@@ -40,7 +40,7 @@ cd valist-web
 make start
 ```
 
-This will install all dependencies and build and serve the `valist` Next.js app.
+This will install all dependencies and build and serve the `valist` Next.js app on `localhost:3000`.
 
 ## Contributing
 
