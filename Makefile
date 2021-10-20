@@ -2,89 +2,65 @@ SHELL=/bin/bash
 
 all: install valist
 
-bin:
-	go build -ldflags "-s -w" ./cmd/valist
+valist: web
 
-bin-linux-amd64:
-	GOOS=linux   GOARCH=amd64 go build -ldflags "-s -w" -o dist/linux-amd64/valist       ./cmd/valist
+install: install-sdk install-app
 
-bin-linux-arm64:
-	GOOS=linux   GOARCH=arm64 go build -ldflags "-s -w" -o dist/linux-arm64/valist       ./cmd/valist
+install-sdk:
+	npm install --prefix ./sdk
 
-bin-darwin-amd64:
-	GOOS=darwin  GOARCH=amd64 go build -ldflags "-s -w" -o dist/darwin-amd64/valist      ./cmd/valist
+install-app:
+	npm install --prefix ./app
 
-bin-darwin-arm64:
-	GOOS=darwin  GOARCH=arm64 go build -ldflags "-s -w" -o dist/darwin-arm64/valist      ./cmd/valist
+sdk:
+	npm run build --prefix ./sdk
 
-bin-windows-amd64:
-	GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -o dist/windows-amd64/valist.exe ./cmd/valist
+app:
+	rm -rf ./app/out
+	npm run build --prefix ./app
+	npm run export --prefix ./app
 
-bin-multi: bin-linux-amd64 bin-linux-arm64 bin-darwin-amd64 bin-darwin-arm64 bin-windows-amd64
+web: sdk app
 
-valist: web bin
+start: sdk
+	npm run start --prefix ./app
 
-install: install-lib install-relay
+dev-sdk:
+	npm run dev --prefix ./sdk
 
-install-lib:
-	npm install --prefix ./web/lib
-
-install-relay:
-	npm install --prefix ./web/relay
-
-install-docs:
-	pip install mkdocs mkdocs-material
-
-dev-lib:
-	npm run dev --prefix ./web/lib
-
-dev-relay:
-	npm run dev --prefix ./web/relay
-
-dev-docs:
-	mkdocs serve
+dev-app:
+	npm run dev --prefix ./app
 
 dev:
-	@make -j 2 dev-lib dev-relay
+	@make -j 2 dev-sdk dev-app
 
-web-lib:
-	npm run build --prefix ./web/lib
+lint-sdk:
+	npm run lint --prefix ./sdk
 
-web-relay:
-	rm -rf ./web/relay/out
-	npm run build --prefix ./web/relay
-	npm run export --prefix ./web/relay
+lint-app:
+	npm run lint --prefix ./app
 
-web: web-lib web-relay
+lint-fix-sdk:
+	npm run lint:fix --prefix ./sdk
 
-lint-valist:
-	golangci-lint run
+lint-fix-app:
+	npm run lint:fix --prefix ./app
 
-lint-web-lib:
-	npm run lint --prefix ./web/lib
+lint: lint-sdk lint-app
 
-lint-web-relay:
-	npm run lint --prefix ./web/relay
+lint-fix: lint-fix-sdk lint-fix-app
 
-lint: lint-valist lint-web-lib lint-web-relay
+test-sdk:
+	npm run test --prefix ./sdk
 
-test-valist:
-	go test ./...
-
-test-web-lib:
-	npm run test --prefix ./web/lib
-
-test: test-valist test-web-lib
-
-docs:
-	mkdocs build
+test: test-sdk
 
 clean:
-	rm -rf ./web/relay/.next
-	rm -rf ./web/relay/out
-	rm -rf ./web/relay/node_modules
-	rm -rf ./web/lib/node_modules
-	rm -rf ./web/lib/dist
-	rm -rf dist site
+	rm -rf ./app/.next
+	rm -rf ./app/out
+	rm -rf ./app/node_modules
+	rm -rf ./sdk/node_modules
+	rm -rf ./sdk/dist
+	rm -rf dist
 
-.PHONY: web docs
+.PHONY: app sdk
