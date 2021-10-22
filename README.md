@@ -1,8 +1,8 @@
-[![Logo](./docs/img/logo-large-with-text.png)](https://valist.io)
+[![Logo](https://github.com/valist-io/valist/blob/main/docs/img/logo-large-with-text.png?raw=true)](https://valist.io)
 
 [![Discord](https://img.shields.io/discord/785535462311591976)](https://discord.com/channels/785535462311591976)
 [![Valist](https://img.shields.io/badge/valist-published-blue)](https://app.valist.io/valist)
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fvalist-io%2Fvalist.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fvalist-io%2Fvalist?ref=badge_shield)
+<!-- [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fvalist-io%2Fvalist.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fvalist-io%2Fvalist?ref=badge_shield) -->
 
 A trustless universal package repository enabling you to digitally sign and distribute software via IPFS in just a few steps.
 
@@ -28,20 +28,19 @@ Documentation for how to get started with Valist can be found at [https://docs.v
 
 #### System Requirements:
 
-* Go >= 1.16
 * node >= 14.17
 * npm >= 6.14
 
 
 ```bash
-git clone https://github.com/valist-io/valist
+git clone https://github.com/valist-io/valist-web
 
-cd valist
+cd valist-web
 
-make
+make start
 ```
 
-This will install all dependencies and build a `valist` binary in the root of the repo directory.
+This will install all dependencies and build and serve the `valist` Next.js app on `localhost:3000`.
 
 ## Contributing
 
