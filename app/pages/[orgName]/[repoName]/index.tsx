@@ -60,7 +60,7 @@ export default function Dashboard() {
 
   const fetchAll = () => Promise.all([
     valist.getRepository(orgName, repoName).then(setRepo),
-    valist.getReleases(orgName, repoName, 1, 10).then((releases) => setRepoReleases(releases.reverse())),
+    valist.getReleases(orgName, repoName, 1, 10).then((releases: Release[]) => setRepoReleases(releases.reverse())),
     valist.getRepoDevs(orgName, repoName).then(setRepoDevs),
     valist.getOrgAdmins(orgName).then(setOrgAdmins),
   ]);
