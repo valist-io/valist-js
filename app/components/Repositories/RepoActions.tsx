@@ -1,6 +1,6 @@
 import { ProjectType } from '@valist/sdk/dist/types';
 import React, { useEffect, useState, useRef } from 'react';
-import { projectTypes, GetActions, Action } from '../../utils/Actions';
+import { projectTypes, GetActions } from '../../utils/Actions';
 import copyToCB from '../../utils/clipboard';
 
 interface RepoActionsProps {

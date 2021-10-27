@@ -146,11 +146,13 @@ export default function ReleaseList(props: ReleaseListProps): JSX.Element {
                       {release.tag}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-left text-sm text-gray-500">
-                      {parseCID(release.releaseCID)}
+                      <a className="cursor-pointer" href={`https://ipfs.io/ipfs/${parseCID(release.releaseCID)}`}>
+                        {parseCID(release.releaseCID)}
+                      </a>
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
                       {!release.active && <div onClick={() => { toggleDownload(release); }}
-                        className="text-indigo-600 hover:text-indigo-900">
+                        className="text-indigo-600 hover:text-indigo-900 cursor-pointer">
                         Download
                       </div>}
                       {release.active && <ReleaseDownloads releaseCID={release.releaseCID} />}
