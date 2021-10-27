@@ -1,5 +1,5 @@
 import { Release, RepoMeta, ReleaseMeta } from '@valist/sdk/dist/types';
-import RepoActions from './RepoActions';
+import RepoActionsCard from './RepoActionsCard';
 import RepoMemberList from './RepoMemberList';
 import ReleaseList from '../Releases/ReleaseList';
 import RepoReadme from './RepoReadme';
@@ -28,10 +28,11 @@ export default function RepoContent(props: ReleaseListProps): JSX.Element {
       case 'readme':
         return <RepoReadme repoReadme={props.releaseMeta.readme} />;
       case 'install':
-        return (<RepoActions
+        return (<RepoActionsCard
           orgName={props.orgName}
           repoName={props.repoName}
-          repoMeta={props.repoMeta}
+          projectType={props.repoMeta.projectType}
+          showAll={true}
         />);
       case 'members':
         return (<RepoMemberList

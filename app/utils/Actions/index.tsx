@@ -5,10 +5,10 @@ export type Action = {
 
 export type ProjectType = {
   actions: string[],
-  default: string
+  default: string[],
 };
 
-export const GetActions = (location:string, orgName:string, repoName:string) => {
+export const GetActions = (location: string, orgName: string, repoName: string) => {
   const actions: Record<string, Action> = {
     npmInstallFromRegistry: {
       description: 'Install from Registry',
@@ -38,29 +38,25 @@ npm i @${orgName}/${repoName}`,
   return actions;
 };
 
-export const projectTypes: Record<string, ProjectType> = {
+export const projectTypes: Record<string, any> = {
   binary: {
-    actions: ['curlBinary'],
-    default: 'curlBinary',
+    actions: ['curlBinary', 'installBinary'],
+    default: ['curlBinary', 'installBinary'],
   },
   npm: {
-    actions: ['installUrl', 'npmInstallFromRegistry'],
-    default: 'npmInstallFromRegistry',
-  },
-  node: {
-    actions: ['installUrl', 'npmInstallFromRegistry'],
-    default: 'npmInstallFromRegistry',
+    actions: ['npmInstallFromRegistry'],
+    default: ['npmInstallFromRegistry'],
   },
   go: {
-    actions: ['curlBinary'],
-    default: 'installBinary',
+    actions: ['curlBinary', 'installBinary'],
+    default: ['installBinary', 'curlBinary'],
   },
   python: {
     actions: ['pipInstall'],
-    default: 'pipInstall',
+    default: ['pipInstall'],
   },
   docker: {
     actions: ['dockerLoad'],
-    default: 'dockerLoad',
+    default: ['dockerLoad'],
   },
 };
