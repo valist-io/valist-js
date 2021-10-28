@@ -48,7 +48,7 @@ export const projectTypes: Record<string, any> = {
     default: ['npmInstallFromRegistry'],
   },
   go: {
-    actions: ['curlBinary', 'installBinary'],
+    actions: ['installBinary', 'curlBinary'],
     default: ['installBinary', 'curlBinary'],
   },
   python: {

@@ -39,7 +39,7 @@ const RepoActions = (props: RepoActionsProps) => {
             <h1 className="text-xl text-gray-900 mb-2">
               {actions[action].description}
             </h1>
-            <div ref={installRef} className="col-span-12 flex bg-indigo-50 rounded-lg">
+            <div ref={installRef} className="col-span-12 flex bg-indigo-50 rounded-lg justify-between">
               <pre style={{ overflow: 'scroll' }} className="p-2 hide-scroll">
                 <code>
                   {actions[action].command}
