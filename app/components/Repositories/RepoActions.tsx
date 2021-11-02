@@ -23,6 +23,14 @@ const RepoActions = (props: RepoActionsProps) => {
     actionView = 'actions';
   }
 
+  const loadAction = () => {
+    try {
+      return projectTypes[projectType][actionView];
+    } catch (err) {
+      return undefined;
+    }
+  };
+
   useEffect(() => {
     let { origin } = window.location;
     if (origin === 'http://localhost:3000') {
@@ -33,7 +41,7 @@ const RepoActions = (props: RepoActionsProps) => {
 
   return (
     <div>
-      {(projectTypes[projectType][actionView] && Object.keys(actions).length
+      {(loadAction() && Object.keys(actions).length
         && projectTypes[projectType][actionView].map((action: string) => (
           <div key={action} className="pb-4">
             <h1 className="text-xl text-gray-900 mb-2">
