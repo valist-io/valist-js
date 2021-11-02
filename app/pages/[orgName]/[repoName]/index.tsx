@@ -97,7 +97,7 @@ export default function Dashboard() {
             orgName={orgName}
             repoName={repoName}
             repoMeta={repo.meta} />
-          <section className="rounded-lg bg-white overflow-hidden shadow">
+          <section className="rounded-lg bg-white shadow">
             {repo && <RepoContent
               repoReleases={repoReleases}
               releaseMeta={releaseMeta}

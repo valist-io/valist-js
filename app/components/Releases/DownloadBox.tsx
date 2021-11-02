@@ -1,5 +1,5 @@
 import {
-  Fragment, useState, Dispatch,
+  Fragment, useState, Dispatch, useEffect,
 } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronDownIcon } from '@heroicons/react/solid';
@@ -67,13 +67,21 @@ const ReleaseDownloads = (props: ReleaseDownloadsProps) => (
           setChosenArtifact={props.setChosenArtifact}
         />
       ))}
+      {(props.releaseArtifacts.length === 0)
+        && <ReleaseArtifact
+          artifact={'Loading'}
+          setChosenArtifact={(() => {
+            const [, setState] = useState();
+            return setState;
+          })()}
+        />
+      }
     </Listbox.Options>
   </Transition>
 );
 
 export default function DownloadBox(props: DownloadBoxProps) {
   const [selected, setSelected] = useState();
-  const [clicked, setClicked] = useState(false);
   const [releaseArtifacts, setReleaseArtifacts] = useState<string[]>([]);
   const [releaseMeta, setReleaseMeta] = useState<any>({});
   const [chosenArtifact, setChosenArtifact] = useState<any>('');
@@ -81,7 +89,8 @@ export default function DownloadBox(props: DownloadBoxProps) {
   const artifactFromName = (artifactName: string) => {
     try {
       const cid = releaseMeta.artifacts[artifactName].provider;
-      const url = `https://gateway.valist.io${cid}?filename=${props.releaseName}`;
+      const parsedCID = parseCID(cid);
+      const url = `https://gateway.valist.io/ipfs/${parsedCID}?filename=${props.releaseName}`;
       window.location.assign(url);
     } catch (err) {
       console.log('Failed to fetch artifact by name', err);
@@ -89,23 +98,23 @@ export default function DownloadBox(props: DownloadBoxProps) {
   };
 
   const artifactFromCID = (artifactCID: string) => {
-    console.log('test');
     const cid = parseCID(artifactCID);
     const url = `https://ipfs.io/ipfs/${cid}`;
     window.open(url, '_blank');
   };
 
   const fetchData = async () => {
-    const url = `https://ipfs.io${props.releaseCID}`;
+    const parsedCID = parseCID(props.releaseCID);
+    const url = `https://ipfs.io/ipfs/${parsedCID}`;
     let artifactNames: string[] = [];
+    let response: any;
+    let json: any;
 
     if (releaseArtifacts.length === 0) {
       try {
-        const response = await fetch(url);
-        const json = await response.json();
+        response = await fetch(url);
+        json = await response.json();
         artifactNames = Object.keys(json.artifacts);
-
-        setReleaseMeta(json);
       } catch (err) {
         console.log('Error while fetching artifacts:', err);
       }
@@ -114,16 +123,18 @@ export default function DownloadBox(props: DownloadBoxProps) {
         artifactNames.push('artifact');
       }
 
+      setReleaseMeta(json);
       setReleaseArtifacts(artifactNames);
-      setClicked(!clicked);
     }
   };
 
-  console.log(chosenArtifact);
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <Listbox value={selected} onChange={setSelected}>
-      <div className="relative">
+      <div className="relative cursor-pointer">
         <div className="inline-flex shadow-sm rounded-md divide-x divide-indigo-600">
           <div className="relative z-0 inline-flex shadow-sm rounded-md divide-x divide-indigo-600">
             <div onClick={() => {
@@ -143,16 +154,15 @@ export default function DownloadBox(props: DownloadBoxProps) {
             rounded-l-none rounded-r-md text-sm font-medium text-white hover:bg-indigo-600
             focus:outline-none focus:z-10 focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50
             focus:ring-indigo-500">
-              <ChevronDownIcon className="h-5 w-5 text-white" aria-hidden="true" onClick={() => fetchData()} />
+              <ChevronDownIcon className="h-5 w-5 text-white" aria-hidden="true" />
             </Listbox.Button>
           </div>
         </div>
-        {clicked
-          && <ReleaseDownloads
-            releaseArtifacts={releaseArtifacts}
-            releaseCID={props.releaseCID}
-            setChosenArtifact={setChosenArtifact}
-          />}
+        <ReleaseDownloads
+          releaseArtifacts={releaseArtifacts}
+          releaseCID={props.releaseCID}
+          setChosenArtifact={setChosenArtifact}
+        />
       </div>
     </Listbox>
   );
