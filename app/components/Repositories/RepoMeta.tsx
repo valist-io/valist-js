@@ -22,15 +22,15 @@ const RepoMetaCard = (props: RepoMetaCardProps) => {
         showAll={false} />
       {repoMeta.repository
         && <div className="pb-4">
-          <h1 className="text-xl text-gray-900 mb-1">Repository</h1>
-          <a className="text-blue-600" href={repoMeta.repository}>{repoMeta.repository}</a>
+          <h1 className="text-xl text-gray-900  mb-1">Repository</h1>
+          <a className="text-gray-600 hover:text-indigo-500" href={repoMeta.repository}>{repoMeta.repository}</a>
         </div>
       }
 
       {repoMeta.homepage
         && <div className="pb-4">
-          <h1 className="text-xl text-gray-900 mb-1">Homepage</h1>
-          <a className="text-blue-600" href={repoMeta.homepage}>{repoMeta.homepage}</a>
+          <h1 className="text-xl text-gray-900  mb-1">Homepage</h1>
+          <a className="text-gray-600 hover:text-indigo-500" href={repoMeta.homepage}>{repoMeta.homepage}</a>
         </div>
       }
       {releaseMeta.version
@@ -42,7 +42,9 @@ const RepoMetaCard = (props: RepoMetaCardProps) => {
       {releaseMeta.license
         && <div className="pb-4">
           <h1 className="text-xl text-gray-900 mb-1">License</h1>
-          <div className="text-gray-600">{releaseMeta.license}</div>
+          <div className="text-gray-600">
+            {releaseMeta.license}
+          </div>
         </div>}
     </div>
   );

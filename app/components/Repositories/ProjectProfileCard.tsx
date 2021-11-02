@@ -36,24 +36,24 @@ export default function ProjectProfileCard(props: ProjectProfileCardProps): JSX.
         </div>
         <div className="flex flex-col sm:flex-row mt-4 cursor-pointer">
           <div onClick={() => { props.setRepoView('readme'); }}
-            className="text-gray-600 text-center py-4 px-6 block hover:text-blue-500 focus:outline-none">
+            className="text-gray-600 text-center py-4 px-6 block hover:text-indigo-500 focus:outline-none">
             Readme
           </div>
           <div onClick={() => { props.setRepoView('install'); }}
-            className="text-gray-600 text-center py-4 px-6 block hover:text-blue-500 focus:outline-none">
+            className="text-gray-600 text-center py-4 px-6 block hover:text-indigo-500 focus:outline-none">
             Install
           </div>
           <div onClick={() => { props.setRepoView('versions'); }}
-            className="text-gray-600 text-center py-4 px-6 block hover:text-blue-500 focus:outline-none">
+            className="text-gray-600 text-center py-4 px-6 block hover:text-indigo-500 focus:outline-none">
             Versions
           </div>
           <div onClick={() => { props.setRepoView('members'); }}
-            className="text-gray-600 text-center py-4 px-6 block hover:text-blue-500 focus:outline-none">
+            className="text-gray-600 text-center py-4 px-6 block hover:text-indigo-500 focus:outline-none">
             Maintainers
           </div>
           {(repoMeta.projectType === 'npm' || repoMeta.projectType === 'go')
             && <div onClick={() => { props.setRepoView('dependencies'); }}
-              className="text-gray-600 text-center py-4 px-6 block hover:text-blue-500 focus:outline-none">
+              className="text-gray-600 text-center py-4 px-6 block hover:text-indigo-500 focus:outline-none">
               Dependencies
             </div>
           }
