@@ -9,7 +9,11 @@ import RepoMetaCard from '../../../components/Repositories/RepoMeta';
 import ValistContext from '../../../components/Valist/ValistContext';
 import ErrorDialog from '../../../components/Dialog/ErrorDialog';
 
-export default function Dashboard() {
+interface DashboardProps {
+  loading: boolean,
+}
+
+export default function Dashboard(props: DashboardProps) {
   const valist = useContext(ValistContext);
   const router = useRouter();
   const orgName = `${router.query.orgName}`;
@@ -81,51 +85,57 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    getData();
+    if (!props.loading) {
+      getData();
+    }
   }, [valist, orgName, repoName]);
 
   useEffect(() => {
-    fetchReadme();
+    if (!props.loading) {
+      fetchReadme();
+    }
   }, [repo, repoReleases]);
 
   useEffect(() => {
-    parseReadmeFromPackageJSON();
+    if (!props.loading) {
+      parseReadmeFromPackageJSON();
+    }
   }, [repoReadme]);
 
   return (
     <Layout>
-        <Head>
-          <meta name="go-import" content={
-            `app.valist.io/${orgName}/${repoName} git https://app.valist.io/api/git/${orgName}/${repoName}`
-          } />
-        </Head>
-        <div className="grid grid-cols-1 gap-4 items-start lg:grid-cols-6 lg:gap-8">
-          <div className="grid grid-cols-1 gap-4 lg:col-span-4">
-            <ProjectProfileCard
-              setRepoView={setRepoView}
+      <Head>
+        <meta name="go-import" content={
+          `app.valist.io/${orgName}/${repoName} git https://app.valist.io/api/git/${orgName}/${repoName}`
+        } />
+      </Head>
+      <div className="grid grid-cols-1 gap-4 items-start lg:grid-cols-6 lg:gap-8">
+        <div className="grid grid-cols-1 gap-4 lg:col-span-4">
+          <ProjectProfileCard
+            setRepoView={setRepoView}
+            orgName={orgName}
+            repoName={repoName}
+            repoMeta={repo.meta} />
+          <section className="rounded-lg bg-white overflow-hidden shadow">
+            {repo && <RepoContent
+              repoReleases={repoReleases}
+              releaseMeta={releaseMeta}
+              repoReadme={repoReadme}
+              view={repoView}
               orgName={orgName}
               repoName={repoName}
-              repoMeta={repo.meta} />
-            <section className="rounded-lg bg-white overflow-hidden shadow">
-              {repo && <RepoContent
-                repoReleases={repoReleases}
-                releaseMeta={releaseMeta}
-                repoReadme={repoReadme}
-                view={repoView}
-                orgName={orgName}
-                repoName={repoName}
-                repoMeta={repo.meta}
-                repoDevs={repoDevs}
-                orgAdmins={orgAdmins}/>}
-            </section>
-          </div>
-          <div className="grid grid-cols-1 gap-4 lg:col-span-2">
-            <RepoMetaCard
+              repoMeta={repo.meta}
+              repoDevs={repoDevs}
+              orgAdmins={orgAdmins} />}
+          </section>
+        </div>
+        <div className="grid grid-cols-1 gap-4 lg:col-span-2">
+          <RepoMetaCard
             releaseMeta={releaseMeta}
             repoMeta={repo.meta}
             orgName={orgName}
             repoName={repoName} />
-          </div>
+        </div>
       </div>
       {error && <ErrorDialog error={error} close={() => setError(undefined)} />}
     </Layout>
