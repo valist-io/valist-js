@@ -50,7 +50,7 @@ export default function Dashboard(props: DashboardProps) {
     if (!props.loading) {
       getData();
     }
-  }, [valist, orgName]);
+  }, [valist, orgName, props.loading]);
 
   return (
     <Layout>

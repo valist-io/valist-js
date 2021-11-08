@@ -28,8 +28,10 @@
     "@sentry/nextjs": "^6.9.0",
     "@tailwindcss/forms": "^0.2.1",
     "@tailwindcss/line-clamp": "^0.2.1",
+    "@valist/sdk": "file:../sdk",
     "@walletconnect/web3-provider": "^1.4.1",
     "axios": "^0.21.1",
+    "ethers": "^5.5.1",
     "events": "^3.3.0",
     "jdenticon": "^3.1.0",
     "magic-sdk": "^4.3.0",
@@ -42,7 +44,6 @@
     "remark": "^14.0.1",
     "remark-gfm": "^2.0.0",
     "remark-html": "^14.0.1",
-    "@valist/sdk": "file:../sdk",
     "walletconnect": "^1.4.1"
   },
   "devDependencies": {

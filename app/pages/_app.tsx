@@ -12,7 +12,6 @@ import ValistContext from '../components/Valist/ValistContext';
 import LoginContext from '../components/Login/LoginContext';
 import getProviders from '../utils/providers';
 
-import LoadingDialog from '../components/Dialog/LoadingDialog';
 import LoginForm from '../components/Login/LoginForm';
 
 import '../styles/main.css';
