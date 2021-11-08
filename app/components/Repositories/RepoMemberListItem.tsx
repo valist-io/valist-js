@@ -10,7 +10,12 @@ export default function RepoMemberListItem(props: OrgAccessCardListItemProps): J
       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
         <AddressIdenticon address={props.address} height={32} />
       </td>
-      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">{props.address}</td>
+      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
+        <a className="cursor-pointer hover:text-indigo-500" href={`https://polygonscan.com/address/${props.address}`}
+          rel="noreferrer" target="_blank">
+          {props.address}
+        </a>
+      </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">{'Org Admin'}</td>
     </tr>
   );

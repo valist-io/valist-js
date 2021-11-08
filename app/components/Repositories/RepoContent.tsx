@@ -1,5 +1,5 @@
-import { Release, RepoMeta } from '@valist/sdk/dist/types';
-import RepoActions from './RepoActions';
+import { Release, RepoMeta, ReleaseMeta } from '@valist/sdk/dist/types';
+import RepoActionsCard from './RepoActionsCard';
 import RepoMemberList from './RepoMemberList';
 import ReleaseList from '../Releases/ReleaseList';
 import RepoReadme from './RepoReadme';
@@ -8,8 +8,7 @@ import RepoDependencies from './RepoDependencies';
 
 interface ReleaseListProps {
   repoReleases: Release[]
-  repoReadme: string,
-  releaseMeta: any,
+  releaseMeta: ReleaseMeta,
   view: string,
   orgName: string,
   repoMeta: RepoMeta
@@ -27,12 +26,13 @@ export default function RepoContent(props: ReleaseListProps): JSX.Element {
 
     switch (currentView) {
       case 'readme':
-        return <RepoReadme repoReadme={props.repoReadme} />;
+        return <RepoReadme repoReadme={props.releaseMeta.readme} />;
       case 'install':
-        return (<RepoActions
+        return (<RepoActionsCard
           orgName={props.orgName}
           repoName={props.repoName}
-          repoMeta={props.repoMeta}
+          projectType={props.repoMeta.projectType}
+          showAll={true}
         />);
       case 'members':
         return (<RepoMemberList
@@ -43,26 +43,26 @@ export default function RepoContent(props: ReleaseListProps): JSX.Element {
           repoReleases={props.repoReleases}
           orgName={props.orgName}
           repoName={props.repoName}
-          />);
+        />);
       case 'dependencies':
         return (<RepoDependencies
           repoMeta={props.repoMeta}
           releaseMeta={props.releaseMeta}
           orgName={props.orgName}
           repoName={props.repoName}
-          />);
+        />);
       case 'releaseSteps':
         return <PublishReleaseSteps />;
       default:
-        return <RepoReadme repoReadme={props.repoReadme} />;
+        return <RepoReadme repoReadme={props.releaseMeta.readme} />;
     }
   };
 
   return (
     <div className="bg-white lg:min-w-0 lg:flex-1">
-        <div className="border-b border-t border-gray-200 xl:border-t-0">
-          {getRepoView(props.view)}
-        </div>
+      <div className="border-b border-t border-gray-200 xl:border-t-0">
+        {getRepoView(props.view)}
+      </div>
     </div>
   );
 }
