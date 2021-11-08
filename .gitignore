@@ -9,4 +9,3 @@ site
 *.test
 *.out
 dist
-web/relay/.next
