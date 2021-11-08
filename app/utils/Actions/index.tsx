@@ -5,10 +5,10 @@ export type Action = {
 
 export type ProjectType = {
   actions: string[],
-  default: string
+  default: string[],
 };
 
-export const GetActions = (location:string, orgName:string, repoName:string) => {
+export const GetActions = (location: string, orgName: string, repoName: string) => {
   const actions: Record<string, Action> = {
     npmInstallFromRegistry: {
       description: 'Install from Registry',
@@ -20,49 +20,43 @@ npm i @${orgName}/${repoName}`,
     },
     curlBinary: {
       description: 'Download (GET) from Url',
-      command: `curl -L -o ${repoName} ${location}/api/${orgName}/${repoName}/latest
-
-      `,
+      command: `curl -L -o ${repoName} ${location}/api/${orgName}/${repoName}/latest`,
+    },
+    installBinary: {
+      description: 'Installation',
+      command: `valist install ${orgName}/${repoName}`,
     },
     pipInstall: {
       description: 'Pip Install From Url',
-      command: `pip install ${location}/api/${orgName}/${repoName}/latest
-
-      `,
+      command: `pip install ${location}/api/${orgName}/${repoName}/latest`,
     },
     dockerLoad: {
       description: 'Load Container from Url',
-      command: `curl -L ${location}/api/${orgName}/${repoName}/latest | docker load
-
-      `,
+      command: `curl -L ${location}/api/${orgName}/${repoName}/latest | docker load`,
     },
   };
   return actions;
 };
 
-export const projectTypes: Record<string, ProjectType> = {
+export const projectTypes: Record<string, any> = {
   binary: {
-    actions: ['curlBinary'],
-    default: 'curlBinary',
+    actions: ['curlBinary', 'installBinary'],
+    default: ['curlBinary', 'installBinary'],
   },
   npm: {
-    actions: ['installUrl', 'npmInstallFromRegistry'],
-    default: 'npmInstallFromRegistry',
-  },
-  node: {
-    actions: ['installUrl', 'npmInstallFromRegistry'],
-    default: 'npmInstallFromRegistry',
+    actions: ['npmInstallFromRegistry'],
+    default: ['npmInstallFromRegistry'],
   },
   go: {
-    actions: ['curlBinary'],
-    default: 'curlBinary',
+    actions: ['installBinary', 'curlBinary'],
+    default: ['installBinary', 'curlBinary'],
   },
   python: {
     actions: ['pipInstall'],
-    default: 'pipInstall',
+    default: ['pipInstall'],
   },
   docker: {
     actions: ['dockerLoad'],
-    default: 'dockerLoad',
+    default: ['dockerLoad'],
   },
 };
