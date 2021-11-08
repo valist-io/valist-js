@@ -10,21 +10,21 @@ const EnsResolver = (props:EnsResolverProps) => {
 
   useEffect(() => {
     (async () => {
-      var provider = new ethers.providers.JsonRpcProvider('https://rpc.valist.io/mainnet');
+      const provider = new ethers.providers.JsonRpcProvider('https://rpc.valist.io/mainnet');
       try {
         const name = await provider.lookupAddress(props.address);
-        if (name != undefined) {
+        if (name !== null) {
           setEnsName(name);
         }
-      }catch(err){
-        console.log(err)
+      } catch (err) {
+        console.log(err);
       }
-    })()
+    })();
   }, []);
 
   return (
     <div>
-      {ensName ? ensName : props.address}
+      {ensName || props.address}
     </div>
   );
 };
