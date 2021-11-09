@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable no-underscore-dangle */
 import Web3 from 'web3';
-// @ts-ignore ipfs client types are finicky
-import ipfsClient from 'ipfs-http-client';
+
+import { create as ipfsClient } from 'ipfs-http-client'
 
 import { provider, EventLog } from 'web3-core/types';
 
@@ -88,7 +88,7 @@ class Valist {
     this.web3 = new Web3(web3Provider);
     this.metaTxEnabled = metaTx;
     this.defaultAccount = '0x0';
-    this.ipfs = ipfsClient(ipfsHost);
+    this.ipfs = ipfsClient({ url: ipfsHost });
     this.gatewayHost = gatewayHost;
     this.contractAddress = contractAddress;
     this.registryAddress = registryAddress;
