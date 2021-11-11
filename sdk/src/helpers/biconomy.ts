@@ -1,4 +1,4 @@
-import * as sigUtil from 'eth-sig-util';
+import * as sigUtil from '@metamask/eth-sig-util';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable no-underscore-dangle */
@@ -208,7 +208,12 @@ const sendMetaTx = async (
   let signed;
 
   if (signer) {
-    signed = sigUtil.signTypedData_v4(Buffer.from(signer, 'hex'), { data: JSON.parse(dataToSign) });
+    signed = sigUtil.signTypedData({
+        privateKey: Buffer.from(signer, 'hex'),
+        data: JSON.parse(dataToSign),
+        version: sigUtil.SignTypedDataVersion.V4
+      }
+    );
   } else {
     const sig = await sendAsync(web3, {
       jsonrpc: '2.0',
