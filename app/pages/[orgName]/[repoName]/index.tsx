@@ -9,7 +9,11 @@ import RepoMetaCard from '../../../components/Repositories/RepoMeta';
 import ValistContext from '../../../components/Valist/ValistContext';
 import ErrorDialog from '../../../components/Dialog/ErrorDialog';
 
-export default function Dashboard() {
+interface DashboardProps {
+  loading: boolean,
+}
+
+export default function Dashboard(props: DashboardProps) {
   const valist = useContext(ValistContext);
   const router = useRouter();
   const orgName = `${router.query.orgName}`;
@@ -76,11 +80,15 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    getData();
+    if (!props.loading) {
+      getData();
+    }
   }, [valist, orgName, repoName]);
 
   useEffect(() => {
-    fetchReadme();
+    if (!props.loading) {
+      fetchReadme();
+    }
   }, [repo, repoReleases]);
 
   return (
@@ -97,7 +105,7 @@ export default function Dashboard() {
             orgName={orgName}
             repoName={repoName}
             repoMeta={repo.meta} />
-          <section className="rounded-lg bg-white shadow">
+          <section className="rounded-lg bg-white overflow-hidden shadow">
             {repo && <RepoContent
               repoReleases={repoReleases}
               releaseMeta={releaseMeta}

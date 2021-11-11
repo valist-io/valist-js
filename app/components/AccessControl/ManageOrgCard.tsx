@@ -1,3 +1,4 @@
+import EnsResolver from '../Ens';
 import AddressIdenticon from '../Identicons/AddressIdenticon';
 
 interface OrgAccessCardListItemProps {
@@ -13,7 +14,7 @@ function OrgAccessCardListItem(props: OrgAccessCardListItemProps): JSX.Element {
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-gray-900 truncate">
-            {props.address}
+            <EnsResolver address={props.address}/>
           </p>
         </div>
       </div>

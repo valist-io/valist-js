@@ -8,7 +8,11 @@ import OrgProfileCard from '../../components/Organizations/OrgProfileCard';
 import ManageOrgCard from '../../components/AccessControl/ManageOrgCard';
 import ErrorDialog from '../../components/Dialog/ErrorDialog';
 
-export default function Dashboard() {
+interface DashboardProps {
+  loading: boolean,
+}
+
+export default function Dashboard(props: DashboardProps) {
   const valist = useContext(ValistContext);
   const router = useRouter();
   const orgName = `${router.query.orgName}`;
@@ -43,12 +47,14 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    getData();
-  }, [valist, orgName]);
+    if (!props.loading) {
+      getData();
+    }
+  }, [valist, orgName, props.loading]);
 
   return (
     <Layout>
-        <div className="grid grid-cols-1 gap-4 items-start lg:grid-cols-3 lg:gap-8">
+      <div className="grid grid-cols-1 gap-4 items-start lg:grid-cols-3 lg:gap-8">
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
           <OrgProfileCard orgName={orgName} orgMeta={org.meta} />
           <section className="rounded-lg bg-white overflow-hidden shadow">

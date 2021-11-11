@@ -45,8 +45,8 @@
     "typescript": "^4.3.5"
   },
   "dependencies": {
+    "@metamask/eth-sig-util": "^4.0.0",
     "encoding": "^0.1.13",
-    "eth-sig-util": "^3.0.1",
     "ipfs-http-client": "47.0.1",
     "node-fetch": "^2.6.1",
     "web3": "^1.4.0",
