@@ -24,16 +24,20 @@ export const Nav = () => {
                       Home
                     </a>
                   </Link>
+                  <Link href="/v/browse">
+                    <a className="text-white text-sm font-medium rounded-md bg-white
+                    bg-opacity-0 px-3 py-2 hover:bg-opacity-10" aria-current="page">
+                      Browse Projects
+                    </a>
+                  </Link>
                   <a href="https://docs.valist.io/" className="text-violet-100 text-sm
                   font-medium rounded-md bg-white bg-opacity-0 px-3 py-2 hover:bg-opacity-10">
                     Documentation
                   </a>
-
                   <a href="https://valist.io/discord" className="text-violet-100 text-sm
                   font-medium rounded-md bg-white bg-opacity-0 px-3 py-2 hover:bg-opacity-10">
                     Discord
                   </a>
-
                   <a href="mailto:support@valist.io" className="text-violet-100 text-sm
                   font-medium rounded-md bg-white bg-opacity-0 px-3 py-2 hover:bg-opacity-10">
                     Support
