@@ -12,7 +12,6 @@ import ValistContext from '../components/Valist/ValistContext';
 import LoginContext from '../components/Login/LoginContext';
 import getProviders from '../utils/providers';
 
-import LoadingDialog from '../components/Dialog/LoadingDialog';
 import LoginForm from '../components/Login/LoginForm';
 
 import '../styles/main.css';
@@ -113,12 +112,12 @@ function App({ Component, pageProps }: AppProps) {
   return (
     <Sentry.ErrorBoundary fallback={<p>An error has occurred</p>} showDialog={true}>
       <LoginContext.Provider value={loginObject}>
-        { valist
+        {valist
           ? <ValistContext.Provider value={valist}>
-            <Component loggedIn={loggedIn} setShowLogin={setShowLogin} {...pageProps} />
-            { showLogin && <LoginForm setShowLogin={setShowLogin} handleLogin={handleLogin} setEmail={setEmail} /> }
+            <Component loading={false} loggedIn={loggedIn} setShowLogin={setShowLogin} {...pageProps} />
+            {showLogin && <LoginForm setShowLogin={setShowLogin} handleLogin={handleLogin} setEmail={setEmail} />}
           </ValistContext.Provider>
-          : <LoadingDialog>Loading...</LoadingDialog>}
+          : <Component loading={true} loggedIn={loggedIn} setShowLogin={setShowLogin} {...pageProps} />}
       </LoginContext.Provider>
     </Sentry.ErrorBoundary>
   );
