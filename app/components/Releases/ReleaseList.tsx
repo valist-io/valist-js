@@ -47,7 +47,8 @@ export default function ReleaseList(props: ReleaseListProps): JSX.Element {
                       {release.tag}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-left text-sm text-gray-500 hover:text-indigo-500">
-                      <a className="cursor-pointer" href={`https://ipfs.io/ipfs/${parseCID(release.releaseCID)}`}>
+                      <a className="cursor-pointer"
+                        href={`https://gateway.valist.io/ipfs/${parseCID(release.releaseCID)}`}>
                         {parseCID(release.releaseCID)}
                       </a>
                     </td>

@@ -99,13 +99,13 @@ export default function DownloadBox(props: DownloadBoxProps) {
 
   const artifactFromCID = (artifactCID: string) => {
     const cid = parseCID(artifactCID);
-    const url = `https://ipfs.io/ipfs/${cid}`;
+    const url = `https://gateway.valist.io/ipfs/${cid}`;
     window.open(url, '_blank');
   };
 
   const fetchData = async () => {
     const parsedCID = parseCID(props.releaseCID);
-    const url = `https://ipfs.io/ipfs/${parsedCID}`;
+    const url = `https://gateway.valist.io/ipfs/${parsedCID}`;
     let artifactNames: string[] = [];
     let response: any;
     let json: any;

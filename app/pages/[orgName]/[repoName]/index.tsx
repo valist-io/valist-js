@@ -51,7 +51,7 @@ export default function Dashboard(props: DashboardProps) {
     const release = repoReleases[0];
     let metaJson;
     if (release && release.releaseCID !== '') {
-      const requestURL = `https://ipfs.io/${release.releaseCID}`;
+      const requestURL = `https://gateway.valist.io/${release.releaseCID}`;
       try {
         const req = await fetch(requestURL);
         metaJson = await req.json();
