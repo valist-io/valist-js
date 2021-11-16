@@ -1,4 +1,4 @@
-[![Logo](https://github.com/valist-io/valist/blob/main/docs/img/logo-large-with-text.png?raw=true)](https://valist.io)
+[![Logo](./docs/src/img/logo-large-with-text.png)](https://valist.io)
 
 [![Discord](https://img.shields.io/discord/785535462311591976)](https://discord.com/channels/785535462311591976)
 [![Valist](https://img.shields.io/badge/valist-published-blue)](https://app.valist.io/valist)
