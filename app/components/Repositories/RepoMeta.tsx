@@ -14,7 +14,7 @@ const RepoMetaCard = (props: RepoMetaCardProps) => {
   } = props;
 
   return (
-    <div className="rounded-lg bg-white overflow-hidden shadow p-6">
+    <div style={{ minHeight: '500px' }} className="rounded-lg bg-white overflow-hidden shadow p-6">
       <RepoActions
         orgName={orgName}
         repoName={repoName}
