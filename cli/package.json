@@ -11,7 +11,7 @@
     "dist/"
   ],
   "scripts": {
-    "postinstall": "node dist/index.js",
+    "preinstall": "node dist/index.js",
     "build": "tsc",
     "dev": "tsc && node dist/index.js",
     "lint": "eslint . --ext .ts",
