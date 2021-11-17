@@ -1,5 +1,6 @@
 export type Integration = {
   name: string,
+  stable: boolean,
   image: string,
   actions: string[],
   docs: string,
@@ -64,6 +65,7 @@ go get ${location}/[org]/[repo]`,
 export const integrations: Integration[] = [
   {
     name: 'NodeJS Packages',
+    stable: true,
     image: '/images/npm-logo.png',
     actions: ['npmPublish', 'npmInstall'],
     docs: 'https://docs.valist.io/fetching-and-installing-software/#npm-registry',
@@ -71,6 +73,7 @@ export const integrations: Integration[] = [
   },
   {
     name: 'Docker',
+    stable: false,
     image: '/images/docker-logo.png',
     actions: ['dockerPush', 'dockerPull'],
     docs: 'https://docs.valist.io/fetching-and-installing-software',
@@ -78,6 +81,7 @@ export const integrations: Integration[] = [
   },
   {
     name: 'Source Control',
+    stable: false,
     image: '/images/git-logo.png',
     actions: ['gitPush', 'gitClone'],
     docs: 'https://docs.valist.io/fetching-and-installing-software',
@@ -85,6 +89,7 @@ export const integrations: Integration[] = [
   },
   {
     name: 'Go Packages & Binaries',
+    stable: true,
     image: '/images/go-logo.png',
     actions: ['goGet'],
     docs: 'https://docs.valist.io/fetching-and-installing-software/',
