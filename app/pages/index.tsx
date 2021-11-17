@@ -69,7 +69,7 @@ export default function Dashboard() {
                 <img style={{ display: 'inline-block' }}
                 className="max-h-32 mr-4 mb-4" width="50px" src={integration.image} />
                 <div style={{ display: 'inline-block' }}>
-                  <h2 style={{ display: 'inline-block' }} 
+                  <h2 style={{ display: 'inline-block' }}
                     className="mb-4 text-base text-2xl text-gray-900" id="npm-title">
                     {integration.name}
                   </h2> ({integration.stable ? 'Stable' : 'Experimental'})
