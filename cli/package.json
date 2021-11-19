@@ -1,7 +1,7 @@
 {
   "name": "@valist/cli",
-  "version": "0.0.1",
-  "description": "Fetch and install versions of the valist-cli (GO).",
+  "version": "0.0.2",
+  "description": "Fetch and install versions of the Valist CLI (Go binary)",
   "main": "dist/index.js",
   "bin": {
     "valist": "./bin/valist"
