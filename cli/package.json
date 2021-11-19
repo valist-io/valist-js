@@ -11,7 +11,7 @@
     "dist/"
   ],
   "scripts": {
-    "postinstall": "node dist/index.js",
+    "postinstall": "node dist/index.js && chmod +x ./bin/valist",
     "build": "tsc",
     "dev": "tsc && node dist/index.js",
     "lint": "eslint . --ext .ts",
