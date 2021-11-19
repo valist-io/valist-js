@@ -19,7 +19,8 @@
   },
   "dependencies": {
     "@valist/sdk": "^0.5.2",
-    "axios": "^0.24.0"
+    "axios": "^0.24.0",
+    "progress": "^2.0.3"
   },
   "devDependencies": {
     "@types/progress": "^2.0.5",
