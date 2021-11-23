@@ -96,21 +96,13 @@ export default function DownloadBox(props: DownloadBoxProps) {
     }
   };
 
-  const artifactFromCID = (artifactCID: string) => {
-    const cid = parseCID(artifactCID);
-    const url = `https://gateway.valist.io/ipfs/${cid}`;
-    window.open(url, '_blank');
-  };
-
   return (
     <Listbox value={selected} onChange={setSelected}>
       <div className="relative cursor-pointer">
         <div className="inline-flex shadow-sm rounded-md divide-x divide-white-600">
           <div className="relative z-0 inline-flex shadow-sm rounded-md divide-x divide-gray-600">
             <div onClick={() => {
-              if (chosenArtifact === 'artifact') {
-                artifactFromCID(props.releaseCID);
-              } else if (chosenArtifact !== '' && chosenArtifact !== 'artifact') {
+              if (chosenArtifact !== '') {
                 artifactFromName(chosenArtifact);
               } else {
                 alert('Please select an artifact to download.');

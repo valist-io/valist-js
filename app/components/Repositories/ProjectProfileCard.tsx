@@ -12,7 +12,6 @@ interface ProjectProfileCardProps {
 }
 
 export default function ProjectProfileCard(props: ProjectProfileCardProps): JSX.Element {
-  const { repoMeta } = props;
   return (
     <section aria-labelledby="profile-overview-title">
       <div className="rounded-lg bg-white overflow-hidden shadow pt-8 pr-6 pl-6">
