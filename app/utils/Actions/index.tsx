@@ -19,7 +19,7 @@ echo @${orgName}:registry=${location}/api/npm >> .npmrc
 npm i @${orgName}/${repoName}`,
     },
     curlBinary: {
-      description: 'Download (GET) from Url',
+      description: '(GET) from Url',
       command: `curl -L -o ${repoName} ${location}/api/${orgName}/${repoName}/latest`,
     },
     installBinary: {

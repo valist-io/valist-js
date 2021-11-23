@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { Repository, Release, ReleaseMeta } from '@valist/sdk/dist/types';
+import { parseCID } from '@valist/sdk/dist/utils';
 import Layout from '../../../components/Layouts/DashboardLayout';
 import RepoContent from '../../../components/Repositories/RepoContent';
 import ProjectProfileCard from '../../../components/Repositories/ProjectProfileCard';
@@ -49,12 +50,19 @@ export default function Dashboard(props: DashboardProps) {
 
   const fetchReadme = async () => {
     const release = repoReleases[0];
-    let metaJson;
+    let metaJson: ReleaseMeta;
     if (release && release.releaseCID !== '') {
-      const requestURL = `https://gateway.valist.io/${release.releaseCID}`;
+      const parsedCID = parseCID(release.releaseCID);
+      const requestURL = `https://gateway.valist.io/ipfs/${parsedCID}`;
       try {
         const req = await fetch(requestURL);
         metaJson = await req.json();
+        if (Object.keys(metaJson.artifacts).length === 0) {
+          metaJson.artifacts.artifact = {
+            sha256: '',
+            provider: release.releaseCID,
+          };
+        }
         setReleaseMeta(metaJson);
       } catch (e) {
         // noop
@@ -105,7 +113,7 @@ export default function Dashboard(props: DashboardProps) {
             orgName={orgName}
             repoName={repoName}
             repoMeta={repo.meta} />
-          <section className="rounded-lg bg-white overflow-hidden shadow">
+          <section className="rounded-lg bg-white shadow ">
             {repo && <RepoContent
               repoReleases={repoReleases}
               releaseMeta={releaseMeta}

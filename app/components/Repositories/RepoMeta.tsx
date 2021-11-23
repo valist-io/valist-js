@@ -1,9 +1,11 @@
+import { RepoMeta } from '@valist/sdk/dist/types';
 import React from 'react';
+import DownloadLink from './DownloadLink';
 import RepoActions from './RepoActions';
 
 interface RepoMetaCardProps {
   releaseMeta: any,
-  repoMeta: any,
+  repoMeta: RepoMeta,
   orgName: string,
   repoName: string
 }
@@ -14,7 +16,7 @@ const RepoMetaCard = (props: RepoMetaCardProps) => {
   } = props;
 
   return (
-    <div className="rounded-lg bg-white overflow-hidden shadow p-6">
+    <div className="rounded-lg bg-white shadow p-6">
       <RepoActions
         orgName={orgName}
         repoName={repoName}
@@ -46,6 +48,16 @@ const RepoMetaCard = (props: RepoMetaCardProps) => {
             {releaseMeta.license}
           </div>
         </div>}
+      <div className="pb-4">
+        {releaseMeta.artifacts
+          && <DownloadLink
+              releaseName={
+                `${orgName}-${repoName}-${releaseMeta.version ? releaseMeta.version : ''}`
+              }
+              releaseMeta={releaseMeta}
+              />
+        }
+      </div>
     </div>
   );
 };

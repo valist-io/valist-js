@@ -1,17 +1,17 @@
 import {
-  Fragment, useState, Dispatch, useEffect,
+  Fragment, useState, Dispatch,
 } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronDownIcon } from '@heroicons/react/solid';
 import { parseCID } from '@valist/sdk/dist/utils';
+import { ReleaseMeta } from '@valist/sdk/dist/types';
 
 interface DownloadBoxProps {
-  releaseCID: string,
-  releaseName: string,
+  releaseName: string;
+  releaseMeta: ReleaseMeta,
 }
 
 interface ReleaseDownloadsProps {
-  releaseCID: string,
   releaseArtifacts: string[],
   setChosenArtifact: Dispatch<any>,
 }
@@ -31,7 +31,7 @@ const ReleaseArtifact = (props: ReleaseArtifactProps) => {
     <div onClick={() => setChosenArtifact(artifact)} key={artifact}>
       <Listbox.Option
         className={({ active }) => classNames(
-          active ? 'text-white bg-indigo-500' : 'text-gray-900',
+          active ? 'text-white bg-gray-500' : 'text-white-900',
           'cursor-default select-none relative p-4 text-sm',
         )}
         value={artifact}
@@ -57,10 +57,9 @@ const ReleaseArtifact = (props: ReleaseArtifactProps) => {
 
 const ReleaseDownloads = (props: ReleaseDownloadsProps) => (
   <Transition as={Fragment} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
-    <div style={{ position: 'relative' }}>
     <Listbox.Options
       className="origin-top-right absolute z-10 right-0 mt-2 w-72
-          rounded-md shadow-lg bg-white divide-y divide-gray-200 ring-1
+          rounded-md shadow-lg overflow-hidden bg-white divide-y divide-gray-200 ring-1
           ring-black ring-opacity-5 focus:outline-none">
       {props.releaseArtifacts.map((artifact: string) => (
         <ReleaseArtifact
@@ -79,19 +78,16 @@ const ReleaseDownloads = (props: ReleaseDownloadsProps) => (
         />
       }
     </Listbox.Options>
-    </div>
   </Transition>
 );
 
 export default function DownloadBox(props: DownloadBoxProps) {
   const [selected, setSelected] = useState();
-  const [releaseArtifacts, setReleaseArtifacts] = useState<string[]>([]);
-  const [releaseMeta, setReleaseMeta] = useState<any>({});
   const [chosenArtifact, setChosenArtifact] = useState<any>('');
 
   const artifactFromName = (artifactName: string) => {
     try {
-      const cid = releaseMeta.artifacts[artifactName].provider;
+      const cid = props.releaseMeta.artifacts[artifactName].provider;
       const parsedCID = parseCID(cid);
       const url = `https://gateway.valist.io/ipfs/${parsedCID}?filename=${props.releaseName}`;
       window.location.assign(url);
@@ -106,40 +102,11 @@ export default function DownloadBox(props: DownloadBoxProps) {
     window.open(url, '_blank');
   };
 
-  const fetchData = async () => {
-    const parsedCID = parseCID(props.releaseCID);
-    const url = `https://gateway.valist.io/ipfs/${parsedCID}`;
-    let artifactNames: string[] = [];
-    let response: any;
-    let json: any;
-
-    if (releaseArtifacts.length === 0) {
-      try {
-        response = await fetch(url);
-        json = await response.json();
-        artifactNames = Object.keys(json.artifacts);
-      } catch (err) {
-        console.log('Error while fetching artifacts:', err);
-      }
-
-      if (artifactNames.length === 0) {
-        artifactNames.push('artifact');
-      }
-
-      setReleaseMeta(json);
-      setReleaseArtifacts(artifactNames);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   return (
     <Listbox value={selected} onChange={setSelected}>
       <div className="relative cursor-pointer">
-        <div className="inline-flex shadow-sm rounded-md divide-x divide-indigo-600">
-          <div className="relative z-0 inline-flex shadow-sm rounded-md divide-x divide-indigo-600">
+        <div className="inline-flex shadow-sm rounded-md divide-x divide-white-600">
+          <div className="relative z-0 inline-flex shadow-sm rounded-md divide-x divide-gray-600">
             <div onClick={() => {
               if (chosenArtifact === 'artifact') {
                 artifactFromCID(props.releaseCID);
@@ -149,21 +116,20 @@ export default function DownloadBox(props: DownloadBoxProps) {
                 alert('Please select an artifact to download.');
               }
             }}
-              className="relative inline-flex items-center bg-indigo-500 w-32
+              className="relative inline-flex items-center bg-gray-500 w-32
               py-2 pl-3 pr-4 border border-transparent rounded-l-md shadow-sm text-white">
               <p className="ml-2.5 text-sm font-medium">{(chosenArtifact !== '') ? chosenArtifact : 'Download'}</p>
             </div>
-            <Listbox.Button className="relative inline-flex items-center bg-indigo-500 p-2
-            rounded-l-none rounded-r-md text-sm font-medium text-white hover:bg-indigo-600
+            <Listbox.Button className="relative inline-flex items-center bg-gray-500 p-2
+            rounded-l-none rounded-r-md text-sm font-medium text-white hover:bg-gray-600
             focus:outline-none focus:z-10 focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50
-            focus:ring-indigo-500">
-              <ChevronDownIcon className="h-5 w-5 text-white" aria-hidden="true" />
+            focus:ring-white-500">
+              <ChevronDownIcon className="h-5 w-5 text-gray" aria-hidden="true" />
             </Listbox.Button>
           </div>
         </div>
         <ReleaseDownloads
-          releaseArtifacts={releaseArtifacts}
-          releaseCID={props.releaseCID}
+          releaseArtifacts={Object.keys(props.releaseMeta.artifacts)}
           setChosenArtifact={setChosenArtifact}
         />
       </div>
