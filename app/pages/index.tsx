@@ -68,8 +68,12 @@ export default function Dashboard() {
               <div className="p-6">
                 <img style={{ display: 'inline-block' }}
                 className="max-h-32 mr-4 mb-4" width="50px" src={integration.image} />
-                <h2 style={{ display: 'inline-block' }}
-                className="mb-4 text-base text-2xl text-gray-900" id="npm-title">{integration.name}</h2>
+                <div style={{ display: 'inline-block' }}>
+                  <h2 style={{ display: 'inline-block' }}
+                    className="mb-4 text-base text-2xl text-gray-900" id="npm-title">
+                    {integration.name}
+                  </h2> ({integration.stable ? 'Stable' : 'Experimental'})
+                </div>
                 {(Object.keys(actions).length !== 0) && integration.actions.map((action:string) => <div key={action}
                   className="mb-4 grid grid-cols-12 gap-4 lg:gap-8">
                     <div className="lg:col-span-4 col-span-12">
