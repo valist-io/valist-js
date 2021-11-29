@@ -88,8 +88,8 @@ export const integrations: Integration[] = [
     code: '',
   },
   {
-    name: 'Go Packages & Binaries',
-    stable: true,
+    name: 'Go Modules',
+    stable: false,
     image: '/images/go-logo.png',
     actions: ['goGet'],
     docs: 'https://docs.valist.io/fetching-and-installing-software/',
