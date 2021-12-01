@@ -8,7 +8,7 @@ import { ReleaseMeta } from '../../sdk/dist/types';
 
 // this will be the tag downloaded by the npm module
 // bump this to target a different release
-const tag = '0.6.0';
+const tag = '0.6.1';
 
 const platforms: Record<string, string> = {
   "win32": "windows",
