@@ -12,7 +12,6 @@ interface ProjectProfileCardProps {
 }
 
 export default function ProjectProfileCard(props: ProjectProfileCardProps): JSX.Element {
-  const { repoMeta } = props;
   return (
     <section aria-labelledby="profile-overview-title">
       <div className="rounded-lg bg-white overflow-hidden shadow pt-8 pr-6 pl-6">
@@ -51,12 +50,10 @@ export default function ProjectProfileCard(props: ProjectProfileCardProps): JSX.
             className="text-gray-600 text-center py-4 px-6 block hover:text-indigo-500 focus:outline-none">
             Maintainers
           </div>
-          {(repoMeta.projectType === 'npm' || repoMeta.projectType === 'go')
-            && <div onClick={() => { props.setRepoView('dependencies'); }}
-              className="text-gray-600 text-center py-4 px-6 block hover:text-indigo-500 focus:outline-none">
-              Dependencies
-            </div>
-          }
+          <div onClick={() => { props.setRepoView('dependencies'); }}
+            className="text-gray-600 text-center py-4 px-6 block hover:text-indigo-500 focus:outline-none">
+            Dependencies
+          </div>
         </div>
       </div>
     </section>
