@@ -1,6 +1,6 @@
 {
   "name": "@valist/cli",
-  "version": "0.6.1",
+  "version": "0.6.1-1",
   "description": "Fetch and install versions of the Valist CLI (Go binary)",
   "main": "dist/index.js",
   "bin": {
@@ -15,7 +15,8 @@
     "build": "tsc",
     "dev": "tsc && node dist/index.js",
     "lint": "eslint . --ext .ts",
-    "lint:fix": "eslint . --ext .ts --fix"
+    "lint:fix": "eslint . --ext .ts --fix",
+    "prepublish": "npm run build"
   },
   "dependencies": {
     "@valist/sdk": "^0.5.2",
