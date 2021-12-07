@@ -20,7 +20,7 @@ const axios_1 = __importDefault(require("axios"));
 const progress_1 = __importDefault(require("progress"));
 // this will be the tag downloaded by the npm module
 // bump this to target a different release
-const tag = '0.6.0';
+const tag = '0.6.1';
 const platforms = {
     "win32": "windows",
 };

@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import Axios from 'axios';
 import ProgressBar from 'progress';
-import { ReleaseMeta } from '../../sdk/dist/types';
+import { ReleaseMeta } from '@valist/sdk/dist/types';
 
 // this will be the tag downloaded by the npm module
 // bump this to target a different release
