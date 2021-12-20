@@ -5,6 +5,19 @@ import Axios from 'axios';
 import axios from 'axios';
 import ProgressBar from 'progress';
 
+type ReleaseArtifact = {
+  sha256:   string,
+  provider: string,
+}
+
+type ReleaseMeta = {
+  name:         string,             
+  readme:       string,             
+  license?:      string,           
+  dependencies?: string[],          
+  artifacts:   Record<string, ReleaseArtifact> 
+}
+
 const platforms: Record<string, string> = {
   "win32": "windows",
 };
@@ -70,7 +83,6 @@ async function fetchArtifact(cid: string) {
   });
 
   data.on('data', (chunk: any) => progressBar.tick(chunk.length));
-
   data.pipe(writer);
 
   return new Promise((resolve, reject) => {
@@ -82,7 +94,7 @@ async function fetchArtifact(cid: string) {
 (async () => {
   console.log("Fetching release", release.tag, "with provider", release.releaseCID);
 
-  const meta: any = await fetchJSONfromIPFS(release.releaseCID);
+  const meta: ReleaseMeta = await fetchJSONfromIPFS(release.releaseCID);
 
   const info = getHostInfo();
   console.log("Detected host platform", info);
