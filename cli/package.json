@@ -19,11 +19,11 @@
     "prepublish": "npm run build"
   },
   "dependencies": {
-    "@valist/sdk": "^0.5.2",
     "axios": "^0.24.0",
     "progress": "^2.0.3"
   },
   "devDependencies": {
+    "@types/node": "^17.0.1",
     "@types/progress": "^2.0.5",
     "@typescript-eslint/eslint-plugin": "^4.28.2",
     "eslint": "^7.30.0",

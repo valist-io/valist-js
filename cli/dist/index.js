@@ -12,21 +12,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const sdk_1 = __importDefault(require("@valist/sdk"));
+exports.parseCID = void 0;
 const os_1 = __importDefault(require("os"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const axios_1 = __importDefault(require("axios"));
+const axios_2 = __importDefault(require("axios"));
 const progress_1 = __importDefault(require("progress"));
-// this will be the tag downloaded by the npm module
-// bump this to target a different release
-const tag = '0.6.1';
 const platforms = {
     "win32": "windows",
 };
 const archs = {
     "ia32": "386",
     "x64": "amd64",
+};
+const release = {
+    tag: '0.6.1',
+    releaseCID: '/ipfs/QmWNyPgGc4JhAF1uw4jhtMj9XwSBGaATeFCSAmocbBEuPU',
+    metaCID: 'QmRBwMae3Skqzc1GmAKBdcnFFPnHeD585MwYtVZzfh9Tkh',
 };
 function getHostInfo() {
     let platform = String(os_1.default.platform());
@@ -38,6 +41,21 @@ function getHostInfo() {
         arch = archs[arch];
     }
     return { platform, arch };
+}
+const parseCID = (url) => url.replace('/ipfs/', '');
+exports.parseCID = parseCID;
+function fetchJSONfromIPFS(ipfsHash) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const json = yield axios_2.default.get(`https://gateway.valist.io/ipfs/${(0, exports.parseCID)(ipfsHash)}`);
+            return json.data;
+        }
+        catch (e) {
+            const msg = 'Could not fetch JSON from IPFS';
+            console.error(msg, e);
+            throw e;
+        }
+    });
 }
 function fetchArtifact(cid) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -66,14 +84,8 @@ function fetchArtifact(cid) {
     });
 }
 (() => __awaiter(void 0, void 0, void 0, function* () {
-    const valist = new sdk_1.default({
-        web3Provider: 'https://rpc.valist.io',
-        metaTx: false,
-    });
-    yield valist.connect();
-    const release = yield valist.getReleaseByTag('valist', 'cli', tag);
     console.log("Fetching release", release.tag, "with provider", release.releaseCID);
-    const meta = yield valist.fetchJSONfromIPFS(release.releaseCID);
+    const meta = yield fetchJSONfromIPFS(release.releaseCID);
     const info = getHostInfo();
     console.log("Detected host platform", info);
     const hostBin = meta.artifacts[`${info.platform}/${info.arch}`];
