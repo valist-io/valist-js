@@ -1,14 +1,22 @@
-import Valist from '@valist/sdk';
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
 import Axios from 'axios';
+import axios from 'axios';
 import ProgressBar from 'progress';
-import { ReleaseMeta } from '@valist/sdk/dist/types';
 
-// this will be the tag downloaded by the npm module
-// bump this to target a different release
-const tag = '0.6.1';
+type ReleaseArtifact = {
+  sha256:   string,
+  provider: string,
+}
+
+type ReleaseMeta = {
+  name:         string,             
+  readme:       string,             
+  license?:      string,           
+  dependencies?: string[],          
+  artifacts:   Record<string, ReleaseArtifact> 
+}
 
 const platforms: Record<string, string> = {
   "win32": "windows",
@@ -18,6 +26,12 @@ const archs: Record<string, string> = {
   "ia32": "386",
   "x64": "amd64",
 };
+
+const release = { 
+  tag: '0.6.1', 
+  releaseCID: '/ipfs/QmWNyPgGc4JhAF1uw4jhtMj9XwSBGaATeFCSAmocbBEuPU', 
+  metaCID: 'QmRBwMae3Skqzc1GmAKBdcnFFPnHeD585MwYtVZzfh9Tkh', 
+}
 
 function getHostInfo() {
   let platform = String(os.platform());
@@ -32,6 +46,19 @@ function getHostInfo() {
   }
   
   return {platform, arch};
+}
+
+export const parseCID = (url: string) => url.replace('/ipfs/', '');
+
+async function fetchJSONfromIPFS(ipfsHash: string): Promise<any> {
+  try {
+    const json = await axios.get(`https://gateway.valist.io/ipfs/${parseCID(ipfsHash)}`);
+    return json.data;
+  } catch (e) {
+    const msg = 'Could not fetch JSON from IPFS';
+    console.error(msg, e);
+    throw e;
+  }
 }
 
 async function fetchArtifact(cid: string) {  
@@ -65,17 +92,9 @@ async function fetchArtifact(cid: string) {
 }
 
 (async () => {
-  const valist = new Valist({
-     web3Provider: 'https://rpc.valist.io',
-     metaTx: false, 
-  });
-
-  await valist.connect();
-
-  const release = await valist.getReleaseByTag('valist', 'cli', tag);
   console.log("Fetching release", release.tag, "with provider", release.releaseCID);
 
-  const meta: ReleaseMeta = await valist.fetchJSONfromIPFS(release.releaseCID);
+  const meta: ReleaseMeta = await fetchJSONfromIPFS(release.releaseCID);
 
   const info = getHostInfo();
   console.log("Detected host platform", info);
