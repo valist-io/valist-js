@@ -27,11 +27,11 @@ const archs: Record<string, string> = {
   "x64": "amd64",
 };
 
-const release = { 
-  tag: '0.6.1', 
-  releaseCID: '/ipfs/QmWNyPgGc4JhAF1uw4jhtMj9XwSBGaATeFCSAmocbBEuPU', 
-  metaCID: 'QmRBwMae3Skqzc1GmAKBdcnFFPnHeD585MwYtVZzfh9Tkh', 
-}
+const release = {
+  tag: '0.6.3',
+  releaseCID: '/ipfs/QmQxe7fcABoXDegwZWM1zpzqTRvG56vjUxvyxCs1xLJ4zC',
+  metaCID: 'QmRBwMae3Skqzc1GmAKBdcnFFPnHeD585MwYtVZzfh9Tkh',
+};
 
 function getHostInfo() {
   let platform = String(os.platform());
