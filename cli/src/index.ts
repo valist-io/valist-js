@@ -29,7 +29,7 @@ const archs: Record<string, string> = {
 
 const release = {
   tag: '0.6.3',
-  releaseCID: '/ipfs/QmQxe7fcABoXDegwZWM1zpzqTRvG56vjUxvyxCs1xLJ4zC',
+  releaseCID: '/ipfs/QmdZTqSGHnP2b3N5Zpran83TyFpWibtKDHNbUFaZJvAT7u',
   metaCID: 'QmRBwMae3Skqzc1GmAKBdcnFFPnHeD585MwYtVZzfh9Tkh',
 };
 
@@ -92,7 +92,7 @@ async function fetchArtifact(cid: string) {
 }
 
 (async () => {
-  console.log("Fetching release", release.tag, "with provider", release.releaseCID);
+  console.log("Fetching release metadata", release.tag, "with provider", release.releaseCID);
 
   const meta: ReleaseMeta = await fetchJSONfromIPFS(release.releaseCID);
 
