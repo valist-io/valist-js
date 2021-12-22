@@ -87,9 +87,7 @@ function fetchArtifact(cid) {
     console.log("Fetching release", release.tag, "with provider", release.releaseCID);
     const meta = yield fetchJSONfromIPFS(release.releaseCID);
     const info = getHostInfo();
-    process.stdout.write(`Detected host platform ${info}`);
-    console.warn("test");
-    console.error("test");
+    console.log("Detected host platform", info);
     const hostBin = meta.artifacts[`${info.platform}/${info.arch}`];
     console.log("Matching artifact found", hostBin);
     console.log("Downloading Valist Go binary:");
