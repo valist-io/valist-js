@@ -2,7 +2,7 @@
 
 ## Usage
 
-## Compiling the Solidity Contracts
+### Compiling the Solidity Contracts
 ```
 npm run compile
 ```
