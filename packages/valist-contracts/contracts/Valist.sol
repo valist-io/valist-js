@@ -39,26 +39,8 @@ contract Valist is ERC2771Context {
   struct Release {
     // release artifact
     string releaseCID;
-    // release metadata
-    string metaCID;
     // release signers
     address[] signers;
-  }
-
-  struct PendingRelease {
-    // release tag (can be SemVer, CalVer, etc)
-    string tag;
-    // release artifact
-    string releaseCID;
-    // release metadata
-    string metaCID;
-  }
-
-  struct PendingVote {
-    // time of first proposal + 7 days
-    uint expiration;
-    // role signers
-    EnumerableSet.AddressSet signers;
   }
 
   // incrementing orgNumber used for assigning unique IDs to organizations
@@ -68,6 +50,12 @@ contract Valist is ERC2771Context {
   // list of unique orgIDs
   // keccak256(abi.encodePacked(++orgCount, block.chainid))[]
   bytes32[] public orgIDs;
+
+    // list of unique names
+  string[] public names;
+
+  // orgName or repoName => orgID (can be governed by a DAO in the future)
+  mapping(string => bytes32) public nameToID;
 
   // orgID => Organization
   mapping(bytes32 => Organization) public orgs;
@@ -82,30 +70,6 @@ contract Valist is ERC2771Context {
   // keccak256(abi.encodePacked(orgID, ORG_ADMIN)) => orgAdminSet
   // keccak256(abi.encodePacked(orgID, repoName, REPO_DEV)) => repoDevSet
   mapping(bytes32 => EnumerableSet.AddressSet) roles;
-
-  // keccak256(abi.encodePacked(orgID, pendingOrgAdminAddress)) => orgAdminModifiedTimestamp
-  // keccak256(abi.encodePacked(orgID, repoName, pendingRepoDevAddress)) => repoDevModifiedTimestamp
-  // this is primarily used to auto-expire any pending operations on the same key once a vote is cast for said key
-  mapping(bytes32 => uint) public roleModifiedTimestamps;
-
-  // keccak256(abi.encodePacked(orgID, repoName)) => PendingRelease[]
-  mapping(bytes32 => PendingRelease[]) public pendingReleaseRequests;
-
-  // orgID => pendingOrgAdminSet
-  // keccak256(abi.encodePacked(orgID, repoName)) => pendingRepoDevSet
-  mapping(bytes32 => address[]) public pendingRoleRequests;
-
-  // orgID => pendingOrgThreshold[]
-  // keccak256(abi.encodePacked(orgID, repoName)) => pendingRepoThreshold[]
-  mapping(bytes32 => uint[]) public pendingThresholdRequests;
-
-  // pendingOrgAdminVotes: keccak256(abi.encodePacked(orgID, ORG_ADMIN, OPERATION, pendingOrgAdminAddress)) => signers
-  // pendingOrgThresholdVotes: keccak256(abi.encodePacked(orgID, pendingOrgThreshold)) => signers
-  // pendingRepoDevVotes: keccak256(abi.encodePacked(orgID, repoName, REPO_DEV, OPERATION, pendingRepoDevAddress)) => signers
-  // pendingRepoThresholdVotes: keccak256(abi.encodePacked(orgID, repoName, pendingRepoThreshold)) => signers
-  // pendingReleaseVotes: keccak256(abi.encode(orgID, repoName, tag, releaseCID, metaCID)) => PendingVote
-  // using abi.encode prevents hash collisions since there are multiple dynamic types here
-  mapping(bytes32 => PendingVote) pendingVotes;
 
   modifier orgAdmin(bytes32 _orgID) {
     require(isOrgAdmin(_orgID, _msgSender()), "Denied");
@@ -125,7 +89,10 @@ contract Valist is ERC2771Context {
 
   event VoteKeyEvent(bytes32 indexed _orgID, string _repoName, address _signer, bytes32 _operation, address _key);
 
-  event VoteReleaseEvent(bytes32 _orgID, string _repoName, string _tag, string _releaseCID, string _metaCID, address _signer);
+  event VoteReleaseEvent(bytes32 _orgID, string _repoName, string _tag, string _releaseCID, address _signer);
+
+  // log new mapping links
+  event MappingEvent(bytes32 indexed _orgID, string indexed _nameHash, string _name);
 
   // check if user has orgAdmin role
   function isOrgAdmin(bytes32 _orgID, address _address) public view returns (bool) {
@@ -176,28 +143,20 @@ contract Valist is ERC2771Context {
     emit RepoCreated(_orgID, _repoName, _repoName, _repoMeta, _repoMeta);
   }
 
-  function voteRelease(
-    bytes32 _orgID,
-    string memory _repoName,
-    string memory _tag,
-    string memory _releaseCID,
-    string memory _metaCID
-  ) public repoDev(_orgID, _repoName) {
+  function voteRelease(bytes32 _orgID, string memory _repoName, string memory _tag, string memory _releaseCID) public repoDev(_orgID, _repoName) {
     require(bytes(_tag).length > 0, "No tag");
     require(bytes(_releaseCID).length > 0, "No releaseCID");
-    require(bytes(_metaCID).length > 0, "No metaCID");
     bytes32 releaseSelector = keccak256(abi.encode(_orgID, _repoName, _tag));
     require(bytes(releases[releaseSelector].releaseCID).length == 0, "Tag used");
     bytes32 repoSelector = keccak256(abi.encodePacked(_orgID, _repoName));
 
     releases[releaseSelector].releaseCID = _releaseCID;
-    releases[releaseSelector].metaCID = _metaCID;
     // add user to release signers
     releases[releaseSelector].signers.push(_msgSender());
     // push tag to repo
     repos[repoSelector].tags.push(_tag);
     // fire ReleaseEvent to notify live clients
-    emit VoteReleaseEvent(_orgID, _repoName, _tag, _releaseCID, _metaCID, _msgSender());
+    emit VoteReleaseEvent(_orgID, _repoName, _tag, _releaseCID, _msgSender());
   }
 
   function setOrgMeta(bytes32 _orgID, string memory _metaCID) public orgAdmin(_orgID) {
@@ -212,16 +171,10 @@ contract Valist is ERC2771Context {
 
   function voteKey(bytes32 _orgID, string memory _repoName, bytes32 _operation, address _key) public repoDev(_orgID, _repoName) {
     require(_operation == ADD_KEY || _operation == REVOKE_KEY || _operation == ROTATE_KEY, "Invalid op");
-    bool isRepoOperation = bytes(_repoName).length > 0;
-    bytes32 voteSelector;
     bytes32 roleSelector;
-    bytes32 repoSelector;
-    if (isRepoOperation) {
-      voteSelector = keccak256(abi.encodePacked(_orgID, _repoName, REPO_DEV, _operation, _key));
+    if (bytes(_repoName).length > 0) {
       roleSelector = keccak256(abi.encodePacked(_orgID, _repoName, REPO_DEV));
-      repoSelector = keccak256(abi.encodePacked(_orgID, _repoName));
     } else {
-      voteSelector = keccak256(abi.encodePacked(_orgID, ORG_ADMIN, _operation, _key));
       roleSelector = keccak256(abi.encodePacked(_orgID, ORG_ADMIN));
     }
     // when revoking key, ensure key is in role
@@ -246,10 +199,10 @@ contract Valist is ERC2771Context {
     }
   }
 
-  function getLatestRelease(bytes32 _orgID, string memory _repoName) public view returns (string memory, string memory, string memory, address[] memory) {
+  function getLatestRelease(bytes32 _orgID, string memory _repoName) public view returns (string memory, string memory, address[] memory) {
     Repository storage repo = repos[keccak256(abi.encodePacked(_orgID, _repoName))];
     Release storage release = releases[keccak256(abi.encode(_orgID, _repoName, repo.tags[repo.tags.length - 1]))];
-    return (repo.tags[repo.tags.length - 1], release.releaseCID, release.metaCID, release.signers);
+    return (repo.tags[repo.tags.length - 1], release.releaseCID, release.signers);
   }
 
   // get paginated list of repo names
@@ -286,5 +239,30 @@ contract Valist is ERC2771Context {
       members[i] = roles[_selector].at(i);
     }
     return members;
+  }
+
+  function getNameCount() public view returns (uint) {
+    return names.length;
+  }
+
+  // get paginated list of names
+  function getNames(uint _page, uint _resultsPerPage) public view returns (string[] memory) {
+    uint i = _resultsPerPage * _page - _resultsPerPage;
+    uint limit = _page * _resultsPerPage;
+    if (limit > names.length) {
+      limit = names.length;
+    }
+    string[] memory _names = new string[](_resultsPerPage);
+    for (i; i < limit; ++i) {
+      _names[i] = names[i];
+    }
+    return _names;
+  }
+
+  function linkNameToID(bytes32 _orgID, string memory _name) public {
+    require(nameToID[_name] == "", "Mapping exists");
+    nameToID[_name] = _orgID;
+    names.push(_name);
+    emit MappingEvent(_orgID, _name, _name);
   }
 }

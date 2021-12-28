@@ -2,16 +2,13 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { Contract, Signer } from "ethers";
-import ValistContract from "../artifacts/contracts/Valist.sol/Valist.json";
 
 describe("Valist Contract", () => {
   const orgName = "testOrg";
   const repoName = "testRepo";
   const releaseCID = "bafybeig5g7gpjxl5mmkufdkf4amj4ttmy4eni5ghgi4huw5w57s6e3cf6y";
   const metaCID = "bafybeigmfwlweiecbubdw4lq6uqngsioqepntcfohvrccr2o5f7flgydme";
-  const iface = new ethers.utils.Interface(ValistContract.abi);
   let valist: Contract;
-  let registry: Contract;
   let accounts: Signer[];
   let orgID: string;
 
@@ -44,11 +41,6 @@ describe("Valist Contract", () => {
     const Valist = await ethers.getContractFactory("Valist");
     valist = await Valist.deploy("0x9399BB24DBB5C4b782C70c2969F58716Ebbd6a3b");
     await valist.deployed();
-
-    const ValistRegistry = await ethers.getContractFactory("ValistRegistry");
-    registry = await ValistRegistry.deploy(
-      "0x9399BB24DBB5C4b782C70c2969F58716Ebbd6a3b"
-    );
     // Setup Accounts and Constants
     accounts = await ethers.getSigners();
   });
@@ -62,8 +54,8 @@ describe("Valist Contract", () => {
     before(async () => {
       orgTx = await valist.createOrganization(metaCID);
       orgTxRec = await orgTx.wait();
-      parsedOrgCreated = iface.parseLog(orgTxRec.logs[0]);
-      parsedVoteKey = iface.parseLog(orgTxRec.logs[1]);
+      parsedOrgCreated = valist.interface.parseLog(orgTxRec.logs[0]);
+      parsedVoteKey = valist.interface.parseLog(orgTxRec.logs[1]);
       orgID = parsedOrgCreated.args[0];
     });
 
@@ -73,11 +65,11 @@ describe("Valist Contract", () => {
     });
 
     it("Should create testOrg organization", async () => {
-      await registry.linkNameToID(orgID, orgName);
+      await valist.linkNameToID(orgID, orgName);
     });
 
     it("Should fetch orgID from orgName", async () => {
-      const _orgID = await registry.nameToID(orgName);
+      const _orgID = await valist.nameToID(orgName);
       expect(_orgID).to.equal(orgID);
     });
 
@@ -145,10 +137,9 @@ describe("Valist Contract", () => {
           [orgID, repoName, "0.0.1"]
         )
       );
-      await valist.voteRelease(orgID, repoName, "0.0.1", releaseCID, metaCID);
+      await valist.voteRelease(orgID, repoName, "0.0.1", releaseCID);
       const release = await valist.releases(releaseSelector);
-      expect(release.releaseCID).to.equal(releaseCID);
-      expect(release.metaCID).to.equal(metaCID);
+      expect(release).to.equal(releaseCID);
     });
 
     it("Should fetch release using releaseSelector", async () => {
@@ -159,20 +150,18 @@ describe("Valist Contract", () => {
         )
       );
       const release = await valist.releases(releaseSelector);
-      expect(release.releaseCID).to.equal(releaseCID);
-      expect(release.metaCID).to.equal(metaCID);
+      expect(release).to.equal(releaseCID);
     });
 
     it("Should fetch release using getLatestRelease", async () => {
       const release = await valist.getLatestRelease(orgID, repoName);
       expect(release[0]).to.equal("0.0.1");
       expect(release[1]).to.equal(releaseCID);
-      expect(release[2]).to.equal(metaCID);
     });
 
     it("Should fail to propose release that has been finalized", async () => {
       try {
-        await valist.voteRelease(orgID, repoName, "0.0.1", releaseCID, metaCID);
+        await valist.voteRelease(orgID, repoName, "0.0.1", releaseCID);
       } catch (e: any) {
         expect(e.message).to.contain("Tag used");
       }
@@ -189,7 +178,7 @@ describe("Valist Contract", () => {
       );
 
       const voteKeyTxRec = await voteKeyTx.wait();
-      const parsedVoteKey = iface.parseLog(voteKeyTxRec.logs[0]);
+      const parsedVoteKey = valist.interface.parseLog(voteKeyTxRec.logs[0]);
       expect(parsedVoteKey.args[1]).to.equal("testRepo");
     });
 
@@ -288,7 +277,7 @@ describe("Valist Contract", () => {
     });
 
     it("Should get 10 orgNames", async () => {
-      const orgNames = await registry.getNames(1, 10);
+      const orgNames = await valist.getNames(1, 10);
       expect(orgNames[0]).to.equal("testOrg");
       expect(orgNames.length).to.equal(10);
     });

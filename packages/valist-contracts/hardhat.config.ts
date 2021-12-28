@@ -2,10 +2,7 @@ import { task } from "hardhat/config";
 import "@nomiclabs/hardhat-waffle";
 import "hardhat-gas-reporter";
 import "hardhat-contract-sizer";
-import ValistContract from "./artifacts/contracts/Valist.sol/Valist.json";
 import { create } from "ipfs-http-client";
-
-// import RegistryContract from "./artifacts/contracts/ValistRegistry.sol/ValistRegistry.json";
 
 // const REGISTRY_ADDRESS = process.env.REGISTRY_ADDRESS || "";
 // const VALIST_ADDRESS = process.env.VALIST_ADDRESS || "";
@@ -19,7 +16,6 @@ task("accounts", "Prints the list of accounts", async (args, hre) => {
 
 interface Args {
   valist: string;
-  registry: string;
 }
 
 const PinRepoMeta = async () => {
@@ -78,37 +74,16 @@ task(
   "Bootstrap contract with dummy data",
   async (args: Args, hre) => {
     const accounts = await hre.ethers.getSigners();
-    // 'const valist = await new hre.ethers.Contract(
-    //   VALIST_ADDRESS,
-    //   ValistContract.abi,
-    //   signers[0]
-    // );
-
-    // const registry = await new hre.ethers.Contract(
-    //   REGISTRY_ADDRESS,
-    //   RegistryContract.abi,
-    //   signers[0]
-    // );'
-
     const Valist = await hre.ethers.getContractFactory("Valist");
     const valist = await Valist.deploy(
       "0x9399BB24DBB5C4b782C70c2969F58716Ebbd6a3b"
     );
     await valist.deployed();
 
-    const ValistRegistry = await hre.ethers.getContractFactory(
-      "ValistRegistry"
-    );
-
-    const registry = await ValistRegistry.deploy(
-      "0x9399BB24DBB5C4b782C70c2969F58716Ebbd6a3b"
-    );
-
     const ADD_KEY = hre.ethers.utils.keccak256(
       hre.ethers.utils.solidityPack(["string"], ["ADD_KEY_OPERATION"])
     );
 
-    console.log("ValistRegistry deployed to:", registry.address);
     console.log("Valist deployed to:", valist.address);
     console.log();
 
@@ -124,17 +99,15 @@ task(
     console.log("Release Meta CID", releaseMetaCid);
     console.log();
 
-    const iface = new hre.ethers.utils.Interface(ValistContract.abi);
-
     for (let i = 0; i < orgNames1.length; i++) {
       console.log("Creating org", orgNames1[i]);
       const orgTx = await valist.createOrganization(orgMetaCid);
       const orgTxRec = await orgTx.wait();
-      const parsed = iface.parseLog(orgTxRec.logs[0]);
+      const parsed = valist.interface.parseLog(orgTxRec.logs[0]);
       const orgID = parsed.args[0];
 
       console.log("Linking Org ID", orgID, "to", orgNames1[i]);
-      await registry.linkNameToID(orgID, orgNames1[i]);
+      await valist.linkNameToID(orgID, orgNames1[i]);
 
       console.log("Creating repo", orgNames1[i], repoName);
       await valist.createRepository(orgID, repoName, repoMetaCid);
@@ -165,11 +138,13 @@ task(
         .createOrganization(metaCID);
 
       const orgTxRec = await orgTx.wait();
-      const parsed = iface.parseLog(orgTxRec.logs[0]);
+      const parsed = valist.interface.parseLog(orgTxRec.logs[0]);
       const orgID = parsed.args[0];
 
       console.log("Linking Org ID", orgID, "to", orgNames2[i]);
-      await registry.connect(accounts[2]).linkNameToID(orgID, orgNames2[i]);
+      await valist
+        .connect(accounts[2])
+        .linkNameToID(orgID, orgNames2[i]);
 
       console.log("Creating repo", orgNames2[i], repoName);
       await valist
@@ -191,7 +166,7 @@ task(
 );
 
 module.exports = {
-  defaultNetwork: "local",
+  // defaultNetwork: "local",
   solidity: {
     version: "0.8.4",
     settings: {
