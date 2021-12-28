@@ -1,268 +1,274 @@
 // SPDX-License-Identifier: MPL-2.0
 pragma solidity >=0.8.4;
+
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import "@openzeppelin/contracts/metatx/ERC2771Context.sol";
-// import "hardhat/console.sol";
 
-contract Valist is ERC2771Context {
-  constructor(address metaTxForwarder) ERC2771Context(metaTxForwarder) {}
-
-  string public versionRecipient = "2.2.0";
-
+/// @title Valist registry contract
+/// @custom:err-empty-meta metadata CID is required
+/// @custom:err-empty-members atleast one member is required
+/// @custom:err-name-claimed name has already been claimed
+/// @custom:err-team-member sender is not a team member
+/// @custom:err-proj-member sender is not a project member
+/// @custom:err-member-exist member already exists
+/// @custom:err-member-not-exist member does not exist
+/// @custom:err-release-not-exist release does not exist
+contract Valist {
   using EnumerableSet for EnumerableSet.AddressSet;
 
-  // organization level role
-  bytes32 constant ORG_ADMIN = keccak256("ORG_ADMIN_ROLE");
-  // repository level role
-  bytes32 constant REPO_DEV = keccak256("REPO_DEV_ROLE");
-  // key operations
-  bytes32 constant ADD_KEY = keccak256("ADD_KEY_OPERATION");
-  bytes32 constant REVOKE_KEY = keccak256("REVOKE_KEY_OPERATION");
-  bytes32 constant ROTATE_KEY = keccak256("ROTATE_KEY_OPERATION");
-
-  struct Organization {
-    // metadata CID
+  struct Team {
     string metaCID;
-    // list of repo names
-    string[] repoNames;
+    string[] projects;
+    EnumerableSet.AddressSet members;
   }
 
-  struct Repository {
-    // check if repo exists
-    bool exists;
-    // metadata CID
+  struct Project {
     string metaCID;
-    // list of release tags
-    string[] tags;
+    string[] releases;
+    EnumerableSet.AddressSet members;
   }
 
   struct Release {
-    // release artifact
-    string releaseCID;
-    // release signers
-    address[] signers;
+    string metaCID;
+    EnumerableSet.AddressSet approvals;
+    EnumerableSet.AddressSet rejections;
   }
 
-  // incrementing orgNumber used for assigning unique IDs to organizations
-  // this + chainID also prevents hash collision attacks on mapping selectors across orgs/repos
-  uint public orgCount;
-
-  // list of unique orgIDs
-  // keccak256(abi.encodePacked(++orgCount, block.chainid))[]
-  bytes32[] public orgIDs;
-
-    // list of unique names
+  /// @dev list of all team names
   string[] public names;
 
-  // orgName or repoName => orgID (can be governed by a DAO in the future)
-  mapping(string => bytes32) public nameToID;
+  /// @dev teamID = keccak256(bytes(teamName))
+  mapping(uint256 => Team) teams;
+  /// @dev projectID = keccak256(abi.encodePacked(teamID, keccak256(bytes(projectName))))
+  mapping(uint256 => Project) projects;
+  /// @dev releaseID = keccak256(abi.encodePacked(projectID, keccak256(bytes(releaseName))))
+  mapping(uint256 => Release) releases;
 
-  // orgID => Organization
-  mapping(bytes32 => Organization) public orgs;
+  /// @dev emitted when a new team is created
+  event TeamCreated(string _teamName, string _metaCID, address _sender);
+  /// @dev emitted when a new team member is added
+  event TeamMemberAdded(string _teamName, address _member);
+  /// @dev emitted when an existing team member is removed
+  event TeamMemberRemoved(string _teamName, address _member);
 
-  // keccak256(abi.encodePacked(orgID, repoName)) => Repository
-  mapping(bytes32 => Repository) public repos;
+  /// @dev emitted when a new project is created
+  event ProjectCreated(string _teamName, string _projectName, string _metaCID, address _member);
+  /// @dev emitted when a new project member is added
+  event ProjectMemberAdded(string _teamName, string _projectName, address _member);
+  /// @dev emitted when an existing project member is removed
+  event ProjectMemberRemoved(string _teamName, string _projectName, address _member);
 
-  // keccak256(abi.encode(orgID, repoName, tag)) => Release
-  // using abi.encode prevents hash collisions since there are multiple dynamic types here
-  mapping(bytes32 => Release) public releases;
+  /// @dev emitted when a new release is created
+  event ReleaseCreated(string _teamName, string _projectName, string _releaseName, string _metaCID, address _member);
+  /// @dev emitted when an existing release is approved by a signer
+  event ReleaseApproved(string _teamName, string _projectName, string _releaseName, address _sender);
+  /// @dev emitted when an existing release is rejected by a signer
+  event ReleaseRejected(string _teamName, string _projectName, string _releaseName, address _sender);
 
-  // keccak256(abi.encodePacked(orgID, ORG_ADMIN)) => orgAdminSet
-  // keccak256(abi.encodePacked(orgID, repoName, REPO_DEV)) => repoDevSet
-  mapping(bytes32 => EnumerableSet.AddressSet) roles;
+  /// Creates a new team with the given members.
+  ///
+  /// @param _teamName Unique name used to identify the team.
+  /// @param _metaCID Content ID of the team metadata.
+  /// @param _members List of members to add to the team.
+  function createTeam(string memory _teamName, string memory _metaCID, address[] memory _members) public {
+    uint256 teamID = uint(keccak256(bytes(_teamName)));
 
-  modifier orgAdmin(bytes32 _orgID) {
-    require(isOrgAdmin(_orgID, _msgSender()), "Denied");
-    _;
-  }
+    require(bytes(teams[teamID].metaCID).length == 0, "err-name-claimed");
+    require(bytes(_metaCID).length > 0, "err-empty-meta");
+    require(_members.length > 0, "err-empty-members");
 
-  modifier repoDev(bytes32 _orgID, string memory _repoName) {
-    require(isRepoDev(_orgID, _repoName, _msgSender()), "Denied");
-    _;
-  }
+    teams[teamID].metaCID = _metaCID;
+    names.push(_teamName);
 
-  event OrgCreated(bytes32 _orgID, string indexed _metaCIDHash, string _metaCID, address _admin);
-
-  event RepoCreated(bytes32 _orgID, string indexed _repoNameHash, string _repoName, string indexed _metaCIDHash, string _metaCID);
-
-  event MetaUpdate(bytes32 indexed _orgID, string indexed _repoName, address indexed _signer, string _metaCID);
-
-  event VoteKeyEvent(bytes32 indexed _orgID, string _repoName, address _signer, bytes32 _operation, address _key);
-
-  event VoteReleaseEvent(bytes32 _orgID, string _repoName, string _tag, string _releaseCID, address _signer);
-
-  // log new mapping links
-  event MappingEvent(bytes32 indexed _orgID, string indexed _nameHash, string _name);
-
-  // check if user has orgAdmin role
-  function isOrgAdmin(bytes32 _orgID, address _address) public view returns (bool) {
-    bytes32 selector = keccak256(abi.encodePacked(_orgID, ORG_ADMIN));
-    return roles[selector].contains(_address);
-  }
-
-  // check if user has at least repoDev role
-  function isRepoDev(bytes32 _orgID, string memory _repoName, address _address) public view returns (bool) {
-    if (bytes(_repoName).length > 0) {
-      require(repos[keccak256(abi.encodePacked(_orgID, _repoName))].exists, "No repo");
-      bytes32 selector = keccak256(abi.encodePacked(_orgID, _repoName, REPO_DEV));
-      return roles[selector].contains(_address) || isOrgAdmin(_orgID, _address);
-    } else {
-      return isOrgAdmin(_orgID, _address);
+    for (uint i = 0; i < _members.length; i++) {
+      teams[teamID].members.add(_members[i]);
     }
+
+    emit TeamCreated(_teamName, _metaCID, msg.sender);
   }
+  
+  /// Creates a new project. Requires the sender to be a member of the team.
+  ///
+  /// @param _teamName Name of the team to create the project under.
+  /// @param _projectName Unique name used to identify the project.
+  /// @param _metaCID Content ID of the project metadata.
+  /// @param _members Optional list of members to add to the project.
+  function createProject(
+    string memory _teamName, 
+    string memory _projectName,
+    string memory _metaCID,
+    address[] memory _members
+  )
+    public
+  {
+    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
 
-  // create an organization and claim an orgID
-  function createOrganization(string memory _orgMeta) public {
-    require(bytes(_orgMeta).length > 0, "No orgMeta");
-    // generate new orgID by incrementing and hashing orgCount
-    bytes32 orgID = keccak256(abi.encodePacked(++orgCount, block.chainid));
-    // set Organization ID and metadata
-    orgs[orgID].metaCID = _orgMeta;
-    // add to list of orgIDs
-    orgIDs.push(orgID);
-    // add creator of org to orgAdmin role
-    roles[keccak256(abi.encodePacked(orgID, ORG_ADMIN))].add(_msgSender());
-    // log new orgID
-    emit OrgCreated(orgID, _orgMeta, _orgMeta, _msgSender());
-    // log new key to help filter client side orgIDs that a key is associated with
-    emit VoteKeyEvent(orgID, "", _msgSender(), ADD_KEY, _msgSender());
-  }
+    require(teams[teamID].members.contains(msg.sender), "err-team-member");
+    require(bytes(projects[projectID].metaCID).length == 0, "err-name-claimed");
+    require(bytes(_metaCID).length > 0, "err-empty-meta");
 
-  function createRepository(bytes32 _orgID, string memory _repoName, string memory _repoMeta) public orgAdmin(_orgID) {
-    bytes32 repoSelector = keccak256(abi.encodePacked(_orgID, _repoName));
-    require(!repos[repoSelector].exists, "Repo exists");
-    require(bytes(_repoName).length > 0, "No repoName");
-    require(bytes(_repoMeta).length > 0, "No repoMeta");
-    // add repoName to org
-    orgs[_orgID].repoNames.push(_repoName);
-    // set repo exists
-    repos[repoSelector].exists = true;
-    // set metadata for repo
-    repos[repoSelector].metaCID = _repoMeta;
-    // log new repo
-    emit RepoCreated(_orgID, _repoName, _repoName, _repoMeta, _repoMeta);
-  }
+    projects[projectID].metaCID = _metaCID;
+    teams[teamID].projects.push(_projectName);
 
-  function voteRelease(bytes32 _orgID, string memory _repoName, string memory _tag, string memory _releaseCID) public repoDev(_orgID, _repoName) {
-    require(bytes(_tag).length > 0, "No tag");
-    require(bytes(_releaseCID).length > 0, "No releaseCID");
-    bytes32 releaseSelector = keccak256(abi.encode(_orgID, _repoName, _tag));
-    require(bytes(releases[releaseSelector].releaseCID).length == 0, "Tag used");
-    bytes32 repoSelector = keccak256(abi.encodePacked(_orgID, _repoName));
-
-    releases[releaseSelector].releaseCID = _releaseCID;
-    // add user to release signers
-    releases[releaseSelector].signers.push(_msgSender());
-    // push tag to repo
-    repos[repoSelector].tags.push(_tag);
-    // fire ReleaseEvent to notify live clients
-    emit VoteReleaseEvent(_orgID, _repoName, _tag, _releaseCID, _msgSender());
-  }
-
-  function setOrgMeta(bytes32 _orgID, string memory _metaCID) public orgAdmin(_orgID) {
-    orgs[_orgID].metaCID = _metaCID;
-    emit MetaUpdate(_orgID, "", _msgSender(), _metaCID);
-  }
-
-  function setRepoMeta(bytes32 _orgID, string memory _repoName, string memory _metaCID) public orgAdmin(_orgID) {
-    repos[keccak256(abi.encodePacked(_orgID, _repoName))].metaCID = _metaCID;
-    emit MetaUpdate(_orgID, _repoName, _msgSender(), _metaCID);
-  }
-
-  function voteKey(bytes32 _orgID, string memory _repoName, bytes32 _operation, address _key) public repoDev(_orgID, _repoName) {
-    require(_operation == ADD_KEY || _operation == REVOKE_KEY || _operation == ROTATE_KEY, "Invalid op");
-    bytes32 roleSelector;
-    if (bytes(_repoName).length > 0) {
-      roleSelector = keccak256(abi.encodePacked(_orgID, _repoName, REPO_DEV));
-    } else {
-      roleSelector = keccak256(abi.encodePacked(_orgID, ORG_ADMIN));
+    for (uint i = 0; i < _members.length; i++) {
+      projects[projectID].members.add(_members[i]);
     }
-    // when revoking key, ensure key is in role
-    if (_operation == REVOKE_KEY) {
-      require(roles[roleSelector].contains(_key), "No Key");
-      roles[roleSelector].remove(_key);
-    } else {
-      // otherwise, if adding or rotating, ensure key is not in role
-      require(!roles[roleSelector].contains(_key), "Key exists");
-    }
-    // allow self-serve key rotation
-    if (_operation == ROTATE_KEY) {
-      // double check role -- if _msgSender() is an orgAdmin, just relying on the repoDev modifier would allow
-      // this function to bypass the threshold and would add the new key and keep the old key
-      require(roles[roleSelector].contains(_msgSender()), "Denied");
-      roles[roleSelector].remove(_msgSender());
-      roles[roleSelector].add(_key);
-    }
-    if (_operation == ADD_KEY) {
-      roles[roleSelector].add(_key);
-      emit VoteKeyEvent(_orgID, _repoName, _msgSender(), _operation, _key);
-    }
+
+    emit ProjectCreated(_teamName, _projectName, _metaCID, msg.sender);
   }
 
-  function getLatestRelease(bytes32 _orgID, string memory _repoName) public view returns (string memory, string memory, address[] memory) {
-    Repository storage repo = repos[keccak256(abi.encodePacked(_orgID, _repoName))];
-    Release storage release = releases[keccak256(abi.encode(_orgID, _repoName, repo.tags[repo.tags.length - 1]))];
-    return (repo.tags[repo.tags.length - 1], release.releaseCID, release.signers);
+  /// Creates a new release. Requires the sender to be a member of the project.
+  ///
+  /// @param _teamName Name of the team.
+  /// @param _projectName Name of the project.
+  /// @param _releaseName Unique name used to identify the release.
+  /// @param _metaCID Content ID of the project metadata.
+  function createRelease(
+    string memory _teamName, 
+    string memory _projectName,
+    string memory _releaseName,
+    string memory _metaCID
+  ) 
+    public 
+  {
+    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
+    uint256 releaseID = uint(keccak256(abi.encodePacked(projectID, keccak256(bytes(_releaseName)))));
+
+    require(projects[projectID].members.contains(msg.sender), "err-proj-member");
+    require(bytes(releases[releaseID].metaCID).length == 0, "err-name-claimed");
+    require(bytes(_metaCID).length > 0, "err-empty-meta");
+
+    releases[releaseID].metaCID = _metaCID;
+    projects[projectID].releases.push(_releaseName);
+
+    emit ReleaseCreated(_teamName, _projectName, _releaseName, _metaCID, msg.sender);
   }
 
-  // get paginated list of repo names
-  function getRepoNames(bytes32 _orgID, uint _page, uint _resultsPerPage) public view returns (string[] memory) {
-    uint i = _resultsPerPage * _page - _resultsPerPage;
-    uint limit = _page * _resultsPerPage;
-    if (limit > orgs[_orgID].repoNames.length) {
-      limit = orgs[_orgID].repoNames.length;
-    }
-    string[] memory _repoNames = new string[](_resultsPerPage);
-    for (i; i < limit; ++i) {
-      _repoNames[i] = orgs[_orgID].repoNames[i];
-    }
-    return _repoNames;
+  /// Approve the release by adding the sender's address to the approvals list.
+  /// The sender's address will be removed from the rejections list if it exists.
+  ///
+  /// @param _teamName Name of the team.
+  /// @param _projectName Name of the project.
+  /// @param _releaseName Name of the release.
+  function approveRelease(
+    string memory _teamName, 
+    string memory _projectName,
+    string memory _releaseName
+  ) 
+    public 
+  {
+    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
+    uint256 releaseID = uint(keccak256(abi.encodePacked(projectID, keccak256(bytes(_releaseName)))));
+
+    require(bytes(releases[releaseID].metaCID).length > 0, "err-release-not-exist");
+
+    releases[releaseID].approvals.add(msg.sender);
+    releases[releaseID].rejections.remove(msg.sender);
+    emit ReleaseApproved(_teamName, _projectName, _releaseName, msg.sender);
   }
 
-  // get paginated list of release tags from repo
-  function getReleaseTags(bytes32 _selector, uint _page, uint _resultsPerPage) public view returns (string[] memory) {
-    uint i = _resultsPerPage * _page - _resultsPerPage;
-    uint limit = _page * _resultsPerPage;
-    if (limit > repos[_selector].tags.length) {
-      limit = repos[_selector].tags.length;
-    }
-    string[] memory _tags = new string[](_resultsPerPage);
-    for (i; i < limit; ++i) {
-      _tags[i] = repos[_selector].tags[i];
-    }
-    return _tags;
+  /// Reject the release by adding the sender's address to the rejections list.
+  /// The sender's address will be removed from the approvals list if it exists.
+  ///
+  /// @param _teamName Name of the team.
+  /// @param _projectName Name of the project.
+  /// @param _releaseName Name of the release.
+  function rejectRelease(
+    string memory _teamName, 
+    string memory _projectName,
+    string memory _releaseName
+  ) 
+    public 
+  {
+    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
+    uint256 releaseID = uint(keccak256(abi.encodePacked(projectID, keccak256(bytes(_releaseName)))));
+
+    require(bytes(releases[releaseID].metaCID).length > 0, "err-release-not-exist");
+
+    releases[releaseID].rejections.add(msg.sender);
+    releases[releaseID].approvals.remove(msg.sender);
+    emit ReleaseRejected(_teamName, _projectName, _releaseName, msg.sender);
   }
 
-  function getRoleMembers(bytes32 _selector) public view returns (address[] memory) {
-    address[] memory members = new address[](roles[_selector].length());
-    for (uint i = 0; i < roles[_selector].length(); ++i) {
-      members[i] = roles[_selector].at(i);
-    }
-    return members;
+  /// Add a member to the team. Requires the sender to be a member of the team.
+  ///
+  /// @param _teamName Name of the team.
+  /// @param _address Address of member.
+  function addTeamMember(string memory _teamName, address _address) public {
+    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    
+    require(teams[teamID].members.contains(msg.sender) == true, "err-team-member");
+    require(teams[teamID].members.contains(_address) == false, "err-member-exist");
+
+    teams[teamID].members.add(_address);
+    emit TeamMemberAdded(_teamName, _address);
   }
 
-  function getNameCount() public view returns (uint) {
-    return names.length;
+  /// Remove a member from the team. Requires the sender to be a member of the team.
+  ///
+  /// @param _teamName Name of the team.
+  /// @param _address Address of member.
+  function removeTeamMember(string memory _teamName, address _address) public {
+    uint256 teamID = uint(keccak256(bytes(_teamName)));
+
+    require(teams[teamID].members.contains(msg.sender) == true, "err-team-member");
+    require(teams[teamID].members.contains(_address) == true, "err-member-not-exist");
+
+    teams[teamID].members.remove(_address);
+    emit TeamMemberRemoved(_teamName, _address);
   }
 
-  // get paginated list of names
-  function getNames(uint _page, uint _resultsPerPage) public view returns (string[] memory) {
-    uint i = _resultsPerPage * _page - _resultsPerPage;
-    uint limit = _page * _resultsPerPage;
-    if (limit > names.length) {
-      limit = names.length;
-    }
-    string[] memory _names = new string[](_resultsPerPage);
-    for (i; i < limit; ++i) {
-      _names[i] = names[i];
-    }
-    return _names;
+  /// Remove the sender from the team and add a new member. Can be used for self
+  /// service key rotations, or to transfer membership to a new account. Requires
+  /// the sender to be a member of the team.
+  ///
+  /// @param _teamName Name of the team.
+  /// @param _address Address to rotate to.
+  function rotateTeamMember(string memory _teamName, address _address) public {
+    uint256 teamID = uint(keccak256(bytes(_teamName)));
+
+    require(teams[teamID].members.contains(msg.sender) == true, "err-team-member");
+    require(teams[teamID].members.contains(_address) == false, "err-member-exist");
+
+    teams[teamID].members.remove(msg.sender);
+    emit TeamMemberRemoved(_teamName, msg.sender);
+
+    teams[teamID].members.add(_address);
+    emit TeamMemberAdded(_teamName, _address);
   }
 
-  function linkNameToID(bytes32 _orgID, string memory _name) public {
-    require(nameToID[_name] == "", "Mapping exists");
-    nameToID[_name] = _orgID;
-    names.push(_name);
-    emit MappingEvent(_orgID, _name, _name);
+  /// Add a member to the project. Requires the sender to be a member of the team.
+  ///
+  /// @param _teamName Name of the team.
+  /// @param _projectName Name of the project.
+  /// @param _address Address of member.
+  function addProjectMember(string memory _teamName, string memory _projectName, address _address) public {
+    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
+    
+    require(teams[teamID].members.contains(msg.sender) == true, "err-team-member");
+    require(projects[projectID].members.contains(_address) == false, "err-member-exist");
+
+    projects[projectID].members.add(_address);
+    emit ProjectMemberAdded(_teamName, _projectName, _address);
+  }
+
+  /// Remove a member from the project. Requires the sender to be a member of the team.
+  ///
+  /// @param _teamName Name of the team.
+  /// @param _projectName Name of the project.
+  /// @param _address Address of member.
+  function removeProjectMember(string memory _teamName, string memory _projectName, address _address) public {
+    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
+    
+    require(teams[teamID].members.contains(msg.sender) == true, "err-team-member");
+    require(projects[projectID].members.contains(_address) == true, "err-member-not-exist"); 
+    
+    projects[projectID].members.remove(_address);
+    emit ProjectMemberRemoved(_teamName, _projectName, _address);   
   }
 }
