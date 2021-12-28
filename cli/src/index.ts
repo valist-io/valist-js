@@ -27,11 +27,11 @@ const archs: Record<string, string> = {
   "x64": "amd64",
 };
 
-const release = { 
-  tag: '0.6.1', 
-  releaseCID: '/ipfs/QmWNyPgGc4JhAF1uw4jhtMj9XwSBGaATeFCSAmocbBEuPU', 
-  metaCID: 'QmRBwMae3Skqzc1GmAKBdcnFFPnHeD585MwYtVZzfh9Tkh', 
-}
+const release = {
+  tag: '0.6.3',
+  releaseCID: '/ipfs/QmdZTqSGHnP2b3N5Zpran83TyFpWibtKDHNbUFaZJvAT7u',
+  metaCID: 'QmRBwMae3Skqzc1GmAKBdcnFFPnHeD585MwYtVZzfh9Tkh',
+};
 
 function getHostInfo() {
   let platform = String(os.platform());
@@ -92,7 +92,7 @@ async function fetchArtifact(cid: string) {
 }
 
 (async () => {
-  console.log("Fetching release", release.tag, "with provider", release.releaseCID);
+  console.log("Fetching release metadata", release.tag, "with provider", release.releaseCID);
 
   const meta: ReleaseMeta = await fetchJSONfromIPFS(release.releaseCID);
 

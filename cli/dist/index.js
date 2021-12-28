@@ -27,8 +27,8 @@ const archs = {
     "x64": "amd64",
 };
 const release = {
-    tag: '0.6.1',
-    releaseCID: '/ipfs/QmWNyPgGc4JhAF1uw4jhtMj9XwSBGaATeFCSAmocbBEuPU',
+    tag: '0.6.3',
+    releaseCID: '/ipfs/QmdZTqSGHnP2b3N5Zpran83TyFpWibtKDHNbUFaZJvAT7u',
     metaCID: 'QmRBwMae3Skqzc1GmAKBdcnFFPnHeD585MwYtVZzfh9Tkh',
 };
 function getHostInfo() {
@@ -84,7 +84,7 @@ function fetchArtifact(cid) {
     });
 }
 (() => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("Fetching release", release.tag, "with provider", release.releaseCID);
+    console.log("Fetching release metadata", release.tag, "with provider", release.releaseCID);
     const meta = yield fetchJSONfromIPFS(release.releaseCID);
     const info = getHostInfo();
     console.log("Detected host platform", info);
