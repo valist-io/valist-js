@@ -24,7 +24,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc -w",
-    "docs": "typedoc ./src --theme minimal --out ../../site/lib --readme none",
+    "docs": "typedoc ./src --theme minimal --out ../../site/sdk --readme none",
     "test": "npm run build && mocha -r ts-node/register 'tests/**/*.ts'",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix"
