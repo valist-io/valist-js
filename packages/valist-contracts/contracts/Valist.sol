@@ -36,7 +36,7 @@ contract Valist {
   }
 
   /// @dev list of all team names
-  string[] public names;
+  string[] teamNames;
 
   /// @dev teamID = keccak256(bytes(teamName))
   mapping(uint256 => Team) teams;
@@ -80,7 +80,7 @@ contract Valist {
     require(_members.length > 0, "err-empty-members");
 
     teams[teamID].metaCID = _metaCID;
-    names.push(_teamName);
+    teamNames.push(_teamName);
 
     for (uint i = 0; i < _members.length; i++) {
       teams[teamID].members.add(_members[i]);
@@ -250,7 +250,13 @@ contract Valist {
   /// @param _teamName Name of the team.
   /// @param _projectName Name of the project.
   /// @param _address Address of member.
-  function addProjectMember(string memory _teamName, string memory _projectName, address _address) public {
+  function addProjectMember(
+    string memory _teamName, 
+    string memory _projectName, 
+    address _address
+  )
+    public
+  {
     uint256 teamID = uint(keccak256(bytes(_teamName)));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
     
@@ -266,7 +272,13 @@ contract Valist {
   /// @param _teamName Name of the team.
   /// @param _projectName Name of the project.
   /// @param _address Address of member.
-  function removeProjectMember(string memory _teamName, string memory _projectName, address _address) public {
+  function removeProjectMember(
+    string memory _teamName, 
+    string memory _projectName, 
+    address _address
+  ) 
+    public 
+  {
     uint256 teamID = uint(keccak256(bytes(_teamName)));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
     
@@ -275,5 +287,154 @@ contract Valist {
     
     projects[projectID].members.remove(_address);
     emit ProjectMemberRemoved(_teamName, _projectName, _address);   
+  }
+
+  /// Returns a paginated list of team names.
+  ///
+  /// @param _page Page to return items from.
+  /// @param _size Number of items to return.
+  function getTeamNames(uint _page, uint _size) public view returns (string[] memory) {
+    uint limit = _page * _size;
+    if (limit > teamNames.length) {
+      limit = teamNames.length;
+    }
+    
+    string[] memory values = new string[](_size);
+    for (uint i = _size * _page - _size; i < limit; ++i) {
+      values[i] = teamNames[i];
+    }
+    
+    return values;
+  }
+
+  /// Returns a paginated list of team members.
+  ///
+  /// @param _teamName Name of the team.
+  /// @param _page Page to return items from.
+  /// @param _size Number of items to return.
+  function getTeamMembers(
+    string memory _teamName, 
+    uint _page, 
+    uint _size
+  ) 
+    public
+    view
+    returns (address[] memory)
+  {
+    uint256 teamID = uint(keccak256(bytes(_teamName)));
+
+    uint limit = _page * _size;
+    if (limit > teams[teamID].members.length()) {
+      limit = teams[teamID].members.length();
+    }
+    
+    address[] memory values = new address[](_size);
+    for (uint i = _size * _page - _size; i < limit; ++i) {
+      values[i] = teams[teamID].members.at(i);
+    }
+    
+    return values;
+  }
+
+  /// Returns a paginated list of project members.
+  ///
+  /// @param _teamName Name of the team.
+  /// @param _projectName Name of the project.
+  /// @param _page Page to return items from.
+  /// @param _size Number of items to return.
+  function getProjectMembers(
+    string memory _teamName,
+    string memory _projectName,
+    uint _page, 
+    uint _size
+  ) 
+    public 
+    view 
+    returns (address[] memory)
+  {
+    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
+
+    uint limit = _page * _size;
+    if (limit > projects[projectID].members.length()) {
+      limit = projects[projectID].members.length();
+    }
+    
+    address[] memory values = new address[](_size);
+    for (uint i = _size * _page - _size; i < limit; ++i) {
+      values[i] = projects[projectID].members.at(i);
+    }
+    
+    return values;
+  }
+
+  /// Returns a paginated list of release approvals.
+  ///
+  /// @param _teamName Name of the team.
+  /// @param _projectName Name of the project.
+  /// @param _releaseName Name of the release.
+  /// @param _page Page to return items from.
+  /// @param _size Number of items to return.
+  function getReleaseApprovals(
+    string memory _teamName,
+    string memory _projectName,
+    string memory _releaseName,
+    uint _page, 
+    uint _size
+  ) 
+    public 
+    view 
+    returns (address[] memory)
+  {
+    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
+    uint256 releaseID = uint(keccak256(abi.encodePacked(projectID, keccak256(bytes(_releaseName)))));
+
+    uint limit = _page * _size;
+    if (limit > releases[releaseID].approvals.length()) {
+      limit = releases[releaseID].approvals.length();
+    }
+    
+    address[] memory values = new address[](_size);
+    for (uint i = _size * _page - _size; i < limit; ++i) {
+      values[i] = releases[releaseID].approvals.at(i);
+    }
+    
+    return values;
+  }
+
+  /// Returns a paginated list of release rejections.
+  ///
+  /// @param _teamName Name of the team.
+  /// @param _projectName Name of the project.
+  /// @param _releaseName Name of the release.
+  /// @param _page Page to return items from.
+  /// @param _size Number of items to return.
+  function getReleaseRejections(
+    string memory _teamName,
+    string memory _projectName,
+    string memory _releaseName,
+    uint _page, 
+    uint _size
+  ) 
+    public 
+    view 
+    returns (address[] memory)
+  {
+    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
+    uint256 releaseID = uint(keccak256(abi.encodePacked(projectID, keccak256(bytes(_releaseName)))));
+
+    uint limit = _page * _size;
+    if (limit > releases[releaseID].rejections.length()) {
+      limit = releases[releaseID].rejections.length();
+    }
+    
+    address[] memory values = new address[](_size);
+    for (uint i = _size * _page - _size; i < limit; ++i) {
+      values[i] = releases[releaseID].rejections.at(i);
+    }
+    
+    return values;
   }
 }
