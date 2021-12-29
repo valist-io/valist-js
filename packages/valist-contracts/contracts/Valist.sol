@@ -4,8 +4,10 @@ pragma solidity >=0.8.4;
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 /// @title Valist registry contract
+///
 /// @custom:err-empty-meta metadata CID is required
 /// @custom:err-empty-members atleast one member is required
+/// @custom:err-empty-name name is required
 /// @custom:err-name-claimed name has already been claimed
 /// @custom:err-team-member sender is not a team member
 /// @custom:err-proj-member sender is not a project member
@@ -74,6 +76,7 @@ contract Valist {
 
     require(bytes(teams[teamID].metaCID).length == 0, "err-name-claimed");
     require(bytes(_metaCID).length > 0, "err-empty-meta");
+    require(bytes(_teamName).length > 0, "err-empty-name");
     require(_members.length > 0, "err-empty-members");
 
     teams[teamID].metaCID = _metaCID;
@@ -106,6 +109,7 @@ contract Valist {
     require(teams[teamID].members.contains(msg.sender), "err-team-member");
     require(bytes(projects[projectID].metaCID).length == 0, "err-name-claimed");
     require(bytes(_metaCID).length > 0, "err-empty-meta");
+    require(bytes(_projectName).length > 0, "err-empty-name");
 
     projects[projectID].metaCID = _metaCID;
     teams[teamID].projects.push(_projectName);
@@ -138,6 +142,7 @@ contract Valist {
     require(projects[projectID].members.contains(msg.sender), "err-proj-member");
     require(bytes(releases[releaseID].metaCID).length == 0, "err-name-claimed");
     require(bytes(_metaCID).length > 0, "err-empty-meta");
+    require(bytes(_releaseName).length > 0, "err-empty-name");
 
     releases[releaseID].metaCID = _metaCID;
     projects[projectID].releases.push(_releaseName);
