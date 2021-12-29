@@ -365,12 +365,12 @@ contract Valist {
     if (limit > teamByID[teamID].projectNames.length) {
       limit = teamByID[teamID].projectNames.length;
     }
-    
+
     string[] memory values = new string[](_size);
     for (uint i = _size * _page - _size; i < limit; ++i) {
       values[i] = teamByID[teamID].projectNames[i];
     }
-    
+
     return values;
   }
 
@@ -394,12 +394,12 @@ contract Valist {
     if (limit > teamByID[teamID].members.length()) {
       limit = teamByID[teamID].members.length();
     }
-    
+
     address[] memory values = new address[](_size);
     for (uint i = _size * _page - _size; i < limit; ++i) {
       values[i] = teamByID[teamID].members.at(i);
     }
-    
+
     return values;
   }
 
@@ -426,12 +426,12 @@ contract Valist {
     if (limit > projectByID[projectID].members.length()) {
       limit = projectByID[projectID].members.length();
     }
-    
+
     address[] memory values = new address[](_size);
     for (uint i = _size * _page - _size; i < limit; ++i) {
       values[i] = projectByID[projectID].members.at(i);
     }
-    
+
     return values;
   }
 
@@ -548,9 +548,6 @@ contract Valist {
     returns (string memory)
   {
     uint256 teamID = uint(keccak256(bytes(_teamName)));
-    
-    require(bytes(teamByID[teamID].metaCID).length > 0, "err-team-not-exist");
-
     return teamByID[teamID].metaCID;
   }
 
@@ -568,9 +565,6 @@ contract Valist {
   {
     uint256 teamID = uint(keccak256(bytes(_teamName)));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
-    
-    require(bytes(projectByID[projectID].metaCID).length > 0, "err-proj-not-exist");
-
     return projectByID[projectID].metaCID;
   }
 
@@ -591,10 +585,25 @@ contract Valist {
     uint256 teamID = uint(keccak256(bytes(_teamName)));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
     uint256 releaseID = uint(keccak256(abi.encodePacked(projectID, keccak256(bytes(_releaseName)))));
-    
-    require(bytes(releaseByID[releaseID].metaCID).length > 0, "err-release-not-exist");
-
     return releaseByID[releaseID].metaCID;
+  }
+
+  /// Returns the latest release name.
+  ///
+  /// @param _teamName Name of the team.
+  /// @param _projectName Name of the project.
+  function getLatestReleaseName(
+    string memory _teamName,
+    string memory _projectName
+  )
+    public
+    view
+    returns (string memory)
+  {
+    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
+    Project storage project = projectByID[projectID];
+    return project.releaseNames[project.releaseNames.length - 1];
   }
 
   /// Sets the team metadata content ID. Requires the sender to be a member of the team.

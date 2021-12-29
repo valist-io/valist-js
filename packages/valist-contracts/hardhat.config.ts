@@ -11,7 +11,6 @@ task("accounts", "Prints the list of accounts", async (args, hre) => {
 });
 
 module.exports = {
-  // defaultNetwork: "local",
   solidity: {
     version: "0.8.4",
     settings: {
