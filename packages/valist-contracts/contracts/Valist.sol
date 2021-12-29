@@ -14,6 +14,8 @@ import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 /// @custom:err-member-exist member already exists
 /// @custom:err-member-not-exist member does not exist
 /// @custom:err-release-not-exist release does not exist
+/// @custom:err-team-not-exist team does not exist
+/// @custom:err-proj-not-exist project does not exist
 contract Valist {
   using EnumerableSet for EnumerableSet.AddressSet;
 
@@ -53,25 +55,64 @@ contract Valist {
   event TeamMemberRemoved(string _teamName, address _member);
 
   /// @dev emitted when a new project is created
-  event ProjectCreated(string _teamName, string _projectName, string _metaCID, address _member);
+  event ProjectCreated(
+    string _teamName, 
+    string _projectName, 
+    string _metaCID, 
+    address _member
+  );
+
   /// @dev emitted when a new project member is added
-  event ProjectMemberAdded(string _teamName, string _projectName, address _member);
+  event ProjectMemberAdded(
+    string _teamName, 
+    string _projectName, 
+    address _member
+  );
+
   /// @dev emitted when an existing project member is removed
-  event ProjectMemberRemoved(string _teamName, string _projectName, address _member);
+  event ProjectMemberRemoved(
+    string _teamName, 
+    string _projectName, 
+    address _member
+  );
 
   /// @dev emitted when a new release is created
-  event ReleaseCreated(string _teamName, string _projectName, string _releaseName, string _metaCID, address _member);
+  event ReleaseCreated(
+    string _teamName, 
+    string _projectName, 
+    string _releaseName, 
+    string _metaCID, 
+    address _member
+  );
+
   /// @dev emitted when an existing release is approved by a signer
-  event ReleaseApproved(string _teamName, string _projectName, string _releaseName, address _sender);
+  event ReleaseApproved(
+    string _teamName, 
+    string _projectName, 
+    string _releaseName, 
+    address _sender
+  );
+
   /// @dev emitted when an existing release is rejected by a signer
-  event ReleaseRejected(string _teamName, string _projectName, string _releaseName, address _sender);
+  event ReleaseRejected(
+    string _teamName, 
+    string _projectName, 
+    string _releaseName, 
+    address _sender
+  );
 
   /// Creates a new team with the given members.
   ///
   /// @param _teamName Unique name used to identify the team.
   /// @param _metaCID Content ID of the team metadata.
   /// @param _members List of members to add to the team.
-  function createTeam(string memory _teamName, string memory _metaCID, address[] memory _members) public {
+  function createTeam(
+    string memory _teamName, 
+    string memory _metaCID, 
+    address[] memory _members
+  ) 
+    public 
+  {
     uint256 teamID = uint(keccak256(bytes(_teamName)));
 
     require(bytes(teams[teamID].metaCID).length == 0, "err-name-claimed");
@@ -146,7 +187,6 @@ contract Valist {
 
     releases[releaseID].metaCID = _metaCID;
     projects[projectID].releases.push(_releaseName);
-
     emit ReleaseCreated(_teamName, _projectName, _releaseName, _metaCID, msg.sender);
   }
 
@@ -293,7 +333,14 @@ contract Valist {
   ///
   /// @param _page Page to return items from.
   /// @param _size Number of items to return.
-  function getTeamNames(uint _page, uint _size) public view returns (string[] memory) {
+  function getTeamNames(
+    uint _page, 
+    uint _size
+  ) 
+    public 
+    view 
+    returns (string[] memory) 
+  {
     uint limit = _page * _size;
     if (limit > teamNames.length) {
       limit = teamNames.length;
@@ -302,6 +349,35 @@ contract Valist {
     string[] memory values = new string[](_size);
     for (uint i = _size * _page - _size; i < limit; ++i) {
       values[i] = teamNames[i];
+    }
+    
+    return values;
+  }
+
+  /// Returns a paginated list of project names.
+  ///
+  /// @param _teamName Name of the team.
+  /// @param _page Page to return items from.
+  /// @param _size Number of items to return.
+  function getProjectNames(
+    string memory _teamName, 
+    uint _page, 
+    uint _size
+  ) 
+    public
+    view
+    returns (string[] memory)
+  {
+    uint256 teamID = uint(keccak256(bytes(_teamName)));
+
+    uint limit = _page * _size;
+    if (limit > teams[teamID].projects.length) {
+      limit = teams[teamID].projects.length;
+    }
+    
+    string[] memory values = new string[](_size);
+    for (uint i = _size * _page - _size; i < limit; ++i) {
+      values[i] = teams[teamID].projects[i];
     }
     
     return values;
@@ -363,6 +439,38 @@ contract Valist {
     address[] memory values = new address[](_size);
     for (uint i = _size * _page - _size; i < limit; ++i) {
       values[i] = projects[projectID].members.at(i);
+    }
+    
+    return values;
+  }
+
+  /// Returns a paginated list of release names.
+  ///
+  /// @param _teamName Name of the team.
+  /// @param _projectName Name of the project.
+  /// @param _page Page to return items from.
+  /// @param _size Number of items to return.
+  function getReleaseNames(
+    string memory _teamName,
+    string memory _projectName,
+    uint _page, 
+    uint _size
+  ) 
+    public 
+    view 
+    returns (string[] memory)
+  {
+    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
+
+    uint limit = _page * _size;
+    if (limit > projects[projectID].releases.length) {
+      limit = projects[projectID].releases.length;
+    }
+    
+    string[] memory values = new string[](_size);
+    for (uint i = _size * _page - _size; i < limit; ++i) {
+      values[i] = projects[projectID].releases[i];
     }
     
     return values;
@@ -436,5 +544,65 @@ contract Valist {
     }
     
     return values;
+  }
+
+  /// Returns the team metadata CID.
+  ///
+  /// @param _teamName Name of the team.
+  function getTeamMetaCID(
+    string memory _teamName
+  ) 
+    public 
+    view 
+    returns (string memory) 
+  {
+    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    
+    require(bytes(teams[teamID].metaCID).length > 0, "err-team-not-exist");
+
+    return teams[teamID].metaCID;
+  }
+
+  /// Returns the project metadata CID.
+  ///
+  /// @param _teamName Name of the team.
+  /// @param _projectName Name of the project.
+  function getProjectMetaCID(
+    string memory _teamName,
+    string memory _projectName
+  ) 
+    public 
+    view 
+    returns (string memory) 
+  {
+    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
+    
+    require(bytes(projects[projectID].metaCID).length > 0, "err-proj-not-exist");
+
+    return projects[projectID].metaCID;
+  }
+
+  /// Returns the release metadata CID.
+  ///
+  /// @param _teamName Name of the team.
+  /// @param _projectName Name of the project.
+  /// @param _releaseName Name of the release.
+  function getReleaseMetaCID(
+    string memory _teamName,
+    string memory _projectName,
+    string memory _releaseName
+  ) 
+    public 
+    view 
+    returns (string memory) 
+  {
+    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
+    uint256 releaseID = uint(keccak256(abi.encodePacked(projectID, keccak256(bytes(_releaseName)))));
+    
+    require(bytes(releases[releaseID].metaCID).length > 0, "err-release-not-exist");
+
+    return releases[releaseID].metaCID;
   }
 }
