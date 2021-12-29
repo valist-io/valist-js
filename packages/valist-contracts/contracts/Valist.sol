@@ -49,6 +49,8 @@ contract Valist {
 
   /// @dev emitted when a new team is created
   event TeamCreated(string _teamName, string _metaCID, address _sender);
+  /// @dev emitted when an exsting team is updated
+  event TeamUpdated(string _teamName, string _metaCID, address _member);
   /// @dev emitted when a new team member is added
   event TeamMemberAdded(string _teamName, address _member);
   /// @dev emitted when an existing team member is removed
@@ -59,6 +61,14 @@ contract Valist {
     string _teamName, 
     string _projectName, 
     string _metaCID, 
+    address _member
+  );
+
+  /// @dev emitted when an existing project is updated
+  event ProjectUpdated(
+    string _teamName,
+    string _projectName,
+    string _metaCID,
     address _member
   );
 
@@ -604,5 +614,48 @@ contract Valist {
     require(bytes(releases[releaseID].metaCID).length > 0, "err-release-not-exist");
 
     return releases[releaseID].metaCID;
+  }
+
+  /// Sets the team metadata content ID. Requires the sender to be a member of the team.
+  ///
+  /// @param _teamName Name of the team.
+  /// @param _metaCID Metadata content ID.
+  function setTeamMetaCID(
+    string memory _teamName,
+    string memory _metaCID
+  )
+    public
+  {
+    uint256 teamID = uint(keccak256(bytes(_teamName)));
+
+    require(teams[teamID].members.contains(msg.sender), "err-team-member");
+    require(bytes(teams[teamID].metaCID).length == 0, "err-team-not-exist");
+    require(bytes(_metaCID).length == 0, "err-empty-meta");
+
+    teams[teamID].metaCID = _metaCID;
+    emit TeamUpdated(_teamName, _metaCID, msg.sender);
+  }
+
+  /// Sets the project metadata content ID. Requires the sender to be a member of the team.
+  ///
+  /// @param _teamName Name of the team.
+  /// @param _projectName Name of the project.
+  /// @param _metaCID Metadata content ID.
+  function setProjectMetaCID(
+    string memory _teamName,
+    string memory _projectName,
+    string memory _metaCID
+  )
+    public
+  {
+    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
+
+    require(teams[teamID].members.contains(msg.sender), "err-team-member");
+    require(bytes(projects[projectID].metaCID).length == 0, "err-proj-not-exist");
+    require(bytes(_metaCID).length == 0, "err-empty-meta");
+
+    projects[projectID].metaCID = _metaCID;
+    emit ProjectUpdated(_teamName, _projectName, _metaCID, msg.sender);
   }
 }
