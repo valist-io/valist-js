@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 pragma solidity >=0.8.4;
 
+import "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 /// @title Valist registry contract
@@ -16,7 +17,7 @@ import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 /// @custom:err-release-not-exist release does not exist
 /// @custom:err-team-not-exist team does not exist
 /// @custom:err-proj-not-exist project does not exist
-contract Valist {
+contract Valist is ERC2771Context {
   using EnumerableSet for EnumerableSet.AddressSet;
 
   struct Team {
@@ -111,6 +112,14 @@ contract Valist {
     address _sender
   );
 
+  /// @dev version of BaseRelayRecipient this contract implements
+  string public versionRecipient = "2.2.0";
+
+  /// Creates a Valist registry.
+  ///
+  /// @param _trustedForwarder Address for meta transactions.
+  constructor(address _trustedForwarder) ERC2771Context(_trustedForwarder) {}
+
   /// Creates a new team with the given members.
   ///
   /// @param _teamName Unique name used to identify the team.
@@ -137,7 +146,7 @@ contract Valist {
       teamByID[teamID].members.add(_members[i]);
     }
 
-    emit TeamCreated(_teamName, _metaCID, msg.sender);
+    emit TeamCreated(_teamName, _metaCID, _msgSender());
   }
   
   /// Creates a new project. Requires the sender to be a member of the team.
@@ -157,7 +166,7 @@ contract Valist {
     uint256 teamID = uint(keccak256(bytes(_teamName)));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
 
-    require(teamByID[teamID].members.contains(msg.sender), "err-team-member");
+    require(teamByID[teamID].members.contains(_msgSender()), "err-team-member");
     require(bytes(projectByID[projectID].metaCID).length == 0, "err-name-claimed");
     require(bytes(_metaCID).length > 0, "err-empty-meta");
     require(bytes(_projectName).length > 0, "err-empty-name");
@@ -169,7 +178,7 @@ contract Valist {
       projectByID[projectID].members.add(_members[i]);
     }
 
-    emit ProjectCreated(_teamName, _projectName, _metaCID, msg.sender);
+    emit ProjectCreated(_teamName, _projectName, _metaCID, _msgSender());
   }
 
   /// Creates a new release. Requires the sender to be a member of the project.
@@ -190,14 +199,14 @@ contract Valist {
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
     uint256 releaseID = uint(keccak256(abi.encodePacked(projectID, keccak256(bytes(_releaseName)))));
 
-    require(projectByID[projectID].members.contains(msg.sender), "err-proj-member");
+    require(projectByID[projectID].members.contains(_msgSender()), "err-proj-member");
     require(bytes(releaseByID[releaseID].metaCID).length == 0, "err-name-claimed");
     require(bytes(_metaCID).length > 0, "err-empty-meta");
     require(bytes(_releaseName).length > 0, "err-empty-name");
 
     releaseByID[releaseID].metaCID = _metaCID;
     projectByID[projectID].releaseNames.push(_releaseName);
-    emit ReleaseCreated(_teamName, _projectName, _releaseName, _metaCID, msg.sender);
+    emit ReleaseCreated(_teamName, _projectName, _releaseName, _metaCID, _msgSender());
   }
 
   /// Approve the release by adding the sender's address to the approvals list.
@@ -219,9 +228,9 @@ contract Valist {
 
     require(bytes(releaseByID[releaseID].metaCID).length > 0, "err-release-not-exist");
 
-    releaseByID[releaseID].approvals.add(msg.sender);
-    releaseByID[releaseID].rejections.remove(msg.sender);
-    emit ReleaseApproved(_teamName, _projectName, _releaseName, msg.sender);
+    releaseByID[releaseID].approvals.add(_msgSender());
+    releaseByID[releaseID].rejections.remove(_msgSender());
+    emit ReleaseApproved(_teamName, _projectName, _releaseName, _msgSender());
   }
 
   /// Reject the release by adding the sender's address to the rejections list.
@@ -243,9 +252,9 @@ contract Valist {
 
     require(bytes(releaseByID[releaseID].metaCID).length > 0, "err-release-not-exist");
 
-    releaseByID[releaseID].rejections.add(msg.sender);
-    releaseByID[releaseID].approvals.remove(msg.sender);
-    emit ReleaseRejected(_teamName, _projectName, _releaseName, msg.sender);
+    releaseByID[releaseID].rejections.add(_msgSender());
+    releaseByID[releaseID].approvals.remove(_msgSender());
+    emit ReleaseRejected(_teamName, _projectName, _releaseName, _msgSender());
   }
 
   /// Add a member to the team. Requires the sender to be a member of the team.
@@ -255,7 +264,7 @@ contract Valist {
   function addTeamMember(string memory _teamName, address _address) public {
     uint256 teamID = uint(keccak256(bytes(_teamName)));
     
-    require(teamByID[teamID].members.contains(msg.sender) == true, "err-team-member");
+    require(teamByID[teamID].members.contains(_msgSender()) == true, "err-team-member");
     require(teamByID[teamID].members.contains(_address) == false, "err-member-exist");
 
     teamByID[teamID].members.add(_address);
@@ -269,7 +278,7 @@ contract Valist {
   function removeTeamMember(string memory _teamName, address _address) public {
     uint256 teamID = uint(keccak256(bytes(_teamName)));
 
-    require(teamByID[teamID].members.contains(msg.sender) == true, "err-team-member");
+    require(teamByID[teamID].members.contains(_msgSender()) == true, "err-team-member");
     require(teamByID[teamID].members.contains(_address) == true, "err-member-not-exist");
 
     teamByID[teamID].members.remove(_address);
@@ -291,7 +300,7 @@ contract Valist {
     uint256 teamID = uint(keccak256(bytes(_teamName)));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
     
-    require(teamByID[teamID].members.contains(msg.sender) == true, "err-team-member");
+    require(teamByID[teamID].members.contains(_msgSender()) == true, "err-team-member");
     require(projectByID[projectID].members.contains(_address) == false, "err-member-exist");
 
     projectByID[projectID].members.add(_address);
@@ -313,7 +322,7 @@ contract Valist {
     uint256 teamID = uint(keccak256(bytes(_teamName)));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
     
-    require(teamByID[teamID].members.contains(msg.sender) == true, "err-team-member");
+    require(teamByID[teamID].members.contains(_msgSender()) == true, "err-team-member");
     require(projectByID[projectID].members.contains(_address) == true, "err-member-not-exist"); 
     
     projectByID[projectID].members.remove(_address);
@@ -618,12 +627,12 @@ contract Valist {
   {
     uint256 teamID = uint(keccak256(bytes(_teamName)));
 
-    require(teamByID[teamID].members.contains(msg.sender), "err-team-member");
+    require(teamByID[teamID].members.contains(_msgSender()), "err-team-member");
     require(bytes(teamByID[teamID].metaCID).length == 0, "err-team-not-exist");
     require(bytes(_metaCID).length == 0, "err-empty-meta");
 
     teamByID[teamID].metaCID = _metaCID;
-    emit TeamUpdated(_teamName, _metaCID, msg.sender);
+    emit TeamUpdated(_teamName, _metaCID, _msgSender());
   }
 
   /// Sets the project metadata content ID. Requires the sender to be a member of the team.
@@ -641,11 +650,11 @@ contract Valist {
     uint256 teamID = uint(keccak256(bytes(_teamName)));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
 
-    require(teamByID[teamID].members.contains(msg.sender), "err-team-member");
+    require(teamByID[teamID].members.contains(_msgSender()), "err-team-member");
     require(bytes(projectByID[projectID].metaCID).length == 0, "err-proj-not-exist");
     require(bytes(_metaCID).length == 0, "err-empty-meta");
 
     projectByID[projectID].metaCID = _metaCID;
-    emit ProjectUpdated(_teamName, _projectName, _metaCID, msg.sender);
+    emit ProjectUpdated(_teamName, _projectName, _metaCID, _msgSender());
   }
 }

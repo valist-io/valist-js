@@ -4,8 +4,12 @@ import { ethers } from "hardhat";
 import { Contract, Signer } from "ethers";
 
 async function deploy() {
+  const accounts = await ethers.getSigners();
+  const forwarder = await accounts[0].getAddress();
+
   const Valist = await ethers.getContractFactory("Valist");
-  const valist = await Valist.deploy();
+  const valist = await Valist.deploy(forwarder);
+  
   await valist.deployed();
   return valist;
 }
