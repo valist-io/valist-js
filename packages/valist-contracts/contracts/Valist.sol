@@ -448,20 +448,22 @@ contract Valist is ERC2771Context {
   /// @param _page Page to return items from.
   /// @param _size Number of items to return.
   function getTeamNames(
-    uint _page, 
+    uint _page,
     uint _size
   )
     public
     view
     returns (string[] memory)
   {
-    uint limit = _page * _size;
+    uint start = _page * _size;
+    uint limit = start + _size;
+
     if (limit > teamNames.length) {
       limit = teamNames.length;
     }
     
-    string[] memory values = new string[](_size);
-    for (uint i = _size * _page - _size; i < limit; ++i) {
+    string[] memory values = new string[](limit - start);
+    for (uint i = start; i < limit; ++i) {
       values[i] = teamNames[i];
     }
     
@@ -484,13 +486,15 @@ contract Valist is ERC2771Context {
   {
     uint256 teamID = uint(keccak256(bytes(_teamName)));
 
-    uint limit = _page * _size;
+    uint start = _page * _size;
+    uint limit = start + _size;
+
     if (limit > teamByID[teamID].projectNames.length) {
       limit = teamByID[teamID].projectNames.length;
     }
 
-    string[] memory values = new string[](_size);
-    for (uint i = _size * _page - _size; i < limit; ++i) {
+    string[] memory values = new string[](limit - start);
+    for (uint i = start; i < limit; ++i) {
       values[i] = teamByID[teamID].projectNames[i];
     }
 
@@ -513,13 +517,15 @@ contract Valist is ERC2771Context {
   {
     uint256 teamID = uint(keccak256(bytes(_teamName)));
 
-    uint limit = _page * _size;
+    uint start = _page * _size;
+    uint limit = start + _size;
+
     if (limit > teamByID[teamID].members.length()) {
       limit = teamByID[teamID].members.length();
     }
 
-    address[] memory values = new address[](_size);
-    for (uint i = _size * _page - _size; i < limit; ++i) {
+    address[] memory values = new address[](limit - start);
+    for (uint i = start; i < limit; ++i) {
       values[i] = teamByID[teamID].members.at(i);
     }
 
@@ -545,13 +551,15 @@ contract Valist is ERC2771Context {
     uint256 teamID = uint(keccak256(bytes(_teamName)));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
 
-    uint limit = _page * _size;
+    uint start = _page * _size;
+    uint limit = start + _size;
+
     if (limit > projectByID[projectID].members.length()) {
       limit = projectByID[projectID].members.length();
     }
 
-    address[] memory values = new address[](_size);
-    for (uint i = _size * _page - _size; i < limit; ++i) {
+    address[] memory values = new address[](limit - start);
+    for (uint i = start; i < limit; ++i) {
       values[i] = projectByID[projectID].members.at(i);
     }
 
@@ -577,13 +585,15 @@ contract Valist is ERC2771Context {
     uint256 teamID = uint(keccak256(bytes(_teamName)));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
 
-    uint limit = _page * _size;
+    uint start = _page * _size;
+    uint limit = start + _size;
+
     if (limit > projectByID[projectID].releaseNames.length) {
       limit = projectByID[projectID].releaseNames.length;
     }
     
-    string[] memory values = new string[](_size);
-    for (uint i = _size * _page - _size; i < limit; ++i) {
+    string[] memory values = new string[](limit - start);
+    for (uint i = start; i < limit; ++i) {
       values[i] = projectByID[projectID].releaseNames[i];
     }
     
@@ -612,13 +622,15 @@ contract Valist is ERC2771Context {
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
     uint256 releaseID = uint(keccak256(abi.encodePacked(projectID, keccak256(bytes(_releaseName)))));
 
-    uint limit = _page * _size;
+    uint start = _page * _size;
+    uint limit = start + _size;
+
     if (limit > releaseByID[releaseID].approvals.length()) {
       limit = releaseByID[releaseID].approvals.length();
     }
     
-    address[] memory values = new address[](_size);
-    for (uint i = _size * _page - _size; i < limit; ++i) {
+    address[] memory values = new address[](limit - start);
+    for (uint i = start; i < limit; ++i) {
       values[i] = releaseByID[releaseID].approvals.at(i);
     }
     
@@ -647,12 +659,14 @@ contract Valist is ERC2771Context {
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
     uint256 releaseID = uint(keccak256(abi.encodePacked(projectID, keccak256(bytes(_releaseName)))));
 
-    uint limit = _page * _size;
+    uint start = _page * _size;
+    uint limit = start + _size;
+
     if (limit > releaseByID[releaseID].rejections.length()) {
       limit = releaseByID[releaseID].rejections.length();
     }
     
-    address[] memory values = new address[](_size);
+    address[] memory values = new address[](limit - start);
     for (uint i = _size * _page - _size; i < limit; ++i) {
       values[i] = releaseByID[releaseID].rejections.at(i);
     }
