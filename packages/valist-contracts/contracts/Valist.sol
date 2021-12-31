@@ -385,6 +385,7 @@ contract Valist is ERC2771Context {
     returns (string memory)
   {
     uint256 teamID = uint(keccak256(bytes(_teamName)));
+    require(bytes(teamByID[teamID].metaCID).length > 0, "err-team-not-exist");
     return teamByID[teamID].metaCID;
   }
 
@@ -402,6 +403,7 @@ contract Valist is ERC2771Context {
   {
     uint256 teamID = uint(keccak256(bytes(_teamName)));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
+    require(bytes(projectByID[projectID].metaCID).length > 0, "err-proj-not-exist");
     return projectByID[projectID].metaCID;
   }
 
@@ -422,6 +424,7 @@ contract Valist is ERC2771Context {
     uint256 teamID = uint(keccak256(bytes(_teamName)));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
     uint256 releaseID = uint(keccak256(abi.encodePacked(projectID, keccak256(bytes(_releaseName)))));
+    require(bytes(releaseByID[releaseID].metaCID).length > 0, "err-release-not-exist");
     return releaseByID[releaseID].metaCID;
   }
 
@@ -440,6 +443,7 @@ contract Valist is ERC2771Context {
     uint256 teamID = uint(keccak256(bytes(_teamName)));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
     Project storage project = projectByID[projectID];
+    require(project.releaseNames.length > 0, "err-proj-not-exist");
     return project.releaseNames[project.releaseNames.length - 1];
   }
 

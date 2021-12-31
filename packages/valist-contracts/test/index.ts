@@ -738,6 +738,14 @@ describe("getTeamMetaCID", () => {
     const metaCID = await valist.getTeamMetaCID("acme");
     expect(metaCID).to.equal("Qm");
   });
+
+  it("Should fail with non existant team", async function() {
+    const valist = await deployValist();
+    const members = await getAddresses();
+
+    await expect(valist.getTeamMetaCID("acme"))
+      .to.be.revertedWith('err-team-not-exist');
+  });
 });
 
 describe("getProjectMetaCID", () => {
@@ -753,6 +761,14 @@ describe("getProjectMetaCID", () => {
 
     const metaCID = await valist.getProjectMetaCID("acme", "bin");
     expect(metaCID).to.equal("Qm2");
+  });
+
+  it("Should fail with non existant project", async function() {
+    const valist = await deployValist();
+    const members = await getAddresses();
+
+    await expect(valist.getProjectMetaCID("acme", "bin"))
+      .to.be.revertedWith('err-proj-not-exist');
   });
 });
 
@@ -772,6 +788,14 @@ describe("getReleaseMetaCID", () => {
 
     const metaCID = await valist.getReleaseMetaCID("acme", "bin", "0.0.1");
     expect(metaCID).to.equal("Qm3");
+  });
+
+  it("Should fail with non existant release", async function() {
+    const valist = await deployValist();
+    const members = await getAddresses();
+
+    await expect(valist.getReleaseMetaCID("acme", "bin", "0.0.1"))
+      .to.be.revertedWith('err-release-not-exist');
   });
 });
 
@@ -793,6 +817,14 @@ describe("getLatestReleaseName", () => {
 
     const name = await valist.getLatestReleaseName("acme", "bin");
     expect(name).to.equal("0.0.5");
+  });
+
+  it("Should fail with non existant release", async function() {
+    const valist = await deployValist();
+    const members = await getAddresses();
+
+    await expect(valist.getLatestReleaseName("acme", "bin"))
+      .to.be.revertedWith('err-proj-not-exist');
   });
 });
 
