@@ -727,6 +727,194 @@ describe("setProjectMetaCID", () => {
   });
 });
 
+describe("getTeamMetaCID", () => {
+  it("Should return team meta", async function() {
+    const valist = await deployValist();
+    const members = await getAddresses();
+
+    const createTeamTx = await valist.createTeam("acme", "Qm", members);
+    await createTeamTx.wait();
+
+    const metaCID = await valist.getTeamMetaCID("acme");
+    expect(metaCID).to.equal("Qm");
+  });
+});
+
+describe("getProjectMetaCID", () => {
+  it("Should return project meta", async function() {
+    const valist = await deployValist();
+    const members = await getAddresses();
+
+    const createTeamTx = await valist.createTeam("acme", "Qm1", members);
+    await createTeamTx.wait();
+
+    const createProjectTx = await valist.createProject("acme", "bin", "Qm2", []);
+    await createProjectTx.wait();
+
+    const metaCID = await valist.getProjectMetaCID("acme", "bin");
+    expect(metaCID).to.equal("Qm2");
+  });
+});
+
+describe("getReleaseMetaCID", () => {
+  it("Should return release meta", async function() {
+    const valist = await deployValist();
+    const members = await getAddresses();
+
+    const createTeamTx = await valist.createTeam("acme", "Qm1", members);
+    await createTeamTx.wait();
+
+    const createProjectTx = await valist.createProject("acme", "bin", "Qm2", members);
+    await createProjectTx.wait();
+
+    const createReleaseTx = await valist.createRelease("acme", "bin", "0.0.1", "Qm3");
+    await createReleaseTx.wait();
+
+    const metaCID = await valist.getReleaseMetaCID("acme", "bin", "0.0.1");
+    expect(metaCID).to.equal("Qm3");
+  });
+});
+
+describe("getLatestReleaseName", () => {
+  it("Should return latest release name", async function() {
+    const valist = await deployValist();
+    const members = await getAddresses();
+
+    const createTeamTx = await valist.createTeam("acme", "Qm1", members);
+    await createTeamTx.wait();
+
+    const createProjectTx = await valist.createProject("acme", "bin", "Qm2", members);
+    await createProjectTx.wait();
+
+    for (let i = 0; i < 6; i++) {
+      const createReleaseTx = await valist.createRelease("acme", "bin", `0.0.${i}`, "Qm");
+      await createReleaseTx.wait();  
+    }
+
+    const name = await valist.getLatestReleaseName("acme", "bin");
+    expect(name).to.equal("0.0.5");
+  });
+});
+
+describe("getTeamNames", () => {
+  it("Should return team names", async function() {
+    const valist = await deployValist();
+    const members = await getAddresses();
+
+    for (let i = 0; i < 4; i++) {
+      const createTeamTx = await valist.createTeam(`acme-${i}`, "Qm", members);
+      await createTeamTx.wait();
+    }
+
+    const page1 = await valist.getTeamNames(0, 2);
+    expect(page1).to.have.ordered.members(["acme-0", "acme-1"]);
+
+    const page2 = await valist.getTeamNames(1, 2);
+    expect(page2).to.have.ordered.members(["acme-2", "acme-3"]);
+  });
+});
+
+describe("getProjectNames", () => {
+  it("Should return project names", async function() {
+    const valist = await deployValist();
+    const members = await getAddresses();
+
+    const createTeamTx = await valist.createTeam("acme", "Qm", members);
+    await createTeamTx.wait();
+
+    for (let i = 0; i < 4; i++) {
+      const createProjectTx = await valist.createProject("acme", `bin-${i}`, "Qm", []);
+      await createProjectTx.wait();
+    }
+
+    const page1 = await valist.getProjectNames("acme", 0, 2);
+    expect(page1).to.have.ordered.members(["bin-0", "bin-1"]);
+
+    const page2 = await valist.getProjectNames("acme", 1, 2);
+    expect(page2).to.have.ordered.members(["bin-2", "bin-3"]);
+  });
+});
+
+describe("getReleaseNames", () => {
+  it("Should return release names", async function() {
+    const valist = await deployValist();
+    const members = await getAddresses();
+
+    const createTeamTx = await valist.createTeam("acme", "Qm", members);
+    await createTeamTx.wait();
+
+    const createProjectTx = await valist.createProject("acme", "bin", "Qm", members);
+    await createProjectTx.wait();
+
+    for (let i = 0; i < 4; i++) {
+      const createReleaseTx = await valist.createRelease("acme", "bin", `0.0.${i}`, "Qm");
+      await createReleaseTx.wait();
+    }
+
+    const page1 = await valist.getReleaseNames("acme", "bin", 0, 2);
+    expect(page1).to.have.ordered.members(["0.0.0", "0.0.1"]);
+
+    const page2 = await valist.getReleaseNames("acme", "bin", 1, 2);
+    expect(page2).to.have.ordered.members(["0.0.2", "0.0.3"]);
+  });
+});
+
+describe("getReleaseApprovals", () => {
+  it("Should return approval addresses", async function() {
+    const valist = await deployValist();
+    const members = await getAddresses();
+    const signers = await ethers.getSigners();
+
+    const createTeamTx = await valist.createTeam("acme", "Qm", members);
+    await createTeamTx.wait();
+
+    const createProjectTx = await valist.createProject("acme", "bin", "Qm", members);
+    await createProjectTx.wait();
+
+    const createReleaseTx = await valist.createRelease("acme", "bin", "0.0.1", "Qm");
+    await createReleaseTx.wait();
+
+    for (let i = 0; i < signers.length; i++) {
+      const approveReleaseTx = await valist.connect(signers[i]).approveRelease("acme", "bin", "0.0.1");
+      await approveReleaseTx.wait();  
+    }
+
+    const page1 = await valist.getReleaseApprovals("acme", "bin", "0.0.1", 0, 10);
+    expect(page1).to.have.ordered.members(members.slice(0, 10));
+
+    const page2 = await valist.getReleaseApprovals("acme", "bin", "0.0.1", 1, 10);
+    expect(page2).to.have.ordered.members(members.slice(10, 20));
+  });
+});
+
+describe("getReleaseRejections", () => {
+  it("Should return rejection addresses", async function() {
+    const valist = await deployValist();
+    const members = await getAddresses();
+    const signers = await ethers.getSigners();
+
+    const createTeamTx = await valist.createTeam("acme", "Qm", members);
+    await createTeamTx.wait();
+
+    const createProjectTx = await valist.createProject("acme", "bin", "Qm", members);
+    await createProjectTx.wait();
+
+    const createReleaseTx = await valist.createRelease("acme", "bin", "0.0.1", "Qm");
+    await createReleaseTx.wait();
+
+    for (let i = 0; i < signers.length; i++) {
+      const rejectReleaseTx = await valist.connect(signers[i]).rejectRelease("acme", "bin", "0.0.1");
+      await rejectReleaseTx.wait();  
+    }
+
+    const page1 = await valist.getReleaseRejections("acme", "bin", "0.0.1", 0, 10);
+    expect(page1).to.have.ordered.members(members.slice(0, 10));
+
+    const page2 = await valist.getReleaseRejections("acme", "bin", "0.0.1", 1, 10);
+    expect(page2).to.have.ordered.members(members.slice(10, 20));
+  });
+});
+
 async function deployValist() {
   const Valist = await ethers.getContractFactory("Valist");
   const valist = await Valist.deploy("0x9399BB24DBB5C4b782C70c2969F58716Ebbd6a3b");

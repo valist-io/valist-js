@@ -464,7 +464,7 @@ contract Valist is ERC2771Context {
     
     string[] memory values = new string[](limit - start);
     for (uint i = start; i < limit; ++i) {
-      values[i] = teamNames[i];
+      values[i - start] = teamNames[i];
     }
     
     return values;
@@ -495,7 +495,7 @@ contract Valist is ERC2771Context {
 
     string[] memory values = new string[](limit - start);
     for (uint i = start; i < limit; ++i) {
-      values[i] = teamByID[teamID].projectNames[i];
+      values[i - start] = teamByID[teamID].projectNames[i];
     }
 
     return values;
@@ -526,7 +526,7 @@ contract Valist is ERC2771Context {
 
     address[] memory values = new address[](limit - start);
     for (uint i = start; i < limit; ++i) {
-      values[i] = teamByID[teamID].members.at(i);
+      values[i - start] = teamByID[teamID].members.at(i);
     }
 
     return values;
@@ -560,7 +560,7 @@ contract Valist is ERC2771Context {
 
     address[] memory values = new address[](limit - start);
     for (uint i = start; i < limit; ++i) {
-      values[i] = projectByID[projectID].members.at(i);
+      values[i - start] = projectByID[projectID].members.at(i);
     }
 
     return values;
@@ -594,7 +594,7 @@ contract Valist is ERC2771Context {
     
     string[] memory values = new string[](limit - start);
     for (uint i = start; i < limit; ++i) {
-      values[i] = projectByID[projectID].releaseNames[i];
+      values[i - start] = projectByID[projectID].releaseNames[i];
     }
     
     return values;
@@ -628,10 +628,10 @@ contract Valist is ERC2771Context {
     if (limit > releaseByID[releaseID].approvals.length()) {
       limit = releaseByID[releaseID].approvals.length();
     }
-    
+
     address[] memory values = new address[](limit - start);
     for (uint i = start; i < limit; ++i) {
-      values[i] = releaseByID[releaseID].approvals.at(i);
+      values[i - start] = releaseByID[releaseID].approvals.at(i);
     }
     
     return values;
@@ -667,8 +667,8 @@ contract Valist is ERC2771Context {
     }
     
     address[] memory values = new address[](limit - start);
-    for (uint i = _size * _page - _size; i < limit; ++i) {
-      values[i] = releaseByID[releaseID].rejections.at(i);
+    for (uint i = start; i < limit; ++i) {
+      values[i - start] = releaseByID[releaseID].rejections.at(i);
     }
     
     return values;
