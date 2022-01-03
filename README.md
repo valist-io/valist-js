@@ -33,9 +33,9 @@ Documentation for how to get started with Valist can be found at [https://docs.v
 
 
 ```bash
-git clone https://github.com/valist-io/valist-web
+git clone https://github.com/valist-io/valist-js
 
-cd valist-web
+cd valist-js
 
 make start
 ```
