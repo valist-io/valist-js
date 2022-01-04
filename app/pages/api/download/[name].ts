@@ -13,7 +13,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
 
   await db.collection('stats').insertOne({
     package: name,
-    timestamp: Date.now(),
+    timestamp: new Date().getTime(),
   });
 
   res.status(200).send({ message: 'success' });
