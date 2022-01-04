@@ -25,6 +25,17 @@ web: sdk app
 start: sdk
 	npm run start --prefix ./app
 
+start-subgraph:
+	docker-compose -f ./subgraph/docker-compose.yml up
+
+build-subgraph:
+	npm run codegen --prefix ./subgraph
+	npm run build --prefix ./subgraph
+
+deploy-subgraph: build-subgraph
+	npm run create-local --prefix ./subgraph
+	npm run deploy-local --prefix ./subgraph
+
 dev-sdk:
 	npm run dev --prefix ./sdk
 
@@ -61,6 +72,7 @@ clean:
 	rm -rf ./app/node_modules
 	rm -rf ./sdk/node_modules
 	rm -rf ./sdk/dist
+	rm -rf ./subgraph/data
 	rm -rf dist
 
 .PHONY: app sdk
