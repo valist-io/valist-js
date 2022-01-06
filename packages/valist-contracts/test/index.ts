@@ -911,10 +911,10 @@ describe("getReleaseApprovals", () => {
       await approveReleaseTx.wait();  
     }
 
-    const page1 = await valist.getReleaseApprovals("acme", "bin", "0.0.1", 0, 10);
+    const page1 = await valist.getReleaseApprovers("acme", "bin", "0.0.1", 0, 10);
     expect(page1).to.have.ordered.members(members.slice(0, 10));
 
-    const page2 = await valist.getReleaseApprovals("acme", "bin", "0.0.1", 1, 10);
+    const page2 = await valist.getReleaseApprovers("acme", "bin", "0.0.1", 1, 10);
     expect(page2).to.have.ordered.members(members.slice(10, 20));
   });
 });
@@ -939,10 +939,10 @@ describe("getReleaseRejections", () => {
       await rejectReleaseTx.wait();  
     }
 
-    const page1 = await valist.getReleaseRejections("acme", "bin", "0.0.1", 0, 10);
+    const page1 = await valist.getReleaseRejectors("acme", "bin", "0.0.1", 0, 10);
     expect(page1).to.have.ordered.members(members.slice(0, 10));
 
-    const page2 = await valist.getReleaseRejections("acme", "bin", "0.0.1", 1, 10);
+    const page2 = await valist.getReleaseRejectors("acme", "bin", "0.0.1", 1, 10);
     expect(page2).to.have.ordered.members(members.slice(10, 20));
   });
 });

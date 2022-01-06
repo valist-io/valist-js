@@ -21,32 +21,31 @@ contract Valist is ERC2771Context {
   using EnumerableSet for EnumerableSet.AddressSet;
 
   struct Team {
-    string metaCID;
     string[] projectNames;
     EnumerableSet.AddressSet members;
   }
 
   struct Project {
-    string metaCID;
     string[] releaseNames;
     EnumerableSet.AddressSet members;
   }
 
   struct Release {
-    string metaCID;
-    EnumerableSet.AddressSet approvals;
-    EnumerableSet.AddressSet rejections;
+    EnumerableSet.AddressSet approvers;
+    EnumerableSet.AddressSet rejectors;
   }
 
   /// @dev list of all team names
   string[] teamNames;
 
-  /// @dev teamID = keccak256(bytes(teamName))
+  /// @dev teamID = keccak256(abi.encodePacked(block.chainId, keccak256(bytes(teamName))))
   mapping(uint256 => Team) teamByID;
   /// @dev projectID = keccak256(abi.encodePacked(teamID, keccak256(bytes(projectName))))
   mapping(uint256 => Project) projectByID;
   /// @dev releaseID = keccak256(abi.encodePacked(projectID, keccak256(bytes(releaseName))))
   mapping(uint256 => Release) releaseByID;
+  /// @dev mapping of team, project, and release IDs to metadata CIDs
+  mapping(uint256 => string) metaByID;
 
   /// @dev emitted when a new team is created
   event TeamCreated(string _teamName, string _metaCID, address _sender);
@@ -130,16 +129,16 @@ contract Valist is ERC2771Context {
     string memory _metaCID, 
     address[] memory _members
   ) 
-    public 
+    public
   {
-    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
 
-    require(bytes(teamByID[teamID].metaCID).length == 0, "err-name-claimed");
+    require(bytes(metaByID[teamID]).length == 0, "err-name-claimed");
     require(bytes(_metaCID).length > 0, "err-empty-meta");
     require(bytes(_teamName).length > 0, "err-empty-name");
     require(_members.length > 0, "err-empty-members");
 
-    teamByID[teamID].metaCID = _metaCID;
+    metaByID[teamID] = _metaCID;
     teamNames.push(_teamName);
 
     for (uint i = 0; i < _members.length; i++) {
@@ -163,15 +162,15 @@ contract Valist is ERC2771Context {
   )
     public
   {
-    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
 
     require(teamByID[teamID].members.contains(_msgSender()), "err-team-member");
-    require(bytes(projectByID[projectID].metaCID).length == 0, "err-name-claimed");
+    require(bytes(metaByID[projectID]).length == 0, "err-name-claimed");
     require(bytes(_metaCID).length > 0, "err-empty-meta");
     require(bytes(_projectName).length > 0, "err-empty-name");
 
-    projectByID[projectID].metaCID = _metaCID;
+    metaByID[projectID] = _metaCID;
     teamByID[teamID].projectNames.push(_projectName);
 
     for (uint i = 0; i < _members.length; i++) {
@@ -193,24 +192,24 @@ contract Valist is ERC2771Context {
     string memory _releaseName,
     string memory _metaCID
   )
-    public 
+    public
   {
-    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
     uint256 releaseID = uint(keccak256(abi.encodePacked(projectID, keccak256(bytes(_releaseName)))));
 
     require(projectByID[projectID].members.contains(_msgSender()), "err-proj-member");
-    require(bytes(releaseByID[releaseID].metaCID).length == 0, "err-name-claimed");
+    require(bytes(metaByID[releaseID]).length == 0, "err-name-claimed");
     require(bytes(_metaCID).length > 0, "err-empty-meta");
     require(bytes(_releaseName).length > 0, "err-empty-name");
 
-    releaseByID[releaseID].metaCID = _metaCID;
+    metaByID[releaseID] = _metaCID;
     projectByID[projectID].releaseNames.push(_releaseName);
     emit ReleaseCreated(_teamName, _projectName, _releaseName, _metaCID, _msgSender());
   }
 
-  /// Approve the release by adding the sender's address to the approvals list.
-  /// The sender's address will be removed from the rejections list if it exists.
+  /// Approve the release by adding the sender's address to the approvers list.
+  /// The sender's address will be removed from the rejectors list if it exists.
   ///
   /// @param _teamName Name of the team.
   /// @param _projectName Name of the project.
@@ -222,19 +221,19 @@ contract Valist is ERC2771Context {
   )
     public
   {
-    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
     uint256 releaseID = uint(keccak256(abi.encodePacked(projectID, keccak256(bytes(_releaseName)))));
 
-    require(bytes(releaseByID[releaseID].metaCID).length > 0, "err-release-not-exist");
+    require(bytes(metaByID[releaseID]).length > 0, "err-release-not-exist");
 
-    releaseByID[releaseID].approvals.add(_msgSender());
-    releaseByID[releaseID].rejections.remove(_msgSender());
+    releaseByID[releaseID].approvers.add(_msgSender());
+    releaseByID[releaseID].rejectors.remove(_msgSender());
     emit ReleaseApproved(_teamName, _projectName, _releaseName, _msgSender());
   }
 
-  /// Reject the release by adding the sender's address to the rejections list.
-  /// The sender's address will be removed from the approvals list if it exists.
+  /// Reject the release by adding the sender's address to the rejectors list.
+  /// The sender's address will be removed from the approvers list if it exists.
   ///
   /// @param _teamName Name of the team.
   /// @param _projectName Name of the project.
@@ -246,14 +245,14 @@ contract Valist is ERC2771Context {
   ) 
     public 
   {
-    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
     uint256 releaseID = uint(keccak256(abi.encodePacked(projectID, keccak256(bytes(_releaseName)))));
 
-    require(bytes(releaseByID[releaseID].metaCID).length > 0, "err-release-not-exist");
+    require(bytes(metaByID[releaseID]).length > 0, "err-release-not-exist");
 
-    releaseByID[releaseID].rejections.add(_msgSender());
-    releaseByID[releaseID].approvals.remove(_msgSender());
+    releaseByID[releaseID].rejectors.add(_msgSender());
+    releaseByID[releaseID].approvers.remove(_msgSender());
     emit ReleaseRejected(_teamName, _projectName, _releaseName, _msgSender());
   }
 
@@ -262,7 +261,7 @@ contract Valist is ERC2771Context {
   /// @param _teamName Name of the team.
   /// @param _address Address of member.
   function addTeamMember(string memory _teamName, address _address) public {
-    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
     
     require(teamByID[teamID].members.contains(_msgSender()) == true, "err-team-member");
     require(teamByID[teamID].members.contains(_address) == false, "err-member-exist");
@@ -276,7 +275,7 @@ contract Valist is ERC2771Context {
   /// @param _teamName Name of the team.
   /// @param _address Address of member.
   function removeTeamMember(string memory _teamName, address _address) public {
-    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
 
     require(teamByID[teamID].members.contains(_msgSender()) == true, "err-team-member");
     require(teamByID[teamID].members.contains(_address) == true, "err-member-not-exist");
@@ -297,10 +296,10 @@ contract Valist is ERC2771Context {
   )
     public
   {
-    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
     
-    require(bytes(projectByID[projectID].metaCID).length > 0, "err-proj-not-exist");
+    require(bytes(metaByID[projectID]).length > 0, "err-proj-not-exist");
     require(teamByID[teamID].members.contains(_msgSender()) == true, "err-team-member");
     require(projectByID[projectID].members.contains(_address) == false, "err-member-exist");
 
@@ -320,10 +319,10 @@ contract Valist is ERC2771Context {
   )
     public
   {
-    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
     
-    require(bytes(projectByID[projectID].metaCID).length > 0, "err-proj-not-exist");
+    require(bytes(metaByID[projectID]).length > 0, "err-proj-not-exist");
     require(teamByID[teamID].members.contains(_msgSender()) == true, "err-team-member");
     require(projectByID[projectID].members.contains(_address) == true, "err-member-not-exist"); 
 
@@ -341,13 +340,13 @@ contract Valist is ERC2771Context {
   )
     public
   {
-    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
 
     require(teamByID[teamID].members.contains(_msgSender()), "err-team-member");
-    require(bytes(teamByID[teamID].metaCID).length > 0, "err-team-not-exist");
+    require(bytes(metaByID[teamID]).length > 0, "err-team-not-exist");
     require(bytes(_metaCID).length > 0, "err-empty-meta");
 
-    teamByID[teamID].metaCID = _metaCID;
+    metaByID[teamID] = _metaCID;
     emit TeamUpdated(_teamName, _metaCID, _msgSender());
   }
 
@@ -363,14 +362,14 @@ contract Valist is ERC2771Context {
   )
     public
   {
-    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
 
     require(teamByID[teamID].members.contains(_msgSender()), "err-team-member");
-    require(bytes(projectByID[projectID].metaCID).length > 0, "err-proj-not-exist");
+    require(bytes(metaByID[projectID]).length > 0, "err-proj-not-exist");
     require(bytes(_metaCID).length > 0, "err-empty-meta");
 
-    projectByID[projectID].metaCID = _metaCID;
+    metaByID[projectID] = _metaCID;
     emit ProjectUpdated(_teamName, _projectName, _metaCID, _msgSender());
   }
 
@@ -384,9 +383,9 @@ contract Valist is ERC2771Context {
     view
     returns (string memory)
   {
-    uint256 teamID = uint(keccak256(bytes(_teamName)));
-    require(bytes(teamByID[teamID].metaCID).length > 0, "err-team-not-exist");
-    return teamByID[teamID].metaCID;
+    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
+    require(bytes(metaByID[teamID]).length > 0, "err-team-not-exist");
+    return metaByID[teamID];
   }
 
   /// Returns the project metadata CID.
@@ -401,10 +400,10 @@ contract Valist is ERC2771Context {
     view
     returns (string memory)
   {
-    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
-    require(bytes(projectByID[projectID].metaCID).length > 0, "err-proj-not-exist");
-    return projectByID[projectID].metaCID;
+    require(bytes(metaByID[projectID]).length > 0, "err-proj-not-exist");
+    return metaByID[projectID];
   }
 
   /// Returns the release metadata CID.
@@ -421,11 +420,11 @@ contract Valist is ERC2771Context {
     view
     returns (string memory)
   {
-    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
     uint256 releaseID = uint(keccak256(abi.encodePacked(projectID, keccak256(bytes(_releaseName)))));
-    require(bytes(releaseByID[releaseID].metaCID).length > 0, "err-release-not-exist");
-    return releaseByID[releaseID].metaCID;
+    require(bytes(metaByID[releaseID]).length > 0, "err-release-not-exist");
+    return metaByID[releaseID];
   }
 
   /// Returns the latest release name.
@@ -440,7 +439,7 @@ contract Valist is ERC2771Context {
     view
     returns (string memory)
   {
-    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
     Project storage project = projectByID[projectID];
     require(project.releaseNames.length > 0, "err-proj-not-exist");
@@ -488,7 +487,7 @@ contract Valist is ERC2771Context {
     view
     returns (string[] memory)
   {
-    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
 
     uint start = _page * _size;
     uint limit = start + _size;
@@ -519,7 +518,7 @@ contract Valist is ERC2771Context {
     view
     returns (address[] memory)
   {
-    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
 
     uint start = _page * _size;
     uint limit = start + _size;
@@ -552,7 +551,7 @@ contract Valist is ERC2771Context {
     view
     returns (address[] memory)
   {
-    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
 
     uint start = _page * _size;
@@ -586,7 +585,7 @@ contract Valist is ERC2771Context {
     view
     returns (string[] memory)
   {
-    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
 
     uint start = _page * _size;
@@ -604,14 +603,14 @@ contract Valist is ERC2771Context {
     return values;
   }
 
-  /// Returns a paginated list of release approvals.
+  /// Returns a paginated list of release approvers.
   ///
   /// @param _teamName Name of the team.
   /// @param _projectName Name of the project.
   /// @param _releaseName Name of the release.
   /// @param _page Page to return items from.
   /// @param _size Number of items to return.
-  function getReleaseApprovals(
+  function getReleaseApprovers(
     string memory _teamName,
     string memory _projectName,
     string memory _releaseName,
@@ -622,33 +621,33 @@ contract Valist is ERC2771Context {
     view
     returns (address[] memory)
   {
-    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
     uint256 releaseID = uint(keccak256(abi.encodePacked(projectID, keccak256(bytes(_releaseName)))));
 
     uint start = _page * _size;
     uint limit = start + _size;
 
-    if (limit > releaseByID[releaseID].approvals.length()) {
-      limit = releaseByID[releaseID].approvals.length();
+    if (limit > releaseByID[releaseID].approvers.length()) {
+      limit = releaseByID[releaseID].approvers.length();
     }
 
     address[] memory values = new address[](limit - start);
     for (uint i = start; i < limit; ++i) {
-      values[i - start] = releaseByID[releaseID].approvals.at(i);
+      values[i - start] = releaseByID[releaseID].approvers.at(i);
     }
     
     return values;
   }
 
-  /// Returns a paginated list of release rejections.
+  /// Returns a paginated list of release rejectors.
   ///
   /// @param _teamName Name of the team.
   /// @param _projectName Name of the project.
   /// @param _releaseName Name of the release.
   /// @param _page Page to return items from.
   /// @param _size Number of items to return.
-  function getReleaseRejections(
+  function getReleaseRejectors(
     string memory _teamName,
     string memory _projectName,
     string memory _releaseName,
@@ -659,20 +658,20 @@ contract Valist is ERC2771Context {
     view
     returns (address[] memory)
   {
-    uint256 teamID = uint(keccak256(bytes(_teamName)));
+    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
     uint256 releaseID = uint(keccak256(abi.encodePacked(projectID, keccak256(bytes(_releaseName)))));
 
     uint start = _page * _size;
     uint limit = start + _size;
 
-    if (limit > releaseByID[releaseID].rejections.length()) {
-      limit = releaseByID[releaseID].rejections.length();
+    if (limit > releaseByID[releaseID].rejectors.length()) {
+      limit = releaseByID[releaseID].rejectors.length();
     }
     
     address[] memory values = new address[](limit - start);
     for (uint i = start; i < limit; ++i) {
-      values[i - start] = releaseByID[releaseID].rejections.at(i);
+      values[i - start] = releaseByID[releaseID].rejectors.at(i);
     }
     
     return values;

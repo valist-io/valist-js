@@ -27,8 +27,9 @@ module.exports = {
     },
   },
   gasReporter: {
+    token: "MATIC",
     currency: "USD",
-    gasPrice: 120,
+    coinmarketcap: process.env.COINMARKETCAP_API_KEY,
   },
   contractSizer: {
     alphaSort: true,
