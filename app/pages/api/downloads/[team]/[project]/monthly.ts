@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import clientPromise from '../../../../utils/Mongo/mongodb';
+import clientPromise from '../../../../../utils/Mongo/mongodb';
 
 export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
-  const { name } = req.query;
+  const { team, project } = req.query;
 
   const now = new Date().getTime();
   const thirtyDays = 1000 * 60 * 60 * 24 * 30;
@@ -12,7 +12,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
   const downloads = await db
     .collection('stats')
     .find({
-      package: name,
+      package: `${team}/${project}`,
       timestamp: { $gt: now - thirtyDays, $lt: now },
     })
     .count();
