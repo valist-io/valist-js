@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import clientPromise from '../../../../utils/Mongo/mongodb';
+import clientPromise from '../../../../../utils/Mongo/mongodb';
 
 export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
   if (req.method !== 'PUT') {
@@ -7,12 +7,13 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
     return;
   }
 
-  const { team, project } = req.query;
+  const { team, project, version } = req.query;
   const client = await clientPromise;
   const db = await client.db('statsdb');
 
   await db.collection('stats').insertOne({
     package: `${team}/${project}`,
+    version,
     timestamp: new Date().getTime(),
   });
 
