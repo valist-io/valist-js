@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 pragma solidity >=0.8.4;
 
+import "./IValist.sol";
 import "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
@@ -17,7 +18,7 @@ import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 /// @custom:err-release-not-exist release does not exist
 /// @custom:err-team-not-exist team does not exist
 /// @custom:err-proj-not-exist project does not exist
-contract Valist is ERC2771Context {
+contract Valist is IValist, ERC2771Context {
   using EnumerableSet for EnumerableSet.AddressSet;
 
   struct Team {
@@ -36,80 +37,16 @@ contract Valist is ERC2771Context {
   }
 
   /// @dev list of all team names
-  string[] teamNames;
+  string[] private teamNames;
 
   /// @dev teamID = keccak256(abi.encodePacked(block.chainId, keccak256(bytes(teamName))))
-  mapping(uint256 => Team) teamByID;
+  mapping(uint256 => Team) private teamByID;
   /// @dev projectID = keccak256(abi.encodePacked(teamID, keccak256(bytes(projectName))))
-  mapping(uint256 => Project) projectByID;
+  mapping(uint256 => Project) private projectByID;
   /// @dev releaseID = keccak256(abi.encodePacked(projectID, keccak256(bytes(releaseName))))
-  mapping(uint256 => Release) releaseByID;
+  mapping(uint256 => Release) private releaseByID;
   /// @dev mapping of team, project, and release IDs to metadata CIDs
-  mapping(uint256 => string) metaByID;
-
-  /// @dev emitted when a new team is created
-  event TeamCreated(string _teamName, string _metaCID, address _sender);
-  /// @dev emitted when an exsting team is updated
-  event TeamUpdated(string _teamName, string _metaCID, address _member);
-  /// @dev emitted when a new team member is added
-  event TeamMemberAdded(string _teamName, address _member);
-  /// @dev emitted when an existing team member is removed
-  event TeamMemberRemoved(string _teamName, address _member);
-
-  /// @dev emitted when a new project is created
-  event ProjectCreated(
-    string _teamName, 
-    string _projectName, 
-    string _metaCID, 
-    address _member
-  );
-
-  /// @dev emitted when an existing project is updated
-  event ProjectUpdated(
-    string _teamName,
-    string _projectName,
-    string _metaCID,
-    address _member
-  );
-
-  /// @dev emitted when a new project member is added
-  event ProjectMemberAdded(
-    string _teamName, 
-    string _projectName, 
-    address _member
-  );
-
-  /// @dev emitted when an existing project member is removed
-  event ProjectMemberRemoved(
-    string _teamName, 
-    string _projectName, 
-    address _member
-  );
-
-  /// @dev emitted when a new release is created
-  event ReleaseCreated(
-    string _teamName, 
-    string _projectName, 
-    string _releaseName, 
-    string _metaCID, 
-    address _member
-  );
-
-  /// @dev emitted when an existing release is approved by a signer
-  event ReleaseApproved(
-    string _teamName, 
-    string _projectName, 
-    string _releaseName, 
-    address _sender
-  );
-
-  /// @dev emitted when an existing release is rejected by a signer
-  event ReleaseRejected(
-    string _teamName, 
-    string _projectName, 
-    string _releaseName, 
-    address _sender
-  );
+  mapping(uint256 => string) private metaByID;
 
   /// @dev version of BaseRelayRecipient this contract implements
   string public versionRecipient = "2.2.0";
@@ -130,6 +67,7 @@ contract Valist is ERC2771Context {
     address[] memory _members
   ) 
     public
+    override
   {
     uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
 
@@ -161,6 +99,7 @@ contract Valist is ERC2771Context {
     address[] memory _members
   )
     public
+    override
   {
     uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
@@ -193,6 +132,7 @@ contract Valist is ERC2771Context {
     string memory _metaCID
   )
     public
+    override
   {
     uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
@@ -220,6 +160,7 @@ contract Valist is ERC2771Context {
     string memory _releaseName
   )
     public
+    override
   {
     uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
@@ -243,7 +184,8 @@ contract Valist is ERC2771Context {
     string memory _projectName,
     string memory _releaseName
   ) 
-    public 
+    public
+    override 
   {
     uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
@@ -260,7 +202,7 @@ contract Valist is ERC2771Context {
   ///
   /// @param _teamName Name of the team.
   /// @param _address Address of member.
-  function addTeamMember(string memory _teamName, address _address) public {
+  function addTeamMember(string memory _teamName, address _address) public override {
     uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
     
     require(teamByID[teamID].members.contains(_msgSender()) == true, "err-team-member");
@@ -274,7 +216,7 @@ contract Valist is ERC2771Context {
   ///
   /// @param _teamName Name of the team.
   /// @param _address Address of member.
-  function removeTeamMember(string memory _teamName, address _address) public {
+  function removeTeamMember(string memory _teamName, address _address) public override {
     uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
 
     require(teamByID[teamID].members.contains(_msgSender()) == true, "err-team-member");
@@ -295,6 +237,7 @@ contract Valist is ERC2771Context {
     address _address
   )
     public
+    override
   {
     uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
@@ -318,6 +261,7 @@ contract Valist is ERC2771Context {
     address _address
   )
     public
+    override
   {
     uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
@@ -339,6 +283,7 @@ contract Valist is ERC2771Context {
     string memory _metaCID
   )
     public
+    override
   {
     uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
 
@@ -361,6 +306,7 @@ contract Valist is ERC2771Context {
     string memory _metaCID
   )
     public
+    override
   {
     uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
     uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
@@ -381,6 +327,7 @@ contract Valist is ERC2771Context {
   )
     public
     view
+    override
     returns (string memory)
   {
     uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
@@ -398,6 +345,7 @@ contract Valist is ERC2771Context {
   )
     public
     view
+    override
     returns (string memory)
   {
     uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
@@ -418,6 +366,7 @@ contract Valist is ERC2771Context {
   )
     public
     view
+    override
     returns (string memory)
   {
     uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
@@ -437,6 +386,7 @@ contract Valist is ERC2771Context {
   )
     public
     view
+    override
     returns (string memory)
   {
     uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
@@ -456,6 +406,7 @@ contract Valist is ERC2771Context {
   )
     public
     view
+    override
     returns (string[] memory)
   {
     uint start = _page * _size;
@@ -485,6 +436,7 @@ contract Valist is ERC2771Context {
   ) 
     public
     view
+    override
     returns (string[] memory)
   {
     uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
@@ -516,6 +468,7 @@ contract Valist is ERC2771Context {
   ) 
     public
     view
+    override
     returns (address[] memory)
   {
     uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
@@ -549,6 +502,7 @@ contract Valist is ERC2771Context {
   )
     public
     view
+    override
     returns (address[] memory)
   {
     uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
@@ -583,6 +537,7 @@ contract Valist is ERC2771Context {
   )
     public
     view
+    override
     returns (string[] memory)
   {
     uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
@@ -619,6 +574,7 @@ contract Valist is ERC2771Context {
   )
     public
     view
+    override
     returns (address[] memory)
   {
     uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
@@ -656,6 +612,7 @@ contract Valist is ERC2771Context {
   )
     public
     view
+    override
     returns (address[] memory)
   {
     uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
