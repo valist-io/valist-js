@@ -2,77 +2,89 @@ SHELL=/bin/bash
 
 all: install valist
 
-valist: web
+valist: frontend
 
-install: install-sdk install-app
+install: install-sdk install-web install-evm-contracts install-evm-subgraph
 
 install-sdk:
-	npm install --prefix ./sdk
+	npm install --prefix ./packages/valist-sdk
 
-install-app:
-	npm install --prefix ./app
+install-web:
+	npm install --prefix ./packages/valist-web
+
+install-evm-contracts:
+	npm install --prefix ./packages/evm-contracts
+
+install-evm-subgraph:
+	npm install --prefix ./packages/evm-subgraph
 
 sdk:
-	npm run build --prefix ./sdk
+	npm run build --prefix ./packages/valist-sdk
 
-app:
-	rm -rf ./app/out
-	npm run build --prefix ./app
-	npm run export --prefix ./app
+web:
+	rm -rf ./packages/web/out
+	npm run build --prefix ./packages/valist-web
+	npm run export --prefix ./packages/valist-web
 
-web: sdk app
+frontend: sdk app
 
 start: sdk
-	npm run start --prefix ./app
+	npm run start --prefix ./packages/valist-sdk
 
-start-subgraph:
-	docker-compose -f ./subgraph/docker-compose.yml up
+evm-start-subgraph:
+	docker-compose -f ./packages/evm-subgraph/docker-compose.yml up
 
-build-subgraph:
-	npm run codegen --prefix ./subgraph
-	npm run build --prefix ./subgraph
+evm-build-subgraph:
+	npm run codegen --prefix ./packages/evm-subgraph
+	npm run build --prefix ./packages/evm-subgraph
 
-deploy-subgraph: build-subgraph
-	npm run create-local --prefix ./subgraph
-	npm run deploy-local --prefix ./subgraph
+evm-deploy-subgraph: evm-build-subgraph
+	npm run create-local --prefix ./packages/evm-subgraph
+	npm run deploy-local --prefix ./packages/evm-subgraph
+
+evm-build-contracts:
+	npm run build --prefix ./packages/evm-contracts
+
+evm-deploy-contracts:
+	npm run deploy:local --prefix ./packages/evm-contracts
 
 dev-sdk:
-	npm run dev --prefix ./sdk
+	npm run dev --prefix ./packages/valist-sdk
 
-dev-app:
-	npm run dev --prefix ./app
+dev-web:
+	npm run dev --prefix ./packages/valist-web
 
 dev:
-	@make -j 2 dev-sdk dev-app
+	@make -j 2 dev-sdk dev-web
 
 lint-sdk:
-	npm run lint --prefix ./sdk
+	npm run lint --prefix ./packages/valist-sdk
 
-lint-app:
-	npm run lint --prefix ./app
+lint-web:
+	npm run lint --prefix ./packages/valist-web
 
 lint-fix-sdk:
-	npm run lint:fix --prefix ./sdk
+	npm run lint:fix --prefix ./packages/valist-sdk
 
-lint-fix-app:
-	npm run lint:fix --prefix ./app
+lint-fix-web:
+	npm run lint:fix --prefix ./packages/valist-web
 
-lint: lint-sdk lint-app
+lint: lint-sdk lint-web
 
-lint-fix: lint-fix-sdk lint-fix-app
+lint-fix: lint-fix-sdk lint-fix-web
 
 test-sdk:
-	npm run test --prefix ./sdk
+	npm run test --prefix ./packages/valist-sdk
 
 test: test-sdk
 
 clean:
-	rm -rf ./app/.next
-	rm -rf ./app/out
-	rm -rf ./app/node_modules
-	rm -rf ./sdk/node_modules
-	rm -rf ./sdk/dist
-	rm -rf ./subgraph/data
+	rm -rf ./packages/valist-web/.next
+	rm -rf ./packages/valist-web/out
+	rm -rf ./packages/valist-web/node_modules
+	rm -rf ./packages/valist-sdk/node_modules
+	rm -rf ./packages/valist-sdk/dist
+	rm -rf ./packages/evm-subgraph/data
 	rm -rf dist
 
-.PHONY: app sdk
+.PHONY: packages
