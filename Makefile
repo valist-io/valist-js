@@ -43,7 +43,11 @@ evm-deploy-subgraph: evm-build-subgraph
 	npm run deploy-local --prefix ./packages/evm-subgraph
 
 evm-build-contracts:
-	npm run build --prefix ./packages/evm-contracts
+	npm run compile --prefix ./packages/evm-contracts
+	rm -Rf ./packages/valist-sdk/src/abis
+	rm -Rf ./packages/evm-subgraph/abis
+	cp -R ./packages/evm-contracts/artifacts ./packages/valist-sdk/src/abis
+	cp -R ./packages/evm-contracts/artifacts ./packages/evm-subgraph/abis
 
 evm-deploy-contracts:
 	npm run deploy:local --prefix ./packages/evm-contracts
