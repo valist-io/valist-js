@@ -1,0 +1,16 @@
+{
+  "name": "valist-evm-subgraph",
+  "license": "UNLICENSED",
+  "scripts": {
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ valist-io/valist-registry",
+    "create-local": "graph create --node http://localhost:8020/ valist-io/valist-registry",
+    "remove-local": "graph remove --node http://localhost:8020/ valist-io/valist-registry",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 valist-io/valist-registry"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "0.23.1",
+    "@graphprotocol/graph-ts": "0.23.1"
+  }
+}
