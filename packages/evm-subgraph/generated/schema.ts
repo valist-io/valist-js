@@ -16,7 +16,7 @@ export class Release extends Entity {
     super();
     this.set("id", Value.fromString(id));
 
-    this.set("repo", Value.fromString(""));
+    this.set("project", Value.fromString(""));
     this.set("tag", Value.fromString(""));
     this.set("releaseCID", Value.fromString(""));
     this.set("signers", Value.fromStringArray(new Array(0)));
@@ -48,13 +48,13 @@ export class Release extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get repo(): string {
-    let value = this.get("repo");
+  get project(): string {
+    let value = this.get("project");
     return value!.toString();
   }
 
-  set repo(value: string) {
-    this.set("repo", Value.fromString(value));
+  set project(value: string) {
+    this.set("project", Value.fromString(value));
   }
 
   get tag(): string {
@@ -85,31 +85,31 @@ export class Release extends Entity {
   }
 }
 
-export class Repository extends Entity {
+export class Project extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
 
-    this.set("org", Value.fromString(""));
+    this.set("team", Value.fromString(""));
     this.set("name", Value.fromString(""));
     this.set("metaCID", Value.fromString(""));
   }
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save Repository entity without an ID");
+    assert(id != null, "Cannot save Project entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        "Cannot save Repository entity with non-string ID. " +
+        "Cannot save Project entity with non-string ID. " +
           'Considering using .toHex() to convert the "id" to a string.'
       );
-      store.set("Repository", id.toString(), this);
+      store.set("Project", id.toString(), this);
     }
   }
 
-  static load(id: string): Repository | null {
-    return changetype<Repository | null>(store.get("Repository", id));
+  static load(id: string): Project | null {
+    return changetype<Project | null>(store.get("Project", id));
   }
 
   get id(): string {
@@ -121,13 +121,13 @@ export class Repository extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get org(): string {
-    let value = this.get("org");
+  get team(): string {
+    let value = this.get("team");
     return value!.toString();
   }
 
-  set org(value: string) {
-    this.set("org", Value.fromString(value));
+  set team(value: string) {
+    this.set("team", Value.fromString(value));
   }
 
   get name(): string {
@@ -137,23 +137,6 @@ export class Repository extends Entity {
 
   set name(value: string) {
     this.set("name", Value.fromString(value));
-  }
-
-  get test(): string | null {
-    let value = this.get("test");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toString();
-    }
-  }
-
-  set test(value: string | null) {
-    if (!value) {
-      this.unset("test");
-    } else {
-      this.set("test", Value.fromString(<string>value));
-    }
   }
 
   get metaCID(): string {
@@ -184,31 +167,30 @@ export class Repository extends Entity {
   }
 }
 
-export class Organization extends Entity {
+export class Team extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
 
-    this.set("orgID", Value.fromBytes(Bytes.empty()));
     this.set("name", Value.fromString(""));
     this.set("metaCID", Value.fromString(""));
   }
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save Organization entity without an ID");
+    assert(id != null, "Cannot save Team entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        "Cannot save Organization entity with non-string ID. " +
+        "Cannot save Team entity with non-string ID. " +
           'Considering using .toHex() to convert the "id" to a string.'
       );
-      store.set("Organization", id.toString(), this);
+      store.set("Team", id.toString(), this);
     }
   }
 
-  static load(id: string): Organization | null {
-    return changetype<Organization | null>(store.get("Organization", id));
+  static load(id: string): Team | null {
+    return changetype<Team | null>(store.get("Team", id));
   }
 
   get id(): string {
@@ -218,15 +200,6 @@ export class Organization extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
-  }
-
-  get orgID(): Bytes {
-    let value = this.get("orgID");
-    return value!.toBytes();
-  }
-
-  set orgID(value: Bytes) {
-    this.set("orgID", Value.fromBytes(value));
   }
 
   get name(): string {
@@ -247,13 +220,13 @@ export class Organization extends Entity {
     this.set("metaCID", Value.fromString(value));
   }
 
-  get repos(): Array<string> {
-    let value = this.get("repos");
+  get projects(): Array<string> {
+    let value = this.get("projects");
     return value!.toStringArray();
   }
 
-  set repos(value: Array<string>) {
-    this.set("repos", Value.fromStringArray(value));
+  set projects(value: Array<string>) {
+    this.set("projects", Value.fromStringArray(value));
   }
 
   get keys(): Array<string> {
@@ -319,8 +292,8 @@ export class Key extends Entity {
     this.set("address", Value.fromString(value));
   }
 
-  get org(): string | null {
-    let value = this.get("org");
+  get team(): string | null {
+    let value = this.get("team");
     if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
@@ -328,16 +301,16 @@ export class Key extends Entity {
     }
   }
 
-  set org(value: string | null) {
+  set team(value: string | null) {
     if (!value) {
-      this.unset("org");
+      this.unset("team");
     } else {
-      this.set("org", Value.fromString(<string>value));
+      this.set("team", Value.fromString(<string>value));
     }
   }
 
-  get repo(): string | null {
-    let value = this.get("repo");
+  get project(): string | null {
+    let value = this.get("project");
     if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
@@ -345,11 +318,11 @@ export class Key extends Entity {
     }
   }
 
-  set repo(value: string | null) {
+  set project(value: string | null) {
     if (!value) {
-      this.unset("repo");
+      this.unset("project");
     } else {
-      this.set("repo", Value.fromString(<string>value));
+      this.set("project", Value.fromString(<string>value));
     }
   }
 }

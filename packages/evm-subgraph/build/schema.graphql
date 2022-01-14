@@ -1,53 +1,37 @@
 type Release @entity {
   id: ID!
-  repo: Repository!
+  project: Project!
   tag: String!
   releaseCID: String!
   signers: [String!]!
 }
 
-# type OrgMeta @entity {
-#   id: ID!
-#   name: String
-#   description: String
-#   homepage: String
-# }
-
-type Repository @entity {
+type Project @entity {
   id: ID!
-  org: Organization!
+  team: Team!
   name: String!
-  test: String
   metaCID: String!
-  releases: [Release!]! @derivedFrom(field: "repo")
-  keys: [Key!]! @derivedFrom(field: "repo")
+  releases: [Release!]! @derivedFrom(field: "project")
+  keys: [Key!]! @derivedFrom(field: "project")
 }
 
-type Organization @entity {
+type Team @entity {
   id: ID!
-  orgID: Bytes! # bytes32
   name: String!
   metaCID: String!
-  repos: [Repository!]! @derivedFrom(field: "org")
-  keys: [Key!]! @derivedFrom(field: "org")
+  projects: [Project!]! @derivedFrom(field: "team")
+  keys: [Key!]! @derivedFrom(field: "team")
 }
 
 type Key @entity {
   id: ID!
   role: String!
   address: String!
-  org: Organization
-  repo: Repository
+  team: Team
+  project: Project
 }
 
 type Activity @entity {
   id: ID!
   text: String!
 }
-
-# type RepoKey @entity {
-#   id: ID!
-#   role: String!
-#   address: String!
-#   repo: Repository!
-# }
