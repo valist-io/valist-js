@@ -3,7 +3,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "metaTxForwarder",
+        "name": "_trustedForwarder",
         "type": "address"
       }
     ],
@@ -14,46 +14,15 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "_orgID",
-        "type": "bytes32"
-      },
-      {
-        "indexed": true,
+        "indexed": false,
         "internalType": "string",
-        "name": "_repoName",
+        "name": "_teamName",
         "type": "string"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "_signer",
-        "type": "address"
       },
       {
         "indexed": false,
         "internalType": "string",
-        "name": "_metaCID",
-        "type": "string"
-      }
-    ],
-    "name": "MetaUpdate",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "_orgID",
-        "type": "bytes32"
-      },
-      {
-        "indexed": true,
-        "internalType": "string",
-        "name": "_metaCIDHash",
+        "name": "_projectName",
         "type": "string"
       },
       {
@@ -65,11 +34,11 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_admin",
+        "name": "_member",
         "type": "address"
       }
     ],
-    "name": "OrgCreated",
+    "name": "ProjectCreated",
     "type": "event"
   },
   {
@@ -77,73 +46,24 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "bytes32",
-        "name": "_orgID",
-        "type": "bytes32"
-      },
-      {
-        "indexed": true,
         "internalType": "string",
-        "name": "_repoNameHash",
+        "name": "_teamName",
         "type": "string"
       },
       {
         "indexed": false,
         "internalType": "string",
-        "name": "_repoName",
-        "type": "string"
-      },
-      {
-        "indexed": true,
-        "internalType": "string",
-        "name": "_metaCIDHash",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "_metaCID",
-        "type": "string"
-      }
-    ],
-    "name": "RepoCreated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "_orgID",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "_repoName",
+        "name": "_projectName",
         "type": "string"
       },
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_signer",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "_operation",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_key",
+        "name": "_member",
         "type": "address"
       }
     ],
-    "name": "VoteKeyEvent",
+    "name": "ProjectMemberAdded",
     "type": "event"
   },
   {
@@ -151,26 +71,39 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "bytes32",
-        "name": "_orgID",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
         "internalType": "string",
-        "name": "_repoName",
+        "name": "_teamName",
         "type": "string"
       },
       {
         "indexed": false,
         "internalType": "string",
-        "name": "_tag",
+        "name": "_projectName",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_member",
+        "type": "address"
+      }
+    ],
+    "name": "ProjectMemberRemoved",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "_teamName",
         "type": "string"
       },
       {
         "indexed": false,
         "internalType": "string",
-        "name": "_releaseCID",
+        "name": "_projectName",
         "type": "string"
       },
       {
@@ -182,22 +115,219 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_signer",
+        "name": "_member",
         "type": "address"
       }
     ],
-    "name": "VoteReleaseEvent",
+    "name": "ProjectUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "_teamName",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "_projectName",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "_releaseName",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_sender",
+        "type": "address"
+      }
+    ],
+    "name": "ReleaseApproved",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "_teamName",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "_projectName",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "_releaseName",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "_metaCID",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_member",
+        "type": "address"
+      }
+    ],
+    "name": "ReleaseCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "_teamName",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "_projectName",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "_releaseName",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_sender",
+        "type": "address"
+      }
+    ],
+    "name": "ReleaseRejected",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "_teamName",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "_metaCID",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_sender",
+        "type": "address"
+      }
+    ],
+    "name": "TeamCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "_teamName",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_member",
+        "type": "address"
+      }
+    ],
+    "name": "TeamMemberAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "_teamName",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_member",
+        "type": "address"
+      }
+    ],
+    "name": "TeamMemberRemoved",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "_teamName",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "_metaCID",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_member",
+        "type": "address"
+      }
+    ],
+    "name": "TeamUpdated",
     "type": "event"
   },
   {
     "inputs": [
       {
         "internalType": "string",
-        "name": "_orgMeta",
+        "name": "_teamName",
         "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_projectName",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "_address",
+        "type": "address"
       }
     ],
-    "name": "createOrganization",
+    "name": "addProjectMember",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -205,22 +335,17 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "_orgID",
-        "type": "bytes32"
-      },
-      {
         "internalType": "string",
-        "name": "_repoName",
+        "name": "_teamName",
         "type": "string"
       },
       {
-        "internalType": "string",
-        "name": "_repoMeta",
-        "type": "string"
+        "internalType": "address",
+        "name": "_address",
+        "type": "address"
       }
     ],
-    "name": "createRepository",
+    "name": "addTeamMember",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -228,33 +353,154 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "_orgID",
-        "type": "bytes32"
+        "internalType": "string",
+        "name": "_teamName",
+        "type": "string"
       },
       {
         "internalType": "string",
-        "name": "_repoName",
+        "name": "_projectName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_releaseName",
         "type": "string"
       }
     ],
-    "name": "getLatestRelease",
+    "name": "approveRelease",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_teamName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_projectName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_metaCID",
+        "type": "string"
+      },
+      {
+        "internalType": "address[]",
+        "name": "_members",
+        "type": "address[]"
+      }
+    ],
+    "name": "createProject",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_teamName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_projectName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_releaseName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_metaCID",
+        "type": "string"
+      }
+    ],
+    "name": "createRelease",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_teamName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_metaCID",
+        "type": "string"
+      },
+      {
+        "internalType": "address[]",
+        "name": "_members",
+        "type": "address[]"
+      }
+    ],
+    "name": "createTeam",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_teamName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_projectName",
+        "type": "string"
+      }
+    ],
+    "name": "getLatestReleaseName",
     "outputs": [
       {
         "internalType": "string",
         "name": "",
         "type": "string"
-      },
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
       {
         "internalType": "string",
-        "name": "",
+        "name": "_teamName",
         "type": "string"
       },
       {
         "internalType": "string",
-        "name": "",
+        "name": "_projectName",
         "type": "string"
       },
+      {
+        "internalType": "uint256",
+        "name": "_page",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_size",
+        "type": "uint256"
+      }
+    ],
+    "name": "getProjectMembers",
+    "outputs": [
       {
         "internalType": "address[]",
         "name": "",
@@ -267,9 +513,33 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "_selector",
-        "type": "bytes32"
+        "internalType": "string",
+        "name": "_teamName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_projectName",
+        "type": "string"
+      }
+    ],
+    "name": "getProjectMetaCID",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_teamName",
+        "type": "string"
       },
       {
         "internalType": "uint256",
@@ -278,11 +548,11 @@
       },
       {
         "internalType": "uint256",
-        "name": "_resultsPerPage",
+        "name": "_size",
         "type": "uint256"
       }
     ],
-    "name": "getReleaseTags",
+    "name": "getProjectNames",
     "outputs": [
       {
         "internalType": "string[]",
@@ -296,9 +566,19 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "_orgID",
-        "type": "bytes32"
+        "internalType": "string",
+        "name": "_teamName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_projectName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_releaseName",
+        "type": "string"
       },
       {
         "internalType": "uint256",
@@ -307,30 +587,11 @@
       },
       {
         "internalType": "uint256",
-        "name": "_resultsPerPage",
+        "name": "_size",
         "type": "uint256"
       }
     ],
-    "name": "getRepoNames",
-    "outputs": [
-      {
-        "internalType": "string[]",
-        "name": "",
-        "type": "string[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_selector",
-        "type": "bytes32"
-      }
-    ],
-    "name": "getRoleMembers",
+    "name": "getReleaseApprovals",
     "outputs": [
       {
         "internalType": "address[]",
@@ -344,22 +605,27 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "_orgID",
-        "type": "bytes32"
+        "internalType": "string",
+        "name": "_teamName",
+        "type": "string"
       },
       {
-        "internalType": "address",
-        "name": "_address",
-        "type": "address"
+        "internalType": "string",
+        "name": "_projectName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_releaseName",
+        "type": "string"
       }
     ],
-    "name": "isOrgAdmin",
+    "name": "getReleaseMetaCID",
     "outputs": [
       {
-        "internalType": "bool",
+        "internalType": "string",
         "name": "",
-        "type": "bool"
+        "type": "string"
       }
     ],
     "stateMutability": "view",
@@ -368,27 +634,143 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "_orgID",
-        "type": "bytes32"
-      },
-      {
         "internalType": "string",
-        "name": "_repoName",
+        "name": "_teamName",
         "type": "string"
       },
       {
-        "internalType": "address",
-        "name": "_address",
-        "type": "address"
+        "internalType": "string",
+        "name": "_projectName",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_page",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_size",
+        "type": "uint256"
       }
     ],
-    "name": "isRepoDev",
+    "name": "getReleaseNames",
     "outputs": [
       {
-        "internalType": "bool",
+        "internalType": "string[]",
         "name": "",
-        "type": "bool"
+        "type": "string[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_teamName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_projectName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_releaseName",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_page",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_size",
+        "type": "uint256"
+      }
+    ],
+    "name": "getReleaseRejections",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_teamName",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_page",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_size",
+        "type": "uint256"
+      }
+    ],
+    "name": "getTeamMembers",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_teamName",
+        "type": "string"
+      }
+    ],
+    "name": "getTeamMetaCID",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_page",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_size",
+        "type": "uint256"
+      }
+    ],
+    "name": "getTeamNames",
+    "outputs": [
+      {
+        "internalType": "string[]",
+        "name": "",
+        "type": "string[]"
       }
     ],
     "stateMutability": "view",
@@ -414,219 +796,24 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "orgCount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "orgIDs",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "name": "orgs",
-    "outputs": [
       {
         "internalType": "string",
-        "name": "metaCID",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "pendingReleaseRequests",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "tag",
+        "name": "_teamName",
         "type": "string"
       },
       {
         "internalType": "string",
-        "name": "releaseCID",
+        "name": "_projectName",
         "type": "string"
       },
       {
         "internalType": "string",
-        "name": "metaCID",
+        "name": "_releaseName",
         "type": "string"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "pendingRoleRequests",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "pendingThresholdRequests",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "name": "releases",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "releaseCID",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "metaCID",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "name": "repos",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "exists",
-        "type": "bool"
-      },
-      {
-        "internalType": "string",
-        "name": "metaCID",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "name": "roleModifiedTimestamps",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_orgID",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "string",
-        "name": "_metaCID",
-        "type": "string"
-      }
-    ],
-    "name": "setOrgMeta",
+    "name": "rejectRelease",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -634,13 +821,54 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "_orgID",
-        "type": "bytes32"
+        "internalType": "string",
+        "name": "_teamName",
+        "type": "string"
       },
       {
         "internalType": "string",
-        "name": "_repoName",
+        "name": "_projectName",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "_address",
+        "type": "address"
+      }
+    ],
+    "name": "removeProjectMember",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_teamName",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "_address",
+        "type": "address"
+      }
+    ],
+    "name": "removeTeamMember",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_teamName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_projectName",
         "type": "string"
       },
       {
@@ -649,7 +877,25 @@
         "type": "string"
       }
     ],
-    "name": "setRepoMeta",
+    "name": "setProjectMetaCID",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_teamName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_metaCID",
+        "type": "string"
+      }
+    ],
+    "name": "setTeamMetaCID",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -665,67 +911,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_orgID",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "string",
-        "name": "_repoName",
-        "type": "string"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "_operation",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "address",
-        "name": "_key",
-        "type": "address"
-      }
-    ],
-    "name": "voteKey",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_orgID",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "string",
-        "name": "_repoName",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_tag",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_releaseCID",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_metaCID",
-        "type": "string"
-      }
-    ],
-    "name": "voteRelease",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   }
 ]

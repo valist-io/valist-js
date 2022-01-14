@@ -10,251 +10,305 @@ import {
   BigInt
 } from "@graphprotocol/graph-ts";
 
-export class MetaUpdate extends ethereum.Event {
-  get params(): MetaUpdate__Params {
-    return new MetaUpdate__Params(this);
+export class ProjectCreated extends ethereum.Event {
+  get params(): ProjectCreated__Params {
+    return new ProjectCreated__Params(this);
   }
 }
 
-export class MetaUpdate__Params {
-  _event: MetaUpdate;
+export class ProjectCreated__Params {
+  _event: ProjectCreated;
 
-  constructor(event: MetaUpdate) {
+  constructor(event: ProjectCreated) {
     this._event = event;
   }
 
-  get _orgID(): Bytes {
-    return this._event.parameters[0].value.toBytes();
+  get _teamName(): string {
+    return this._event.parameters[0].value.toString();
   }
 
-  get _repoName(): Bytes {
-    return this._event.parameters[1].value.toBytes();
-  }
-
-  get _signer(): Address {
-    return this._event.parameters[2].value.toAddress();
-  }
-
-  get _metaCID(): string {
-    return this._event.parameters[3].value.toString();
-  }
-}
-
-export class OrgCreated extends ethereum.Event {
-  get params(): OrgCreated__Params {
-    return new OrgCreated__Params(this);
-  }
-}
-
-export class OrgCreated__Params {
-  _event: OrgCreated;
-
-  constructor(event: OrgCreated) {
-    this._event = event;
-  }
-
-  get _orgID(): Bytes {
-    return this._event.parameters[0].value.toBytes();
-  }
-
-  get _metaCIDHash(): Bytes {
-    return this._event.parameters[1].value.toBytes();
+  get _projectName(): string {
+    return this._event.parameters[1].value.toString();
   }
 
   get _metaCID(): string {
     return this._event.parameters[2].value.toString();
   }
 
-  get _admin(): Address {
+  get _member(): Address {
     return this._event.parameters[3].value.toAddress();
   }
 }
 
-export class RepoCreated extends ethereum.Event {
-  get params(): RepoCreated__Params {
-    return new RepoCreated__Params(this);
+export class ProjectMemberAdded extends ethereum.Event {
+  get params(): ProjectMemberAdded__Params {
+    return new ProjectMemberAdded__Params(this);
   }
 }
 
-export class RepoCreated__Params {
-  _event: RepoCreated;
+export class ProjectMemberAdded__Params {
+  _event: ProjectMemberAdded;
 
-  constructor(event: RepoCreated) {
+  constructor(event: ProjectMemberAdded) {
     this._event = event;
   }
 
-  get _orgID(): Bytes {
-    return this._event.parameters[0].value.toBytes();
+  get _teamName(): string {
+    return this._event.parameters[0].value.toString();
   }
 
-  get _repoNameHash(): Bytes {
-    return this._event.parameters[1].value.toBytes();
-  }
-
-  get _repoName(): string {
-    return this._event.parameters[2].value.toString();
-  }
-
-  get _metaCIDHash(): Bytes {
-    return this._event.parameters[3].value.toBytes();
-  }
-
-  get _metaCID(): string {
-    return this._event.parameters[4].value.toString();
-  }
-}
-
-export class VoteKeyEvent extends ethereum.Event {
-  get params(): VoteKeyEvent__Params {
-    return new VoteKeyEvent__Params(this);
-  }
-}
-
-export class VoteKeyEvent__Params {
-  _event: VoteKeyEvent;
-
-  constructor(event: VoteKeyEvent) {
-    this._event = event;
-  }
-
-  get _orgID(): Bytes {
-    return this._event.parameters[0].value.toBytes();
-  }
-
-  get _repoName(): string {
+  get _projectName(): string {
     return this._event.parameters[1].value.toString();
   }
 
-  get _signer(): Address {
+  get _member(): Address {
     return this._event.parameters[2].value.toAddress();
   }
+}
 
-  get _operation(): Bytes {
-    return this._event.parameters[3].value.toBytes();
+export class ProjectMemberRemoved extends ethereum.Event {
+  get params(): ProjectMemberRemoved__Params {
+    return new ProjectMemberRemoved__Params(this);
+  }
+}
+
+export class ProjectMemberRemoved__Params {
+  _event: ProjectMemberRemoved;
+
+  constructor(event: ProjectMemberRemoved) {
+    this._event = event;
   }
 
-  get _key(): Address {
+  get _teamName(): string {
+    return this._event.parameters[0].value.toString();
+  }
+
+  get _projectName(): string {
+    return this._event.parameters[1].value.toString();
+  }
+
+  get _member(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+}
+
+export class ProjectUpdated extends ethereum.Event {
+  get params(): ProjectUpdated__Params {
+    return new ProjectUpdated__Params(this);
+  }
+}
+
+export class ProjectUpdated__Params {
+  _event: ProjectUpdated;
+
+  constructor(event: ProjectUpdated) {
+    this._event = event;
+  }
+
+  get _teamName(): string {
+    return this._event.parameters[0].value.toString();
+  }
+
+  get _projectName(): string {
+    return this._event.parameters[1].value.toString();
+  }
+
+  get _metaCID(): string {
+    return this._event.parameters[2].value.toString();
+  }
+
+  get _member(): Address {
+    return this._event.parameters[3].value.toAddress();
+  }
+}
+
+export class ReleaseApproved extends ethereum.Event {
+  get params(): ReleaseApproved__Params {
+    return new ReleaseApproved__Params(this);
+  }
+}
+
+export class ReleaseApproved__Params {
+  _event: ReleaseApproved;
+
+  constructor(event: ReleaseApproved) {
+    this._event = event;
+  }
+
+  get _teamName(): string {
+    return this._event.parameters[0].value.toString();
+  }
+
+  get _projectName(): string {
+    return this._event.parameters[1].value.toString();
+  }
+
+  get _releaseName(): string {
+    return this._event.parameters[2].value.toString();
+  }
+
+  get _sender(): Address {
+    return this._event.parameters[3].value.toAddress();
+  }
+}
+
+export class ReleaseCreated extends ethereum.Event {
+  get params(): ReleaseCreated__Params {
+    return new ReleaseCreated__Params(this);
+  }
+}
+
+export class ReleaseCreated__Params {
+  _event: ReleaseCreated;
+
+  constructor(event: ReleaseCreated) {
+    this._event = event;
+  }
+
+  get _teamName(): string {
+    return this._event.parameters[0].value.toString();
+  }
+
+  get _projectName(): string {
+    return this._event.parameters[1].value.toString();
+  }
+
+  get _releaseName(): string {
+    return this._event.parameters[2].value.toString();
+  }
+
+  get _metaCID(): string {
+    return this._event.parameters[3].value.toString();
+  }
+
+  get _member(): Address {
     return this._event.parameters[4].value.toAddress();
   }
 }
 
-export class VoteReleaseEvent extends ethereum.Event {
-  get params(): VoteReleaseEvent__Params {
-    return new VoteReleaseEvent__Params(this);
+export class ReleaseRejected extends ethereum.Event {
+  get params(): ReleaseRejected__Params {
+    return new ReleaseRejected__Params(this);
   }
 }
 
-export class VoteReleaseEvent__Params {
-  _event: VoteReleaseEvent;
+export class ReleaseRejected__Params {
+  _event: ReleaseRejected;
 
-  constructor(event: VoteReleaseEvent) {
+  constructor(event: ReleaseRejected) {
     this._event = event;
   }
 
-  get _orgID(): Bytes {
-    return this._event.parameters[0].value.toBytes();
+  get _teamName(): string {
+    return this._event.parameters[0].value.toString();
   }
 
-  get _repoName(): string {
+  get _projectName(): string {
     return this._event.parameters[1].value.toString();
   }
 
-  get _tag(): string {
+  get _releaseName(): string {
     return this._event.parameters[2].value.toString();
   }
 
-  get _releaseCID(): string {
-    return this._event.parameters[3].value.toString();
+  get _sender(): Address {
+    return this._event.parameters[3].value.toAddress();
+  }
+}
+
+export class TeamCreated extends ethereum.Event {
+  get params(): TeamCreated__Params {
+    return new TeamCreated__Params(this);
+  }
+}
+
+export class TeamCreated__Params {
+  _event: TeamCreated;
+
+  constructor(event: TeamCreated) {
+    this._event = event;
+  }
+
+  get _teamName(): string {
+    return this._event.parameters[0].value.toString();
   }
 
   get _metaCID(): string {
-    return this._event.parameters[4].value.toString();
+    return this._event.parameters[1].value.toString();
   }
 
-  get _signer(): Address {
-    return this._event.parameters[5].value.toAddress();
-  }
-}
-
-export class Valist__getLatestReleaseResult {
-  value0: string;
-  value1: string;
-  value2: string;
-  value3: Array<Address>;
-
-  constructor(
-    value0: string,
-    value1: string,
-    value2: string,
-    value3: Array<Address>
-  ) {
-    this.value0 = value0;
-    this.value1 = value1;
-    this.value2 = value2;
-    this.value3 = value3;
-  }
-
-  toMap(): TypedMap<string, ethereum.Value> {
-    let map = new TypedMap<string, ethereum.Value>();
-    map.set("value0", ethereum.Value.fromString(this.value0));
-    map.set("value1", ethereum.Value.fromString(this.value1));
-    map.set("value2", ethereum.Value.fromString(this.value2));
-    map.set("value3", ethereum.Value.fromAddressArray(this.value3));
-    return map;
+  get _sender(): Address {
+    return this._event.parameters[2].value.toAddress();
   }
 }
 
-export class Valist__pendingReleaseRequestsResult {
-  value0: string;
-  value1: string;
-  value2: string;
-
-  constructor(value0: string, value1: string, value2: string) {
-    this.value0 = value0;
-    this.value1 = value1;
-    this.value2 = value2;
-  }
-
-  toMap(): TypedMap<string, ethereum.Value> {
-    let map = new TypedMap<string, ethereum.Value>();
-    map.set("value0", ethereum.Value.fromString(this.value0));
-    map.set("value1", ethereum.Value.fromString(this.value1));
-    map.set("value2", ethereum.Value.fromString(this.value2));
-    return map;
+export class TeamMemberAdded extends ethereum.Event {
+  get params(): TeamMemberAdded__Params {
+    return new TeamMemberAdded__Params(this);
   }
 }
 
-export class Valist__releasesResult {
-  value0: string;
-  value1: string;
+export class TeamMemberAdded__Params {
+  _event: TeamMemberAdded;
 
-  constructor(value0: string, value1: string) {
-    this.value0 = value0;
-    this.value1 = value1;
+  constructor(event: TeamMemberAdded) {
+    this._event = event;
   }
 
-  toMap(): TypedMap<string, ethereum.Value> {
-    let map = new TypedMap<string, ethereum.Value>();
-    map.set("value0", ethereum.Value.fromString(this.value0));
-    map.set("value1", ethereum.Value.fromString(this.value1));
-    return map;
+  get _teamName(): string {
+    return this._event.parameters[0].value.toString();
+  }
+
+  get _member(): Address {
+    return this._event.parameters[1].value.toAddress();
   }
 }
 
-export class Valist__reposResult {
-  value0: boolean;
-  value1: string;
+export class TeamMemberRemoved extends ethereum.Event {
+  get params(): TeamMemberRemoved__Params {
+    return new TeamMemberRemoved__Params(this);
+  }
+}
 
-  constructor(value0: boolean, value1: string) {
-    this.value0 = value0;
-    this.value1 = value1;
+export class TeamMemberRemoved__Params {
+  _event: TeamMemberRemoved;
+
+  constructor(event: TeamMemberRemoved) {
+    this._event = event;
   }
 
-  toMap(): TypedMap<string, ethereum.Value> {
-    let map = new TypedMap<string, ethereum.Value>();
-    map.set("value0", ethereum.Value.fromBoolean(this.value0));
-    map.set("value1", ethereum.Value.fromString(this.value1));
-    return map;
+  get _teamName(): string {
+    return this._event.parameters[0].value.toString();
+  }
+
+  get _member(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+}
+
+export class TeamUpdated extends ethereum.Event {
+  get params(): TeamUpdated__Params {
+    return new TeamUpdated__Params(this);
+  }
+}
+
+export class TeamUpdated__Params {
+  _event: TeamUpdated;
+
+  constructor(event: TeamUpdated) {
+    this._event = event;
+  }
+
+  get _teamName(): string {
+    return this._event.parameters[0].value.toString();
+  }
+
+  get _metaCID(): string {
+    return this._event.parameters[1].value.toString();
+  }
+
+  get _member(): Address {
+    return this._event.parameters[2].value.toAddress();
   }
 }
 
@@ -263,146 +317,73 @@ export class Valist extends ethereum.SmartContract {
     return new Valist("Valist", address);
   }
 
-  getLatestRelease(
-    _orgID: Bytes,
-    _repoName: string
-  ): Valist__getLatestReleaseResult {
+  getLatestReleaseName(_teamName: string, _projectName: string): string {
     let result = super.call(
-      "getLatestRelease",
-      "getLatestRelease(bytes32,string):(string,string,string,address[])",
+      "getLatestReleaseName",
+      "getLatestReleaseName(string,string):(string)",
       [
-        ethereum.Value.fromFixedBytes(_orgID),
-        ethereum.Value.fromString(_repoName)
+        ethereum.Value.fromString(_teamName),
+        ethereum.Value.fromString(_projectName)
       ]
     );
 
-    return new Valist__getLatestReleaseResult(
-      result[0].toString(),
-      result[1].toString(),
-      result[2].toString(),
-      result[3].toAddressArray()
-    );
+    return result[0].toString();
   }
 
-  try_getLatestRelease(
-    _orgID: Bytes,
-    _repoName: string
-  ): ethereum.CallResult<Valist__getLatestReleaseResult> {
+  try_getLatestReleaseName(
+    _teamName: string,
+    _projectName: string
+  ): ethereum.CallResult<string> {
     let result = super.tryCall(
-      "getLatestRelease",
-      "getLatestRelease(bytes32,string):(string,string,string,address[])",
+      "getLatestReleaseName",
+      "getLatestReleaseName(string,string):(string)",
       [
-        ethereum.Value.fromFixedBytes(_orgID),
-        ethereum.Value.fromString(_repoName)
+        ethereum.Value.fromString(_teamName),
+        ethereum.Value.fromString(_projectName)
       ]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
-    return ethereum.CallResult.fromValue(
-      new Valist__getLatestReleaseResult(
-        value[0].toString(),
-        value[1].toString(),
-        value[2].toString(),
-        value[3].toAddressArray()
-      )
-    );
+    return ethereum.CallResult.fromValue(value[0].toString());
   }
 
-  getReleaseTags(
-    _selector: Bytes,
+  getProjectMembers(
+    _teamName: string,
+    _projectName: string,
     _page: BigInt,
-    _resultsPerPage: BigInt
-  ): Array<string> {
+    _size: BigInt
+  ): Array<Address> {
     let result = super.call(
-      "getReleaseTags",
-      "getReleaseTags(bytes32,uint256,uint256):(string[])",
+      "getProjectMembers",
+      "getProjectMembers(string,string,uint256,uint256):(address[])",
       [
-        ethereum.Value.fromFixedBytes(_selector),
+        ethereum.Value.fromString(_teamName),
+        ethereum.Value.fromString(_projectName),
         ethereum.Value.fromUnsignedBigInt(_page),
-        ethereum.Value.fromUnsignedBigInt(_resultsPerPage)
+        ethereum.Value.fromUnsignedBigInt(_size)
       ]
-    );
-
-    return result[0].toStringArray();
-  }
-
-  try_getReleaseTags(
-    _selector: Bytes,
-    _page: BigInt,
-    _resultsPerPage: BigInt
-  ): ethereum.CallResult<Array<string>> {
-    let result = super.tryCall(
-      "getReleaseTags",
-      "getReleaseTags(bytes32,uint256,uint256):(string[])",
-      [
-        ethereum.Value.fromFixedBytes(_selector),
-        ethereum.Value.fromUnsignedBigInt(_page),
-        ethereum.Value.fromUnsignedBigInt(_resultsPerPage)
-      ]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toStringArray());
-  }
-
-  getRepoNames(
-    _orgID: Bytes,
-    _page: BigInt,
-    _resultsPerPage: BigInt
-  ): Array<string> {
-    let result = super.call(
-      "getRepoNames",
-      "getRepoNames(bytes32,uint256,uint256):(string[])",
-      [
-        ethereum.Value.fromFixedBytes(_orgID),
-        ethereum.Value.fromUnsignedBigInt(_page),
-        ethereum.Value.fromUnsignedBigInt(_resultsPerPage)
-      ]
-    );
-
-    return result[0].toStringArray();
-  }
-
-  try_getRepoNames(
-    _orgID: Bytes,
-    _page: BigInt,
-    _resultsPerPage: BigInt
-  ): ethereum.CallResult<Array<string>> {
-    let result = super.tryCall(
-      "getRepoNames",
-      "getRepoNames(bytes32,uint256,uint256):(string[])",
-      [
-        ethereum.Value.fromFixedBytes(_orgID),
-        ethereum.Value.fromUnsignedBigInt(_page),
-        ethereum.Value.fromUnsignedBigInt(_resultsPerPage)
-      ]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toStringArray());
-  }
-
-  getRoleMembers(_selector: Bytes): Array<Address> {
-    let result = super.call(
-      "getRoleMembers",
-      "getRoleMembers(bytes32):(address[])",
-      [ethereum.Value.fromFixedBytes(_selector)]
     );
 
     return result[0].toAddressArray();
   }
 
-  try_getRoleMembers(_selector: Bytes): ethereum.CallResult<Array<Address>> {
+  try_getProjectMembers(
+    _teamName: string,
+    _projectName: string,
+    _page: BigInt,
+    _size: BigInt
+  ): ethereum.CallResult<Array<Address>> {
     let result = super.tryCall(
-      "getRoleMembers",
-      "getRoleMembers(bytes32):(address[])",
-      [ethereum.Value.fromFixedBytes(_selector)]
+      "getProjectMembers",
+      "getProjectMembers(string,string,uint256,uint256):(address[])",
+      [
+        ethereum.Value.fromString(_teamName),
+        ethereum.Value.fromString(_projectName),
+        ethereum.Value.fromUnsignedBigInt(_page),
+        ethereum.Value.fromUnsignedBigInt(_size)
+      ]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -411,71 +392,345 @@ export class Valist extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddressArray());
   }
 
-  isOrgAdmin(_orgID: Bytes, _address: Address): boolean {
+  getProjectMetaCID(_teamName: string, _projectName: string): string {
     let result = super.call(
-      "isOrgAdmin",
-      "isOrgAdmin(bytes32,address):(bool)",
+      "getProjectMetaCID",
+      "getProjectMetaCID(string,string):(string)",
       [
-        ethereum.Value.fromFixedBytes(_orgID),
-        ethereum.Value.fromAddress(_address)
+        ethereum.Value.fromString(_teamName),
+        ethereum.Value.fromString(_projectName)
       ]
     );
 
-    return result[0].toBoolean();
+    return result[0].toString();
   }
 
-  try_isOrgAdmin(
-    _orgID: Bytes,
-    _address: Address
-  ): ethereum.CallResult<boolean> {
+  try_getProjectMetaCID(
+    _teamName: string,
+    _projectName: string
+  ): ethereum.CallResult<string> {
     let result = super.tryCall(
-      "isOrgAdmin",
-      "isOrgAdmin(bytes32,address):(bool)",
+      "getProjectMetaCID",
+      "getProjectMetaCID(string,string):(string)",
       [
-        ethereum.Value.fromFixedBytes(_orgID),
-        ethereum.Value.fromAddress(_address)
+        ethereum.Value.fromString(_teamName),
+        ethereum.Value.fromString(_projectName)
       ]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
+    return ethereum.CallResult.fromValue(value[0].toString());
   }
 
-  isRepoDev(_orgID: Bytes, _repoName: string, _address: Address): boolean {
+  getProjectNames(
+    _teamName: string,
+    _page: BigInt,
+    _size: BigInt
+  ): Array<string> {
     let result = super.call(
-      "isRepoDev",
-      "isRepoDev(bytes32,string,address):(bool)",
+      "getProjectNames",
+      "getProjectNames(string,uint256,uint256):(string[])",
       [
-        ethereum.Value.fromFixedBytes(_orgID),
-        ethereum.Value.fromString(_repoName),
-        ethereum.Value.fromAddress(_address)
+        ethereum.Value.fromString(_teamName),
+        ethereum.Value.fromUnsignedBigInt(_page),
+        ethereum.Value.fromUnsignedBigInt(_size)
       ]
     );
 
-    return result[0].toBoolean();
+    return result[0].toStringArray();
   }
 
-  try_isRepoDev(
-    _orgID: Bytes,
-    _repoName: string,
-    _address: Address
-  ): ethereum.CallResult<boolean> {
+  try_getProjectNames(
+    _teamName: string,
+    _page: BigInt,
+    _size: BigInt
+  ): ethereum.CallResult<Array<string>> {
     let result = super.tryCall(
-      "isRepoDev",
-      "isRepoDev(bytes32,string,address):(bool)",
+      "getProjectNames",
+      "getProjectNames(string,uint256,uint256):(string[])",
       [
-        ethereum.Value.fromFixedBytes(_orgID),
-        ethereum.Value.fromString(_repoName),
-        ethereum.Value.fromAddress(_address)
+        ethereum.Value.fromString(_teamName),
+        ethereum.Value.fromUnsignedBigInt(_page),
+        ethereum.Value.fromUnsignedBigInt(_size)
       ]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
+    return ethereum.CallResult.fromValue(value[0].toStringArray());
+  }
+
+  getReleaseApprovals(
+    _teamName: string,
+    _projectName: string,
+    _releaseName: string,
+    _page: BigInt,
+    _size: BigInt
+  ): Array<Address> {
+    let result = super.call(
+      "getReleaseApprovals",
+      "getReleaseApprovals(string,string,string,uint256,uint256):(address[])",
+      [
+        ethereum.Value.fromString(_teamName),
+        ethereum.Value.fromString(_projectName),
+        ethereum.Value.fromString(_releaseName),
+        ethereum.Value.fromUnsignedBigInt(_page),
+        ethereum.Value.fromUnsignedBigInt(_size)
+      ]
+    );
+
+    return result[0].toAddressArray();
+  }
+
+  try_getReleaseApprovals(
+    _teamName: string,
+    _projectName: string,
+    _releaseName: string,
+    _page: BigInt,
+    _size: BigInt
+  ): ethereum.CallResult<Array<Address>> {
+    let result = super.tryCall(
+      "getReleaseApprovals",
+      "getReleaseApprovals(string,string,string,uint256,uint256):(address[])",
+      [
+        ethereum.Value.fromString(_teamName),
+        ethereum.Value.fromString(_projectName),
+        ethereum.Value.fromString(_releaseName),
+        ethereum.Value.fromUnsignedBigInt(_page),
+        ethereum.Value.fromUnsignedBigInt(_size)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddressArray());
+  }
+
+  getReleaseMetaCID(
+    _teamName: string,
+    _projectName: string,
+    _releaseName: string
+  ): string {
+    let result = super.call(
+      "getReleaseMetaCID",
+      "getReleaseMetaCID(string,string,string):(string)",
+      [
+        ethereum.Value.fromString(_teamName),
+        ethereum.Value.fromString(_projectName),
+        ethereum.Value.fromString(_releaseName)
+      ]
+    );
+
+    return result[0].toString();
+  }
+
+  try_getReleaseMetaCID(
+    _teamName: string,
+    _projectName: string,
+    _releaseName: string
+  ): ethereum.CallResult<string> {
+    let result = super.tryCall(
+      "getReleaseMetaCID",
+      "getReleaseMetaCID(string,string,string):(string)",
+      [
+        ethereum.Value.fromString(_teamName),
+        ethereum.Value.fromString(_projectName),
+        ethereum.Value.fromString(_releaseName)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toString());
+  }
+
+  getReleaseNames(
+    _teamName: string,
+    _projectName: string,
+    _page: BigInt,
+    _size: BigInt
+  ): Array<string> {
+    let result = super.call(
+      "getReleaseNames",
+      "getReleaseNames(string,string,uint256,uint256):(string[])",
+      [
+        ethereum.Value.fromString(_teamName),
+        ethereum.Value.fromString(_projectName),
+        ethereum.Value.fromUnsignedBigInt(_page),
+        ethereum.Value.fromUnsignedBigInt(_size)
+      ]
+    );
+
+    return result[0].toStringArray();
+  }
+
+  try_getReleaseNames(
+    _teamName: string,
+    _projectName: string,
+    _page: BigInt,
+    _size: BigInt
+  ): ethereum.CallResult<Array<string>> {
+    let result = super.tryCall(
+      "getReleaseNames",
+      "getReleaseNames(string,string,uint256,uint256):(string[])",
+      [
+        ethereum.Value.fromString(_teamName),
+        ethereum.Value.fromString(_projectName),
+        ethereum.Value.fromUnsignedBigInt(_page),
+        ethereum.Value.fromUnsignedBigInt(_size)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toStringArray());
+  }
+
+  getReleaseRejections(
+    _teamName: string,
+    _projectName: string,
+    _releaseName: string,
+    _page: BigInt,
+    _size: BigInt
+  ): Array<Address> {
+    let result = super.call(
+      "getReleaseRejections",
+      "getReleaseRejections(string,string,string,uint256,uint256):(address[])",
+      [
+        ethereum.Value.fromString(_teamName),
+        ethereum.Value.fromString(_projectName),
+        ethereum.Value.fromString(_releaseName),
+        ethereum.Value.fromUnsignedBigInt(_page),
+        ethereum.Value.fromUnsignedBigInt(_size)
+      ]
+    );
+
+    return result[0].toAddressArray();
+  }
+
+  try_getReleaseRejections(
+    _teamName: string,
+    _projectName: string,
+    _releaseName: string,
+    _page: BigInt,
+    _size: BigInt
+  ): ethereum.CallResult<Array<Address>> {
+    let result = super.tryCall(
+      "getReleaseRejections",
+      "getReleaseRejections(string,string,string,uint256,uint256):(address[])",
+      [
+        ethereum.Value.fromString(_teamName),
+        ethereum.Value.fromString(_projectName),
+        ethereum.Value.fromString(_releaseName),
+        ethereum.Value.fromUnsignedBigInt(_page),
+        ethereum.Value.fromUnsignedBigInt(_size)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddressArray());
+  }
+
+  getTeamMembers(
+    _teamName: string,
+    _page: BigInt,
+    _size: BigInt
+  ): Array<Address> {
+    let result = super.call(
+      "getTeamMembers",
+      "getTeamMembers(string,uint256,uint256):(address[])",
+      [
+        ethereum.Value.fromString(_teamName),
+        ethereum.Value.fromUnsignedBigInt(_page),
+        ethereum.Value.fromUnsignedBigInt(_size)
+      ]
+    );
+
+    return result[0].toAddressArray();
+  }
+
+  try_getTeamMembers(
+    _teamName: string,
+    _page: BigInt,
+    _size: BigInt
+  ): ethereum.CallResult<Array<Address>> {
+    let result = super.tryCall(
+      "getTeamMembers",
+      "getTeamMembers(string,uint256,uint256):(address[])",
+      [
+        ethereum.Value.fromString(_teamName),
+        ethereum.Value.fromUnsignedBigInt(_page),
+        ethereum.Value.fromUnsignedBigInt(_size)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddressArray());
+  }
+
+  getTeamMetaCID(_teamName: string): string {
+    let result = super.call(
+      "getTeamMetaCID",
+      "getTeamMetaCID(string):(string)",
+      [ethereum.Value.fromString(_teamName)]
+    );
+
+    return result[0].toString();
+  }
+
+  try_getTeamMetaCID(_teamName: string): ethereum.CallResult<string> {
+    let result = super.tryCall(
+      "getTeamMetaCID",
+      "getTeamMetaCID(string):(string)",
+      [ethereum.Value.fromString(_teamName)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toString());
+  }
+
+  getTeamNames(_page: BigInt, _size: BigInt): Array<string> {
+    let result = super.call(
+      "getTeamNames",
+      "getTeamNames(uint256,uint256):(string[])",
+      [
+        ethereum.Value.fromUnsignedBigInt(_page),
+        ethereum.Value.fromUnsignedBigInt(_size)
+      ]
+    );
+
+    return result[0].toStringArray();
+  }
+
+  try_getTeamNames(
+    _page: BigInt,
+    _size: BigInt
+  ): ethereum.CallResult<Array<string>> {
+    let result = super.tryCall(
+      "getTeamNames",
+      "getTeamNames(uint256,uint256):(string[])",
+      [
+        ethereum.Value.fromUnsignedBigInt(_page),
+        ethereum.Value.fromUnsignedBigInt(_size)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toStringArray());
   }
 
   isTrustedForwarder(forwarder: Address): boolean {
@@ -499,238 +754,6 @@ export class Valist extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBoolean());
-  }
-
-  orgCount(): BigInt {
-    let result = super.call("orgCount", "orgCount():(uint256)", []);
-
-    return result[0].toBigInt();
-  }
-
-  try_orgCount(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall("orgCount", "orgCount():(uint256)", []);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
-  orgIDs(param0: BigInt): Bytes {
-    let result = super.call("orgIDs", "orgIDs(uint256):(bytes32)", [
-      ethereum.Value.fromUnsignedBigInt(param0)
-    ]);
-
-    return result[0].toBytes();
-  }
-
-  try_orgIDs(param0: BigInt): ethereum.CallResult<Bytes> {
-    let result = super.tryCall("orgIDs", "orgIDs(uint256):(bytes32)", [
-      ethereum.Value.fromUnsignedBigInt(param0)
-    ]);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBytes());
-  }
-
-  orgs(param0: Bytes): string {
-    let result = super.call("orgs", "orgs(bytes32):(string)", [
-      ethereum.Value.fromFixedBytes(param0)
-    ]);
-
-    return result[0].toString();
-  }
-
-  try_orgs(param0: Bytes): ethereum.CallResult<string> {
-    let result = super.tryCall("orgs", "orgs(bytes32):(string)", [
-      ethereum.Value.fromFixedBytes(param0)
-    ]);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toString());
-  }
-
-  pendingReleaseRequests(
-    param0: Bytes,
-    param1: BigInt
-  ): Valist__pendingReleaseRequestsResult {
-    let result = super.call(
-      "pendingReleaseRequests",
-      "pendingReleaseRequests(bytes32,uint256):(string,string,string)",
-      [
-        ethereum.Value.fromFixedBytes(param0),
-        ethereum.Value.fromUnsignedBigInt(param1)
-      ]
-    );
-
-    return new Valist__pendingReleaseRequestsResult(
-      result[0].toString(),
-      result[1].toString(),
-      result[2].toString()
-    );
-  }
-
-  try_pendingReleaseRequests(
-    param0: Bytes,
-    param1: BigInt
-  ): ethereum.CallResult<Valist__pendingReleaseRequestsResult> {
-    let result = super.tryCall(
-      "pendingReleaseRequests",
-      "pendingReleaseRequests(bytes32,uint256):(string,string,string)",
-      [
-        ethereum.Value.fromFixedBytes(param0),
-        ethereum.Value.fromUnsignedBigInt(param1)
-      ]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(
-      new Valist__pendingReleaseRequestsResult(
-        value[0].toString(),
-        value[1].toString(),
-        value[2].toString()
-      )
-    );
-  }
-
-  pendingRoleRequests(param0: Bytes, param1: BigInt): Address {
-    let result = super.call(
-      "pendingRoleRequests",
-      "pendingRoleRequests(bytes32,uint256):(address)",
-      [
-        ethereum.Value.fromFixedBytes(param0),
-        ethereum.Value.fromUnsignedBigInt(param1)
-      ]
-    );
-
-    return result[0].toAddress();
-  }
-
-  try_pendingRoleRequests(
-    param0: Bytes,
-    param1: BigInt
-  ): ethereum.CallResult<Address> {
-    let result = super.tryCall(
-      "pendingRoleRequests",
-      "pendingRoleRequests(bytes32,uint256):(address)",
-      [
-        ethereum.Value.fromFixedBytes(param0),
-        ethereum.Value.fromUnsignedBigInt(param1)
-      ]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
-  }
-
-  pendingThresholdRequests(param0: Bytes, param1: BigInt): BigInt {
-    let result = super.call(
-      "pendingThresholdRequests",
-      "pendingThresholdRequests(bytes32,uint256):(uint256)",
-      [
-        ethereum.Value.fromFixedBytes(param0),
-        ethereum.Value.fromUnsignedBigInt(param1)
-      ]
-    );
-
-    return result[0].toBigInt();
-  }
-
-  try_pendingThresholdRequests(
-    param0: Bytes,
-    param1: BigInt
-  ): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "pendingThresholdRequests",
-      "pendingThresholdRequests(bytes32,uint256):(uint256)",
-      [
-        ethereum.Value.fromFixedBytes(param0),
-        ethereum.Value.fromUnsignedBigInt(param1)
-      ]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
-  releases(param0: Bytes): Valist__releasesResult {
-    let result = super.call("releases", "releases(bytes32):(string,string)", [
-      ethereum.Value.fromFixedBytes(param0)
-    ]);
-
-    return new Valist__releasesResult(
-      result[0].toString(),
-      result[1].toString()
-    );
-  }
-
-  try_releases(param0: Bytes): ethereum.CallResult<Valist__releasesResult> {
-    let result = super.tryCall(
-      "releases",
-      "releases(bytes32):(string,string)",
-      [ethereum.Value.fromFixedBytes(param0)]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(
-      new Valist__releasesResult(value[0].toString(), value[1].toString())
-    );
-  }
-
-  repos(param0: Bytes): Valist__reposResult {
-    let result = super.call("repos", "repos(bytes32):(bool,string)", [
-      ethereum.Value.fromFixedBytes(param0)
-    ]);
-
-    return new Valist__reposResult(result[0].toBoolean(), result[1].toString());
-  }
-
-  try_repos(param0: Bytes): ethereum.CallResult<Valist__reposResult> {
-    let result = super.tryCall("repos", "repos(bytes32):(bool,string)", [
-      ethereum.Value.fromFixedBytes(param0)
-    ]);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(
-      new Valist__reposResult(value[0].toBoolean(), value[1].toString())
-    );
-  }
-
-  roleModifiedTimestamps(param0: Bytes): BigInt {
-    let result = super.call(
-      "roleModifiedTimestamps",
-      "roleModifiedTimestamps(bytes32):(uint256)",
-      [ethereum.Value.fromFixedBytes(param0)]
-    );
-
-    return result[0].toBigInt();
-  }
-
-  try_roleModifiedTimestamps(param0: Bytes): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "roleModifiedTimestamps",
-      "roleModifiedTimestamps(bytes32):(uint256)",
-      [ethereum.Value.fromFixedBytes(param0)]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
   versionRecipient(): string {
@@ -774,7 +797,7 @@ export class ConstructorCall__Inputs {
     this._call = call;
   }
 
-  get metaTxForwarder(): Address {
+  get _trustedForwarder(): Address {
     return this._call.inputValues[0].value.toAddress();
   }
 }
@@ -787,230 +810,416 @@ export class ConstructorCall__Outputs {
   }
 }
 
-export class CreateOrganizationCall extends ethereum.Call {
-  get inputs(): CreateOrganizationCall__Inputs {
-    return new CreateOrganizationCall__Inputs(this);
+export class AddProjectMemberCall extends ethereum.Call {
+  get inputs(): AddProjectMemberCall__Inputs {
+    return new AddProjectMemberCall__Inputs(this);
   }
 
-  get outputs(): CreateOrganizationCall__Outputs {
-    return new CreateOrganizationCall__Outputs(this);
+  get outputs(): AddProjectMemberCall__Outputs {
+    return new AddProjectMemberCall__Outputs(this);
   }
 }
 
-export class CreateOrganizationCall__Inputs {
-  _call: CreateOrganizationCall;
+export class AddProjectMemberCall__Inputs {
+  _call: AddProjectMemberCall;
 
-  constructor(call: CreateOrganizationCall) {
+  constructor(call: AddProjectMemberCall) {
     this._call = call;
   }
 
-  get _orgMeta(): string {
+  get _teamName(): string {
     return this._call.inputValues[0].value.toString();
   }
-}
 
-export class CreateOrganizationCall__Outputs {
-  _call: CreateOrganizationCall;
-
-  constructor(call: CreateOrganizationCall) {
-    this._call = call;
-  }
-}
-
-export class CreateRepositoryCall extends ethereum.Call {
-  get inputs(): CreateRepositoryCall__Inputs {
-    return new CreateRepositoryCall__Inputs(this);
-  }
-
-  get outputs(): CreateRepositoryCall__Outputs {
-    return new CreateRepositoryCall__Outputs(this);
-  }
-}
-
-export class CreateRepositoryCall__Inputs {
-  _call: CreateRepositoryCall;
-
-  constructor(call: CreateRepositoryCall) {
-    this._call = call;
-  }
-
-  get _orgID(): Bytes {
-    return this._call.inputValues[0].value.toBytes();
-  }
-
-  get _repoName(): string {
+  get _projectName(): string {
     return this._call.inputValues[1].value.toString();
   }
 
-  get _repoMeta(): string {
+  get _address(): Address {
+    return this._call.inputValues[2].value.toAddress();
+  }
+}
+
+export class AddProjectMemberCall__Outputs {
+  _call: AddProjectMemberCall;
+
+  constructor(call: AddProjectMemberCall) {
+    this._call = call;
+  }
+}
+
+export class AddTeamMemberCall extends ethereum.Call {
+  get inputs(): AddTeamMemberCall__Inputs {
+    return new AddTeamMemberCall__Inputs(this);
+  }
+
+  get outputs(): AddTeamMemberCall__Outputs {
+    return new AddTeamMemberCall__Outputs(this);
+  }
+}
+
+export class AddTeamMemberCall__Inputs {
+  _call: AddTeamMemberCall;
+
+  constructor(call: AddTeamMemberCall) {
+    this._call = call;
+  }
+
+  get _teamName(): string {
+    return this._call.inputValues[0].value.toString();
+  }
+
+  get _address(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+}
+
+export class AddTeamMemberCall__Outputs {
+  _call: AddTeamMemberCall;
+
+  constructor(call: AddTeamMemberCall) {
+    this._call = call;
+  }
+}
+
+export class ApproveReleaseCall extends ethereum.Call {
+  get inputs(): ApproveReleaseCall__Inputs {
+    return new ApproveReleaseCall__Inputs(this);
+  }
+
+  get outputs(): ApproveReleaseCall__Outputs {
+    return new ApproveReleaseCall__Outputs(this);
+  }
+}
+
+export class ApproveReleaseCall__Inputs {
+  _call: ApproveReleaseCall;
+
+  constructor(call: ApproveReleaseCall) {
+    this._call = call;
+  }
+
+  get _teamName(): string {
+    return this._call.inputValues[0].value.toString();
+  }
+
+  get _projectName(): string {
+    return this._call.inputValues[1].value.toString();
+  }
+
+  get _releaseName(): string {
     return this._call.inputValues[2].value.toString();
   }
 }
 
-export class CreateRepositoryCall__Outputs {
-  _call: CreateRepositoryCall;
+export class ApproveReleaseCall__Outputs {
+  _call: ApproveReleaseCall;
 
-  constructor(call: CreateRepositoryCall) {
+  constructor(call: ApproveReleaseCall) {
     this._call = call;
   }
 }
 
-export class SetOrgMetaCall extends ethereum.Call {
-  get inputs(): SetOrgMetaCall__Inputs {
-    return new SetOrgMetaCall__Inputs(this);
+export class CreateProjectCall extends ethereum.Call {
+  get inputs(): CreateProjectCall__Inputs {
+    return new CreateProjectCall__Inputs(this);
   }
 
-  get outputs(): SetOrgMetaCall__Outputs {
-    return new SetOrgMetaCall__Outputs(this);
+  get outputs(): CreateProjectCall__Outputs {
+    return new CreateProjectCall__Outputs(this);
   }
 }
 
-export class SetOrgMetaCall__Inputs {
-  _call: SetOrgMetaCall;
+export class CreateProjectCall__Inputs {
+  _call: CreateProjectCall;
 
-  constructor(call: SetOrgMetaCall) {
+  constructor(call: CreateProjectCall) {
     this._call = call;
   }
 
-  get _orgID(): Bytes {
-    return this._call.inputValues[0].value.toBytes();
+  get _teamName(): string {
+    return this._call.inputValues[0].value.toString();
+  }
+
+  get _projectName(): string {
+    return this._call.inputValues[1].value.toString();
   }
 
   get _metaCID(): string {
-    return this._call.inputValues[1].value.toString();
+    return this._call.inputValues[2].value.toString();
+  }
+
+  get _members(): Array<Address> {
+    return this._call.inputValues[3].value.toAddressArray();
   }
 }
 
-export class SetOrgMetaCall__Outputs {
-  _call: SetOrgMetaCall;
+export class CreateProjectCall__Outputs {
+  _call: CreateProjectCall;
 
-  constructor(call: SetOrgMetaCall) {
+  constructor(call: CreateProjectCall) {
     this._call = call;
   }
 }
 
-export class SetRepoMetaCall extends ethereum.Call {
-  get inputs(): SetRepoMetaCall__Inputs {
-    return new SetRepoMetaCall__Inputs(this);
+export class CreateReleaseCall extends ethereum.Call {
+  get inputs(): CreateReleaseCall__Inputs {
+    return new CreateReleaseCall__Inputs(this);
   }
 
-  get outputs(): SetRepoMetaCall__Outputs {
-    return new SetRepoMetaCall__Outputs(this);
+  get outputs(): CreateReleaseCall__Outputs {
+    return new CreateReleaseCall__Outputs(this);
   }
 }
 
-export class SetRepoMetaCall__Inputs {
-  _call: SetRepoMetaCall;
+export class CreateReleaseCall__Inputs {
+  _call: CreateReleaseCall;
 
-  constructor(call: SetRepoMetaCall) {
+  constructor(call: CreateReleaseCall) {
     this._call = call;
   }
 
-  get _orgID(): Bytes {
-    return this._call.inputValues[0].value.toBytes();
+  get _teamName(): string {
+    return this._call.inputValues[0].value.toString();
   }
 
-  get _repoName(): string {
+  get _projectName(): string {
     return this._call.inputValues[1].value.toString();
+  }
+
+  get _releaseName(): string {
+    return this._call.inputValues[2].value.toString();
   }
 
   get _metaCID(): string {
-    return this._call.inputValues[2].value.toString();
-  }
-}
-
-export class SetRepoMetaCall__Outputs {
-  _call: SetRepoMetaCall;
-
-  constructor(call: SetRepoMetaCall) {
-    this._call = call;
-  }
-}
-
-export class VoteKeyCall extends ethereum.Call {
-  get inputs(): VoteKeyCall__Inputs {
-    return new VoteKeyCall__Inputs(this);
-  }
-
-  get outputs(): VoteKeyCall__Outputs {
-    return new VoteKeyCall__Outputs(this);
-  }
-}
-
-export class VoteKeyCall__Inputs {
-  _call: VoteKeyCall;
-
-  constructor(call: VoteKeyCall) {
-    this._call = call;
-  }
-
-  get _orgID(): Bytes {
-    return this._call.inputValues[0].value.toBytes();
-  }
-
-  get _repoName(): string {
-    return this._call.inputValues[1].value.toString();
-  }
-
-  get _operation(): Bytes {
-    return this._call.inputValues[2].value.toBytes();
-  }
-
-  get _key(): Address {
-    return this._call.inputValues[3].value.toAddress();
-  }
-}
-
-export class VoteKeyCall__Outputs {
-  _call: VoteKeyCall;
-
-  constructor(call: VoteKeyCall) {
-    this._call = call;
-  }
-}
-
-export class VoteReleaseCall extends ethereum.Call {
-  get inputs(): VoteReleaseCall__Inputs {
-    return new VoteReleaseCall__Inputs(this);
-  }
-
-  get outputs(): VoteReleaseCall__Outputs {
-    return new VoteReleaseCall__Outputs(this);
-  }
-}
-
-export class VoteReleaseCall__Inputs {
-  _call: VoteReleaseCall;
-
-  constructor(call: VoteReleaseCall) {
-    this._call = call;
-  }
-
-  get _orgID(): Bytes {
-    return this._call.inputValues[0].value.toBytes();
-  }
-
-  get _repoName(): string {
-    return this._call.inputValues[1].value.toString();
-  }
-
-  get _tag(): string {
-    return this._call.inputValues[2].value.toString();
-  }
-
-  get _releaseCID(): string {
     return this._call.inputValues[3].value.toString();
   }
+}
 
-  get _metaCID(): string {
-    return this._call.inputValues[4].value.toString();
+export class CreateReleaseCall__Outputs {
+  _call: CreateReleaseCall;
+
+  constructor(call: CreateReleaseCall) {
+    this._call = call;
   }
 }
 
-export class VoteReleaseCall__Outputs {
-  _call: VoteReleaseCall;
+export class CreateTeamCall extends ethereum.Call {
+  get inputs(): CreateTeamCall__Inputs {
+    return new CreateTeamCall__Inputs(this);
+  }
 
-  constructor(call: VoteReleaseCall) {
+  get outputs(): CreateTeamCall__Outputs {
+    return new CreateTeamCall__Outputs(this);
+  }
+}
+
+export class CreateTeamCall__Inputs {
+  _call: CreateTeamCall;
+
+  constructor(call: CreateTeamCall) {
+    this._call = call;
+  }
+
+  get _teamName(): string {
+    return this._call.inputValues[0].value.toString();
+  }
+
+  get _metaCID(): string {
+    return this._call.inputValues[1].value.toString();
+  }
+
+  get _members(): Array<Address> {
+    return this._call.inputValues[2].value.toAddressArray();
+  }
+}
+
+export class CreateTeamCall__Outputs {
+  _call: CreateTeamCall;
+
+  constructor(call: CreateTeamCall) {
+    this._call = call;
+  }
+}
+
+export class RejectReleaseCall extends ethereum.Call {
+  get inputs(): RejectReleaseCall__Inputs {
+    return new RejectReleaseCall__Inputs(this);
+  }
+
+  get outputs(): RejectReleaseCall__Outputs {
+    return new RejectReleaseCall__Outputs(this);
+  }
+}
+
+export class RejectReleaseCall__Inputs {
+  _call: RejectReleaseCall;
+
+  constructor(call: RejectReleaseCall) {
+    this._call = call;
+  }
+
+  get _teamName(): string {
+    return this._call.inputValues[0].value.toString();
+  }
+
+  get _projectName(): string {
+    return this._call.inputValues[1].value.toString();
+  }
+
+  get _releaseName(): string {
+    return this._call.inputValues[2].value.toString();
+  }
+}
+
+export class RejectReleaseCall__Outputs {
+  _call: RejectReleaseCall;
+
+  constructor(call: RejectReleaseCall) {
+    this._call = call;
+  }
+}
+
+export class RemoveProjectMemberCall extends ethereum.Call {
+  get inputs(): RemoveProjectMemberCall__Inputs {
+    return new RemoveProjectMemberCall__Inputs(this);
+  }
+
+  get outputs(): RemoveProjectMemberCall__Outputs {
+    return new RemoveProjectMemberCall__Outputs(this);
+  }
+}
+
+export class RemoveProjectMemberCall__Inputs {
+  _call: RemoveProjectMemberCall;
+
+  constructor(call: RemoveProjectMemberCall) {
+    this._call = call;
+  }
+
+  get _teamName(): string {
+    return this._call.inputValues[0].value.toString();
+  }
+
+  get _projectName(): string {
+    return this._call.inputValues[1].value.toString();
+  }
+
+  get _address(): Address {
+    return this._call.inputValues[2].value.toAddress();
+  }
+}
+
+export class RemoveProjectMemberCall__Outputs {
+  _call: RemoveProjectMemberCall;
+
+  constructor(call: RemoveProjectMemberCall) {
+    this._call = call;
+  }
+}
+
+export class RemoveTeamMemberCall extends ethereum.Call {
+  get inputs(): RemoveTeamMemberCall__Inputs {
+    return new RemoveTeamMemberCall__Inputs(this);
+  }
+
+  get outputs(): RemoveTeamMemberCall__Outputs {
+    return new RemoveTeamMemberCall__Outputs(this);
+  }
+}
+
+export class RemoveTeamMemberCall__Inputs {
+  _call: RemoveTeamMemberCall;
+
+  constructor(call: RemoveTeamMemberCall) {
+    this._call = call;
+  }
+
+  get _teamName(): string {
+    return this._call.inputValues[0].value.toString();
+  }
+
+  get _address(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+}
+
+export class RemoveTeamMemberCall__Outputs {
+  _call: RemoveTeamMemberCall;
+
+  constructor(call: RemoveTeamMemberCall) {
+    this._call = call;
+  }
+}
+
+export class SetProjectMetaCIDCall extends ethereum.Call {
+  get inputs(): SetProjectMetaCIDCall__Inputs {
+    return new SetProjectMetaCIDCall__Inputs(this);
+  }
+
+  get outputs(): SetProjectMetaCIDCall__Outputs {
+    return new SetProjectMetaCIDCall__Outputs(this);
+  }
+}
+
+export class SetProjectMetaCIDCall__Inputs {
+  _call: SetProjectMetaCIDCall;
+
+  constructor(call: SetProjectMetaCIDCall) {
+    this._call = call;
+  }
+
+  get _teamName(): string {
+    return this._call.inputValues[0].value.toString();
+  }
+
+  get _projectName(): string {
+    return this._call.inputValues[1].value.toString();
+  }
+
+  get _metaCID(): string {
+    return this._call.inputValues[2].value.toString();
+  }
+}
+
+export class SetProjectMetaCIDCall__Outputs {
+  _call: SetProjectMetaCIDCall;
+
+  constructor(call: SetProjectMetaCIDCall) {
+    this._call = call;
+  }
+}
+
+export class SetTeamMetaCIDCall extends ethereum.Call {
+  get inputs(): SetTeamMetaCIDCall__Inputs {
+    return new SetTeamMetaCIDCall__Inputs(this);
+  }
+
+  get outputs(): SetTeamMetaCIDCall__Outputs {
+    return new SetTeamMetaCIDCall__Outputs(this);
+  }
+}
+
+export class SetTeamMetaCIDCall__Inputs {
+  _call: SetTeamMetaCIDCall;
+
+  constructor(call: SetTeamMetaCIDCall) {
+    this._call = call;
+  }
+
+  get _teamName(): string {
+    return this._call.inputValues[0].value.toString();
+  }
+
+  get _metaCID(): string {
+    return this._call.inputValues[1].value.toString();
+  }
+}
+
+export class SetTeamMetaCIDCall__Outputs {
+  _call: SetTeamMetaCIDCall;
+
+  constructor(call: SetTeamMetaCIDCall) {
     this._call = call;
   }
 }
