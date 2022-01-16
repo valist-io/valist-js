@@ -4,9 +4,9 @@ pragma solidity >=0.8.4;
 interface IValist {
 
   /// @dev emitted when a new team is created
-  event TeamCreated(string _teamName, string _metaCID, address _sender);
+  event TeamCreated(string _teamName, string _metaURI, address _sender);
   /// @dev emitted when an exsting team is updated
-  event TeamUpdated(string _teamName, string _metaCID, address _member);
+  event TeamUpdated(string _teamName, string _metaURI, address _member);
   /// @dev emitted when a new team member is added
   event TeamMemberAdded(string _teamName, address _member);
   /// @dev emitted when an existing team member is removed
@@ -16,7 +16,7 @@ interface IValist {
   event ProjectCreated(
     string _teamName, 
     string _projectName, 
-    string _metaCID, 
+    string _metaURI, 
     address _member
   );
 
@@ -24,7 +24,7 @@ interface IValist {
   event ProjectUpdated(
     string _teamName,
     string _projectName,
-    string _metaCID,
+    string _metaURI,
     address _member
   );
 
@@ -47,7 +47,7 @@ interface IValist {
     string _teamName, 
     string _projectName, 
     string _releaseName, 
-    string _metaCID, 
+    string _metaURI, 
     address _member
   );
 
@@ -70,11 +70,11 @@ interface IValist {
   /// Creates a new team with the given members.
   ///
   /// @param _teamName Unique name used to identify the team.
-  /// @param _metaCID Content ID of the team metadata.
+  /// @param _metaURI URI of the team metadata.
   /// @param _members List of members to add to the team.
   function createTeam(
     string memory _teamName, 
-    string memory _metaCID, 
+    string memory _metaURI, 
     address[] memory _members
   ) 
     external;
@@ -83,12 +83,12 @@ interface IValist {
   ///
   /// @param _teamName Name of the team to create the project under.
   /// @param _projectName Unique name used to identify the project.
-  /// @param _metaCID Content ID of the project metadata.
+  /// @param _metaURI URI of the project metadata.
   /// @param _members Optional list of members to add to the project.
   function createProject(
     string memory _teamName, 
     string memory _projectName,
-    string memory _metaCID,
+    string memory _metaURI,
     address[] memory _members
   )
     external;
@@ -98,12 +98,12 @@ interface IValist {
   /// @param _teamName Name of the team.
   /// @param _projectName Name of the project.
   /// @param _releaseName Unique name used to identify the release.
-  /// @param _metaCID Content ID of the project metadata.
+  /// @param _metaURI URI of the project metadata.
   function createRelease(
     string memory _teamName, 
     string memory _projectName,
     string memory _releaseName,
-    string memory _metaCID
+    string memory _metaURI
   )
     external;
 
@@ -169,43 +169,43 @@ interface IValist {
   )
     external;
 
-  /// Sets the team metadata content ID. Requires the sender to be a member of the team.
+  /// Sets the team metadata URI. Requires the sender to be a member of the team.
   ///
   /// @param _teamName Name of the team.
-  /// @param _metaCID Metadata content ID.
-  function setTeamMetaCID(
+  /// @param _metaURI Metadata URI.
+  function setTeamMetaURI(
     string memory _teamName,
-    string memory _metaCID
+    string memory _metaURI
   )
     external;
 
-  /// Sets the project metadata content ID. Requires the sender to be a member of the team.
+  /// Sets the project metadata URI. Requires the sender to be a member of the team.
   ///
   /// @param _teamName Name of the team.
   /// @param _projectName Name of the project.
-  /// @param _metaCID Metadata content ID.
-  function setProjectMetaCID(
+  /// @param _metaURI Metadata URI.
+  function setProjectMetaURI(
     string memory _teamName,
     string memory _projectName,
-    string memory _metaCID
+    string memory _metaURI
   )
     external;
 
-  /// Returns the team metadata CID.
+  /// Returns the team metadata URI.
   ///
   /// @param _teamName Name of the team.
-  function getTeamMetaCID(
+  function getTeamMetaURI(
     string memory _teamName
   )
     external
     view
     returns (string memory);
 
-  /// Returns the project metadata CID.
+  /// Returns the project metadata URI.
   ///
   /// @param _teamName Name of the team.
   /// @param _projectName Name of the project.
-  function getProjectMetaCID(
+  function getProjectMetaURI(
     string memory _teamName,
     string memory _projectName
   )
@@ -213,12 +213,12 @@ interface IValist {
     view
     returns (string memory);
 
-  /// Returns the release metadata CID.
+  /// Returns the release metadata URI.
   ///
   /// @param _teamName Name of the team.
   /// @param _projectName Name of the project.
   /// @param _releaseName Name of the release.
-  function getReleaseMetaCID(
+  function getReleaseMetaURI(
     string memory _teamName,
     string memory _projectName,
     string memory _releaseName
