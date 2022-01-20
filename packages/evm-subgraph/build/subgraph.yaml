@@ -6,7 +6,7 @@ dataSources:
     name: Valist
     network: ganache
     source:
-      address: "0x9B2dc066592261c6Da6D3E5aE51715F486BE78b8"
+      address: "0x03330317C73a219a26FF34a05f58F4a6104cbcd4"
       abi: Valist
     mapping:
       kind: ethereum/events
@@ -27,7 +27,7 @@ dataSources:
         - event: TeamUpdated(string,string,address)
           handler: handleTeamUpdate
         - event: TeamMemberAdded(string,address)
-          handler: handTeamMemberAdded
+          handler: handleTeamMemberAdded
         - event: ProjectCreated(string,string,string,address)
           handler: handleProjectCreated
         - event: ReleaseCreated(string,string,string,string,address)

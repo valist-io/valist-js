@@ -463,7 +463,7 @@ export class Valist extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toStringArray());
   }
 
-  getReleaseApprovals(
+  getReleaseApprovers(
     _teamName: string,
     _projectName: string,
     _releaseName: string,
@@ -471,8 +471,8 @@ export class Valist extends ethereum.SmartContract {
     _size: BigInt
   ): Array<Address> {
     let result = super.call(
-      "getReleaseApprovals",
-      "getReleaseApprovals(string,string,string,uint256,uint256):(address[])",
+      "getReleaseApprovers",
+      "getReleaseApprovers(string,string,string,uint256,uint256):(address[])",
       [
         ethereum.Value.fromString(_teamName),
         ethereum.Value.fromString(_projectName),
@@ -485,7 +485,7 @@ export class Valist extends ethereum.SmartContract {
     return result[0].toAddressArray();
   }
 
-  try_getReleaseApprovals(
+  try_getReleaseApprovers(
     _teamName: string,
     _projectName: string,
     _releaseName: string,
@@ -493,8 +493,8 @@ export class Valist extends ethereum.SmartContract {
     _size: BigInt
   ): ethereum.CallResult<Array<Address>> {
     let result = super.tryCall(
-      "getReleaseApprovals",
-      "getReleaseApprovals(string,string,string,uint256,uint256):(address[])",
+      "getReleaseApprovers",
+      "getReleaseApprovers(string,string,string,uint256,uint256):(address[])",
       [
         ethereum.Value.fromString(_teamName),
         ethereum.Value.fromString(_projectName),
@@ -592,7 +592,7 @@ export class Valist extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toStringArray());
   }
 
-  getReleaseRejections(
+  getReleaseRejectors(
     _teamName: string,
     _projectName: string,
     _releaseName: string,
@@ -600,8 +600,8 @@ export class Valist extends ethereum.SmartContract {
     _size: BigInt
   ): Array<Address> {
     let result = super.call(
-      "getReleaseRejections",
-      "getReleaseRejections(string,string,string,uint256,uint256):(address[])",
+      "getReleaseRejectors",
+      "getReleaseRejectors(string,string,string,uint256,uint256):(address[])",
       [
         ethereum.Value.fromString(_teamName),
         ethereum.Value.fromString(_projectName),
@@ -614,7 +614,7 @@ export class Valist extends ethereum.SmartContract {
     return result[0].toAddressArray();
   }
 
-  try_getReleaseRejections(
+  try_getReleaseRejectors(
     _teamName: string,
     _projectName: string,
     _releaseName: string,
@@ -622,8 +622,8 @@ export class Valist extends ethereum.SmartContract {
     _size: BigInt
   ): ethereum.CallResult<Array<Address>> {
     let result = super.tryCall(
-      "getReleaseRejections",
-      "getReleaseRejections(string,string,string,uint256,uint256):(address[])",
+      "getReleaseRejectors",
+      "getReleaseRejectors(string,string,string,uint256,uint256):(address[])",
       [
         ethereum.Value.fromString(_teamName),
         ethereum.Value.fromString(_projectName),

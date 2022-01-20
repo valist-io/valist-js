@@ -48,10 +48,11 @@ export function handleProjectCreated(event: ProjectCreated): void {
 }
 
 export function handleTeamMemberAdded(event: TeamMemberAdded): void {
-  const team = Team.load(event.params._teamName);
+  const teamName = event.params._teamName;
+  const team = Team.load(teamName);
   if (!team) return
 
-  const keyID = `${event.params._teamName}/${event.params._member}`
+  const keyID = `${teamName}/${event.params._member.toHexString()}`
   let key = Key.load(keyID);
   if (!key){
     key = new Key(keyID);
@@ -63,7 +64,7 @@ export function handleTeamMemberAdded(event: TeamMemberAdded): void {
   key.save();
 }
 
-export function handleReleaseCreatedEvent(event: ReleaseCreated): void {
+export function handleReleaseCreated(event: ReleaseCreated): void {
     const team = Team.load(event.params._teamName);
     if (!team) return
 

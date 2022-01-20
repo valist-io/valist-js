@@ -73,7 +73,6 @@ async function bootstrap() {
   console.log("Release Meta CID", releaseMetaCid);
   console.log();
 
-  const signer0 = await accounts[0];
   const account0 = await accounts[0].getAddress();
   const account1 = await accounts[1].getAddress();
   const account2 = await accounts[2].getAddress();
@@ -84,15 +83,18 @@ async function bootstrap() {
 
   for (let i = 0; i < teamNames1.length; i++) {
     console.log("Creating Team", teamNames1[i]);
-    const createTeamTx = await valist
-      .connect(signer0)
-      .createTeam(teamNames1[i], teamMetaCid, [account0]);
+    const createTeamTx = await valist.createTeam(teamNames1[i], teamMetaCid, [
+      account0,
+    ]);
     await createTeamTx.wait();
 
     console.log("Creating Project", teamNames1[i], projectName);
-    const createProjectTx = await valist
-      .connect(signer0)
-      .createProject(teamNames1[i], projectName, projectMetaCid, [account0]);
+    const createProjectTx = await valist.createProject(
+      teamNames1[i],
+      projectName,
+      projectMetaCid,
+      [account0]
+    );
     await createProjectTx.wait();
 
     // const project = await valist.getProjectMembers(
@@ -103,20 +105,22 @@ async function bootstrap() {
     // );
     // console.log("Project Members", project);
 
-    console.log("Add addr1 as projectMember", account1);
-    const addProjectMemberTx = await valist
-      .connect(signer0)
-      .addProjectMember(teamNames1[i], projectName, account1);
+    console.log(`Add addr1(${account1}) as projectMember`);
+    const addProjectMemberTx = await valist.addProjectMember(
+      teamNames1[i],
+      projectName,
+      account1
+    );
     await addProjectMemberTx.wait();
 
-    // console.log("Publishing release to", `${teamNames1[i]}/${projectName}`);
-    // await valist.createRelease(
-    //   teamNames1[i],
-    //   projectName,
-    //   "0.0.1",
-    //   releaseMetaCid
-    // );
-    // console.log();
+    console.log("Publishing Release to", `${teamNames1[i]}/${projectName}`);
+    await valist.createRelease(
+      teamNames1[i],
+      projectName,
+      "0.0.1",
+      releaseMetaCid
+    );
+    console.log();
   }
 }
 

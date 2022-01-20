@@ -11,6 +11,8 @@ interface IValist {
   event TeamMemberAdded(string _teamName, address _member);
   /// @dev emitted when an existing team member is removed
   event TeamMemberRemoved(string _teamName, address _member);
+  /// @dev emitted when a new project member is added
+  event ProjectMemberAdded(string _projectName, address _member);
 
   /// @dev emitted when a new project is created
   event ProjectCreated(
