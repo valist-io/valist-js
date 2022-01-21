@@ -334,42 +334,42 @@ export interface StorageAPI {
 
 export class Team {
 	/** team friendly name. */
-	name?: string;
+	public name?: string;
 	/** short description of the team. */
-	description?: string;
+	public description?: string;
 	/** link to the team website. */
-	homepage?: string;
+	public homepage?: string;
 }
 
 export class Project {
 	/** project friendly name */
-	name?: string;
+	public name?: string;
 	/** short description of the project. */
-	description?: string;
+	public description?: string;
 	/** link to the project website. */
-	homepage?: string;
+	public homepage?: string;
 	/** source code url for the project. */
-	repository?: string;
+	public repository?: string;
 }
 
 export class Release {
 	/** full release name. */
-	name?: string;
+	public name?: string;
 	/** release version. */
-	version?: string;
+	public version?: string;
 	/** readme contents. */
-	readme?: string;
+	public readme?: string;
 	/** license type. */
-	license?: string;
+	public license?: string;
 	/** list of dependencies. */
-	dependencies?: string[];
+	public dependencies?: string[];
 	/** mapping of names to artifacts. */
-	artifacts?: Map<string, Artifact>;
+	public artifacts?: Map<string, Artifact>;
 }
 
 export class Artifact {
 	/** SHA256 hash of the file. */
-	sha256?: string;
+	public sha256?: string;
 	/** path to the artifact file. */
-	provider?: string;
+	public provider?: string;
 }
