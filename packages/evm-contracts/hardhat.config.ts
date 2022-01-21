@@ -2,6 +2,7 @@ import { task } from "hardhat/config";
 import "@nomiclabs/hardhat-waffle";
 import "hardhat-gas-reporter";
 import "hardhat-contract-sizer";
+import "hardhat-abi-exporter";
 
 task("accounts", "Prints the list of accounts", async (args, hre) => {
   const accounts = await hre.ethers.getSigners();
@@ -36,4 +37,18 @@ module.exports = {
     runOnCompile: true,
     disambiguatePaths: false,
   },
+  abiExporter: [
+    { 
+      path: '../valist-sdk/src/contract/abis/',
+      only: [':Valist'],
+      clear: true,
+      flat: true,
+    },
+    { 
+      path: '../evm-subgraph/abis/',
+      only: [':Valist'],
+      clear: true,
+      flat: true,
+    },
+  ],
 };
