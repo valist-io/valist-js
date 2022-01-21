@@ -1,144 +1,375 @@
-export type OrgID = string;
+/**
+ * Valist high level API.
+ */
+export interface CoreAPI {
+	/**
+	 * Storage provider.
+	 */
+	storage: StorageAPI;
 
-export type OrgName = string;
+	/**
+	 * Contract backend.
+	 */
+	contract: ContractAPI
 
-export type OrgMeta = {
-  name: string,
-  description: string
-  homepage?: string
-};
+	/**
+	 * Create a new team.
+	 * 
+	 * @param teamName Unique name used to identify the team.
+	 * @param team Team metadata.
+	 * @param members List of members to add to the team.
+	 */
+	createTeam(teamName: string, team: Team, members: string[]): Promise<void>;
 
-export type BinaryTypes = 'binary' | 'go' | 'rust' | 'c++';
+	/**
+	 * Create a new project. Requires the sender to be a member of the team.
+	 * 
+	 * @param teamName Name of the team to create the project under.
+	 * @param projectName Unique name used to identify the project.
+	 * @param team Project metadata.
+	 * @param members List of members to add to the project.
+	 */
+	createProject(teamName: string, projectName: string, project: Project, members: string[]): Promise<void>;
 
-export type ProjectType = BinaryTypes | 'node' | 'npm' | 'python' | 'docker' | 'static';
+	/**
+	 * Create a new release. Requires the sender to be a member of the project.
+	 * 
+	 * @param teamName Name of the team.
+	 * @param projectName Name of the project to create the release under.
+	 * @param releaseName Unique name used to identify the release.
+	 * @param release Release metadata.
+	 */
+	createRelease(teamName: string, projectName: string, releaseName: string, release: Release): Promise<void>;
 
-export type RepoMeta = {
-  name: string,
-  description: string,
-  projectType: ProjectType,
-  homepage?: string,
-  repository?: string
-};
+		/**
+	 * Returns team metadata.
+	 * 
+	 * @param teamName Name of the team.
+	 */
+	getTeam(teamName: string): Promise<Team>;
 
-export type Organization = {
-  // organization ID
-  orgID: OrgID,
-  // multi-party threshold
-  threshold: number,
-  // date threshold was set
-  thresholdDate: number,
-  // parsed JSON from metaCID
-  meta: OrgMeta,
-  // metadata CID
-  metaCID: string,
-  // list of repo names
-  repoNames: string[]
-};
+	/**
+	 * Returns project metadata.
+	 * 
+	 * @param teamName Name of the team.
+	 * @param projectName Name of the project.
+	 */
+	getProject(teamName: string, projectName: string): Promise<Project>;
 
-export type Repository = {
-  // organization ID
-  orgID: OrgID,
-  // multi-party threshold
-  threshold: number,
-  // date threshold was set
-  thresholdDate: number,
-  // parsed JSON from metaCID
-  meta: RepoMeta,
-  // metadata CID
-  metaCID: string,
-  // list of release tags
-  tags: string[]
-};
-
-export type Release = {
-  // release tag/version
-  tag: string,
-  // release artifact
-  releaseCID: string,
-  // release metadata
-  metaCID: string,
-  // finalized release signers
-  signers?: string[],
-};
-
-export type ReleaseArtifact = {
-    sha256:   string,
-    provider: string,
+	/**
+	 * Returns release metadata.
+	 * 
+	 * @param teamName Name of the team.
+	 * @param projectName Name of the project.
+	 * @param releaseName Name of the release.
+	 */
+	getRelease(teamName: string, projectName: string, releaseName: string): Promise<Release>;
 }
 
-export type ReleaseMeta = {
-    name:         string,             
-    readme:       string,             
-    license?:      string,           
-    dependencies?: string[],          
-    artifacts:   Record<string, ReleaseArtifact> 
+/**
+ * Contract abstraction API.
+ */
+export interface ContractAPI {
+	/**
+	 * Creates a new team with the given members.
+	 *
+	 * @param teamName Unique name used to identify the team.
+  	 * @param metaURI URI of the team metadata.
+  	 * @param members List of members to add to the team.
+	 */
+	createTeam(teamName: string, metaURI: string, members: string[]): Promise<void>;
+
+	/**
+	 * Creates a new project. Requires the sender to be a member of the team.
+	 * 
+	 * @param teamName Name of the team to create the project under.
+  	 * @param projectName Unique name used to identify the project.
+  	 * @param metaURI URI of the project metadata.
+	 * @param members Optional list of members to add to the project.
+	 */
+	createProject(teamName: string, projectName: string, metaURI: string, members: string[]): Promise<void>;
+
+	/**
+	 * Creates a new release. Requires the sender to be a member of the project.
+	 * 
+	 * @param teamName Name of the team.
+     * @param projectName Name of the project.
+     * @param releaseName Unique name used to identify the release.
+     * @param metaURI URI of the project metadata.
+	 */
+	createRelease(teamName: string, projectName: string, releaseName: string, metaURI: string): Promise<void>;
+
+	/**
+	 * Adds a member to the team. Requires the sender to be a member of the team.
+	 * 
+	 * @param teamName Name of the team.
+     * @param address Address of member.
+	 */
+	addTeamMember(teamName: string, address: string): Promise<void>;
+	
+	/**
+	 * Removes a member from the team. Requires the sender to be a member of the team.
+	 * 
+	 * @param teamName Name of the team.
+     * @param address Address of member.
+	 */
+	removeTeamMember(teamName: string, address: string): Promise<void>;
+	
+	/**
+	 * Adds a member to the project. Requires the sender to be a member of the team.
+	 *
+	 * @param teamName Name of the team.
+  	 * @param projectName Name of the project.
+  	 * @param address Address of member.
+	 */
+	addProjectMember(teamName: string, projectName: string, address: string): Promise<void>;
+	
+	/**
+	 * Removes a member from the project. Requires the sender to be a member of the team.
+	 * 
+	 * @param teamName Name of the team.
+     * @param projectName Name of the project.
+     * @param address Address of member.
+	 */
+	removeProjectMember(teamName: string, projectName: string, address: string): Promise<void>;
+	
+	/**
+	 * Sets the team metadata content ID. Requires the sender to be a member of the team.
+	 * 
+	 * @param teamName Name of the team.
+     * @param metaURI Metadata URI.
+	 */
+	setTeamMetaURI(teamName: string, metaURI: string): Promise<void>;
+	
+	/**
+	 * Sets the project metadata content ID. Requires the sender to be a member of the team.
+	 * 
+	 * @param teamName Name of the team.
+     * @param projectName Name of the project.
+     * @param metaURI Metadata URI.
+	 */
+	setProjectMetaURI(teamName: string, projectName: string, metaURI: string): Promise<void>;
+
+	/**
+	 * Approves the release by adding the sender's address to the approvers list.
+	 * The sender's address will be removed from the rejectors list if it exists.
+	 * 
+	 * @param teamName Name of the team.
+     * @param projectName Name of the project.
+     * @param releaseName Name of the release.
+	 */
+	approveRelease(teamName: string, projectName: string, releaseName: string): Promise<void>;
+	
+	/**
+	 * Rejects the release by adding the sender's address to the rejectors list.
+	 * The sender's address will be removed from the approvers list if it exists.
+	 * 
+	 * @param teamName Name of the team.
+     * @param projectName Name of the project.
+     * @param releaseName Name of the release.
+	 */
+	rejectRelease(teamName: string, projectName: string, releaseName: string): Promise<void>;
+
+	/**
+	 * Returns the latest release name.
+	 * 
+	 * @param teamName Name of the team.
+     * @param projectName Name of the project.
+	 */
+	getLatestReleaseName(teamName: string, projectName: string): Promise<string>;
+
+	/** 
+	 * Returns the team metadata URI.
+	 * 
+	 * @param teamName Name of the team.
+	 */
+	getTeamMetaURI(teamName: string): Promise<string>;
+
+	/**
+	 * Returns the project metadata URI.
+	 * 
+	 * @param teamName Name of the team.
+     * @param projectName Name of the project.
+	 */
+	getProjectMetaURI(teamName: string, projectName: string): Promise<string>;
+
+	/**
+	 * Returns the release metadata URI.
+	 * 
+	 * @param teamName Name of the team.
+     * @param projectName Name of the project.
+     * @param releaseName Name of the release.
+	 */
+	getReleaseMetaURI(teamName: string, projectName: string, releaseName: string): Promise<string>;
+
+	/**
+	 * Returns a paginated list of team names.
+	 * 
+	 * @param page Page to return items from.
+     * @param size Number of items to return.
+	 */
+	getTeamNames(page: number, size: number): Promise<string[]>;
+
+	/**
+	 * Returns a paginated list of project names.
+	 * 
+	 * @param teamName Name of the team.
+     * @param page Page to return items from.
+     * @param size Number of items to return.
+	 */
+	getProjectNames(teamName: string, page: number, size: number): Promise<string[]>;
+
+	/**
+	 * Returns a paginated list of release names.
+	 * 
+	 * @param teamName Name of the team.
+     * @param projectName Name of the project.
+     * @param page Page to return items from.
+     * @param size Number of items to return.
+	 */
+	getReleaseNames(teamName: string, projectName: string, page: number, size: number): Promise<string[]>;
+	
+	/**
+	 * Returns a paginated list of team members.
+	 * 
+     * @param teamName Name of the team.
+     * @param page Page to return items from.
+     * @param size Number of items to return.
+	 */
+	getTeamMembers(teamName: string, page: number, size: number): Promise<string[]>;
+	
+	/**
+	 * Returns a paginated list of project members.
+	 * 
+     * @param teamName Name of the team.
+     * @param projectName Name of the project.
+     * @param page Page to return items from.
+     * @param size Number of items to return.
+	 */
+	getProjectMembers(teamName: string, projectName: string, page: number, size: number): Promise<string[]>;
+	
+	/**
+	 * Returns a paginated list of release approvers.
+	 * 
+     * @param teamName Name of the team.
+     * @param projectName Name of the project.
+     * @param releaseName Name of the release.
+     * @param page Page to return items from.
+     * @param size Number of items to return.
+	 */
+	getReleaseApprovers(teamName: string, projectName: string, releaseName: string, page: number, size: number): Promise<string[]>;
+	
+	/**
+	 * Returns a paginated list of release rejectors.
+	 * 
+	 * @param teamName Name of the team.
+     * @param projectName Name of the project.
+     * @param releaseName Name of the release.
+     * @param page Page to return items from.
+     * @param size Number of items to return.
+	 */
+	getReleaseRejectors(teamName: string, projectName: string, releaseName: string, page: number, size: number): Promise<string[]>;
 }
 
-export type PendingVote = {
-  // expiration date of vote
-  expiration: string,
-  // signers that have voted on this release
-  signers: string[]
-};
+/**
+ * Storage abstraction API.
+ */
+export interface StorageAPI {
+	/**
+	 * Read team metadata from storage.
+	 * 
+	 * @param metaURI Metadata URI.
+	 */
+	readTeamMeta(metaURI: string): Promise<Team>;
 
-export type PendingRelease = {
-  // proposed tag
-  tag: string,
-  // release artifact
-  releaseCID: string,
-  // release metadata
-  metaCID: string,
-  // pending vote
-  pendingVote?: PendingVote
-};
+	/**
+	 * Read project metadata from storage.
+	 * 
+	 * @param metaURI Metadata URI.
+	 */
+	readProjectMeta(metaURI: string): Promise<Project>;
 
-export type VoteThresholdEvent = {
-  _orgID: string,
-  _repoName: string,
-  _signer: string,
-  _pendingThreshold: string,
-  _sigCount: string,
-  _threshold: string
-};
+	/**
+	 * Read release metadata from storage.
+	 * 
+	 * @param metaURI Metadata URI.
+	 */
+	readReleaseMeta(metaURI: string): Promise<Release>;
 
-export type VoteKeyEvent = {
-  _orgID: string,
-  _repoName: string,
-  _signer: string,
-  _operation: string,
-  _key: string,
-  _sigCount: string,
-  _threshold: string
-};
+	/**
+	 * Write team metadata to storage and return its URI.
+	 * 
+	 * @param team Team metadata.
+	 */
+	writeTeamMeta(team: Team): Promise<string>;
 
-export type VoteReleaseEvent = {
-  _orgID: string,
-  _repoName: string,
-  _tag: string,
-  _releaseCID: string,
-  _metaCID: string,
-  _signer: string,
-  _sigCount: string,
-  _threshold: string
-};
+	/**
+	 * Write project metadata to storage and return its URI.
+	 * 
+	 * @param project Project metadata.
+	 */
+	writeProjectMeta(project: Project): Promise<string>;
+	
+	/**
+	 * Write release metadata to storage and return its URI.
+	 * 
+	 * @param release Release metadata.
+	 */
+	writeReleaseMeta(release: Release): Promise<string>;
 
-export type ValistCache = {
-  // orgIDs: OrgID[],
-  // orgNames: OrgName[],
-  // orgs: Record<OrgName, Organization>,
-  // repos: Record<OrgID, Record<string, Repository>>,
-  orgIDs: Record<OrgName, OrgID>,
-};
+	/**
+	 * Write data to storage and return its URI.
+	 * 
+	 * @param data File or string to write.
+	 */
+	write(data: File | string): Promise<string> 
 
-export type ValistConfig = {
-  type: ProjectType,
-  org: string,
-  repo: string,
-  tag: string,
-  meta: string,
-  image: string,
-  build: string,
-  install: string,
-  out?: string,
-  artifacts?: Record<string, string>,
-};
+	/**
+	 * Read data from storage.
+	 * 
+	 * @param uri URI of data.
+	 */
+	read(uri: string): Promise<string>
+}
+
+export class Team {
+	/** team friendly name. */
+	name?: string;
+	/** short description of the team. */
+	description?: string;
+	/** link to the team website. */
+	homepage?: string;
+}
+
+export class Project {
+	/** project friendly name */
+	name?: string;
+	/** short description of the project. */
+	description?: string;
+	/** link to the project website. */
+	homepage?: string;
+	/** source code url for the project. */
+	repository?: string;
+}
+
+export class Release {
+	/** full release name. */
+	name?: string;
+	/** release version. */
+	version?: string;
+	/** readme contents. */
+	readme?: string;
+	/** license type. */
+	license?: string;
+	/** list of dependencies. */
+	dependencies?: string[];
+	/** mapping of names to artifacts. */
+	artifacts?: Map<string, Artifact>;
+}
+
+export class Artifact {
+	/** SHA256 hash of the file. */
+	sha256?: string;
+	/** path to the artifact file. */
+	provider?: string;
+}
