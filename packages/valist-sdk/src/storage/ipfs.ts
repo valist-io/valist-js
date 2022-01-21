@@ -1,4 +1,6 @@
-import { StorageAPI, Team, Project, Release } from './types';
+import { Team, Project, Release } from '../index';
+import { StorageAPI } from './index';
+
 import { create, IPFSHTTPClient, Options } from 'ipfs-http-client';
 import { toString } from 'uint8arrays/to-string';
 import { concat } from 'uint8arrays/concat';
