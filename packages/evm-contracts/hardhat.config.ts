@@ -37,18 +37,9 @@ module.exports = {
     runOnCompile: true,
     disambiguatePaths: false,
   },
-  abiExporter: [
-    { 
-      path: '../valist-sdk/src/contract/abis/',
-      only: [':Valist'],
-      clear: true,
-      flat: true,
-    },
-    { 
-      path: '../evm-subgraph/abis/',
-      only: [':Valist'],
-      clear: true,
-      flat: true,
-    },
-  ],
+  abiExporter: { 
+    path: './abis',
+    clear: true,
+    flat: true,
+  },
 };

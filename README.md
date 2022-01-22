@@ -2,45 +2,44 @@
 
 [![Discord](https://img.shields.io/discord/785535462311591976)](https://discord.com/channels/785535462311591976)
 [![Valist](https://img.shields.io/badge/valist-published-blue)](https://app.valist.io/valist)
-<!-- [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fvalist-io%2Fvalist.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fvalist-io%2Fvalist?ref=badge_shield) -->
 
-A trustless universal package repository enabling you to digitally sign and distribute software via IPFS in just a few steps.
+Web3-native software distribution.
 
 ## Features
 
-Valist supports building and distributing software from source code to the end user.
-
-Key Features:
-
-* Publish Binaries (software, firmware, you name it)
-* Easy Reproducible Builds
-* NPM Registry
-* Docker Registry
-* Multi-Factor Releases (multi-sig for publishing software)
-* Native IPFS Support
-* Multi-Chain Support (Ethereum-based only for now)
+* Publish Applications and Assets (EXEs, WASM, Docker images, NFTs, etc.)
+* Multi-Factor Releases (multi-sig for publishing assets)
+* Multi-Chain Support (EVM based only for now, NEAR [coming soon](https://github.com/filecoin-project/devgrants/pull/368))
 
 ## Documentation
 
 Documentation for how to get started with Valist can be found at [https://docs.valist.io](https://docs.valist.io).
 
-## Building
+## Development
 
-#### System Requirements:
+#### Requirements
 
 * node >= 14.17
 * npm >= 6.14
 
+#### Setup
 
 ```bash
 git clone https://github.com/valist-io/valist-js
 
 cd valist-js
 
-make start
+npm install
 ```
 
-This will install all dependencies and build and serve the `valist` Next.js app on `localhost:3000`.
+#### Scripts
+
+- `npm run bootstrap`
+	- link local packages and install dependencies
+- `npm run lint`
+	- lint all packages
+- `npm run dev`
+	- starts the development server
 
 ## Contributing
 
