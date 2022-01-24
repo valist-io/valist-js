@@ -26,7 +26,7 @@ web:
 	npm run build --prefix ./packages/valist-web
 	npm run export --prefix ./packages/valist-web
 
-frontend: sdk app
+frontend: sdk web
 
 start: sdk
 	npm run start --prefix ./packages/valist-sdk

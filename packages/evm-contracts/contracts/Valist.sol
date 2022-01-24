@@ -81,7 +81,7 @@ contract Valist is IValist, ERC2771Context {
 
     for (uint i = 0; i < _members.length; i++) {
       teamByID[teamID].members.add(_members[i]);
-      emit TeamMemberAdded(_teamName, _address);
+      emit TeamMemberAdded(_teamName, _members[i]);
     }
 
     emit TeamCreated(_teamName, _metaCID, _msgSender());
@@ -115,7 +115,7 @@ contract Valist is IValist, ERC2771Context {
 
     for (uint i = 0; i < _members.length; i++) {
       projectByID[projectID].members.add(_members[i]);
-      emit ProjectMemberAdded(_projectName, _address);
+      emit ProjectMemberAdded(_projectName, _members[i]);
     }
 
     emit ProjectCreated(_teamName, _projectName, _metaCID, _msgSender());
