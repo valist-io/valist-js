@@ -32,7 +32,7 @@ start: sdk
 	npm run start --prefix ./packages/valist-sdk
 
 evm-start-subgraph:
-	docker-compose -f ./packages/evm-subgraph/docker-compose.yml up
+	cd packages/evm-subgraph && docker-compose up
 
 evm-build-subgraph:
 	npm run codegen --prefix ./packages/evm-subgraph

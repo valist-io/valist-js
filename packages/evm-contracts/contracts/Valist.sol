@@ -115,7 +115,7 @@ contract Valist is IValist, ERC2771Context {
 
     for (uint i = 0; i < _members.length; i++) {
       projectByID[projectID].members.add(_members[i]);
-      emit ProjectMemberAdded(_projectName, _members[i]);
+      emit ProjectMemberAdded(_teamName, _projectName, _members[i]);
     }
 
     emit ProjectCreated(_teamName, _projectName, _metaCID, _msgSender());

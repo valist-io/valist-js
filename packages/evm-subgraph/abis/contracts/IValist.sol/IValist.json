@@ -40,25 +40,6 @@
         {
           "indexed": false,
           "internalType": "string",
-          "name": "_projectName",
-          "type": "string"
-        },
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "_member",
-          "type": "address"
-        }
-      ],
-      "name": "ProjectMemberAdded",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "string",
           "name": "_teamName",
           "type": "string"
         },
