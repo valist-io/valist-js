@@ -52,6 +52,9 @@ evm-build-contracts:
 evm-deploy-contracts:
 	npm run deploy:local --prefix ./packages/evm-contracts
 
+evm-bootstrap-contracts:
+	npm run bootstrap --prefix ./packages/evm-contracts
+
 dev-sdk:
 	npm run dev --prefix ./packages/valist-sdk
 
