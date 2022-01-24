@@ -20,7 +20,7 @@ dataSources:
         - ReleaseCreated
       abis:
         - name: Valist
-          file: ./abis/Valist.json
+          file: ./abis/contracts/Valist.sol/Valist.json
       eventHandlers:
         - event: TeamCreated(string,string,address)
           handler: handleTeamCreated
