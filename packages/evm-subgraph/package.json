@@ -1,6 +1,6 @@
 {
   "name": "valist-evm-subgraph",
-  "license": "UNLICENSED",
+  "license": "MPL-2.0",
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
