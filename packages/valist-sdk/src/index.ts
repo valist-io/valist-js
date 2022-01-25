@@ -34,7 +34,7 @@ export class Release {
 	/** list of dependencies. */
 	public dependencies?: string[];
 	/** mapping of names to artifacts. */
-	public artifacts?: Map<string, Artifact>;
+	public artifacts?: any;
 }
 
 export class Artifact {

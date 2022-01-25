@@ -28,7 +28,7 @@ const contract = new Contract.EVM('<valist-address>', provider);
 const signer = provider.getSigner();
 const contract = new Contract.EVM('<valist-address>', signer)
 
-const storage = new Storage.IPFS({host: 'https://pin.valist.io'});
+const storage = Storage.createIPFS();
 const valist = new Client(contract, storage);
 
 const team = await valist.getTeam('valist');

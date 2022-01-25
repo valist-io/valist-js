@@ -1,7 +1,7 @@
 import { ContractAPI } from './index';
 import { Contract, Signer } from 'ethers';
 import { Provider } from '@ethersproject/abstract-provider';
-import * as abi from './abis/Valist.json';
+import { abi } from './abis/Valist.json';
 
 export class EVM implements ContractAPI {
 	contract: Contract;
