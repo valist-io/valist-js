@@ -1,51 +1,67 @@
-import { Magic } from 'magic-sdk';
 import WalletConnectProvider from '@walletconnect/web3-provider';
+import { MetaMaskInpageProvider } from "@metamask/providers";
+import { Magic } from 'magic-sdk';
 import getConfig from 'next/config';
+import { ethers } from 'ethers';
+import { SetUseState } from '../Account/types';
 
 const { publicRuntimeConfig } = getConfig();
 
-function getProviders(setMagic: any, setLoggedIn: any, email: string) {
-  return {
-    magic: async () => {
-      const customNodeOptions = {
-        rpcUrl: publicRuntimeConfig.WEB3_PROVIDER,
-      };
-
-      const magicObj = new Magic(publicRuntimeConfig.MAGIC_PUBKEY, { network: customNodeOptions });
-      const magicLoggedIn = await magicObj.user.isLoggedIn();
-      setMagic(magicObj);
-
-      if (magicLoggedIn) {
-        setLoggedIn(true);
-        return magicObj.rpcProvider;
-      }
-
-      await magicObj.auth.loginWithMagicLink({ email });
-      setLoggedIn(true);
-      return magicObj.rpcProvider;
-    },
-    walletConnect: async () => {
-      const provider = new WalletConnectProvider({
-        rpc: {
-          80001: publicRuntimeConfig.WEB3_PROVIDER,
-        },
-      });
-
-      //  Enable session (triggers QR Code modal)
-      await provider.enable();
-      setLoggedIn(true);
-      return provider;
-    },
-    metaMask: async () => {
-      await (window as any).ethereum.send('eth_requestAccounts');
-      setLoggedIn(true);
-      return (window as any).ethereum;
-    },
-    readOnly: async () => {
-      setLoggedIn(false);
-      return publicRuntimeConfig.WEB3_PROVIDER;
-    },
-  };
+declare global {
+  interface Window {
+    ethereum: MetaMaskInpageProvider;
+  }
 }
 
-export default getProviders;
+export const newMagic = () => {
+  const customNodeOptions = {
+    rpcUrl: publicRuntimeConfig.WEB3_PROVIDER,
+  };
+
+  return new Magic(publicRuntimeConfig.MAGIC_PUBKEY, { network: customNodeOptions });
+};
+
+export const addressFromProvider = async (provider: any) => {
+  const w3 = new ethers.providers.Web3Provider(provider);
+  const signer = w3.getSigner();
+  const account = await signer.getAddress();
+  return account;
+};
+
+export const providers = {
+  walletConnect: async ({}) => {
+    const wc = new WalletConnectProvider({
+      rpc: {
+        80001: publicRuntimeConfig.WEB3_PROVIDER,
+      },
+    });
+    await wc.enable();    //  Enable session (triggers QR Code modal)
+    return wc;
+  },
+  metaMask: async ({}) => {
+    try{
+     await window.ethereum.request({ method: 'eth_requestAccounts' });
+    }catch(err){
+        console.log(err);
+    }
+      
+    return window.ethereum;
+  },
+  magic: async (params: {email: string | null, setMagic: SetUseState<Magic | null>}) => {
+    const { email } = params;
+    const magic = newMagic();
+
+    try {
+      const magicLoggedIn = await magic.user.isLoggedIn();
+      if (!magicLoggedIn && email) {
+        await magic.auth.loginWithMagicLink({ email });
+      }
+    }catch(err){}
+
+    params.setMagic(magic);
+    return magic.rpcProvider;
+  },
+  readOnly: async ({}) => {
+    return publicRuntimeConfig.WEB3_PROVIDER;
+  },
+};
