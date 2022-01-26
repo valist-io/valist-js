@@ -51,73 +51,52 @@ contract ProofOfContribution is IERC1155MetadataURI, ERC1155, ERC2771Context {
 
     /// BEGIN TOKEN CONTRACT
 
-    uint256 public constant PROOF = 0;
+    uint256 public constant CONTRIBUTION = 0;
 
-    function balanceOf(address account, uint256 id) public view override(ERC1155, IERC1155) returns (uint256) {
-
+    function mint(
+        string memory teamName,
+        string memory projectName,
+        string memory releaseName,
+        address contributor
+    ) public {
+        uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(teamName)))));
+        uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(projectName)))));
+        uint256 releaseID = uint(keccak256(abi.encodePacked(projectID, keccak256(bytes(releaseName)))));
+        require(
+            valist.isTeamMember(teamID, _msgSender()) ||
+            valist.isProjectMember(projectID, _msgSender()
+        ), "err-proj-member");
+        require(bytes(valist.metaByID(releaseID)).length > 0, "err-release-not-exist");
+        _mint(contributor, releaseID, 1, "");
     }
 
-    function balanceOfBatch(
-        address[] memory accounts,
-        uint256[] memory id
-    )
-        public
-        view
-        override(ERC1155, IERC1155)
-        returns (uint256[] memory)
-    {
+    function mintBatch(
+        string memory teamName,
+        string memory projectName,
+        string memory releaseName,
+        address[] memory contributors
+    ) public {
+        uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(teamName)))));
+        uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(projectName)))));
+        uint256 releaseID = uint(keccak256(abi.encodePacked(projectID, keccak256(bytes(releaseName)))));
+        require(
+            valist.isTeamMember(teamID, _msgSender()) ||
+            valist.isProjectMember(projectID, _msgSender()
+        ), "err-proj-member");
+        require(bytes(valist.metaByID(releaseID)).length > 0, "err-release-not-exist");
 
+        for (uint i = 0; i < contributors.length; i++) {
+            _mint(contributors[i], releaseID, 1, "");
+        }
     }
 
-    function setApprovalForAll(address operator, bool approved) public override(ERC1155, IERC1155) {
-
-    }
-
-    function isApprovedForAll(
-        address account,
-        address operator
-    )
-        public
-        view
-        override(ERC1155, IERC1155)
-        returns (bool)
-    {
-
-    }
-
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 id,
-        uint256 amount,
-        bytes memory data
-    ) 
-        public
-        override(ERC1155, IERC1155)
-    {
-
-    }
-
-    function safeBatchTransferFrom(
-        address from,
-        address to,
-        uint256[] memory ids,
-        uint256[] memory amounts,
-        bytes memory data
-    ) 
-        public
-        override(ERC1155, IERC1155)
-    {
-
-    }
-
-    function uri(uint256)
+    function uri(uint256 id)
         public
         override(ERC1155, IERC1155MetadataURI)
         view
         returns (string memory)
     {
-
+        return valist.metaByID(id);
     }
 
 }

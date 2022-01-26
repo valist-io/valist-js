@@ -67,6 +67,11 @@ interface IValist {
     address _sender
   );
 
+  /// Return metadata URIs associated with team, project, or release
+  ///
+  /// @param _id Unique ID of team, project, or release
+  function metaByID(uint256 _id) external view returns (string memory);
+
   /// Creates a new team with the given members.
   ///
   /// @param _teamName Unique name used to identify the team.
@@ -190,6 +195,53 @@ interface IValist {
     string memory _metaURI
   )
     external;
+
+  function getTeamID(
+    string memory _teamName
+  )
+    external
+    view
+    returns (uint);
+
+  function getProjectID(
+    uint _teamID,
+    string memory _projectName
+  )
+    external
+    view
+    returns (uint);
+
+  function getReleaseID(
+    uint _projectID,
+    string memory _releaseName
+  )
+    external
+    view
+    returns (uint);
+
+  /// Returns whether a given address is a member of a team.
+  ///
+  /// @param _teamID Unique team ID.
+  /// @param _member Address of member.
+  function isTeamMember(
+    uint _teamID,
+    address _member
+  )
+    external
+    view
+    returns (bool);
+
+  /// Returns whether a given address is a member of a project.
+  ///
+  /// @param _projectID Unique project ID.
+  /// @param _member Address of member.
+  function isProjectMember(
+    uint _projectID,
+    address _member
+  )
+    external
+    view
+    returns (bool);
 
   /// Returns the team metadata URI.
   ///

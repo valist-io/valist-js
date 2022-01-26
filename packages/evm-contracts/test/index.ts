@@ -947,7 +947,7 @@ describe("getReleaseRejections", () => {
   });
 });
 
-async function deployValist() {
+export async function deployValist() {
   const Valist = await ethers.getContractFactory("Valist");
   const valist = await Valist.deploy("0x9399BB24DBB5C4b782C70c2969F58716Ebbd6a3b");
   
@@ -955,7 +955,7 @@ async function deployValist() {
   return valist;
 }
 
-async function getAddresses() {
+export async function getAddresses() {
   const signers = await ethers.getSigners();
   return signers.map((acct) => acct.address);
 }

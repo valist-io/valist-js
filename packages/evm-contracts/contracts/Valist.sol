@@ -46,7 +46,7 @@ contract Valist is IValist, ERC2771Context {
   /// @dev releaseID = keccak256(abi.encodePacked(projectID, keccak256(bytes(releaseName))))
   mapping(uint256 => Release) private releaseByID;
   /// @dev mapping of team, project, and release IDs to metadata URIs
-  mapping(uint256 => string) private metaByID;
+  mapping(uint256 => string) public override metaByID;
 
   /// @dev version of BaseRelayRecipient this contract implements
   string public versionRecipient = "2.2.0";
@@ -55,6 +55,23 @@ contract Valist is IValist, ERC2771Context {
   ///
   /// @param _trustedForwarder Address for meta transactions.
   constructor(address _trustedForwarder) ERC2771Context(_trustedForwarder) {}
+
+  // @TODO
+  // cascade admin keys to be able to publish
+  // add modifiers for roles
+  // add id generator functions
+
+  // modifier teamMembers(string memory _teamName, address _member) {
+  //   uint teamID = getTeamID(_teamName);
+  //   require(teamByID[teamID].members.contains(_member), "err-team-member");
+  //   _;
+  // }
+
+  // modifier projectMembers(string memory _teamName, string memory _projectName, address _member) {
+  //   uint teamID = getTeamID(_teamName);
+  //   require(teamByID[teamID].members.contains(_member), "err-team-member");
+  //   _;
+  // }
 
   /// Creates a new team with the given members.
   ///
@@ -69,7 +86,7 @@ contract Valist is IValist, ERC2771Context {
     public
     override
   {
-    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
+    uint256 teamID = getTeamID(_teamName);
 
     require(bytes(metaByID[teamID]).length == 0, "err-name-claimed");
     require(bytes(_metaURI).length > 0, "err-empty-meta");
@@ -101,10 +118,10 @@ contract Valist is IValist, ERC2771Context {
     public
     override
   {
-    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
-    uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
+    uint256 teamID = getTeamID(_teamName);
+    uint256 projectID = getProjectID(teamID, _projectName);
 
-    require(teamByID[teamID].members.contains(_msgSender()), "err-team-member");
+    require(isTeamMember(teamID, _msgSender()), "err-team-member");
     require(bytes(metaByID[projectID]).length == 0, "err-name-claimed");
     require(bytes(_metaURI).length > 0, "err-empty-meta");
     require(bytes(_projectName).length > 0, "err-empty-name");
@@ -134,11 +151,16 @@ contract Valist is IValist, ERC2771Context {
     public
     override
   {
-    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
-    uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
-    uint256 releaseID = uint(keccak256(abi.encodePacked(projectID, keccak256(bytes(_releaseName)))));
+    uint256 teamID = getTeamID(_teamName);
+    uint256 projectID = getProjectID(teamID, _projectName);
+    uint256 releaseID = getReleaseID(projectID, _releaseName);
 
-    require(projectByID[projectID].members.contains(_msgSender()), "err-proj-member");
+    require(
+      isTeamMember(teamID, _msgSender()) ||
+      isProjectMember(projectID, _msgSender()),
+      "err-proj-member"
+    );
+
     require(bytes(metaByID[releaseID]).length == 0, "err-name-claimed");
     require(bytes(_metaURI).length > 0, "err-empty-meta");
     require(bytes(_releaseName).length > 0, "err-empty-name");
@@ -162,9 +184,9 @@ contract Valist is IValist, ERC2771Context {
     public
     override
   {
-    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
-    uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
-    uint256 releaseID = uint(keccak256(abi.encodePacked(projectID, keccak256(bytes(_releaseName)))));
+    uint256 teamID = getTeamID(_teamName);
+    uint256 projectID = getProjectID(teamID, _projectName);
+    uint256 releaseID = getReleaseID(projectID, _releaseName);
 
     require(bytes(metaByID[releaseID]).length > 0, "err-release-not-exist");
 
@@ -187,9 +209,9 @@ contract Valist is IValist, ERC2771Context {
     public
     override 
   {
-    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
-    uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
-    uint256 releaseID = uint(keccak256(abi.encodePacked(projectID, keccak256(bytes(_releaseName)))));
+    uint256 teamID = getTeamID(_teamName);
+    uint256 projectID = getProjectID(teamID, _projectName);
+    uint256 releaseID = getReleaseID(projectID, _releaseName);
 
     require(bytes(metaByID[releaseID]).length > 0, "err-release-not-exist");
 
@@ -239,8 +261,8 @@ contract Valist is IValist, ERC2771Context {
     public
     override
   {
-    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
-    uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
+    uint256 teamID = getTeamID(_teamName);
+    uint256 projectID = getProjectID(teamID, _projectName);
     
     require(bytes(metaByID[projectID]).length > 0, "err-proj-not-exist");
     require(teamByID[teamID].members.contains(_msgSender()) == true, "err-team-member");
@@ -263,8 +285,8 @@ contract Valist is IValist, ERC2771Context {
     public
     override
   {
-    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
-    uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
+    uint256 teamID = getTeamID(_teamName);
+    uint256 projectID = getProjectID(teamID, _projectName);
     
     require(bytes(metaByID[projectID]).length > 0, "err-proj-not-exist");
     require(teamByID[teamID].members.contains(_msgSender()) == true, "err-team-member");
@@ -308,8 +330,8 @@ contract Valist is IValist, ERC2771Context {
     public
     override
   {
-    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
-    uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
+    uint256 teamID = getTeamID(_teamName);
+    uint256 projectID = getProjectID(teamID, _projectName);
 
     require(teamByID[teamID].members.contains(_msgSender()), "err-team-member");
     require(bytes(metaByID[projectID]).length > 0, "err-proj-not-exist");
@@ -317,6 +339,73 @@ contract Valist is IValist, ERC2771Context {
 
     metaByID[projectID] = _metaURI;
     emit ProjectUpdated(_teamName, _projectName, _metaURI, _msgSender());
+  }
+
+  function getTeamID(
+    string memory _teamName
+  )
+    public
+    view
+    override
+    returns (uint)
+  {
+    return uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
+  }
+
+  function getProjectID(
+    uint _teamID,
+    string memory _projectName
+  )
+    public
+    pure
+    override
+    returns (uint)
+  {
+    return uint(keccak256(abi.encodePacked(_teamID, keccak256(bytes(_projectName)))));
+  }
+
+  function getReleaseID(
+    uint _projectID,
+    string memory _releaseName
+  )
+    public
+    pure
+    override
+    returns (uint)
+  {
+    return uint(keccak256(abi.encodePacked(_projectID, keccak256(bytes(_releaseName)))));
+  }
+
+  /// Returns whether a given address is a member of a team.
+  ///
+  /// @param _teamID Unique team ID.
+  /// @param _member Address of member.
+  function isTeamMember(
+    uint _teamID,
+    address _member
+  )
+    public
+    view
+    override
+    returns (bool)
+  {
+    return teamByID[_teamID].members.contains(_member);
+  }
+
+  /// Returns whether a given address is a member of a project.
+  ///
+  /// @param _projectID Unique project ID.
+  /// @param _member Address of member.
+  function isProjectMember(
+    uint _projectID,
+    address _member
+  )
+    public
+    view
+    override
+    returns (bool)
+  {
+    return projectByID[_projectID].members.contains(_member);
   }
 
   /// Returns the team metadata URI.
@@ -348,8 +437,8 @@ contract Valist is IValist, ERC2771Context {
     override
     returns (string memory)
   {
-    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
-    uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
+    uint256 teamID = getTeamID(_teamName);
+    uint256 projectID = getProjectID(teamID, _projectName);
     require(bytes(metaByID[projectID]).length > 0, "err-proj-not-exist");
     return metaByID[projectID];
   }
@@ -369,9 +458,9 @@ contract Valist is IValist, ERC2771Context {
     override
     returns (string memory)
   {
-    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
-    uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
-    uint256 releaseID = uint(keccak256(abi.encodePacked(projectID, keccak256(bytes(_releaseName)))));
+    uint256 teamID = getTeamID(_teamName);
+    uint256 projectID = getProjectID(teamID, _projectName);
+    uint256 releaseID = getReleaseID(projectID, _releaseName);
     require(bytes(metaByID[releaseID]).length > 0, "err-release-not-exist");
     return metaByID[releaseID];
   }
@@ -389,8 +478,8 @@ contract Valist is IValist, ERC2771Context {
     override
     returns (string memory)
   {
-    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
-    uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
+    uint256 teamID = getTeamID(_teamName);
+    uint256 projectID = getProjectID(teamID, _projectName);
     Project storage project = projectByID[projectID];
     require(project.releaseNames.length > 0, "err-proj-not-exist");
     return project.releaseNames[project.releaseNames.length - 1];
@@ -505,8 +594,8 @@ contract Valist is IValist, ERC2771Context {
     override
     returns (address[] memory)
   {
-    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
-    uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
+    uint256 teamID = getTeamID(_teamName);
+    uint256 projectID = getProjectID(teamID, _projectName);
 
     uint start = _page * _size;
     uint limit = start + _size;
@@ -540,8 +629,8 @@ contract Valist is IValist, ERC2771Context {
     override
     returns (string[] memory)
   {
-    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
-    uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
+    uint256 teamID = getTeamID(_teamName);
+    uint256 projectID = getProjectID(teamID, _projectName);
 
     uint start = _page * _size;
     uint limit = start + _size;
@@ -577,9 +666,9 @@ contract Valist is IValist, ERC2771Context {
     override
     returns (address[] memory)
   {
-    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
-    uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
-    uint256 releaseID = uint(keccak256(abi.encodePacked(projectID, keccak256(bytes(_releaseName)))));
+    uint256 teamID = getTeamID(_teamName);
+    uint256 projectID = getProjectID(teamID, _projectName);
+    uint256 releaseID = getReleaseID(projectID, _releaseName);
 
     uint start = _page * _size;
     uint limit = start + _size;
@@ -615,9 +704,9 @@ contract Valist is IValist, ERC2771Context {
     override
     returns (address[] memory)
   {
-    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
-    uint256 projectID = uint(keccak256(abi.encodePacked(teamID, keccak256(bytes(_projectName)))));
-    uint256 releaseID = uint(keccak256(abi.encodePacked(projectID, keccak256(bytes(_releaseName)))));
+    uint256 teamID = getTeamID(_teamName);
+    uint256 projectID = getProjectID(teamID, _projectName);
+    uint256 releaseID = getReleaseID(projectID, _releaseName);
 
     uint start = _page * _size;
     uint limit = start + _size;
