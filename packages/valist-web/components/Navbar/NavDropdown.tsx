@@ -1,5 +1,6 @@
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
+import Link from 'next/link';
 import { LoginType } from '../../utils/Account/types';
 import { checkLoggedIn } from '../../utils/Account/index';
 import AddressIdenticon from '../Identicons/AddressIdenticon';
@@ -11,7 +12,7 @@ interface NavDropdownProps {
   address: string,
 }
 
-const NavDropdown = (props: NavDropdownProps): JSX.Element => {
+export default function NavDropdown(props: NavDropdownProps): JSX.Element {
   return (
     <Menu as="div" className="flex-shrink-0 relative ml-5">
       <div>
@@ -34,13 +35,14 @@ const NavDropdown = (props: NavDropdownProps): JSX.Element => {
                 {({}) => (
                   <Fragment>
                     {checkLoggedIn(item.isLoggedIn, props.loginType) && item.href != '' &&
-                      <a
-                        href={item.href}
-                        onClick={() => {item.action();}}
-                        className='block py-2 px-4 text-sm text-gray-700 cursor-pointer hover:bg-gray-100'
-                      >
-                        {item.name}
-                      </a>
+                      <Link href={item.href || ''}>
+                        <a
+                          onClick={() => {item.action();}}
+                          className='block py-2 px-4 text-sm text-gray-700 cursor-pointer hover:bg-gray-100'
+                        >
+                          {item.name}
+                        </a>
+                      </Link>
                     }
                     {checkLoggedIn(item.isLoggedIn, props.loginType) && item.href === '' &&
                       <div
@@ -58,5 +60,3 @@ const NavDropdown = (props: NavDropdownProps): JSX.Element => {
     </Menu>
   );
 };
-
-export default NavDropdown;

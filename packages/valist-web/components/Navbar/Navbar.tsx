@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Popover } from '@headlessui/react';
 import { MenuIcon, XIcon } from '@heroicons/react/outline';
 import Link from 'next/link';
@@ -11,12 +11,9 @@ import { classNames } from '../../utils/Styles';
 import { logout } from '../../utils/Account';
 import { truncate } from '../../utils/Formatting/truncate';
 
-interface NavbarProps {
-  address: string,
-}
-
-export default function Navbar(props: NavbarProps) {
+export default function Navbar() {
   const accountCtx = useContext(AccountContext);
+  const [address, setAddress] = useState<string>('0x0');
 
   const navItems = [
     { name: 'Discover', href: '/search' },
@@ -26,8 +23,8 @@ export default function Navbar(props: NavbarProps) {
   ];
 
   const dropdownItems = [
-    { name: truncate(props.address, 5), 
-      href: `/addr/${props.address}`,
+    { name: truncate(address, 5), 
+      href: `/addr/${address}`,
       isLoggedIn: false,
       isMobile: false, 
       action: () => {},
@@ -45,6 +42,10 @@ export default function Navbar(props: NavbarProps) {
       action: () => logout(accountCtx.setLoginType, accountCtx.setAddress, accountCtx.magic), 
     },
   ];
+
+  useEffect(() => {
+    setAddress(accountCtx.address);
+  },[accountCtx.address])
 
   return (
     <>
@@ -97,11 +98,11 @@ export default function Navbar(props: NavbarProps) {
                       </a>
                     </Link>
                   ))}
-                  <NavDropdown loginType={accountCtx.loginType} address={props.address} actions={dropdownItems} />
+                  <NavDropdown loginType={accountCtx.loginType} address={address} actions={dropdownItems} />
                 </div>
               </div>
             </div>
-            <MobileMenu loginType={accountCtx.loginType} actions={dropdownItems} navigation={navItems} address={props.address} />
+            <MobileMenu loginType={accountCtx.loginType} actions={dropdownItems} navigation={navItems} address={address} />
           </>
         )}
       </Popover>

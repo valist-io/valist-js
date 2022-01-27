@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { SearchIcon } from '@heroicons/react/solid';
 
-const SearchBar = (): JSX.Element => {
+export default function SearchBar(): JSX.Element {
   const router = useRouter();
   const [searchInput, setSearchInput ] = useState("");
 
@@ -32,5 +32,3 @@ const SearchBar = (): JSX.Element => {
     </div>
   );
 };
-
-export default SearchBar;

@@ -59,7 +59,7 @@ export const onAccountChanged = (
     window.ethereum.on('accountsChanged', () => {
       const loginType = (localStorage.getItem('loginType') as LoginType);
       if (loginType === 'metaMask') {
-        login(loginType, setLoginType, setProvider, setAddress, email, null);
+        login(loginType, setLoginType, setProvider, setAddress, ()=>{}, email,);
       }
     });
   };

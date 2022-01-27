@@ -24,22 +24,27 @@ const MagicLogin = (props: MagicLoginProps) => {
   };
 
   useEffect(() => {
-    const handleMagic = async () => {
-      if (accountCtx.magic) {
-        if (await accountCtx.magic.user.isLoggedIn()){
-          const address = await addressFromProvider(accountCtx.magic.rpcProvider);
-          setMagicAddress(address);
+    let magicRequest = true;
+
+    if (magicRequest) {
+      const handleMagic = async () => {
+        if (accountCtx.magic) {
+          if (await accountCtx.magic.user.isLoggedIn()){
+            const address = await addressFromProvider(accountCtx.magic.rpcProvider);
+            setMagicAddress(address);
+          }
         }
-      }
-
-      setTimeout(() => {
         setMagicChecked(true);
-      }, 2000);
-    };
-    handleMagic();
-  }, [accountCtx.magic]);
+      };
 
-  
+      handleMagic();
+    }
+
+    return () => {
+      (magicRequest = false)
+    };
+  }, [accountCtx.magic, setMagicAddress, setMagicChecked]);
+
   if (magicChecked && accountCtx && accountCtx.loginType != "magic") {
     if (magicAddress !== '') {
       return (
