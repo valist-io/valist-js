@@ -56,23 +56,6 @@ contract Valist is IValist, ERC2771Context {
   /// @param _trustedForwarder Address for meta transactions.
   constructor(address _trustedForwarder) ERC2771Context(_trustedForwarder) {}
 
-  // @TODO
-  // cascade admin keys to be able to publish
-  // add modifiers for roles
-  // add id generator functions
-
-  // modifier teamMembers(string memory _teamName, address _member) {
-  //   uint teamID = getTeamID(_teamName);
-  //   require(teamByID[teamID].members.contains(_member), "err-team-member");
-  //   _;
-  // }
-
-  // modifier projectMembers(string memory _teamName, string memory _projectName, address _member) {
-  //   uint teamID = getTeamID(_teamName);
-  //   require(teamByID[teamID].members.contains(_member), "err-team-member");
-  //   _;
-  // }
-
   /// Creates a new team with the given members.
   ///
   /// @param _teamName Unique name used to identify the team.

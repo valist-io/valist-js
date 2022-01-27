@@ -196,6 +196,10 @@ interface IValist {
   )
     external;
 
+  
+  /// Generates teamID from teamName.
+  ///
+  /// @param _teamName Name of the team.
   function getTeamID(
     string memory _teamName
   )
@@ -203,6 +207,10 @@ interface IValist {
     view
     returns (uint);
 
+  /// Generates projectID from teamID and projectName.
+  ///
+  /// @param _teamID Unique team ID.
+  /// @param _projectName Name of the project.
   function getProjectID(
     uint _teamID,
     string memory _projectName
@@ -211,6 +219,10 @@ interface IValist {
     view
     returns (uint);
 
+  /// Generates releaseID from projectID and releaseName.
+  ///
+  /// @param _projectID Unique project ID.
+  /// @param _releaseName Name of the release.
   function getReleaseID(
     uint _projectID,
     string memory _releaseName
