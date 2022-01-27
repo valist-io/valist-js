@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 /// @title Valist registry contract
 ///
-/// @custom:err-empty-meta metadata CID is required
+/// @custom:err-empty-meta metadata URI is required
 /// @custom:err-empty-members atleast one member is required
 /// @custom:err-empty-name name is required
 /// @custom:err-name-claimed name has already been claimed
@@ -45,7 +45,7 @@ contract Valist is IValist, ERC2771Context {
   mapping(uint256 => Project) private projectByID;
   /// @dev releaseID = keccak256(abi.encodePacked(projectID, keccak256(bytes(releaseName))))
   mapping(uint256 => Release) private releaseByID;
-  /// @dev mapping of team, project, and release IDs to metadata CIDs
+  /// @dev mapping of team, project, and release IDs to metadata URIs
   mapping(uint256 => string) private metaByID;
 
   /// @dev version of BaseRelayRecipient this contract implements
@@ -59,11 +59,11 @@ contract Valist is IValist, ERC2771Context {
   /// Creates a new team with the given members.
   ///
   /// @param _teamName Unique name used to identify the team.
-  /// @param _metaCID Content ID of the team metadata.
+  /// @param _metaURI URI of the team metadata.
   /// @param _members List of members to add to the team.
   function createTeam(
     string memory _teamName, 
-    string memory _metaCID, 
+    string memory _metaURI, 
     address[] memory _members
   ) 
     public
@@ -72,11 +72,11 @@ contract Valist is IValist, ERC2771Context {
     uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
 
     require(bytes(metaByID[teamID]).length == 0, "err-name-claimed");
-    require(bytes(_metaCID).length > 0, "err-empty-meta");
+    require(bytes(_metaURI).length > 0, "err-empty-meta");
     require(bytes(_teamName).length > 0, "err-empty-name");
     require(_members.length > 0, "err-empty-members");
 
-    metaByID[teamID] = _metaCID;
+    metaByID[teamID] = _metaURI;
     teamNames.push(_teamName);
 
     for (uint i = 0; i < _members.length; i++) {
@@ -84,19 +84,19 @@ contract Valist is IValist, ERC2771Context {
       emit TeamMemberAdded(_teamName, _members[i]);
     }
 
-    emit TeamCreated(_teamName, _metaCID, _msgSender());
+    emit TeamCreated(_teamName, _metaURI, _msgSender());
   }
   
   /// Creates a new project. Requires the sender to be a member of the team.
   ///
   /// @param _teamName Name of the team to create the project under.
   /// @param _projectName Unique name used to identify the project.
-  /// @param _metaCID Content ID of the project metadata.
+  /// @param _metaURI URI of the project metadata.
   /// @param _members Optional list of members to add to the project.
   function createProject(
     string memory _teamName, 
     string memory _projectName,
-    string memory _metaCID,
+    string memory _metaURI,
     address[] memory _members
   )
     public
@@ -107,10 +107,10 @@ contract Valist is IValist, ERC2771Context {
 
     require(teamByID[teamID].members.contains(_msgSender()), "err-team-member");
     require(bytes(metaByID[projectID]).length == 0, "err-name-claimed");
-    require(bytes(_metaCID).length > 0, "err-empty-meta");
+    require(bytes(_metaURI).length > 0, "err-empty-meta");
     require(bytes(_projectName).length > 0, "err-empty-name");
 
-    metaByID[projectID] = _metaCID;
+    metaByID[projectID] = _metaURI;
     teamByID[teamID].projectNames.push(_projectName);
 
     for (uint i = 0; i < _members.length; i++) {
@@ -118,7 +118,7 @@ contract Valist is IValist, ERC2771Context {
       emit ProjectMemberAdded(_teamName, _projectName, _members[i]);
     }
 
-    emit ProjectCreated(_teamName, _projectName, _metaCID, _msgSender());
+    emit ProjectCreated(_teamName, _projectName, _metaURI, _msgSender());
   }
 
   /// Creates a new release. Requires the sender to be a member of the project.
@@ -126,12 +126,12 @@ contract Valist is IValist, ERC2771Context {
   /// @param _teamName Name of the team.
   /// @param _projectName Name of the project.
   /// @param _releaseName Unique name used to identify the release.
-  /// @param _metaCID Content ID of the project metadata.
+  /// @param _metaURI URI of the project metadata.
   function createRelease(
     string memory _teamName, 
     string memory _projectName,
     string memory _releaseName,
-    string memory _metaCID
+    string memory _metaURI
   )
     public
     override
@@ -142,12 +142,12 @@ contract Valist is IValist, ERC2771Context {
 
     require(projectByID[projectID].members.contains(_msgSender()), "err-proj-member");
     require(bytes(metaByID[releaseID]).length == 0, "err-name-claimed");
-    require(bytes(_metaCID).length > 0, "err-empty-meta");
+    require(bytes(_metaURI).length > 0, "err-empty-meta");
     require(bytes(_releaseName).length > 0, "err-empty-name");
 
-    metaByID[releaseID] = _metaCID;
+    metaByID[releaseID] = _metaURI;
     projectByID[projectID].releaseNames.push(_releaseName);
-    emit ReleaseCreated(_teamName, _projectName, _releaseName, _metaCID, _msgSender());
+    emit ReleaseCreated(_teamName, _projectName, _releaseName, _metaURI, _msgSender());
   }
 
   /// Approve the release by adding the sender's address to the approvers list.
@@ -276,13 +276,13 @@ contract Valist is IValist, ERC2771Context {
     emit ProjectMemberRemoved(_teamName, _projectName, _address);   
   }
 
-  /// Sets the team metadata content ID. Requires the sender to be a member of the team.
+  /// Sets the team metadata URI. Requires the sender to be a member of the team.
   ///
   /// @param _teamName Name of the team.
-  /// @param _metaCID Metadata content ID.
-  function setTeamMetaCID(
+  /// @param _metaURI Metadata URI.
+  function setTeamMetaURI(
     string memory _teamName,
-    string memory _metaCID
+    string memory _metaURI
   )
     public
     override
@@ -291,21 +291,21 @@ contract Valist is IValist, ERC2771Context {
 
     require(teamByID[teamID].members.contains(_msgSender()), "err-team-member");
     require(bytes(metaByID[teamID]).length > 0, "err-team-not-exist");
-    require(bytes(_metaCID).length > 0, "err-empty-meta");
+    require(bytes(_metaURI).length > 0, "err-empty-meta");
 
-    metaByID[teamID] = _metaCID;
-    emit TeamUpdated(_teamName, _metaCID, _msgSender());
+    metaByID[teamID] = _metaURI;
+    emit TeamUpdated(_teamName, _metaURI, _msgSender());
   }
 
-  /// Sets the project metadata content ID. Requires the sender to be a member of the team.
+  /// Sets the project metadata URI. Requires the sender to be a member of the team.
   ///
   /// @param _teamName Name of the team.
   /// @param _projectName Name of the project.
-  /// @param _metaCID Metadata content ID.
-  function setProjectMetaCID(
+  /// @param _metaURI Metadata URI.
+  function setProjectMetaURI(
     string memory _teamName,
     string memory _projectName,
-    string memory _metaCID
+    string memory _metaURI
   )
     public
     override
@@ -315,16 +315,16 @@ contract Valist is IValist, ERC2771Context {
 
     require(teamByID[teamID].members.contains(_msgSender()), "err-team-member");
     require(bytes(metaByID[projectID]).length > 0, "err-proj-not-exist");
-    require(bytes(_metaCID).length > 0, "err-empty-meta");
+    require(bytes(_metaURI).length > 0, "err-empty-meta");
 
-    metaByID[projectID] = _metaCID;
-    emit ProjectUpdated(_teamName, _projectName, _metaCID, _msgSender());
+    metaByID[projectID] = _metaURI;
+    emit ProjectUpdated(_teamName, _projectName, _metaURI, _msgSender());
   }
 
-  /// Returns the team metadata CID.
+  /// Returns the team metadata URI.
   ///
   /// @param _teamName Name of the team.
-  function getTeamMetaCID(
+  function getTeamMetaURI(
     string memory _teamName
   )
     public
@@ -337,11 +337,11 @@ contract Valist is IValist, ERC2771Context {
     return metaByID[teamID];
   }
 
-  /// Returns the project metadata CID.
+  /// Returns the project metadata URI.
   ///
   /// @param _teamName Name of the team.
   /// @param _projectName Name of the project.
-  function getProjectMetaCID(
+  function getProjectMetaURI(
     string memory _teamName,
     string memory _projectName
   )
@@ -356,12 +356,12 @@ contract Valist is IValist, ERC2771Context {
     return metaByID[projectID];
   }
 
-  /// Returns the release metadata CID.
+  /// Returns the release metadata URI.
   ///
   /// @param _teamName Name of the team.
   /// @param _projectName Name of the project.
   /// @param _releaseName Name of the release.
-  function getReleaseMetaCID(
+  function getReleaseMetaURI(
     string memory _teamName,
     string memory _projectName,
     string memory _releaseName

@@ -608,7 +608,7 @@ describe("removeProjectMember", () => {
   });
 });
 
-describe("setTeamMetaCID", () => {
+describe("setTeamMetaURI", () => {
   it("Should emit TeamUpdated", async function() {
     const valist = await deployValist();
     const members = await getAddresses();
@@ -616,7 +616,7 @@ describe("setTeamMetaCID", () => {
     const createTeamTx = await valist.createTeam("acme", "Qm", members);
     await createTeamTx.wait();
 
-    await expect(valist.setTeamMetaCID("acme", "baf"))
+    await expect(valist.setTeamMetaURI("acme", "baf"))
       .to.emit(valist, "TeamUpdated");
   });
 
@@ -627,7 +627,7 @@ describe("setTeamMetaCID", () => {
     const createTeamTx = await valist.createTeam("acme", "Qm", members.slice(1));
     await createTeamTx.wait();
 
-    await expect(valist.setTeamMetaCID("acme", "baf"))
+    await expect(valist.setTeamMetaURI("acme", "baf"))
       .to.be.revertedWith('err-team-member');
   });
 
@@ -638,7 +638,7 @@ describe("setTeamMetaCID", () => {
     const createTeamTx = await valist.createTeam("acme", "Qm", members);
     await createTeamTx.wait();
 
-    await expect(valist.setTeamMetaCID("", "baf"))
+    await expect(valist.setTeamMetaURI("", "baf"))
       .to.be.revertedWith('err-team-member');
   });
 
@@ -649,12 +649,12 @@ describe("setTeamMetaCID", () => {
     const createTeamTx = await valist.createTeam("acme", "Qm", members);
     await createTeamTx.wait();
 
-    await expect(valist.setTeamMetaCID("acme", ""))
+    await expect(valist.setTeamMetaURI("acme", ""))
       .to.be.revertedWith('err-empty-meta');
   });
 });
 
-describe("setProjectMetaCID", () => {
+describe("setProjectMetaURI", () => {
   it("Should emit ProjectUpdated", async function() {
     const valist = await deployValist();
     const members = await getAddresses();
@@ -665,7 +665,7 @@ describe("setProjectMetaCID", () => {
     const createProjectTx = await valist.createProject("acme", "bin", "Qm", members);
     await createProjectTx.wait();
 
-    await expect(valist.setProjectMetaCID("acme", "bin", "baf"))
+    await expect(valist.setProjectMetaURI("acme", "bin", "baf"))
       .to.emit(valist, "ProjectUpdated");
   });
 
@@ -680,7 +680,7 @@ describe("setProjectMetaCID", () => {
     const createProjectTx = await valist.createProject("acme", "bin", "Qm", members);
     await createProjectTx.wait();
 
-    await expect(valist.connect(signers[1]).setProjectMetaCID("acme", "bin", "baf"))
+    await expect(valist.connect(signers[1]).setProjectMetaURI("acme", "bin", "baf"))
       .to.be.revertedWith('err-team-member');
   });
 
@@ -694,7 +694,7 @@ describe("setProjectMetaCID", () => {
     const createProjectTx = await valist.createProject("acme", "bin", "Qm", members);
     await createProjectTx.wait();
 
-    await expect(valist.setProjectMetaCID("", "bin", "baf"))
+    await expect(valist.setProjectMetaURI("", "bin", "baf"))
       .to.be.revertedWith('err-team-member');
   });
 
@@ -708,7 +708,7 @@ describe("setProjectMetaCID", () => {
     const createProjectTx = await valist.createProject("acme", "bin", "Qm", members);
     await createProjectTx.wait();
 
-    await expect(valist.setProjectMetaCID("acme", "", "baf"))
+    await expect(valist.setProjectMetaURI("acme", "", "baf"))
       .to.be.revertedWith('err-proj-not-exist');
   });
 
@@ -722,12 +722,12 @@ describe("setProjectMetaCID", () => {
     const createProjectTx = await valist.createProject("acme", "bin", "Qm", members);
     await createProjectTx.wait();
 
-    await expect(valist.setProjectMetaCID("acme", "bin", ""))
+    await expect(valist.setProjectMetaURI("acme", "bin", ""))
       .to.be.revertedWith('err-empty-meta');
   });
 });
 
-describe("getTeamMetaCID", () => {
+describe("getTeamMetaURI", () => {
   it("Should return team meta", async function() {
     const valist = await deployValist();
     const members = await getAddresses();
@@ -735,20 +735,20 @@ describe("getTeamMetaCID", () => {
     const createTeamTx = await valist.createTeam("acme", "Qm", members);
     await createTeamTx.wait();
 
-    const metaCID = await valist.getTeamMetaCID("acme");
-    expect(metaCID).to.equal("Qm");
+    const metaURI = await valist.getTeamMetaURI("acme");
+    expect(metaURI).to.equal("Qm");
   });
 
   it("Should fail with non existant team", async function() {
     const valist = await deployValist();
     const members = await getAddresses();
 
-    await expect(valist.getTeamMetaCID("acme"))
+    await expect(valist.getTeamMetaURI("acme"))
       .to.be.revertedWith('err-team-not-exist');
   });
 });
 
-describe("getProjectMetaCID", () => {
+describe("getProjectMetaURI", () => {
   it("Should return project meta", async function() {
     const valist = await deployValist();
     const members = await getAddresses();
@@ -759,20 +759,20 @@ describe("getProjectMetaCID", () => {
     const createProjectTx = await valist.createProject("acme", "bin", "Qm2", []);
     await createProjectTx.wait();
 
-    const metaCID = await valist.getProjectMetaCID("acme", "bin");
-    expect(metaCID).to.equal("Qm2");
+    const metaURI = await valist.getProjectMetaURI("acme", "bin");
+    expect(metaURI).to.equal("Qm2");
   });
 
   it("Should fail with non existant project", async function() {
     const valist = await deployValist();
     const members = await getAddresses();
 
-    await expect(valist.getProjectMetaCID("acme", "bin"))
+    await expect(valist.getProjectMetaURI("acme", "bin"))
       .to.be.revertedWith('err-proj-not-exist');
   });
 });
 
-describe("getReleaseMetaCID", () => {
+describe("getReleaseMetaURI", () => {
   it("Should return release meta", async function() {
     const valist = await deployValist();
     const members = await getAddresses();
@@ -786,15 +786,15 @@ describe("getReleaseMetaCID", () => {
     const createReleaseTx = await valist.createRelease("acme", "bin", "0.0.1", "Qm3");
     await createReleaseTx.wait();
 
-    const metaCID = await valist.getReleaseMetaCID("acme", "bin", "0.0.1");
-    expect(metaCID).to.equal("Qm3");
+    const metaURI = await valist.getReleaseMetaURI("acme", "bin", "0.0.1");
+    expect(metaURI).to.equal("Qm3");
   });
 
   it("Should fail with non existant release", async function() {
     const valist = await deployValist();
     const members = await getAddresses();
 
-    await expect(valist.getReleaseMetaCID("acme", "bin", "0.0.1"))
+    await expect(valist.getReleaseMetaURI("acme", "bin", "0.0.1"))
       .to.be.revertedWith('err-release-not-exist');
   });
 });
