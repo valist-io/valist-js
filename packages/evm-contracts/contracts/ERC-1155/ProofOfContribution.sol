@@ -24,7 +24,7 @@ contract ProofOfContribution is IERC1155MetadataURI, ERC1155, ERC2771Context {
         address _valistRegistry,
         address _trustedForwarder
     )
-        ERC1155("https://valist.io/api/{id}")
+        ERC1155("")
         ERC2771Context(_trustedForwarder)
     {
         valist = IValist(_valistRegistry);
@@ -51,8 +51,15 @@ contract ProofOfContribution is IERC1155MetadataURI, ERC1155, ERC2771Context {
 
     /// BEGIN TOKEN CONTRACT
 
-    uint256 public constant CONTRIBUTION = 0;
+    string public symbol = "CONTRIB";
+    string public name = "Proof of Contribution";
 
+    /// Mints a Proof of Contribution NFT.
+    ///
+    /// @param teamName Name of the team.
+    /// @param projectName Name of the project.
+    /// @param releaseName Unique name used to identify the release.
+    /// @param contributor Address of the recipient.
     function mint(
         string memory teamName,
         string memory projectName,
@@ -70,6 +77,12 @@ contract ProofOfContribution is IERC1155MetadataURI, ERC1155, ERC2771Context {
         _mint(contributor, releaseID, 1, "");
     }
 
+    /// Mints a Proof of Contribution NFT to multiple contributors
+    ///
+    /// @param teamName Name of the team.
+    /// @param projectName Name of the project.
+    /// @param releaseName Unique name used to identify the release.
+    /// @param contributors Addresses of the recipients.
     function mintBatch(
         string memory teamName,
         string memory projectName,
@@ -90,13 +103,17 @@ contract ProofOfContribution is IERC1155MetadataURI, ERC1155, ERC2771Context {
         }
     }
 
+    /// Fetches metaURI of the software the Proof of Contribution is linked to.
+    ///
+    /// @param id Unique releaseID generated from team, project, and version.
     function uri(uint256 id)
         public
         override(ERC1155, IERC1155MetadataURI)
         view
         returns (string memory)
     {
-        return valist.metaByID(id);
+        string memory gateway = "https://gateway.valist.io";
+        return string(abi.encodePacked(gateway, valist.metaByID(id)));
     }
 
 }

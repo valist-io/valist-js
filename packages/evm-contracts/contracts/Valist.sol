@@ -86,12 +86,13 @@ contract Valist is IValist, ERC2771Context {
     public
     override
   {
-    uint256 teamID = getTeamID(_teamName);
-
-    require(bytes(metaByID[teamID]).length == 0, "err-name-claimed");
     require(bytes(_metaURI).length > 0, "err-empty-meta");
     require(bytes(_teamName).length > 0, "err-empty-name");
     require(_members.length > 0, "err-empty-members");
+
+    uint256 teamID = getTeamID(_teamName);
+
+    require(bytes(metaByID[teamID]).length == 0, "err-name-claimed");
 
     metaByID[teamID] = _metaURI;
     teamNames.push(_teamName);
@@ -118,13 +119,14 @@ contract Valist is IValist, ERC2771Context {
     public
     override
   {
+    require(bytes(_metaURI).length > 0, "err-empty-meta");
+    require(bytes(_projectName).length > 0, "err-empty-name");
+
     uint256 teamID = getTeamID(_teamName);
     uint256 projectID = getProjectID(teamID, _projectName);
 
     require(isTeamMember(teamID, _msgSender()), "err-team-member");
     require(bytes(metaByID[projectID]).length == 0, "err-name-claimed");
-    require(bytes(_metaURI).length > 0, "err-empty-meta");
-    require(bytes(_projectName).length > 0, "err-empty-name");
 
     metaByID[projectID] = _metaURI;
     teamByID[teamID].projectNames.push(_projectName);
@@ -151,6 +153,10 @@ contract Valist is IValist, ERC2771Context {
     public
     override
   {
+    require(bytes(_metaURI).length > 0, "err-empty-meta");
+    require(bytes(_projectName).length > 0, "err-empty-name");
+    require(bytes(_releaseName).length > 0, "err-empty-name");
+
     uint256 teamID = getTeamID(_teamName);
     uint256 projectID = getProjectID(teamID, _projectName);
     uint256 releaseID = getReleaseID(projectID, _releaseName);
@@ -162,8 +168,6 @@ contract Valist is IValist, ERC2771Context {
     );
 
     require(bytes(metaByID[releaseID]).length == 0, "err-name-claimed");
-    require(bytes(_metaURI).length > 0, "err-empty-meta");
-    require(bytes(_releaseName).length > 0, "err-empty-name");
 
     metaByID[releaseID] = _metaURI;
     projectByID[projectID].releaseNames.push(_releaseName);
@@ -307,11 +311,12 @@ contract Valist is IValist, ERC2771Context {
     public
     override
   {
+    require(bytes(_metaURI).length > 0, "err-empty-meta");
+
     uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
 
     require(teamByID[teamID].members.contains(_msgSender()), "err-team-member");
     require(bytes(metaByID[teamID]).length > 0, "err-team-not-exist");
-    require(bytes(_metaURI).length > 0, "err-empty-meta");
 
     metaByID[teamID] = _metaURI;
     emit TeamUpdated(_teamName, _metaURI, _msgSender());
@@ -330,17 +335,21 @@ contract Valist is IValist, ERC2771Context {
     public
     override
   {
+    require(bytes(_metaURI).length > 0, "err-empty-meta");
+
     uint256 teamID = getTeamID(_teamName);
     uint256 projectID = getProjectID(teamID, _projectName);
 
     require(teamByID[teamID].members.contains(_msgSender()), "err-team-member");
     require(bytes(metaByID[projectID]).length > 0, "err-proj-not-exist");
-    require(bytes(_metaURI).length > 0, "err-empty-meta");
 
     metaByID[projectID] = _metaURI;
     emit ProjectUpdated(_teamName, _projectName, _metaURI, _msgSender());
   }
 
+  /// Generates teamID from teamName.
+  ///
+  /// @param _teamName Name of the team.
   function getTeamID(
     string memory _teamName
   )
@@ -352,6 +361,10 @@ contract Valist is IValist, ERC2771Context {
     return uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
   }
 
+  /// Generates projectID from teamID and projectName.
+  ///
+  /// @param _teamID Unique team ID.
+  /// @param _projectName Name of the project.
   function getProjectID(
     uint _teamID,
     string memory _projectName
@@ -364,6 +377,10 @@ contract Valist is IValist, ERC2771Context {
     return uint(keccak256(abi.encodePacked(_teamID, keccak256(bytes(_projectName)))));
   }
 
+  /// Generates releaseID from projectID and releaseName.
+  ///
+  /// @param _projectID Unique project ID.
+  /// @param _releaseName Name of the release.
   function getReleaseID(
     uint _projectID,
     string memory _releaseName
