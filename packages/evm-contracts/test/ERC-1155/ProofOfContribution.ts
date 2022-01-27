@@ -12,13 +12,19 @@ export async function deployProofOfContribution(registryAddress: string) {
     return PoC;
   }
 
+// {
+//     "name": "Proof of Contribution",
+//     "symbol": "CONTRIB",
+//     "description": "Valist Proof of Contribution NFT",
+//     "image": "https://gateway.valist.io/ipfs/QmWvcEXc6DzyHZFuMZpPZ5QHJTavcTwiXqbeaqJDACYNGx"
+// }
+const metaURI = "/ipfs/QmVteGgoFEZtnY2CCpt4rRdTSFkQucqo5wPibD5xJXoiQJ";
+
 describe("Proof of Contribution", () => {
     it("Should mint to a single contributor", async function() {
         this.timeout(1000000);
         const valist = await deployValist();
         const proof = await deployProofOfContribution(valist.address);
-
-        const metaURI = "/ipfs/QmVteGgoFEZtnY2CCpt4rRdTSFkQucqo5wPibD5xJXoiQJ";
 
         const signers = await ethers.getSigners();
     
@@ -85,7 +91,7 @@ describe("Proof of Contribution", () => {
       const members = await getAddresses();
       const signers = await ethers.getSigners();
 
-      const metaURI = "/ipfs/QmVteGgoFEZtnY2CCpt4rRdTSFkQucqo5wPibD5xJXoiQJ";
+      
   
       const createTeamTx = await valist.createTeam("acme", metaURI, members);
       await createTeamTx.wait();
