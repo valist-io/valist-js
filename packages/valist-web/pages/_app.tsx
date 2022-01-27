@@ -3,13 +3,15 @@ import type { AppProps } from 'next/app';
 import getConfig from 'next/config';
 import React, { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
+import { ApolloProvider } from '@apollo/client';
+import { Magic } from 'magic-sdk';
 
 import AccountContext from '../components/Accounts/AccountContext';
 import { LoginType, ValistProvider } from '../utils/Account/types';
 import { login, onAccountChanged } from '../utils/Account/index';
 import LoginForm from '../components/Accounts/LoginForm';
-import { Magic } from 'magic-sdk';
 import { newMagic } from '../utils/Providers';
+import client from "../utils/Apollo/client";
 
 function ValistApp({ Component, pageProps }: AppProps) {
   const { publicRuntimeConfig } = getConfig();
@@ -45,15 +47,17 @@ function ValistApp({ Component, pageProps }: AppProps) {
   }, []);
 
   useEffect(() => console.log("Address:", address), [address]);
-  
-  return (
-    <AccountContext.Provider value={accountState}>
-      <Component {...pageProps} />
-      {showLogin && <LoginForm 
-        setProvider={setProvider}
-        setAddress={setAddress}
-      />}
-    </AccountContext.Provider>
+
+  return ( 
+    <ApolloProvider client={client}>
+      <AccountContext.Provider value={accountState}>
+        <Component {...pageProps} />
+        {showLogin && <LoginForm 
+          setProvider={setProvider}
+          setAddress={setAddress}
+        />}
+      </AccountContext.Provider>
+    </ApolloProvider>
   );
 }
 
