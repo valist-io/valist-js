@@ -19,11 +19,11 @@ const SearchPage: NextPage = () => {
   const { data, loading, error } = useQuery(PROJECT_SEARCH_QUERY, {
     variables: { search: search },
   });
-  const [ list, setList ] = useState<Project[]>([]);
+  const [ list, setProjects ] = useState<Project[]>([]);
 
   useEffect(() => {
     if (data && data.projects){
-      setList(data.projects);
+      setProjects(data.projects);
     }
   }, [data, loading, error]);
 

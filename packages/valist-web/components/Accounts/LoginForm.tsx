@@ -1,4 +1,3 @@
-import { Magic } from 'magic-sdk';
 import React, { useEffect, useContext, useRef, useState } from 'react';
 import { login } from '../../utils/Account';
 import { LoginType, SetUseState, ValistProvider } from '../../utils/Account/types';

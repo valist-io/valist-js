@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { fetchJSONfromIPFS } from '../../utils/Ipfs';
 import AddressIdenticon from '../Identicons/AddressIdenticon';
 
-type SearchCardProps = {
-  name: string,
-  metaCID: string,
-};
-
 type ProjectMeta = {
   description: string,
 }
+
+interface SearchCardProps {
+  name: string,
+  metaCID: string,
+};
 
 export default function SearchCard(props: SearchCardProps): JSX.Element {
   let [ meta, setMeta ] = useState<ProjectMeta>({

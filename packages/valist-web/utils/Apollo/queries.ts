@@ -19,6 +19,24 @@ export const PROJECT_SEARCH_QUERY = gql`
   }
 `;
 
+export const PROJECT_PROFILE_QUERY = gql`
+  query ProjectProfile($project: String){
+    projects(where: { id: $project} ){
+      id
+      name
+      metaCID
+      releases{
+        tag
+        releaseCID
+      }
+      keys{
+        role
+        address
+      }
+    }
+  }
+`;
+
 export const ADDR_PROFILE_QUERY =  gql`
   query Keys($address: String){
     keys (where: { address: $address} ){

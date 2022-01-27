@@ -9,7 +9,7 @@ interface MagicLoginProps {
   setEmail: SetUseState<string>,
 };
 
-const MagicLogin = (props: MagicLoginProps) => {
+export default function MagicLogin(props: MagicLoginProps) {
   const accountCtx = useContext(AccountCtx);
   const [magicAddress, setMagicAddress] = useState<string>('');
   const [magicChecked, setMagicChecked] = useState<boolean>(false);
@@ -118,5 +118,3 @@ const MagicLogin = (props: MagicLoginProps) => {
     </div>
   );
 };
-
-export default MagicLogin;
