@@ -53,14 +53,12 @@ const PinReleaseMeta = async () => {
 
 async function bootstrap() {
   const accounts = await hre.ethers.getSigners();
-  const Valist = await hre.ethers.getContractFactory("Valist");
-  const valist = await Valist.deploy(
-    "0x9399BB24DBB5C4b782C70c2969F58716Ebbd6a3b"
-  );
-  await valist.deployed();
-
-  console.log("Valist deployed to:", valist.address);
-  console.log();
+  const valist = await hre.ethers.getContractAt("Valist", "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab");
+  // const Valist = await hre.ethers.getContractFactory("Valist");
+  // const valist = await Valist.deploy(
+  //   "0x9399BB24DBB5C4b782C70c2969F58716Ebbd6a3b"
+  // );
+  // await valist.deployed();
 
   const teamNames1 = ["test1", "test2", "test3", "test4"];
   // const orgNames2 = ["test5", "test6", "test7", "test8"];

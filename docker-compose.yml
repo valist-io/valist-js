@@ -4,6 +4,7 @@ services:
     image: trufflesuite/ganache
     ports:
       - '8545:8545'
+    command: ["--deterministic"]
   ipfs:
     image: ipfs/go-ipfs:v0.10.0
     ports:
@@ -30,7 +31,7 @@ services:
       postgres_db: graph-node
       ipfs: 'ipfs:5001'
       ethereum: 'ganache:http://ganache:8545'
-      RUST_LOG: info
+      GRAPH_LOG: debug
   postgres:
     image: postgres
     ports:

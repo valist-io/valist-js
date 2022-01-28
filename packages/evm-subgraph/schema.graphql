@@ -1,37 +1,41 @@
-type Release @entity {
+type Team @entity {
   id: ID!
-  project: Project!
-  tag: String!
-  releaseCID: String!
-  signers: [String!]!
+  name: String!
+  metaURI: String!
+  members: [String!]!
+  projects: [Project!]! @derivedFrom(field: "team")
+  createdTx: String!
+  updatedTx: String!
 }
 
 type Project @entity {
   id: ID!
+  name: String!
+  metaURI: String!
+  members: [String!]!
   team: Team!
-  name: String!
-  metaCID: String!
   releases: [Release!]! @derivedFrom(field: "project")
-  keys: [Key!]! @derivedFrom(field: "project")
+  createdTx: String!
+  updatedTx: String!
 }
 
-type Team @entity {
+type Release @entity {
   id: ID!
   name: String!
-  metaCID: String!
-  projects: [Project!]! @derivedFrom(field: "team")
-  keys: [Key!]! @derivedFrom(field: "team")
+  metaURI: String!
+  project: Project!
+  approvers: [String!]!
+  rejectors: [String!]!
+  createdTx: String!
+  updatedTx: String!
 }
 
-type Key @entity {
+type Log @entity {
   id: ID!
-  role: String!
-  address: String!
-  team: Team
-  project: Project
-}
-
-type Activity @entity {
-  id: ID!
-  text: String!
+  type: String!
+  team: String
+  project: String
+  release: String
+  member: String
+  sender: String
 }

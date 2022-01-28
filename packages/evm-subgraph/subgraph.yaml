@@ -6,30 +6,41 @@ dataSources:
     name: Valist
     network: ganache
     source:
-      address: "0x03330317C73a219a26FF34a05f58F4a6104cbcd4"
+      address: "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab"
       abi: Valist
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
-        - TeamCreated
-        - TeamUpdated
-        - TeamMemberAdded
-        - ProjectCreated
-        - ReleaseCreated
+        - Team
+        - Project
+        - Release
+        - Log
       abis:
         - name: Valist
-          file: ./abis/contracts/Valist.sol/Valist.json
+          file: ./abis/Valist.json
       eventHandlers:
         - event: TeamCreated(string,string,address)
           handler: handleTeamCreated
         - event: TeamUpdated(string,string,address)
           handler: handleTeamUpdate
-        - event: TeamMemberAdded(string,address)
+        - event: TeamMemberAdded(string,address,address)
           handler: handleTeamMemberAdded
+        - event: TeamMemberRemoved(string,address,address)
+          handler: handleTeamMemberRemoved
         - event: ProjectCreated(string,string,string,address)
           handler: handleProjectCreated
+        - event: ProjectUpdated(string,string,string,address)
+          handler: handleProjectUpdated
+        - event: ProjectMemberAdded(string,string,address,address)
+          handler: handleProjectMemberAdded
+        - event: ProjectMemberRemoved(string,string,address,address)
+          handler: handleProjectMemberRemoved
         - event: ReleaseCreated(string,string,string,string,address)
           handler: handleReleaseCreated
-      file: ./src/valist.ts
+        - event: ReleaseApproved(string,string,string,address)
+          handler: handleReleaseApproved
+        - event: ReleaseRejected(string,string,string,address)
+          handler: handleReleaseRejected
+      file: ./src/mapping.ts

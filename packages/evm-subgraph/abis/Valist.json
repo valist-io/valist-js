@@ -1,8 +1,15 @@
-{
-  "_format": "hh-sol-artifact-1",
-  "contractName": "IValist",
-  "sourceName": "contracts/IValist.sol",
-  "abi": [
+[
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_trustedForwarder",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
     {
       "anonymous": false,
       "inputs": [
@@ -21,13 +28,13 @@
         {
           "indexed": false,
           "internalType": "string",
-          "name": "_metaCID",
+          "name": "_metaURI",
           "type": "string"
         },
         {
           "indexed": false,
           "internalType": "address",
-          "name": "_member",
+          "name": "_sender",
           "type": "address"
         }
       ],
@@ -54,6 +61,12 @@
           "internalType": "address",
           "name": "_member",
           "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_sender",
+          "type": "address"
         }
       ],
       "name": "ProjectMemberAdded",
@@ -79,6 +92,12 @@
           "internalType": "address",
           "name": "_member",
           "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_sender",
+          "type": "address"
         }
       ],
       "name": "ProjectMemberRemoved",
@@ -102,13 +121,13 @@
         {
           "indexed": false,
           "internalType": "string",
-          "name": "_metaCID",
+          "name": "_metaURI",
           "type": "string"
         },
         {
           "indexed": false,
           "internalType": "address",
-          "name": "_member",
+          "name": "_sender",
           "type": "address"
         }
       ],
@@ -170,13 +189,13 @@
         {
           "indexed": false,
           "internalType": "string",
-          "name": "_metaCID",
+          "name": "_metaURI",
           "type": "string"
         },
         {
           "indexed": false,
           "internalType": "address",
-          "name": "_member",
+          "name": "_sender",
           "type": "address"
         }
       ],
@@ -226,7 +245,7 @@
         {
           "indexed": false,
           "internalType": "string",
-          "name": "_metaCID",
+          "name": "_metaURI",
           "type": "string"
         },
         {
@@ -253,6 +272,12 @@
           "internalType": "address",
           "name": "_member",
           "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_sender",
+          "type": "address"
         }
       ],
       "name": "TeamMemberAdded",
@@ -272,6 +297,12 @@
           "internalType": "address",
           "name": "_member",
           "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_sender",
+          "type": "address"
         }
       ],
       "name": "TeamMemberRemoved",
@@ -289,13 +320,13 @@
         {
           "indexed": false,
           "internalType": "string",
-          "name": "_metaCID",
+          "name": "_metaURI",
           "type": "string"
         },
         {
           "indexed": false,
           "internalType": "address",
-          "name": "_member",
+          "name": "_sender",
           "type": "address"
         }
       ],
@@ -380,7 +411,7 @@
         },
         {
           "internalType": "string",
-          "name": "_metaCID",
+          "name": "_metaURI",
           "type": "string"
         },
         {
@@ -413,7 +444,7 @@
         },
         {
           "internalType": "string",
-          "name": "_metaCID",
+          "name": "_metaURI",
           "type": "string"
         }
       ],
@@ -431,7 +462,7 @@
         },
         {
           "internalType": "string",
-          "name": "_metaCID",
+          "name": "_metaURI",
           "type": "string"
         },
         {
@@ -516,7 +547,7 @@
           "type": "string"
         }
       ],
-      "name": "getProjectMetaCID",
+      "name": "getProjectMetaURI",
       "outputs": [
         {
           "internalType": "string",
@@ -613,7 +644,7 @@
           "type": "string"
         }
       ],
-      "name": "getReleaseMetaCID",
+      "name": "getReleaseMetaURI",
       "outputs": [
         {
           "internalType": "string",
@@ -734,7 +765,7 @@
           "type": "string"
         }
       ],
-      "name": "getTeamMetaCID",
+      "name": "getTeamMetaURI",
       "outputs": [
         {
           "internalType": "string",
@@ -764,6 +795,25 @@
           "internalType": "string[]",
           "name": "",
           "type": "string[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "forwarder",
+          "type": "address"
+        }
+      ],
+      "name": "isTrustedForwarder",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
         }
       ],
       "stateMutability": "view",
@@ -847,11 +897,11 @@
         },
         {
           "internalType": "string",
-          "name": "_metaCID",
+          "name": "_metaURI",
           "type": "string"
         }
       ],
-      "name": "setProjectMetaCID",
+      "name": "setProjectMetaURI",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -865,18 +915,26 @@
         },
         {
           "internalType": "string",
-          "name": "_metaCID",
+          "name": "_metaURI",
           "type": "string"
         }
       ],
-      "name": "setTeamMetaCID",
+      "name": "setTeamMetaURI",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "versionRecipient",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
     }
-  ],
-  "bytecode": "0x",
-  "deployedBytecode": "0x",
-  "linkReferences": {},
-  "deployedLinkReferences": {}
-}
+  ]
