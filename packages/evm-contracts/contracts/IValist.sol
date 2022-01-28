@@ -6,18 +6,27 @@ interface IValist {
   /// @dev emitted when a new team is created
   event TeamCreated(string _teamName, string _metaURI, address _sender);
   /// @dev emitted when an exsting team is updated
-  event TeamUpdated(string _teamName, string _metaURI, address _member);
+  event TeamUpdated(string _teamName, string _metaURI, address _sender);
   /// @dev emitted when a new team member is added
-  event TeamMemberAdded(string _teamName, address _member);
+  event TeamMemberAdded(string _teamName, address _member, address _sender);
   /// @dev emitted when an existing team member is removed
-  event TeamMemberRemoved(string _teamName, address _member);
+  event TeamMemberRemoved(string _teamName, address _member, address _sender);
+
+  /// @dev emitted when a beneficiary is updated on a license.
+
+  event BeneficiaryUpdated(
+    uint256 _teamID,
+    address _oldBeneficiary,
+    address _newBeneficiary,
+    address _sender
+  );
 
   /// @dev emitted when a new project is created
   event ProjectCreated(
-    string _teamName, 
-    string _projectName, 
-    string _metaURI, 
-    address _member
+    string _teamName,
+    string _projectName,
+    string _metaURI,
+    address _sender
   );
 
   /// @dev emitted when an existing project is updated
@@ -25,30 +34,32 @@ interface IValist {
     string _teamName,
     string _projectName,
     string _metaURI,
-    address _member
+    address _sender
   );
 
   /// @dev emitted when a new project member is added
   event ProjectMemberAdded(
     string _teamName, 
-    string _projectName, 
-    address _member
+    string _projectName,
+    address _member, 
+    address _sender
   );
 
   /// @dev emitted when an existing project member is removed
   event ProjectMemberRemoved(
     string _teamName, 
     string _projectName, 
-    address _member
+    address _member,
+    address _sender
   );
 
   /// @dev emitted when a new release is created
   event ReleaseCreated(
-    string _teamName, 
-    string _projectName, 
-    string _releaseName, 
-    string _metaURI, 
-    address _member
+    string _teamName,
+    string _projectName,
+    string _releaseName,
+    string _metaURI,
+    address _sender
   );
 
   /// @dev emitted when an existing release is approved by a signer
@@ -80,6 +91,7 @@ interface IValist {
   function createTeam(
     string memory _teamName, 
     string memory _metaURI, 
+    address _beneficiary,
     address[] memory _members
   ) 
     external;
@@ -150,6 +162,16 @@ interface IValist {
   /// @param _address Address of member.
   function removeTeamMember(string memory _teamName, address _address) external;
 
+  /// Set team beneficiary address for recieving payments.
+  ///
+  /// @param _teamID Unique ID of the team.
+  /// @param _newBeneficiary Address of new beneficiary address.
+  function setBeneficiary(
+    uint256 _teamID,
+    address _newBeneficiary
+  )
+      external;
+
   /// Add a member to the project. Requires the sender to be a member of the team.
   ///
   /// @param _teamName Name of the team.
@@ -206,6 +228,16 @@ interface IValist {
     external
     view
     returns (uint);
+
+  /// Fetches team beneficiary address.
+  ///
+  /// @param _teamID Unique ID of the team.
+  function getTeamBeneficiary(
+    uint256 _teamID
+  )
+    external
+    view
+    returns (address);
 
   /// Generates projectID from teamID and projectName.
   ///

@@ -28,7 +28,7 @@ describe("Proof of Contribution", () => {
 
         const signers = await ethers.getSigners();
     
-        const createTeamTx = await valist.createTeam("acme", metaURI, [signers[0].address]);
+        const createTeamTx = await valist.createTeam("acme", metaURI, signers[0].address, [signers[0].address]);
         await createTeamTx.wait();
     
         const createProjectTx = await valist.createProject("acme", "bin", metaURI, []);
@@ -60,7 +60,7 @@ describe("Proof of Contribution", () => {
 
         const signers = await ethers.getSigners();
     
-        const createTeamTx = await valist.createTeam("acme", metaURI, [signers[0].address]);
+        const createTeamTx = await valist.createTeam("acme", metaURI, signers[0].address, [signers[0].address]);
         await createTeamTx.wait();
     
         const createProjectTx = await valist.createProject("acme", "bin", metaURI, []);
@@ -93,7 +93,7 @@ describe("Proof of Contribution", () => {
 
       
   
-      const createTeamTx = await valist.createTeam("acme", metaURI, members);
+      const createTeamTx = await valist.createTeam("acme", metaURI, signers[0].address, members);
       await createTeamTx.wait();
   
       const createProjectTx = await valist.createProject("acme", "bin", metaURI, members);
