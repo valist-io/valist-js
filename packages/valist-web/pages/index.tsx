@@ -5,6 +5,7 @@ import HomepageActivity from '../components/Homepage/HomepageActivity';
 import HomepageLinks from '../components/Homepage/HomepageLinks';
 import HomepageProfileCard from '../components/Homepage/HomepageProfileCard';
 import Layout from '../components/Layouts/Main';
+import ProjectList from '../components/Projects/ProjectList';
 
 const Home: NextPage = () => {
   const accountCtx = useContext(AccountContext);
@@ -16,6 +17,7 @@ const Home: NextPage = () => {
         {/* Left column */}
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
           <HomepageProfileCard address={accountCtx.address} view={view} setView={setView} />
+          <ProjectList />
         </div>
         {/* Right column */}
         <div className="grid grid-cols-1 gap-4">

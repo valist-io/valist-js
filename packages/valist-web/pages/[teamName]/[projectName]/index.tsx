@@ -6,7 +6,7 @@ import ProjectContent from "../../../components/Projects/ProjectContent";
 import ProjectMetaCard from "../../../components/Projects/ProjectMetaCard";
 import ProjectProfileCard from "../../../components/Projects/ProjectProfileCard";
 import { PROJECT_PROFILE_QUERY } from "../../../utils/Apollo/queries";
-import { Key, Release, ReleaseMeta } from "../../../utils/Apollo/types";
+import { Key, ProjectMeta, Release, ReleaseMeta } from "../../../utils/Apollo/types";
 import { parseCID } from "../../../utils/Ipfs";
 
 export default function ProjectPage():JSX.Element {
@@ -17,6 +17,10 @@ export default function ProjectPage():JSX.Element {
     variables: { project: `${teamName}/${projectName}` },
   });
   const [view, setView] = useState<string>('Readme');
+  const [projectMeta, setProjectMeta] = useState<ProjectMeta>({
+    name: 'loading',
+    description: 'loading',
+  });
   const [members, setMembers] = useState<Key[]>([]);
   const [releases, setReleases] = useState<Release[]>([]);
   const [releaseMeta, setReleaseMeta] = useState<ReleaseMeta>({
@@ -30,10 +34,9 @@ export default function ProjectPage():JSX.Element {
     },
   });
 
-  const fetchReleaseMeta = async (data:any) => {
-    const release = data.projects[0].releases[0];
-    if (release && release.releaseCID !== '') {
-      const parsedCID = parseCID(release.releaseCID);
+  const fetchReleaseMeta = async (release: Release) => {
+    if (release && release.releaseURI !== '') {
+      const parsedCID = parseCID(release.releaseURI);
       const requestURL = `http://localhost:8080/ipfs/${parsedCID}`;
       try {
         const req = await fetch(requestURL);
@@ -41,7 +44,7 @@ export default function ProjectPage():JSX.Element {
         if (Object.keys(metaJson.artifacts).length === 0) {
           metaJson.artifacts.artifact = {
             sha256: '',
-            provider: release.releaseCID,
+            provider: release.releaseURI,
           };
         }
         setReleaseMeta(metaJson);
@@ -49,11 +52,22 @@ export default function ProjectPage():JSX.Element {
     }
   };
 
+const fetchProjectMeta = async (metaCID: string) => {
+  const parsedCID = parseCID(metaCID);
+  const requestURL = `http://localhost:8080/ipfs/${parsedCID}`;
+  try {
+    const req = await fetch(requestURL);
+    const metaJson:ProjectMeta = await req.json();
+    setProjectMeta(metaJson);
+  } catch (e) { /* TODO Handle */ }
+};
+
   useEffect(() => {
-    if (data && data.projects) {
-      setMembers(data.projects[0].keys);
+    if (data && data.projects && data.projects[0].members) {
+      setMembers(data.projects[0].members);
       setReleases(data.projects[0].releases);
-      fetchReleaseMeta(data);
+      fetchReleaseMeta(data.projects[0].releases[0]);
+      fetchProjectMeta(data.projects[0].metaURI);
     }
   }, [data, loading, error]);
   
@@ -77,9 +91,10 @@ export default function ProjectPage():JSX.Element {
         </div>
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
           <ProjectMetaCard 
-            releaseMeta={releaseMeta} 
-            teamName={teamName} 
+            teamName={teamName}
             projectName={projectName} 
+            projectMeta={projectMeta} 
+            releaseMeta={releaseMeta} 
           />
         </div>
       </div>

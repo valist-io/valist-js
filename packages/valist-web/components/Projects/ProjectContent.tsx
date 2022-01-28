@@ -28,9 +28,9 @@ export default function RepoContent(props: ReleaseListProps): JSX.Element {
         return (<ProjectMemberList members={props.members} />);
       case 'Versions':
         return (<ReleaseList
-          repoReleases={props.projectReleases}
-          orgName={props.teamName}
-          repoName={props.projectName}
+          projectReleases={props.projectReleases}
+          teamName={props.teamName}
+          projectName={props.projectName}
         />);
       case 'Dependencies':
         return <RepoDependencies releaseMeta={props.releaseMeta} />;

@@ -3,13 +3,13 @@ import { parseCID } from '../../utils/Ipfs';
 import DownloadBox from './DownloadBox';
 
 interface ReleaseListProps {
-  repoReleases: Release[],
-  orgName: string,
-  repoName: string,
+  projectReleases: Release[],
+  teamName: string,
+  projectName: string,
 }
 
 export default function ReleaseList(props: ReleaseListProps): JSX.Element {
-  const { orgName, repoName } = props;
+  const { teamName, projectName, projectReleases} = props;
   return (
     <div className="flex flex-col">
       <div className="-my-2 sm:-mx-6 lg:-mx-8">
@@ -42,22 +42,22 @@ export default function ReleaseList(props: ReleaseListProps): JSX.Element {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {props.repoReleases.map((release: any) => (
-                  <tr key={release.releaseCID}>
+                {projectReleases.map((release: Release) => (
+                  <tr key={release.releaseURI}>
                     <td className="px-4 py-4 whitespace-nowrap text-left text-sm font-medium text-gray-900">
                       {release.tag}
                     </td>
                     <td className="hidden lg:block px-4 py-6 whitespace-nowrap text-left
                     text-sm text-gray-500 hover:text-indigo-500">
                       <a className="cursor-pointer"
-                        href={`https://gateway.valist.io/ipfs/${parseCID(release.releaseCID)}`}>
-                        {parseCID(release.releaseCID)}
+                        href={`https://gateway.valist.io/ipfs/${parseCID(release.releaseURI)}`}>
+                        {parseCID(release.releaseURI)}
                       </a>
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <DownloadBox
-                        releaseCID={release.releaseCID}
-                        releaseName={`${orgName}_${repoName}@${release.tag}`}
+                        releaseURI={release.releaseURI}
+                        releaseName={`${teamName}_${projectName}@${release.tag}`}
                       />
                     </td>
                   </tr>

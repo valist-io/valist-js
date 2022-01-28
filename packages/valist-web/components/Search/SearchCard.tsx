@@ -8,7 +8,7 @@ type ProjectMeta = {
 
 interface SearchCardProps {
   name: string,
-  metaCID: string,
+  metaURI: string,
 };
 
 export default function SearchCard(props: SearchCardProps): JSX.Element {
@@ -17,13 +17,13 @@ export default function SearchCard(props: SearchCardProps): JSX.Element {
   });
 
   useEffect(() => {
-    fetchJSONfromIPFS(props.metaCID).then((metaJson) => {
+    fetchJSONfromIPFS(props.metaURI).then((metaJson) => {
       setMeta(JSON.parse(metaJson));
     });
-  }, [props.metaCID]);
+  }, [props.metaURI]);
   
   return (
-    <div className="bg-white p-4 border border-gray-200 rounded-md flex hover:border-indigo-300">
+    <div className="bg-white p-8 border border-gray-200 rounded-md flex hover:border-indigo-300">
       <div className="flex-shrink-0 mr-10">
         <AddressIdenticon address={props.name} height={56} />
       </div>

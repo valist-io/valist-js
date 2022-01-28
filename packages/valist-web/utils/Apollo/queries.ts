@@ -9,12 +9,56 @@ export const ACT_QUERY = gql`
   }
 `;
 
+export const USER_PROJECTS = gql`
+  query Projects($address: String){
+    members (where: { address: $address} ){
+      id
+      address
+      team{
+        id
+        projects{
+          id
+          metaURI
+          name
+        }
+      }
+      project {
+        id
+        name
+        metaURI
+        team{
+          id
+        }
+      }
+    }
+  }
+`;
+
+export const TEAM_PROFILE_QUERY = gql`
+  query Team($team: String) {
+    teams(where: { id: $team} ){
+      id
+      metaURI
+      members{
+        id
+        address
+      }
+      projects{
+        id
+        name
+        metaURI
+      }
+    }
+  }
+`;
+
+
 export const PROJECT_SEARCH_QUERY = gql`
   query Project($search: String){
     projects(where: { name_contains: $search} ){
       id
       name
-      metaCID
+      metaURI
     }
   }
 `;
@@ -24,12 +68,12 @@ export const PROJECT_PROFILE_QUERY = gql`
     projects(where: { id: $project} ){
       id
       name
-      metaCID
+      metaURI
       releases{
         tag
-        releaseCID
+        releaseURI
       }
-      keys{
+      members{
         role
         address
       }
@@ -38,24 +82,23 @@ export const PROJECT_PROFILE_QUERY = gql`
 `;
 
 export const ADDR_PROFILE_QUERY =  gql`
-  query Keys($address: String){
+  query AddrProfile($address: String){
     keys (where: { address: $address} ){
       id
       address
-      org{
+      team{
         id
-        name
-        repos{
+        project{
           id
-          metaCID
+          metaURI
           name
         }
       }
-      repo {
+      project {
         id
         name
-        metaCID
-        org{
+        metaURI
+        team{
           name
         }
       }

@@ -10,7 +10,7 @@ import { PROJECT_SEARCH_QUERY } from '../../utils/Apollo/queries';
 type Project = {
   id: string,
   name: string,
-  metaCID: string,
+  metaURI: string,
 }
 
 const SearchPage: NextPage = () => {
@@ -37,7 +37,7 @@ const SearchPage: NextPage = () => {
           {list.map((project: Project) => (
             <Link key={project.id} href={`/${project.id}`}>
               <a>
-                <SearchCard name={project.id} metaCID={project.metaCID}/>
+                <SearchCard name={project.id} metaURI={project.metaURI}/>
               </a>
             </Link>
           ))}

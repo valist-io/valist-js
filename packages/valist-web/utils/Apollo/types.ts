@@ -1,7 +1,7 @@
 
 export type Release = {
   tag: string,
-  releaseCID: string,
+  releaseURI: string,
 }
 
 export type Key = {
@@ -12,7 +12,7 @@ export type Key = {
 export type Project = {
     id: string,
     name: string,
-    metaCID: string,
+    metaURI: string,
     releases: Release[],
     keys: Key[],
 }
@@ -25,6 +25,7 @@ export declare type ReleaseArtifact = {
 export declare type ProjectMeta = {
   name: string;
   description: string;
+  repository?: string,
   homepage?: string;
 };
 

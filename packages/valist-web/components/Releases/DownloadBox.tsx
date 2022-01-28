@@ -7,12 +7,12 @@ import { classNames } from '../../utils/Styles';
 import { parseCID } from '../../utils/Ipfs';
 
 interface DownloadBoxProps {
-  releaseCID: string,
+  releaseURI: string,
   releaseName: string,
 }
 
 interface ReleaseDownloadsProps {
-  releaseCID: string,
+  releaseURI: string,
   releaseArtifacts: string[],
   setChosenArtifact: Dispatch<any>,
 }
@@ -104,7 +104,7 @@ export default function DownloadBox(props: DownloadBoxProps) {
   };
 
   const fetchData = async () => {
-    const parsedCID = parseCID(props.releaseCID);
+    const parsedCID = parseCID(props.releaseURI);
     const url = `https://gateway.valist.io/ipfs/${parsedCID}`;
     let artifactNames: string[] = [];
     let response: any;
@@ -139,7 +139,7 @@ export default function DownloadBox(props: DownloadBoxProps) {
           <div className="relative z-0 inline-flex shadow-sm rounded-md divide-x divide-indigo-600">
             <div onClick={() => {
               if (chosenArtifact === 'artifact') {
-                artifactFromCID(props.releaseCID);
+                artifactFromCID(props.releaseURI);
               } else if (chosenArtifact !== '' && chosenArtifact !== 'artifact') {
                 artifactFromName(chosenArtifact);
               } else {
@@ -160,7 +160,7 @@ export default function DownloadBox(props: DownloadBoxProps) {
         </div>
         <ReleaseDownloads
           releaseArtifacts={releaseArtifacts}
-          releaseCID={props.releaseCID}
+          releaseURI={props.releaseURI}
           setChosenArtifact={setChosenArtifact}
         />
       </div>
