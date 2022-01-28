@@ -16,9 +16,9 @@ export async function deployProofOfContribution(registryAddress: string) {
 //     "name": "Proof of Contribution",
 //     "symbol": "CONTRIB",
 //     "description": "Valist Proof of Contribution NFT",
-//     "image": "https://gateway.valist.io/ipfs/QmWvcEXc6DzyHZFuMZpPZ5QHJTavcTwiXqbeaqJDACYNGx"
+//     "image": "https://gateway.valist.io/ipfs/QmfPeC65TKPbA3dxE314Boh82LX5NpkcrPXonCxUuKh6vr"
 // }
-const metaURI = "/ipfs/QmVteGgoFEZtnY2CCpt4rRdTSFkQucqo5wPibD5xJXoiQJ";
+const metaURI = "/ipfs/QmNjwLntRGfSrWo1y2DYYZaXFoRioNGCGtAXRknYZ8Foqd";
 
 describe("Proof of Contribution", () => {
     it("Should mint to a single contributor", async function() {
