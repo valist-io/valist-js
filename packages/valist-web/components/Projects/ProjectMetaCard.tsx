@@ -20,7 +20,7 @@ const ProjectMetaCard = (props: RepoMetaCardProps) => {
     (async () => {
       try {
         if (teamName && projectName) {
-          const downloads = await fetch(`https://stats.valist.io/api/downloads/?package=${teamName}/${projectName}`);
+          const downloads = await fetch(`https://stats.valist.io/api/downloads/${teamName}/${projectName}`);
           const json = await downloads.json();
           setDownloads(json.downloads);
         }
