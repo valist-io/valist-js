@@ -2,7 +2,7 @@ type Team @entity {
   id: ID!
   name: String!
   metaURI: String!
-  members: [String!]!
+  members: [User!]!
   projects: [Project!]! @derivedFrom(field: "team")
   createdTx: String!
   updatedTx: String!
@@ -12,7 +12,7 @@ type Project @entity {
   id: ID!
   name: String!
   metaURI: String!
-  members: [String!]!
+  members: [User!]!
   team: Team!
   releases: [Release!]! @derivedFrom(field: "project")
   createdTx: String!
@@ -24,10 +24,18 @@ type Release @entity {
   name: String!
   metaURI: String!
   project: Project!
-  approvers: [String!]!
-  rejectors: [String!]!
+  approvers: [User!]!
+  rejectors: [User!]!
   createdTx: String!
   updatedTx: String!
+}
+
+type User @entity {
+  id: ID!
+  teams: [Team!]!
+  projects: [Project!]!
+  approved: [Release!]!
+  rejected: [Release!]!
 }
 
 type Log @entity {

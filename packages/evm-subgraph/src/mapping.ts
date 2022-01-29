@@ -1,4 +1,4 @@
-import { Team, Release, Project, Log } from "../generated/schema";
+import { Team, Release, Project, User, Log } from "../generated/schema";
 
 import {
   Valist,
@@ -59,11 +59,17 @@ export function handleTeamMemberAdded(event: TeamMemberAdded): void {
   let team = Team.load(teamID.toHex());
   if (team == null) team = new Team(teamID.toHex());
 
-  const members = new Set<string>();
-  for (let i = 0; i < team.members.length; i++) {
-    members.add(team.members[i]);
-  }
+  let user = User.load(event.params._member.toHex());
+  if (user == null) user = new User(event.params._member.toHex());
+
+  const teams = _arrayToSet(user.projects);
+  teams.add(teamID.toHex());
+
+  const members = _arrayToSet(team.members);
   members.add(event.params._member.toHex());
+
+  user.teams = teams.values();
+  user.save();
 
   team.name = event.params._teamName;
   team.members = members.values();
@@ -85,11 +91,17 @@ export function handleTeamMemberRemoved(event: TeamMemberRemoved): void {
   let team = Team.load(teamID.toHex());
   if (team == null) team = new Team(teamID.toHex());
 
-  const members = new Set<string>();
-  for (let i = 0; i < team.members.length; i++) {
-    members.add(team.members[i]);
-  }
+  let user = User.load(event.params._member.toHex());
+  if (user == null) user = new User(event.params._member.toHex());
+
+  const teams = _arrayToSet(user.projects);
+  teams.delete(teamID.toHex());
+
+  const members = _arrayToSet(team.members);
   members.delete(event.params._member.toHex());
+
+  user.teams = teams.values();
+  user.save();
 
   team.name = event.params._teamName;
   team.members = members.values();
@@ -155,11 +167,17 @@ export function handleProjectMemberAdded(event: ProjectMemberAdded): void {
   let project = Project.load(projectID.toHex())
   if (project == null) project = new Project(projectID.toHex());
 
-  const members = new Set<string>();
-  for (let i = 0; i < project.members.length; i++) {
-    members.add(project.members[i]);
-  }
+  let user = User.load(event.params._member.toHex());
+  if (user == null) user = new User(event.params._member.toHex());
+
+  const projects = _arrayToSet(user.projects);
+  projects.add(projectID.toHex());
+
+  const members = _arrayToSet(project.members);
   members.add(event.params._member.toHex());
+
+  user.projects = projects.values();
+  user.save();
 
   project.name = event.params._projectName;
   project.team = teamID.toHex();
@@ -184,11 +202,17 @@ export function handleProjectMemberRemoved(event: ProjectMemberRemoved): void {
   let project = Project.load(projectID.toHex())
   if (project == null) project = new Project(projectID.toHex());
 
-  const members = new Set<string>();
-  for (let i = 0; i < project.members.length; i++) {
-    members.add(project.members[i]);
-  }
+  let user = User.load(event.params._member.toHex());
+  if (user == null) user = new User(event.params._member.toHex());
+
+  const projects = _arrayToSet(user.projects);
+  projects.delete(projectID.toHex());
+
+  const members = _arrayToSet(project.members);
   members.delete(event.params._member.toHex());
+
+  user.projects = projects.values();
+  user.save();
 
   project.name = event.params._projectName;
   project.team = teamID.toHex();
@@ -237,18 +261,24 @@ export function handleReleaseApproved(event: ReleaseApproved): void {
   let release = Release.load(releaseID.toHex());
   if (release == null) release = new Release(releaseID.toHex());
 
-  const approvers = new Set<string>();
-  const rejectors = new Set<string>();
+  let user = User.load(event.params._sender.toHex());
+  if (user == null) user = new User(event.params._sender.toHex());
 
-  for(let i = 0; i < release.approvers.length; i++) {
-    approvers.add(release.approvers[i]);
-  }
-  for (let i = 0; i < release.rejectors.length; i++) {
-    rejectors.add(release.rejectors[i]);
-  }
-
+  const approvers = _arrayToSet(release.approvers);
   approvers.add(event.params._sender.toHex());
+
+  const rejectors = _arrayToSet(release.rejectors);
   rejectors.delete(event.params._sender.toHex());
+
+  const approved = _arrayToSet(user.approved);
+  approved.add(releaseID.toHex());
+
+  const rejected = _arrayToSet(user.rejected);
+  rejected.delete(releaseID.toHex());
+
+  user.rejected = rejected.values();
+  user.approved = approved.values();
+  user.save();
 
   release.name = event.params._releaseName;
   release.project = projectID.toHex();
@@ -274,18 +304,24 @@ export function handleReleaseRejected(event: ReleaseRejected): void {
   let release = Release.load(releaseID.toHex());
   if (release == null) release = new Release(releaseID.toHex());
 
-  const approvers = new Set<string>();
-  const rejectors = new Set<string>();
+  let user = User.load(event.params._sender.toHex());
+  if (user == null) user = new User(event.params._sender.toHex());
 
-  for(let i = 0; i < release.approvers.length; i++) {
-    approvers.add(release.approvers[i]);
-  }
-  for (let i = 0; i < release.rejectors.length; i++) {
-    rejectors.add(release.rejectors[i]);
-  }
-
+  const approvers = _arrayToSet(release.approvers);
   approvers.delete(event.params._sender.toHex());
+
+  const rejectors = _arrayToSet(release.rejectors);
   rejectors.add(event.params._sender.toHex());
+
+  const approved = _arrayToSet(user.approved);
+  approved.delete(releaseID.toHex());
+
+  const rejected = _arrayToSet(user.rejected);
+  rejected.add(releaseID.toHex());
+
+  user.rejected = rejected.values();
+  user.approved = approved.values();
+  user.save();
 
   release.name = event.params._releaseName;
   release.project = projectID.toHex();
@@ -300,4 +336,12 @@ export function handleReleaseRejected(event: ReleaseRejected): void {
   log.release = event.params._releaseName;
   log.sender = event.params._sender.toHex();
   log.save();
+}
+
+function _arrayToSet(arr: Array<string>): Set<string> {
+  const set = new Set<string>();
+  for (let i = 0; i < arr.length; i++) {
+    set.add(arr[i]);
+  }
+  return set;
 }
