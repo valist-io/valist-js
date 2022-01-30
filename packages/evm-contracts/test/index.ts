@@ -142,18 +142,18 @@ describe("createRelease", () => {
       .to.emit(valist, 'ReleaseCreated');
   });
 
-  it("Should fail with no project member", async function() {
+  it("Should publish with no project member", async function() {
     const valist = await deployValist();
     const members = await getAddresses();
 
     const createTeamTx = await valist.createTeam("acme", "Qm", members);
     await createTeamTx.wait();
 
-    const createProjectTx = await valist.createProject("acme", "bin", "Qm", members.slice(1));
+    const createProjectTx = await valist.createProject("acme", "bin", "Qm", []);
     await createProjectTx.wait();
 
     await expect(valist.createRelease("acme", "bin", "0.0.1", "Qm"))
-      .to.be.revertedWith('err-proj-member');
+      .to.emit(valist, 'ReleaseCreated');
   });
 
   it("Should fail with claimed name", async function() {
@@ -212,7 +212,7 @@ describe("createRelease", () => {
     await createProjectTx.wait();
 
     await expect(valist.createRelease("acme", "", "0.0.1", "Qm"))
-      .to.be.revertedWith('err-proj-member');
+      .to.be.revertedWith('err-empty-name');
   });
 
   it("Should fail with empty meta", async function() {
@@ -727,6 +727,63 @@ describe("setProjectMetaURI", () => {
   });
 });
 
+describe("getTeamID", () => {
+  it("Should generate teamID from teamName", async function () {
+    const valist = await deployValist();
+    const members = await getAddresses();
+
+    const createTeamTx = await valist.createTeam("acme", "Qm1", members);
+    await createTeamTx.wait();
+
+    const teamID = await valist.getTeamID("acme");
+
+    expect(teamID.toHexString()).to.equal("0xd536bdbb7dd07f6d4a73e4ad4defa1c64e0078a4d77d4fc1cbf62b2c57ca9ef9");
+  })
+});
+
+describe("getProjectID", () => {
+  it("Should generate projectID from teamID and projectName", async function () {
+    const valist = await deployValist();
+    const members = await getAddresses();
+
+    const createTeamTx = await valist.createTeam("acme", "Qm1", members);
+    await createTeamTx.wait();
+
+    const createProjectTx = await valist.createProject("acme", "bin", "Qm2", members);
+    await createProjectTx.wait();
+
+    const teamID = await valist.getTeamID("acme");
+    const projectID = await valist.getProjectID(teamID, "bin");
+
+    expect(teamID.toHexString()).to.equal("0xd536bdbb7dd07f6d4a73e4ad4defa1c64e0078a4d77d4fc1cbf62b2c57ca9ef9");
+    expect(projectID.toHexString()).to.equal("0x1a240c874444b80e555f1c03ed5daec7f099acda27441020ef344496a5fd81d5");
+  })
+});
+
+describe("getReleaseID", () => {
+  it("Should generate releaseID from projectID and releaseName", async function () {
+    const valist = await deployValist();
+    const members = await getAddresses();
+
+    const createTeamTx = await valist.createTeam("acme", "Qm1", members);
+    await createTeamTx.wait();
+
+    const createProjectTx = await valist.createProject("acme", "bin", "Qm2", members);
+    await createProjectTx.wait();
+
+    const createReleaseTx = await valist.createRelease("acme", "bin", "0.0.1", "Qm3");
+    await createReleaseTx.wait();
+
+    const teamID = await valist.getTeamID("acme");
+    const projectID = await valist.getProjectID(teamID, "bin");
+    const releaseID = await valist.getReleaseID(projectID, "0.0.1");
+
+    expect(teamID.toHexString()).to.equal("0xd536bdbb7dd07f6d4a73e4ad4defa1c64e0078a4d77d4fc1cbf62b2c57ca9ef9");
+    expect(projectID.toHexString()).to.equal("0x1a240c874444b80e555f1c03ed5daec7f099acda27441020ef344496a5fd81d5");
+    expect(releaseID.toHexString()).to.equal("0x961bc62a541f18ddd675b881528d3482ef44658f76a61398763fdeb19fa9dd0e");
+  })
+});
+
 describe("getTeamMetaURI", () => {
   it("Should return team meta", async function() {
     const valist = await deployValist();
@@ -947,7 +1004,7 @@ describe("getReleaseRejections", () => {
   });
 });
 
-async function deployValist() {
+export async function deployValist() {
   const Valist = await ethers.getContractFactory("Valist");
   const valist = await Valist.deploy("0x9399BB24DBB5C4b782C70c2969F58716Ebbd6a3b");
   
@@ -955,7 +1012,7 @@ async function deployValist() {
   return valist;
 }
 
-async function getAddresses() {
+export async function getAddresses() {
   const signers = await ethers.getSigners();
   return signers.map((acct) => acct.address);
 }

@@ -8,14 +8,7 @@ module.exports = {
     '@typescript-eslint/eslint-plugin',
   ],
   extends: [
+    'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
-    'airbnb-typescript/base'
   ],
-  rules: {
-    'no-console': 'off',
-    'no-plusplus': 'off',
-    'class-methods-use-this': 'off',
-    'import/prefer-default-export': 'off',
-    'max-len': ['error', { 'code': 120 }],
-  }
 };

@@ -2,6 +2,7 @@ import { task } from "hardhat/config";
 import "@nomiclabs/hardhat-waffle";
 import "hardhat-gas-reporter";
 import "hardhat-contract-sizer";
+import "hardhat-abi-exporter";
 
 task("accounts", "Prints the list of accounts", async (args, hre) => {
   const accounts = await hre.ethers.getSigners();
@@ -23,7 +24,7 @@ module.exports = {
   },
   networks: {
     local: {
-      url: "http://127.0.0.1:7545",
+      url: "http://localhost:8545",
     },
   },
   gasReporter: {
@@ -35,5 +36,10 @@ module.exports = {
     alphaSort: true,
     runOnCompile: true,
     disambiguatePaths: false,
+  },
+  abiExporter: { 
+    path: './abis',
+    clear: true,
+    flat: true,
   },
 };
