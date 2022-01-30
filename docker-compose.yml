@@ -1,5 +1,17 @@
 version: '3'
 services:
+  ganache:
+    image: trufflesuite/ganache
+    ports:
+      - '8545:8545'
+    command: ["--deterministic"]
+  ipfs:
+    image: ipfs/go-ipfs:v0.10.0
+    ports:
+      - '4001:4001/tcp'
+      - '4001:4001/udp'
+      - '5001:5001'
+      - '8080:8080'
   graph-node:
     image: graphprotocol/graph-node
     ports:
@@ -9,15 +21,17 @@ services:
       - '8030:8030'
       - '8040:8040'
     depends_on:
+      - ganache
       - postgres
+      - ipfs
     environment:
       postgres_host: postgres
       postgres_user: graph-node
       postgres_pass: let-me-in
       postgres_db: graph-node
-      ipfs: 'host.docker.internal:5001'
-      ethereum: 'ganache:http://host.docker.internal:7545'
-      RUST_LOG: info
+      ipfs: 'ipfs:5001'
+      ethereum: 'ganache:http://ganache:8545'
+      GRAPH_LOG: debug
   postgres:
     image: postgres
     ports:
@@ -27,5 +41,3 @@ services:
       POSTGRES_USER: graph-node
       POSTGRES_PASSWORD: let-me-in
       POSTGRES_DB: graph-node
-    volumes:
-      - ./data/postgres:/var/lib/postgresql/data

@@ -3,7 +3,6 @@
   "scripts": {
     "compile": "hardhat compile",
     "test": "hardhat test",
-    "blockchain": "hardhat node",
     "export-abi": "hardhat export-abi",
     "bootstrap": "hardhat run scripts/bootstrap.ts --network local",
     "deploy:local": "hardhat run scripts/deploy.ts --network local",
