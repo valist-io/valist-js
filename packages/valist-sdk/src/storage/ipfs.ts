@@ -55,6 +55,6 @@ export class IPFS implements StorageAPI {
  * Creates the default IPFS storage provider.
  */
 export function createIPFS(): StorageAPI {
-	const ipfs = create({host: 'pin.valist.io', port: 443, protocol: 'https'});	
+	const ipfs = create({ host: 'pin.valist.io', port: 443, protocol: 'https' });
 	return new IPFS(ipfs);
 }

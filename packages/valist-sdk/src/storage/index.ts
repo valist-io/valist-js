@@ -39,7 +39,7 @@ export interface StorageAPI {
 	 * @param project Project metadata.
 	 */
 	writeProjectMeta(project: Project): Promise<string>;
-	
+
 	/**
 	 * Write release metadata to storage and return its URI.
 	 * 
@@ -52,7 +52,7 @@ export interface StorageAPI {
 	 * 
 	 * @param data File or string to write.
 	 */
-	write(data: File | string): Promise<string> 
+	write(data: File | string): Promise<string>
 
 	/**
 	 * Read data from storage.
