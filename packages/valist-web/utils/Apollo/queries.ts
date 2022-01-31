@@ -1,33 +1,34 @@
 import { gql } from "@apollo/client";
 
-export const ACT_QUERY = gql`
-  query Activity{
-    activities(first: 5){
+export const USER_LOGS_QUERY = gql`
+  query UserLogs($address: String){
+    logs (where: {sender: $address}, first: 5){
       id
-      text
+      type
+      team
+      project
+      release
+      sender
     }
   }
 `;
 
 export const USER_PROJECTS = gql`
   query Projects($address: String){
-    members (where: { address: $address} ){
+    users(where: {id: $address}) {
       id
-      address
-      team{
-        id
+      teams {
+        name
         projects{
-          id
-          metaURI
           name
         }
       }
-      project {
+      projects {
         id
         name
         metaURI
-        team{
-          id
+        team {
+          name
         }
       }
     }
@@ -36,17 +37,20 @@ export const USER_PROJECTS = gql`
 
 export const TEAM_PROFILE_QUERY = gql`
   query Team($team: String) {
-    teams(where: { id: $team} ){
+    teams(where: { name: $team} ){
       id
+      name
       metaURI
       members{
         id
-        address
       }
-      projects{
+      projects {
         id
         name
         metaURI
+        team {
+          name
+        }
       }
     }
   }
@@ -55,10 +59,13 @@ export const TEAM_PROFILE_QUERY = gql`
 
 export const PROJECT_SEARCH_QUERY = gql`
   query Project($search: String){
-    projects(where: { name_contains: $search} ){
+    projects(where:{name_contains: $search}){
       id
       name
       metaURI
+      team{
+        name
+      }
     }
   }
 `;
@@ -66,7 +73,6 @@ export const PROJECT_SEARCH_QUERY = gql`
 export const PROJECT_PROFILE_QUERY = gql`
   query ProjectProfile($project: String){
     projects(where: { id: $project} ){
-      id
       name
       metaURI
       releases{

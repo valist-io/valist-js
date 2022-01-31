@@ -10,11 +10,21 @@ export type Key = {
 }
 
 export type Project = {
-    id: string,
+  id: string,
+  name: string,
+  metaURI: string,
+  team: {
     name: string,
-    metaURI: string,
-    releases: Release[],
-    keys: Key[],
+  }
+};
+
+export type Log = {
+  id: string,
+  project: string,
+  release: string,
+  sender: string,
+  team: string,
+  type: string,
 }
 
 export declare type ReleaseArtifact = {

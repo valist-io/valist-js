@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import Layout from "../../../components/Layouts/Main";
 import { NextPage } from "next";
 import AddressProfileCard from "../../../components/Address/AddressProfileCard";
-import HomepageActivity from "../../../components/Homepage/HomepageActivity";
+import ActivityCard from "../../../components/Logs/ActivityCard";
 import AccountContext from "../../../components/Accounts/AccountContext";
 import ProjectList from "../../../components/Projects/ProjectList";
 
@@ -24,7 +24,7 @@ const AddressPage: NextPage = () => {
         {/* Right column */}
         <div className="grid grid-cols-1 gap-4">
           {/* Recent Activity */}
-          <HomepageActivity address={accountCtx.address} />
+          <ActivityCard logType="sender" address={accountCtx.address} />
         </div>
       </div>
     </Layout>

@@ -63,20 +63,30 @@ const fetchProjectMeta = async (metaCID: string) => {
 };
 
   useEffect(() => {
+    // (async () => {
+    //   const provider = new ethers.providers.Web3Provider((window.ethereum as any));
+    //   const contract = new Contract.EVM('', provider);
+
+    //   const valist = new Client(contract, storage);
+
+    //   const team = await valist.getTeam('valist');
+    //   console.log('Team', team);
+    // })();
+
     if (data && data.projects && data.projects[0].members) {
       setMembers(data.projects[0].members);
       setReleases(data.projects[0].releases);
       fetchReleaseMeta(data.projects[0].releases[0]);
       fetchProjectMeta(data.projects[0].metaURI);
     }
-  }, [data, loading, error]);
+  }, [data]);
   
   return (
     <Layout title="Valist | Project">
       <div className="grid grid-cols-1 gap-4 items-start lg:grid-cols-6 lg:gap-8">
         <div className="grid grid-cols-1 gap-4 lg:col-span-4">
           <ProjectProfileCard 
-            view={view} 
+            view={view}
             setView={setView} 
             teamName={teamName}
             projectName={projectName} 

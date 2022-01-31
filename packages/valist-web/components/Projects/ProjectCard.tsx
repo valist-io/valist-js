@@ -20,16 +20,14 @@ const ProjectCard = ({ teamName, projectName, metaCID }: ProjectCardProps): JSX.
     description: "Loading....",
   });
 
-  const handleTeamClick = (e: any) => {
-    e.preventDefault();
-    router.push(name);
-    console.log('fired');
-  }
-
   useEffect(() => {
-    fetchJSONfromIPFS(metaCID).then((metaJson) => {
-      setMeta(JSON.parse(metaJson));
-    });
+    if (metaCID === 'loading') {
+      setMeta({description: metaCID});
+    } else {
+      fetchJSONfromIPFS(metaCID).then((metaJson) => {
+        setMeta(JSON.parse(metaJson));
+      });
+    }
   }, [metaCID]);
 
   return (
@@ -42,8 +40,8 @@ const ProjectCard = ({ teamName, projectName, metaCID }: ProjectCardProps): JSX.
           {name}
         </h3>
         <div>Published by: 
-          <span className="ml-1 hover:text-indigo-500 cursor-pointer text-gray-900 py-1">
-            <span onClick={(e) => handleTeamClick(e)} style={{marginBottom: "-4px"}} className='inline-block'></span>
+          <span className="ml-1 cursor-pointer text-gray-900 py-1">
+            <span style={{marginBottom: "-4px"}} className='inline-block'></span>
               {teamName}
             </span>
         </div>

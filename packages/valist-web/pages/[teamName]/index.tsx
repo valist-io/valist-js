@@ -6,13 +6,14 @@ import TeamProfileCard from '../../components/Teams/TeamProfileCard';
 import TeamMemberList from '../../components/Teams/TeamMemberList';
 import TeamProjectList from '../../components/Teams/TeamProjectList';
 import { TEAM_PROFILE_QUERY } from '../../utils/Apollo/queries';
+import { Project } from '../../utils/Apollo/types';
 
 interface TeamPageProps {
   address: string,
 }
 
 type TeamMember = {
-  address: string
+  id: string
 }
 
 export default function Dashboard(props: TeamPageProps) {
@@ -23,11 +24,11 @@ export default function Dashboard(props: TeamPageProps) {
   });
   const [view, setView] = useState<string>('Projects');
   const [metaCID, setMetaCID] = useState<string>('');
-  const [projects, setaProjects] = useState<any>([]);
+  const [projects, setaProjects] = useState<Project[]>([]);
   const [members, setMembers] = useState<TeamMember[]>([]);
 
   useEffect(() => {
-    if (data && data.teams) {
+    if (data && data.teams && data.teams[0]) {
       setMetaCID(data.teams[0].metaURI);
       setaProjects(data.teams[0].projects);
       setMembers(data.teams[0].members);
@@ -45,8 +46,7 @@ export default function Dashboard(props: TeamPageProps) {
             metaCID={metaCID}        
           />
           <TeamProjectList 
-            projects={projects} 
-            teamName={teamName}          
+            projects={projects}         
           />
         </div>
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">

@@ -6,12 +6,7 @@ import React, { useEffect, useState } from 'react';
 import Layout from '../../components/Layouts/Main';
 import SearchCard from '../../components/Search/SearchCard';
 import { PROJECT_SEARCH_QUERY } from '../../utils/Apollo/queries';
-
-type Project = {
-  id: string,
-  name: string,
-  metaURI: string,
-}
+import { Project } from '../../utils/Apollo/types';
 
 const SearchPage: NextPage = () => {
   const router = useRouter();
@@ -35,9 +30,9 @@ const SearchPage: NextPage = () => {
         {/* Right column */}
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
           {list.map((project: Project) => (
-            <Link key={project.id} href={`/${project.id}`}>
+            <Link key={project.id} href={`/${project.team.name}/${project.name}`}>
               <a>
-                <SearchCard name={project.id} metaURI={project.metaURI}/>
+                <SearchCard name={`${project.team.name}/${project.name}`} metaURI={project.metaURI}/>
               </a>
             </Link>
           ))}
