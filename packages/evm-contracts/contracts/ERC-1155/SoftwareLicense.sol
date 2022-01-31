@@ -99,11 +99,17 @@ contract SoftwareLicense is IERC1155MetadataURI, ERC1155, ERC2771Context {
     )
         public
     {
+        require(bytes(_metaURI).length > 0, "err-empty-meta");
+        require(bytes(_teamName).length > 0, "err-empty-name");
+        require(bytes(_projectName).length > 0, "err-empty-name");
+        require(bytes(_licenseName).length > 0, "err-empty-name");
+
         uint256 teamID = valist.getTeamID(_teamName);
         uint256 projectID = valist.getProjectID(teamID, _projectName);
         uint licenseID = getLicenseID(projectID, _licenseName);
 
         require(valist.isTeamMember(teamID, _msgSender()), "err-team-member");
+        require(bytes(valist.metaByID(projectID)).length > 0, "err-proj-not-exist");
         require(valist.getTeamBeneficiary(teamID) != address(0), "err-no-beneficiary");
 
         priceByID[licenseID] = _mintPrice;
@@ -135,6 +141,7 @@ contract SoftwareLicense is IERC1155MetadataURI, ERC1155, ERC2771Context {
         address beneficiary = valist.getTeamBeneficiary(teamID);
 
         require(beneficiary != address(0), "err-no-beneficiary");
+        require(bytes(metaByID[licenseID]).length > 0, "err-license-not-exist");
         require(msg.value >= priceByID[licenseID], "err-mint-fee");
 
         (bool sent,) = beneficiary.call{value: msg.value}("");
