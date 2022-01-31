@@ -95,19 +95,48 @@ describe("Software License", () => {
         const teamID = await valist.getTeamID("acme");
         const projectID = await valist.getProjectID(teamID, "otherproject");
         const licenseID = await license.getLicenseID(projectID, "2022 Edition");
-
-        // const mintLicenseTx = await license.mintLicense(
-        //   "acme",
-        //   "otherproject",
-        //   "2022 Edition",
-        //   signers[0].address,
-        //   {
-        //     value: ethers.utils.parseEther("1.0"),
-        //   },
-        // );
-        // await mintLicenseTx.wait();
   
         await expect(license.mintLicense("acme", "otherproject", "0.0.1", signers[0].address))
+            .to.be.revertedWith('err-license-not-exist');
+        
+        const balance = await license.balanceOf(signers[0].address, licenseID);
+        expect(balance).to.equal(BigNumber.from(0));
+
+        const uri = await license.uri(licenseID);
+        expect(uri).to.equal(`https://gateway.valist.io`);
+      });
+
+      it("Should fail to create license when not a team member", async function() {
+        const valist = await deployValist();
+        const license = await deploySoftwareLicense(valist.address);
+
+        const metaURI = "/ipfs/QmVteGgoFEZtnY2CCpt4rRdTSFkQucqo5wPibD5xJXoiQJ";
+
+        const signers = await ethers.getSigners();
+    
+        const createTeamTx = await valist.createTeam("acme", metaURI, signers[0].address, [signers[0].address]);
+        await createTeamTx.wait();
+    
+        const createProjectTx = await valist.createProject("acme", "bin", metaURI, []);
+        await createProjectTx.wait();
+
+        expect(
+          license
+          .connect(signers[1])
+          .createLicense(
+          "acme",
+          "bin",
+          "2022 Edition",
+          metaURI,
+          ethers.utils.parseEther("1.0"),
+        ))
+          .to.be.revertedWith('err-team-member');
+  
+        const teamID = await valist.getTeamID("acme");
+        const projectID = await valist.getProjectID(teamID, "bin");
+        const licenseID = await license.getLicenseID(projectID, "2022 Edition");
+  
+        await expect(license.mintLicense("acme", "bin", "0.0.1", signers[0].address))
             .to.be.revertedWith('err-license-not-exist');
         
         const balance = await license.balanceOf(signers[0].address, licenseID);
