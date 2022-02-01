@@ -80,11 +80,13 @@ contract Valist is IValist, ERC2771Context {
     metaByID[teamID] = _metaURI;
     teamNames.push(_teamName);
 
+    // emit first so the TeamMemberAdded event comes after
+    emit TeamCreated(_teamName, _metaURI, _msgSender());
+
     for (uint i = 0; i < _members.length; i++) {
       teamByID[teamID].members.add(_members[i]);
+      emit TeamMemberAdded(_teamName, _members[i], _msgSender());
     }
-
-    emit TeamCreated(_teamName, _metaURI, _msgSender());
   }
   
   /// Creates a new project. Requires the sender to be a member of the team.
@@ -114,11 +116,13 @@ contract Valist is IValist, ERC2771Context {
     metaByID[projectID] = _metaURI;
     teamByID[teamID].projectNames.push(_projectName);
 
+    // emit first so the ProjectMemberAdded event comes after
+    emit ProjectCreated(_teamName, _projectName, _metaURI, _msgSender());
+
     for (uint i = 0; i < _members.length; i++) {
       projectByID[projectID].members.add(_members[i]);
+      emit ProjectMemberAdded(_teamName, _projectName, _members[i], _msgSender());
     }
-
-    emit ProjectCreated(_teamName, _projectName, _metaURI, _msgSender());
   }
 
   /// Creates a new release. Requires the sender to be a member of the project.
@@ -176,6 +180,7 @@ contract Valist is IValist, ERC2771Context {
     uint256 releaseID = getReleaseID(projectID, _releaseName);
 
     require(bytes(metaByID[releaseID]).length > 0, "err-release-not-exist");
+    require(!releaseByID[releaseID].approvers.contains(_msgSender()), "err-member-exist");
 
     releaseByID[releaseID].approvers.add(_msgSender());
     releaseByID[releaseID].rejectors.remove(_msgSender());
@@ -201,6 +206,7 @@ contract Valist is IValist, ERC2771Context {
     uint256 releaseID = getReleaseID(projectID, _releaseName);
 
     require(bytes(metaByID[releaseID]).length > 0, "err-release-not-exist");
+    require(!releaseByID[releaseID].rejectors.contains(_msgSender()), "err-member-exist");
 
     releaseByID[releaseID].rejectors.add(_msgSender());
     releaseByID[releaseID].approvers.remove(_msgSender());
@@ -218,7 +224,7 @@ contract Valist is IValist, ERC2771Context {
     require(teamByID[teamID].members.contains(_address) == false, "err-member-exist");
 
     teamByID[teamID].members.add(_address);
-    emit TeamMemberAdded(_teamName, _address);
+    emit TeamMemberAdded(_teamName, _address, _msgSender());
   }
 
   /// Remove a member from the team. Requires the sender to be a member of the team.
@@ -232,7 +238,7 @@ contract Valist is IValist, ERC2771Context {
     require(teamByID[teamID].members.contains(_address) == true, "err-member-not-exist");
 
     teamByID[teamID].members.remove(_address);
-    emit TeamMemberRemoved(_teamName, _address);
+    emit TeamMemberRemoved(_teamName, _address, _msgSender());
   }
 
   /// Add a member to the project. Requires the sender to be a member of the team.
@@ -256,7 +262,7 @@ contract Valist is IValist, ERC2771Context {
     require(projectByID[projectID].members.contains(_address) == false, "err-member-exist");
 
     projectByID[projectID].members.add(_address);
-    emit ProjectMemberAdded(_teamName, _projectName, _address);
+    emit ProjectMemberAdded(_teamName, _projectName, _address, _msgSender());
   }
 
   /// Remove a member from the project. Requires the sender to be a member of the team.
@@ -280,7 +286,7 @@ contract Valist is IValist, ERC2771Context {
     require(projectByID[projectID].members.contains(_address) == true, "err-member-not-exist"); 
 
     projectByID[projectID].members.remove(_address);
-    emit ProjectMemberRemoved(_teamName, _projectName, _address);   
+    emit ProjectMemberRemoved(_teamName, _projectName, _address, _msgSender());   
   }
 
   /// Sets the team metadata URI. Requires the sender to be a member of the team.

@@ -3,58 +3,44 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: ValistRegistry
-    network: ganache
-    source:
-      address: "0xe150AEC62C3F6c8A96CD4676Bf9C44C8BE365E73"
-      abi: ValistRegistry
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.5
-      language: wasm/assemblyscript
-      entities:
-        - MappingEvent
-      abis:
-        - name: ValistRegistry
-          file: ./abis/ValistRegistry.json
-      eventHandlers:
-        - event: MappingEvent(indexed bytes32,indexed string,string)
-          handler: handleMappingEvent
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
-          handler: handleRoleAdminChanged
-        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleGranted
-        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleRevoked
-      file: ./src/registry.ts
-  - kind: ethereum/contract
     name: Valist
     network: ganache
     source:
-      address: "0x9B2dc066592261c6Da6D3E5aE51715F486BE78b8"
+      address: "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab"
       abi: Valist
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
-        - MetaUpdate
-        - OrgCreated
-        - RepoCreated
-        - VoteKeyEvent
-        - VoteReleaseEvent
+        - Team
+        - Project
+        - Release
+        - Log
       abis:
         - name: Valist
           file: ./abis/Valist.json
       eventHandlers:
-        - event: OrgCreated(bytes32,indexed string,string,address)
-          handler: handleOrgCreated
-        - event: RepoCreated(bytes32,indexed string,string,indexed string,string)
-          handler: handleRepoCreated
-        - event: MetaUpdate(indexed bytes32,indexed string,indexed address,string)
-          handler: handleMetaUpdate
-        - event: VoteKeyEvent(indexed bytes32,string,address,bytes32,address)
-          handler: handleVoteKeyEvent
-        - event: VoteReleaseEvent(bytes32,string,string,string,string,address)
-          handler: handleVoteReleaseEvent
-      file: ./src/valist.ts
+        - event: TeamCreated(string,string,address)
+          handler: handleTeamCreated
+        - event: TeamUpdated(string,string,address)
+          handler: handleTeamUpdate
+        - event: TeamMemberAdded(string,address,address)
+          handler: handleTeamMemberAdded
+        - event: TeamMemberRemoved(string,address,address)
+          handler: handleTeamMemberRemoved
+        - event: ProjectCreated(string,string,string,address)
+          handler: handleProjectCreated
+        - event: ProjectUpdated(string,string,string,address)
+          handler: handleProjectUpdated
+        - event: ProjectMemberAdded(string,string,address,address)
+          handler: handleProjectMemberAdded
+        - event: ProjectMemberRemoved(string,string,address,address)
+          handler: handleProjectMemberRemoved
+        - event: ReleaseCreated(string,string,string,string,address)
+          handler: handleReleaseCreated
+        - event: ReleaseApproved(string,string,string,address)
+          handler: handleReleaseApproved
+        - event: ReleaseRejected(string,string,string,address)
+          handler: handleReleaseRejected
+      file: ./src/mapping.ts
