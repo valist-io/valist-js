@@ -3,6 +3,7 @@ import WalletConnectProvider from '@walletconnect/web3-provider';
 import { MetaMaskInpageProvider } from "@metamask/providers";
 import { ethers } from 'ethers';
 import { Magic } from 'magic-sdk';
+import { Client } from '@valist/sdk';
 
 export type SetUseState<T> = React.Dispatch<React.SetStateAction<T>>;
 
@@ -44,4 +45,8 @@ export interface AccountCtxInterface {
   setShowLogin: SetUseState<boolean>,
   setAddress: SetUseState<string>,
   setMagic: SetUseState<Magic | null>,
+}
+
+export interface ValistCtxInterface {
+  valist: Client
 }

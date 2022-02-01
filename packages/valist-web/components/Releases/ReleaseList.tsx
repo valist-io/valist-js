@@ -43,20 +43,20 @@ export default function ReleaseList(props: ReleaseListProps): JSX.Element {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {projectReleases.map((release: Release) => (
-                  <tr key={release.releaseURI}>
+                  <tr key={release.metaURI}>
                     <td className="px-4 py-4 whitespace-nowrap text-left text-sm font-medium text-gray-900">
-                      {release.tag}
+                      {release.name}
                     </td>
                     <td className="hidden lg:block px-4 py-6 whitespace-nowrap text-left
                     text-sm text-gray-500 hover:text-indigo-500">
                       <a className="cursor-pointer"
-                        href={`https://gateway.valist.io/ipfs/${parseCID(release.releaseURI)}`}>
-                        {parseCID(release.releaseURI)}
+                        href={`https://gateway.valist.io/ipfs/${parseCID(release.metaURI)}`}>
+                        {parseCID(release.metaURI)}
                       </a>
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <DownloadBox
-                        releaseURI={release.releaseURI}
+                        releaseURI={release.metaURI}
                         releaseName={`${teamName}_${projectName}@${release.tag}`}
                       />
                     </td>

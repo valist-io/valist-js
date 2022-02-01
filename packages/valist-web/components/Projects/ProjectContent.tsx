@@ -3,7 +3,7 @@ import ReleaseList from '../Releases/ReleaseList';
 import RepoReadme from './ProjectReadme';
 import PublishReleaseSteps from '../Releases/PublishReleaseSteps';
 import RepoDependencies from './ProjectDependencies';
-import { Release, ReleaseMeta, Key } from '../../utils/Apollo/types';
+import { Member, Release, ReleaseMeta } from '../../utils/Apollo/types';
 
 interface ReleaseListProps {
   teamName: string,
@@ -11,7 +11,7 @@ interface ReleaseListProps {
   projectReleases: Release[]
   releaseMeta: ReleaseMeta,
   view: string,
-  members: Key[],
+  members: Member[],
 }
 
 export default function RepoContent(props: ReleaseListProps): JSX.Element {

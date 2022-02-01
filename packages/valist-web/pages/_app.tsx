@@ -2,11 +2,14 @@ import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import getConfig from 'next/config';
 import React, { useEffect, useState } from 'react';
+import { Client, Contract, Storage} from '@valist/sdk';
+import { create } from "ipfs-http-client";
 import { ethers } from 'ethers';
 import { ApolloProvider } from '@apollo/client';
 import { Magic } from 'magic-sdk';
 
 import AccountContext from '../components/Accounts/AccountContext';
+import ValistContext from '../components/Valist/ValistContext';
 import { LoginType, ValistProvider } from '../utils/Account/types';
 import { login, onAccountChanged } from '../utils/Account/index';
 import LoginForm from '../components/Accounts/LoginForm';
@@ -35,9 +38,21 @@ function ValistApp({ Component, pageProps }: AppProps) {
     setMagic,
   };
 
+  const valistState = {
+    valist: new Client(
+      new Contract.EVM(
+        '0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab', 
+        new ethers.providers.JsonRpcProvider(
+          'http://localhost:8545',
+        ),
+      ),
+      new Storage.IPFS(create({host:'localhost', port:5001})),
+      )
+  }
+
   useEffect(() => {
     setMagic(newMagic());
-  }, []);
+  }, [setMagic]);
 
   useEffect(() => {
     const _loginType = (localStorage.getItem('loginType') as LoginType) || 'readOnly';
@@ -48,16 +63,18 @@ function ValistApp({ Component, pageProps }: AppProps) {
 
   useEffect(() => console.log("Address:", address), [address]);
 
-  return ( 
-    <ApolloProvider client={client}>
-      <AccountContext.Provider value={accountState}>
-        <Component {...pageProps} />
-        {showLogin && <LoginForm 
-          setProvider={setProvider}
-          setAddress={setAddress}
-        />}
-      </AccountContext.Provider>
-    </ApolloProvider>
+  return (
+      <ApolloProvider client={client}>
+        <AccountContext.Provider value={accountState}>
+          <ValistContext.Provider value={valistState}>
+            <Component {...pageProps} />
+            {showLogin && <LoginForm 
+              setProvider={setProvider}
+              setAddress={setAddress}
+            />}
+           </ValistContext.Provider>
+        </AccountContext.Provider>
+      </ApolloProvider>
   );
 }
 

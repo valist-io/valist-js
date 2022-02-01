@@ -19,7 +19,6 @@ export default function RepoMemberListItem(props: OrgAccessCardListItemProps): J
           </a>
         </Link>
       </td>
-      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">{'Org Admin'}</td>
     </tr>
   );
 }

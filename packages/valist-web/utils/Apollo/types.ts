@@ -1,12 +1,11 @@
 
 export type Release = {
-  tag: string,
-  releaseURI: string,
+  name: string,
+  metaURI: string,
 }
 
-export type Key = {
-  role: string,
-  address: string,
+export type Member = {
+  id: string,
 }
 
 export type Project = {

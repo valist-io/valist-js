@@ -1,27 +1,33 @@
 import { useQuery } from "@apollo/client";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { create } from "ipfs-http-client";
+import { ethers } from "ethers";
+import { useContext, useEffect, useState } from "react";
+import { Client, Contract, Storage } from '@valist/sdk';
 import Layout from "../../../components/Layouts/Main";
 import ProjectContent from "../../../components/Projects/ProjectContent";
 import ProjectMetaCard from "../../../components/Projects/ProjectMetaCard";
 import ProjectProfileCard from "../../../components/Projects/ProjectProfileCard";
 import { PROJECT_PROFILE_QUERY } from "../../../utils/Apollo/queries";
-import { Key, ProjectMeta, Release, ReleaseMeta } from "../../../utils/Apollo/types";
+import { Member, ProjectMeta, Release, ReleaseMeta } from "../../../utils/Apollo/types";
 import { parseCID } from "../../../utils/Ipfs";
+import ValistContext from "../../../components/Valist/ValistContext";
 
 export default function ProjectPage():JSX.Element {
   const router = useRouter();
   const teamName = `${router.query.teamName}`;
   const projectName = `${router.query.projectName}`;
+  const valistCtx = useContext(ValistContext);
+  const [projectID, setProjectID] = useState<string>('');
   const { data, loading, error } = useQuery(PROJECT_PROFILE_QUERY, {
-    variables: { project: `${teamName}/${projectName}` },
+    variables: { project: projectID },
   });
   const [view, setView] = useState<string>('Readme');
   const [projectMeta, setProjectMeta] = useState<ProjectMeta>({
     name: 'loading',
     description: 'loading',
   });
-  const [members, setMembers] = useState<Key[]>([]);
+  const [members, setMembers] = useState<Member[]>([]);
   const [releases, setReleases] = useState<Release[]>([]);
   const [releaseMeta, setReleaseMeta] = useState<ReleaseMeta>({
     name: 'loading',
@@ -35,8 +41,9 @@ export default function ProjectPage():JSX.Element {
   });
 
   const fetchReleaseMeta = async (release: Release) => {
-    if (release && release.releaseURI !== '') {
-      const parsedCID = parseCID(release.releaseURI);
+    console.log('release', release);
+    if (release && release.metaURI !== '') {
+      const parsedCID = parseCID(release.metaURI);
       const requestURL = `http://localhost:8080/ipfs/${parsedCID}`;
       try {
         const req = await fetch(requestURL);
@@ -44,7 +51,7 @@ export default function ProjectPage():JSX.Element {
         if (Object.keys(metaJson.artifacts).length === 0) {
           metaJson.artifacts.artifact = {
             sha256: '',
-            provider: release.releaseURI,
+            provider: release.metaURI,
           };
         }
         setReleaseMeta(metaJson);
@@ -52,26 +59,25 @@ export default function ProjectPage():JSX.Element {
     }
   };
 
-const fetchProjectMeta = async (metaCID: string) => {
-  const parsedCID = parseCID(metaCID);
-  const requestURL = `http://localhost:8080/ipfs/${parsedCID}`;
-  try {
-    const req = await fetch(requestURL);
-    const metaJson:ProjectMeta = await req.json();
-    setProjectMeta(metaJson);
-  } catch (e) { /* TODO Handle */ }
-};
+  const fetchProjectMeta = async (metaCID: string) => {
+    const parsedCID = parseCID(metaCID);
+    const requestURL = `http://localhost:8080/ipfs/${parsedCID}`;
+    try {
+      const req = await fetch(requestURL);
+      const metaJson:ProjectMeta = await req.json();
+      setProjectMeta(metaJson);
+    } catch (e) { /* TODO Handle */ }
+  };
 
   useEffect(() => {
-    // (async () => {
-    //   const provider = new ethers.providers.Web3Provider((window.ethereum as any));
-    //   const contract = new Contract.EVM('', provider);
-
-    //   const valist = new Client(contract, storage);
-
-    //   const team = await valist.getTeam('valist');
-    //   console.log('Team', team);
-    // })();
+    (async () => {
+      const valist = valistCtx.valist;
+      if (teamName !== 'undefined') {
+        const teamID = await valist.contract.getTeamID(teamName);
+        const id = await valist.contract.getProjectID(teamID, projectName);
+        setProjectID(id._hex);
+      }
+    })();
 
     if (data && data.projects && data.projects[0].members) {
       setMembers(data.projects[0].members);
@@ -79,7 +85,9 @@ const fetchProjectMeta = async (metaCID: string) => {
       fetchReleaseMeta(data.projects[0].releases[0]);
       fetchProjectMeta(data.projects[0].metaURI);
     }
-  }, [data]);
+  }, [data, teamName, valistCtx]);
+
+  console.log('data', data);
   
   return (
     <Layout title="Valist | Project">

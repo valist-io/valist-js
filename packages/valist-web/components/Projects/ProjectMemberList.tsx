@@ -1,8 +1,8 @@
-import { Key } from '../../utils/Apollo/types';
+import { Member } from '../../utils/Apollo/types';
 import RepoMemberListItem from './ProjectMemberListItem';
 
 interface RepoMemberListItemProps {
-  members: Key[]
+  members: Member[]
 }
 
 export default function ManageProjectAccessCard(props: RepoMemberListItemProps): JSX.Element {
@@ -25,16 +25,10 @@ export default function ManageProjectAccessCard(props: RepoMemberListItemProps):
                   >
                     Address
                   </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Role
-                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                { props.members.map((member: any) => <RepoMemberListItem key={member.address} address={member.address} />)}
+                { props.members.map((member: Member) => <RepoMemberListItem key={member.id} address={member.id} />)}
               </tbody>
             </table>
           </div>
