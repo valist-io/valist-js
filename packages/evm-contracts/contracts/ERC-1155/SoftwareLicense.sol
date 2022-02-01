@@ -54,7 +54,7 @@ contract SoftwareLicense is IERC1155MetadataURI, ERC1155, ERC2771Context {
     string public symbol = "LICENSE";
     string public name = "Software License";
 
-    // @TODO ADD ROYALTIES
+    // @TODO ADD ROYALTIES SYSTEM, PAYMENT IN ERC-20 tokens
 
     /// @dev licenseID => mintPrice (in wei)
     mapping(uint256 => uint256) public priceByID;
@@ -163,6 +163,24 @@ contract SoftwareLicense is IERC1155MetadataURI, ERC1155, ERC2771Context {
     {
         string memory gateway = "https://gateway.valist.io";
         return string(abi.encodePacked(gateway, metaByID[id]));
+    }
+
+    /// Fetches metaURI of the software the license is linked to.
+    ///
+    /// @param _teamName Name of the team.
+    /// @param _projectName Name of the project.
+    /// @param _releaseName Name of the release.
+    function getReleaseMetaURI(
+        string memory _teamName,
+        string memory _projectName,
+        string memory _releaseName
+    )
+        public
+        view
+        returns (string memory)
+    {
+        string memory gateway = "https://gateway.valist.io";
+        return string(abi.encodePacked(gateway, valist.getReleaseMetaURI(_teamName, _projectName, _releaseName)));
     }
 
     /// Generates a licenseID given a projectID and licenseName.
