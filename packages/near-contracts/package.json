@@ -1,0 +1,14 @@
+{
+  "name": "@valist/near-contracts",
+  "version": "0.0.0",
+  "description": "Valist NEAR contracts",
+  "homepage": "https://valist.io",
+  "license": "MPL-2.0",
+  "scripts": {
+    "build": "asb"
+  },
+  "devDependencies": {
+    "asbuild": "^0.2.0",
+    "near-sdk-as": "^3.2.3"
+  }
+}
