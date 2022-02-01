@@ -28,6 +28,9 @@ dev:
 up:
 	docker-compose up
 
+down:
+	docker-compose down
+
 bootstrap:
 	npm run deploy:local --prefix ./packages/evm-contracts
 	lerna run bootstrap
