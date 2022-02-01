@@ -34,25 +34,28 @@ describe('valist client', async () => {
 		const members = [address];
 
 		const team = new Team();
+		team.image = 'https://gateway.valist.io/ipfs/Qm456';
 		team.name = 'valist';
 		team.description = 'Web3 digital distribution';
-		team.homepage = 'https://valist.io';
+		team.external_url = 'https://valist.io';
 
 		const project = new Project();
+		project.image = 'https://gateway.valist.io/ipfs/Qm456';
 		project.name = 'sdk';
 		project.description = 'Valist Typescript SDK';
-		project.homepage = 'https://docs.valist.io';
-		project.repository = 'https://github.com/valist-io/valist-js';
-
-		const artifact = new Artifact();
-		artifact.provider = 'Qm123';
+		project.external_url = 'https://github.com/valist-io/valist-js';
 
 		const release = new Release();
+		release.image = 'https://gateway.valist.io/ipfs/Qm456';
 		release.name = 'sdk@v0.5.0';
-		release.version = 'v0.5.0';
-		release.artifacts = {
-			'package.json': artifact
-		};
+		release.description = 'Release v0.5.0';
+		release.external_url = 'https://github.com/valist-io/valist/releases/tag/v0.6.3';
+
+		const artifact = new Artifact();
+		artifact.provider = '/ipfs/Qm123';
+
+		release.artifacts = new Map<string, Artifact>();
+		release.artifacts.set('package.json', artifact);
 
 		await valist.createTeam('valist', team, members);
 		await valist.createProject('valist', 'sdk', project, members);

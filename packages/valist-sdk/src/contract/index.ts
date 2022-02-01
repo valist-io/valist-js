@@ -1,4 +1,7 @@
 import { EVM } from './evm';
+import { BigNumber } from 'ethers';
+
+export type INumber = number | BigNumber;
 
 /**
  * Contract abstraction API.
@@ -140,18 +143,18 @@ interface ContractAPI {
 	 * Returns a paginated list of team names.
 	 * 
 	 * @param page Page to return items from.
-	 * @param size Number of items to return.
+	 * @param size INumber of items to return.
 	 */
-	getTeamNames(page: number, size: number): Promise<string[]>;
+	getTeamNames(page: INumber, size: INumber): Promise<string[]>;
 
 	/**
 	 * Returns a paginated list of project names.
 	 * 
 	 * @param teamName Name of the team.
 	 * @param page Page to return items from.
-	 * @param size Number of items to return.
+	 * @param size INumber of items to return.
 	 */
-	getProjectNames(teamName: string, page: number, size: number): Promise<string[]>;
+	getProjectNames(teamName: string, page: INumber, size: INumber): Promise<string[]>;
 
 	/**
 	 * Returns a paginated list of release names.
@@ -159,18 +162,18 @@ interface ContractAPI {
 	 * @param teamName Name of the team.
 	 * @param projectName Name of the project.
 	 * @param page Page to return items from.
-	 * @param size Number of items to return.
+	 * @param size INumber of items to return.
 	 */
-	getReleaseNames(teamName: string, projectName: string, page: number, size: number): Promise<string[]>;
+	getReleaseNames(teamName: string, projectName: string, page: INumber, size: INumber): Promise<string[]>;
 
 	/**
 	 * Returns a paginated list of team members.
 	 * 
 	 * @param teamName Name of the team.
 	 * @param page Page to return items from.
-	 * @param size Number of items to return.
+	 * @param size INumber of items to return.
 	 */
-	getTeamMembers(teamName: string, page: number, size: number): Promise<string[]>;
+	getTeamMembers(teamName: string, page: INumber, size: INumber): Promise<string[]>;
 
 	/**
 	 * Returns a paginated list of project members.
@@ -178,9 +181,9 @@ interface ContractAPI {
 	 * @param teamName Name of the team.
 	 * @param projectName Name of the project.
 	 * @param page Page to return items from.
-	 * @param size Number of items to return.
+	 * @param size INumber of items to return.
 	 */
-	getProjectMembers(teamName: string, projectName: string, page: number, size: number): Promise<string[]>;
+	getProjectMembers(teamName: string, projectName: string, page: INumber, size: INumber): Promise<string[]>;
 
 	/**
 	 * Returns a paginated list of release approvers.
@@ -189,9 +192,9 @@ interface ContractAPI {
 	 * @param projectName Name of the project.
 	 * @param releaseName Name of the release.
 	 * @param page Page to return items from.
-	 * @param size Number of items to return.
+	 * @param size INumber of items to return.
 	 */
-	getReleaseApprovers(teamName: string, projectName: string, releaseName: string, page: number, size: number): Promise<string[]>;
+	getReleaseApprovers(teamName: string, projectName: string, releaseName: string, page: INumber, size: INumber): Promise<string[]>;
 
 	/**
 	 * Returns a paginated list of release rejectors.
@@ -200,16 +203,16 @@ interface ContractAPI {
 	 * @param projectName Name of the project.
 	 * @param releaseName Name of the release.
 	 * @param page Page to return items from.
-	 * @param size Number of items to return.
+	 * @param size INumber of items to return.
 	 */
-	getReleaseRejectors(teamName: string, projectName: string, releaseName: string, page: number, size: number): Promise<string[]>;
+	getReleaseRejectors(teamName: string, projectName: string, releaseName: string, page: INumber, size: INumber): Promise<string[]>;
 
 	/**
 	 * Generates teamID from teamName.
 	 *
 	 * @param teamName Name of the team.
 	 */
-	getTeamID(teamName: string): Promise<number>;
+	getTeamID(teamName: string): Promise<INumber>;
 
 	/**
 	 * Generates projectID from teamID and projectName.
@@ -217,7 +220,7 @@ interface ContractAPI {
 	 * @param teamID Unique team ID.
 	 * @param projectName Name of the project.
 	 */
-	getProjectID(teamID: number, projectName: string): Promise<number>;
+	getProjectID(teamID: INumber, projectName: string): Promise<INumber>;
 
 	/**
 	 * Generates releaseID from projectID and releaseName.
@@ -225,7 +228,7 @@ interface ContractAPI {
 	 * @param projectID Unique project ID.
 	 * @param releaseName Name of the release.
 	 */
-	getReleaseID(projectID: number, releaseName: string): Promise<number>;
+	getReleaseID(projectID: INumber, releaseName: string): Promise<INumber>;
 }
 
 export { ContractAPI, EVM };

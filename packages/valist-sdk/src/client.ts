@@ -26,6 +26,11 @@ export class Client {
 		return await this.storage.readReleaseMeta(metaURI);
 	}
 
+	async getLatestRelease(teamName: string, projectName: string): Promise<Release> {
+		const releaseName = await this.contract.getLatestReleaseName(teamName, projectName);
+		return await this.getRelease(teamName, projectName, releaseName);
+	}
+
 	async createTeam(teamName: string, team: Team, members: string[]): Promise<void> {
 		const metaURI = await this.storage.writeTeamMeta(team);
 		await this.contract.createTeam(teamName, metaURI, members);

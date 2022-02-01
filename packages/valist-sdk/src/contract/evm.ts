@@ -2,6 +2,7 @@ import { ContractAPI } from './index';
 import { Contract, Signer } from 'ethers';
 import { Provider } from '@ethersproject/abstract-provider';
 import { abi } from './abis/Valist.json';
+import { INumber } from './index';
 
 export class EVM implements ContractAPI {
 	contract: Contract;
@@ -81,43 +82,43 @@ export class EVM implements ContractAPI {
 		return await this.contract.getReleaseMetaURI(teamName, projectName, releaseName);
 	}
 
-	async getTeamNames(page: number, size: number): Promise<string[]> {
+	async getTeamNames(page: INumber, size: INumber): Promise<string[]> {
 		return await this.contract.getTeamNames(page, size);
 	}
 
-	async getProjectNames(teamName: string, page: number, size: number): Promise<string[]> {
+	async getProjectNames(teamName: string, page: INumber, size: INumber): Promise<string[]> {
 		return await this.contract.getProjectNames(teamName, page, size);
 	}
 
-	async getReleaseNames(teamName: string, projectName: string, page: number, size: number): Promise<string[]> {
+	async getReleaseNames(teamName: string, projectName: string, page: INumber, size: INumber): Promise<string[]> {
 		return await this.contract.getReleaseNames(teamName, projectName, page, size);
 	}
 
-	async getTeamMembers(teamName: string, page: number, size: number): Promise<string[]> {
+	async getTeamMembers(teamName: string, page: INumber, size: INumber): Promise<string[]> {
 		return await this.contract.getTeamMembers(teamName, page, size);
 	}
 
-	async getProjectMembers(teamName: string, projectName: string, page: number, size: number): Promise<string[]> {
+	async getProjectMembers(teamName: string, projectName: string, page: INumber, size: INumber): Promise<string[]> {
 		return await this.contract.getProjectMembers(teamName, projectName, page, size);
 	}
 
-	async getReleaseApprovers(teamName: string, projectName: string, releaseName: string, page: number, size: number): Promise<string[]> {
+	async getReleaseApprovers(teamName: string, projectName: string, releaseName: string, page: INumber, size: INumber): Promise<string[]> {
 		return await this.contract.getReleaseApprovers(teamName, projectName, releaseName, page, size);
 	}
 
-	async getReleaseRejectors(teamName: string, projectName: string, releaseName: string, page: number, size: number): Promise<string[]> {
+	async getReleaseRejectors(teamName: string, projectName: string, releaseName: string, page: INumber, size: INumber): Promise<string[]> {
 		return await this.contract.getReleaseRejectors(teamName, projectName, releaseName, page, size);
 	}
 
-	async getTeamID(teamName: string): Promise<number> {
+	async getTeamID(teamName: string): Promise<INumber> {
 		return await this.contract.getTeamID(teamName);
 	}
 
-	async getProjectID(teamID: number, projectName: string): Promise<number> {
+	async getProjectID(teamID: INumber, projectName: string): Promise<INumber> {
 		return await this.contract.getProjectID(teamID, projectName);
 	}
 
-	async getReleaseID(projectID: number, releaseName: string): Promise<number> {
+	async getReleaseID(projectID: INumber, releaseName: string): Promise<INumber> {
 		return await this.contract.getReleaseID(projectID, releaseName);
 	}
 }

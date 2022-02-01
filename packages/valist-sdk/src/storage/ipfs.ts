@@ -1,4 +1,4 @@
-import { Team, Project, Release } from '../index';
+import { Team, Project, Release, replacer, reviver } from '../index';
 import { StorageAPI } from './index';
 import * as types from 'ipfs-core-types';
 import { create } from 'ipfs-http-client';
@@ -15,29 +15,32 @@ export class IPFS implements StorageAPI {
 
 	async readTeamMeta(metaURI: string): Promise<Team> {
 		const data = await this.read(metaURI);
-		return JSON.parse(data);
+		return JSON.parse(data, reviver);
 	}
 
 	async readProjectMeta(metaURI: string): Promise<Project> {
 		const data = await this.read(metaURI);
-		return JSON.parse(data);
+		return JSON.parse(data, reviver);
 	}
 
 	async readReleaseMeta(metaURI: string): Promise<Release> {
 		const data = await this.read(metaURI);
-		return JSON.parse(data);
+		return JSON.parse(data, reviver);
 	}
 
 	async writeTeamMeta(team: Team): Promise<string> {
-		return await this.write(JSON.stringify(team));
+		const data = JSON.stringify(team, replacer);
+		return await this.write(data);
 	}
 
 	async writeProjectMeta(project: Project): Promise<string> {
-		return await this.write(JSON.stringify(project));
+		const data = JSON.stringify(project, replacer);
+		return await this.write(data);
 	}
 
 	async writeReleaseMeta(release: Release): Promise<string> {
-		return await this.write(JSON.stringify(release));
+		const data = JSON.stringify(release, replacer);
+		return await this.write(data);
 	}
 
 	async write(data: string | File): Promise<string> {
