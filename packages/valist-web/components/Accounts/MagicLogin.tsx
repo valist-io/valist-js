@@ -3,6 +3,7 @@ import { logout } from '../../utils/Account';
 import { LoginType, SetUseState } from '../../utils/Account/types';
 import AccountCtx from './AccountContext';
 import { addressFromProvider } from '../../utils/Providers';
+import { ethers } from 'ethers';
 
 interface MagicLoginProps {
   login: (loginType: LoginType) => Promise<void>,
@@ -30,7 +31,9 @@ export default function MagicLogin(props: MagicLoginProps) {
       const handleMagic = async () => {
         if (accountCtx.magic) {
           if (await accountCtx.magic.user.isLoggedIn()){
-            const address = await addressFromProvider(accountCtx.magic.rpcProvider);
+            // @ts-ignore
+            const provider = new ethers.providers.Web3Provider(accountCtx.magic.rpcProvider);
+            const address = await addressFromProvider(provider);
             setMagicAddress(address);
           }
         }
