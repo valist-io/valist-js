@@ -6,18 +6,18 @@ interface IValist {
   /// @dev emitted when a new team is created
   event TeamCreated(string _teamName, string _metaURI, address _sender);
   /// @dev emitted when an exsting team is updated
-  event TeamUpdated(string _teamName, string _metaURI, address _member);
+  event TeamUpdated(string _teamName, string _metaURI, address _sender);
   /// @dev emitted when a new team member is added
-  event TeamMemberAdded(string _teamName, address _member);
+  event TeamMemberAdded(string _teamName, address _member, address _sender);
   /// @dev emitted when an existing team member is removed
-  event TeamMemberRemoved(string _teamName, address _member);
+  event TeamMemberRemoved(string _teamName, address _member, address _sender);
 
   /// @dev emitted when a new project is created
   event ProjectCreated(
     string _teamName, 
     string _projectName, 
     string _metaURI, 
-    address _member
+    address _sender
   );
 
   /// @dev emitted when an existing project is updated
@@ -25,21 +25,23 @@ interface IValist {
     string _teamName,
     string _projectName,
     string _metaURI,
-    address _member
+    address _sender
   );
 
   /// @dev emitted when a new project member is added
   event ProjectMemberAdded(
     string _teamName, 
     string _projectName, 
-    address _member
+    address _member,
+    address _sender
   );
 
   /// @dev emitted when an existing project member is removed
   event ProjectMemberRemoved(
     string _teamName, 
     string _projectName, 
-    address _member
+    address _member,
+    address _sender
   );
 
   /// @dev emitted when a new release is created
@@ -48,7 +50,7 @@ interface IValist {
     string _projectName, 
     string _releaseName, 
     string _metaURI, 
-    address _member
+    address _sender
   );
 
   /// @dev emitted when an existing release is approved by a signer
