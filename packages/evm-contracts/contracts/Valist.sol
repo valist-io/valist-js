@@ -85,11 +85,13 @@ contract Valist is IValist, ERC2771Context {
 
     teamByID[teamID].beneficiary = _beneficiary;
 
+    // emit first so the TeamMemberAdded event comes after
+    emit TeamCreated(_teamName, _metaURI, _msgSender());
+
     for (uint i = 0; i < _members.length; ++i) {
       teamByID[teamID].members.add(_members[i]);
+      emit TeamMemberAdded(_teamName, _members[i], _msgSender());
     }
-
-    emit TeamCreated(_teamName, _metaURI, _msgSender());
   }
   
   /// Creates a new project. Requires the sender to be a member of the team.
@@ -119,11 +121,13 @@ contract Valist is IValist, ERC2771Context {
     metaByID[projectID] = _metaURI;
     teamByID[teamID].projectNames.push(_projectName);
 
+    // emit first so the ProjectMemberAdded event comes after
+    emit ProjectCreated(_teamName, _projectName, _metaURI, _msgSender());
+
     for (uint i = 0; i < _members.length; ++i) {
       projectByID[projectID].members.add(_members[i]);
+      emit ProjectMemberAdded(_teamName, _projectName, _members[i], _msgSender());
     }
-
-    emit ProjectCreated(_teamName, _projectName, _metaURI, _msgSender());
   }
 
   /// Creates a new release. Requires the sender to be a member of the project.
@@ -181,6 +185,7 @@ contract Valist is IValist, ERC2771Context {
     uint256 releaseID = getReleaseID(projectID, _releaseName);
 
     require(bytes(metaByID[releaseID]).length > 0, "err-release-not-exist");
+    require(!releaseByID[releaseID].approvers.contains(_msgSender()), "err-member-exist");
 
     releaseByID[releaseID].approvers.add(_msgSender());
     releaseByID[releaseID].rejectors.remove(_msgSender());
@@ -206,6 +211,7 @@ contract Valist is IValist, ERC2771Context {
     uint256 releaseID = getReleaseID(projectID, _releaseName);
 
     require(bytes(metaByID[releaseID]).length > 0, "err-release-not-exist");
+    require(!releaseByID[releaseID].rejectors.contains(_msgSender()), "err-member-exist");
 
     releaseByID[releaseID].rejectors.add(_msgSender());
     releaseByID[releaseID].approvers.remove(_msgSender());
