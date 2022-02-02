@@ -22,6 +22,7 @@ contract Valist is IValist, ERC2771Context {
   using EnumerableSet for EnumerableSet.AddressSet;
 
   struct Team {
+    address beneficiary;
     string[] projectNames;
     EnumerableSet.AddressSet members;
   }
@@ -60,10 +61,12 @@ contract Valist is IValist, ERC2771Context {
   ///
   /// @param _teamName Unique name used to identify the team.
   /// @param _metaURI URI of the team metadata.
+  /// @param _beneficiary Beneficiary address of the team for recieving payments.
   /// @param _members List of members to add to the team.
   function createTeam(
-    string memory _teamName, 
-    string memory _metaURI, 
+    string memory _teamName,
+    string memory _metaURI,
+    address _beneficiary,
     address[] memory _members
   ) 
     public
@@ -80,10 +83,12 @@ contract Valist is IValist, ERC2771Context {
     metaByID[teamID] = _metaURI;
     teamNames.push(_teamName);
 
+    teamByID[teamID].beneficiary = _beneficiary;
+
     // emit first so the TeamMemberAdded event comes after
     emit TeamCreated(_teamName, _metaURI, _msgSender());
 
-    for (uint i = 0; i < _members.length; i++) {
+    for (uint i = 0; i < _members.length; ++i) {
       teamByID[teamID].members.add(_members[i]);
       emit TeamMemberAdded(_teamName, _members[i], _msgSender());
     }
@@ -119,7 +124,7 @@ contract Valist is IValist, ERC2771Context {
     // emit first so the ProjectMemberAdded event comes after
     emit ProjectCreated(_teamName, _projectName, _metaURI, _msgSender());
 
-    for (uint i = 0; i < _members.length; i++) {
+    for (uint i = 0; i < _members.length; ++i) {
       projectByID[projectID].members.add(_members[i]);
       emit ProjectMemberAdded(_teamName, _projectName, _members[i], _msgSender());
     }
@@ -241,6 +246,23 @@ contract Valist is IValist, ERC2771Context {
     emit TeamMemberRemoved(_teamName, _address, _msgSender());
   }
 
+  /// Set team beneficiary address for recieving payments.
+  ///
+  /// @param _teamID Unique ID of the team.
+  /// @param _newBeneficiary Address of new beneficiary address.
+  function setTeamBeneficiary(
+        uint256 _teamID,
+        address _newBeneficiary
+    )
+        public
+        override
+    {
+        require(isTeamMember(_teamID, _msgSender()), "err-team-member");
+        address _oldBeneficiary = teamByID[_teamID].beneficiary;
+        teamByID[_teamID].beneficiary = _newBeneficiary;
+        emit TeamBeneficiaryUpdated(_teamID, _oldBeneficiary, _newBeneficiary, _msgSender());
+    }
+
   /// Add a member to the project. Requires the sender to be a member of the team.
   ///
   /// @param _teamName Name of the team.
@@ -348,6 +370,20 @@ contract Valist is IValist, ERC2771Context {
     returns (uint)
   {
     return uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));
+  }
+
+  /// Fetches team beneficiary address.
+  ///
+  /// @param _teamID Unique ID of the team.
+  function getTeamBeneficiary(
+    uint256 _teamID
+  )
+    public
+    view
+    override
+    returns (address)
+  {
+    return teamByID[_teamID].beneficiary;
   }
 
   /// Generates projectID from teamID and projectName.
