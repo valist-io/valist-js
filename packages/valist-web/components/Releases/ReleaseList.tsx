@@ -56,8 +56,8 @@ export default function ReleaseList(props: ReleaseListProps): JSX.Element {
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <DownloadBox
-                        releaseURI={release.metaURI}
-                        releaseName={`${teamName}_${projectName}@${release.tag}`}
+                        metaURI={release.metaURI}
+                        releaseName={`${teamName}_${projectName}@${release.name}`}
                       />
                     </td>
                   </tr>

@@ -5,6 +5,7 @@ import Tabs from '../Tabs';
 interface ProjectProfileCardProps {
   teamName: string,
   projectName: string,
+  projectImg: string,
   view: string,
   setView: Function
 }
@@ -16,7 +17,12 @@ export default function ProjectProfileCard(props: ProjectProfileCardProps): JSX.
         <div className="sm:flex sm:items-center pt-6 px-6">
           <div className="sm:flex sm:space-x-5">
             <div className="flex-shrink-0">
-              <AddressIdenticon address={`${props.teamName}/${props.projectName}`} height={85} />
+              <img 
+                height={85} 
+                width={85} 
+                className='mx-auto rounded-full' 
+                src={props.projectImg}
+                alt="profile-image" />
             </div>
             <div>
               <p className={`lg:text-3xl text-gray-900 sm:text-2xl font-medium`}>
@@ -38,7 +44,7 @@ export default function ProjectProfileCard(props: ProjectProfileCardProps): JSX.
         <Tabs 
           setView={props.setView}
           view={props.view}
-          tabs={['Readme', 'Versions', 'Members', 'Dependencies']}
+          tabs={['Readme', 'Versions', 'Members']}
         />
       </div>
     </section>

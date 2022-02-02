@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { ProjectMeta } from '../../utils/Apollo/types';
+import { ProjectMeta, ReleaseMeta } from '../../utils/Valist/types';
 import ProjectActions from './ProjectActions';
 
 interface RepoMetaCardProps {
+  version?: string,
   teamName: string,
   projectName: string
   projectMeta: ProjectMeta,
-  releaseMeta: any,
+  releaseMeta: ReleaseMeta,
 }
 
 const ProjectMetaCard = (props: RepoMetaCardProps) => {
@@ -35,41 +36,31 @@ const ProjectMetaCard = (props: RepoMetaCardProps) => {
         projectName={projectName}
         showAll={false} 
       />
-      {projectMeta.homepage
-        && <div className="pb-4">
-          <h1 className="text-xl text-gray-900  mb-1">Homepage</h1>
-          <a className="text-gray-600 hover:text-indigo-500" href={projectMeta.homepage}>{projectMeta.homepage}</a>
-        </div>
-      }
-      {projectMeta.repository
+      {projectMeta.external_url
         && <div className="pb-4">
           <h1 className="text-xl text-gray-900  mb-1">Repository</h1>
-          <a className="text-gray-600 hover:text-indigo-500" href={projectMeta.repository}>{projectMeta.repository}</a>
+          <a className="text-gray-600 hover:text-indigo-500" href={projectMeta.external_url}>
+            {projectMeta.external_url}
+          </a>
         </div>
       }
       <div className="grid grid-cols-2 gap-2">
-      {releaseMeta.license 
-        && <div className="pb-4">
-            <h1 className="text-xl text-gray-900 mb-1">License</h1>
-            <div className="text-gray-600">
-              {releaseMeta.license}
-            </div>
-          </div>}
-          
         <div className="pb-4">
           <h1 className="text-xl text-gray-900 mb-1">Downloads</h1>
           <div className="text-gray-600">{downloads}</div>
         </div>
 
-        {releaseMeta.version
-          && <div className="pb-4">
+        {props.version &&
+          <div className="pb-4">
             <h1 className="text-xl text-gray-900 mb-1">Version</h1>
-            <div className="text-gray-600">{releaseMeta.version}</div>
+            <div className="text-gray-600">{props.version}</div>
           </div>}
           
         <div className="pb-4">
           <h1 className="text-xl text-gray-900 mb-1">Total Files</h1>
-          <div className="text-gray-600">{Object.keys(releaseMeta.artifacts).length}</div>
+          <div className="text-gray-600">
+            {Object.keys(releaseMeta.artifacts).length}
+          </div>
         </div>
       </div>
     </div>
