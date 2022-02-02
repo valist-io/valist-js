@@ -1,3 +1,4 @@
+import { ethers } from 'ethers';
 import { Magic } from 'magic-sdk';
 import { addressFromProvider, providers } from '../Providers';
 import { ProviderParams } from '../Providers/types';
@@ -27,7 +28,6 @@ export const login = async (
   try {
     let account = '0x0';
     let params: ProviderParams = { email: '', setMagic: () => {} };
-    let provider;
 
     if (loginType === 'magic') {
       params = { 
@@ -36,7 +36,10 @@ export const login = async (
       };
     }
 
-    provider = await providers[loginType](params);
+    const providerURL = await providers[loginType](params);
+    const provider = new ethers.providers.Web3Provider(
+      providerURL
+    );
     setProvider(provider);
 
     if (loginType != 'readOnly') {
@@ -44,6 +47,7 @@ export const login = async (
     }
 
     window.localStorage.setItem('loginType', loginType);
+    console.log('address', account);
     setAddress(account);
     setLoginType(loginType);
   }catch(err) {}

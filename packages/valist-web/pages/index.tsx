@@ -17,7 +17,7 @@ const Home: NextPage = () => {
         {/* Left column */}
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
           <HomepageProfileCard address={accountCtx.address} view={view} setView={setView} />
-          <ProjectList />
+          <ProjectList address={accountCtx.address} />
         </div>
         {/* Right column */}
         <div className="grid grid-cols-1 gap-4">

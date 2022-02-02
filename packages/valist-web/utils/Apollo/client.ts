@@ -1,7 +1,10 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
+import getConfig from "next/config";
+
+const { publicRuntimeConfig } = getConfig();
 
 const client = new ApolloClient({
-    uri: "http://localhost:8000/subgraphs/name/valist-io/valist",
+    uri: publicRuntimeConfig.GRAPH_PROVIDER,
     cache: new InMemoryCache(),
 });
 

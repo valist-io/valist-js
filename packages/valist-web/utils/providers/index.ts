@@ -22,8 +22,7 @@ export const newMagic = () => {
 };
 
 export const addressFromProvider = async (provider: any) => {
-  const w3 = new ethers.providers.Web3Provider(provider);
-  const signer = w3.getSigner();
+  const signer = provider.getSigner();
   const account = await signer.getAddress();
   return account;
 };
