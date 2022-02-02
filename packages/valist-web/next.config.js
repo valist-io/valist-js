@@ -3,6 +3,8 @@ const nextConfig = {
   reactStrictMode: true,
   publicRuntimeConfig: {
     WEB3_PROVIDER: process.env.WEB3_PROVIDER || 'https://rpc.valist.io',
+    IPFS_GATEWAY: process.env.IPFS_GATEWAY || 'http://localhost:8080',
+    GRAPH_PROVIDER: process.env.GRAPH_PROVIDER || 'http://localhost:8000/subgraphs/name/valist-io/valist',
     MAGIC_PUBKEY: 'pk_live_B577A4A7B11805D0',
     METATX_ENABLED: process.env.METATX_ENABLED || true,
   },
