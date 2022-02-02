@@ -1,53 +1,49 @@
+type Team @entity {
+  id: ID!
+  name: String!
+  metaURI: String!
+  members: [User!]!
+  projects: [Project!]! @derivedFrom(field: "team")
+  createdTx: String!
+  updatedTx: String!
+}
+
+type Project @entity {
+  id: ID!
+  name: String!
+  metaURI: String!
+  members: [User!]!
+  team: Team!
+  releases: [Release!]! @derivedFrom(field: "project")
+  createdTx: String!
+  updatedTx: String!
+}
+
 type Release @entity {
   id: ID!
-  repo: Repository!
-  tag: String!
-  releaseCID: String!
-  signers: [String!]!
-}
-
-# type OrgMeta @entity {
-#   id: ID!
-#   name: String
-#   description: String
-#   homepage: String
-# }
-
-type Repository @entity {
-  id: ID!
-  org: Organization!
   name: String!
-  test: String
-  metaCID: String!
-  releases: [Release!]! @derivedFrom(field: "repo")
-  keys: [Key!]! @derivedFrom(field: "repo")
+  metaURI: String!
+  project: Project!
+  approvers: [User!]!
+  rejectors: [User!]!
+  createdTx: String!
+  updatedTx: String!
 }
 
-type Organization @entity {
+type User @entity {
   id: ID!
-  orgID: Bytes! # bytes32
-  name: String!
-  metaCID: String!
-  repos: [Repository!]! @derivedFrom(field: "org")
-  keys: [Key!]! @derivedFrom(field: "org")
+  teams: [Team!]!
+  projects: [Project!]!
+  approved: [Release!]!
+  rejected: [Release!]!
 }
 
-type Key @entity {
+type Log @entity {
   id: ID!
-  role: String!
-  address: String!
-  org: Organization
-  repo: Repository
+  type: String!
+  team: String
+  project: String
+  release: String
+  member: String
+  sender: String
 }
-
-type Activity @entity {
-  id: ID!
-  text: String!
-}
-
-# type RepoKey @entity {
-#   id: ID!
-#   role: String!
-#   address: String!
-#   repo: Repository!
-# }

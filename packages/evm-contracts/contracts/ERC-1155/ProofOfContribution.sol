@@ -3,7 +3,6 @@ pragma solidity >=0.8.4;
 
 import "../IValist.sol";
 import "@openzeppelin/contracts/metatx/ERC2771Context.sol";
-import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol";
 
@@ -12,7 +11,6 @@ contract ProofOfContribution is IERC1155MetadataURI, ERC1155, ERC2771Context {
     /// @dev internal reference to Valist registry contract
     IValist private valist;
 
-    using EnumerableSet for EnumerableSet.AddressSet;
     /// @dev version of BaseRelayRecipient this contract implements
     string public versionRecipient = "2.2.0";
 
@@ -98,7 +96,7 @@ contract ProofOfContribution is IERC1155MetadataURI, ERC1155, ERC2771Context {
         ), "err-proj-member");
         require(bytes(valist.metaByID(releaseID)).length > 0, "err-release-not-exist");
 
-        for (uint i = 0; i < contributors.length; i++) {
+        for (uint i = 0; i < contributors.length; ++i) {
             _mint(contributors[i], releaseID, 1, "");
         }
     }

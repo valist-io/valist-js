@@ -1,46 +1,46 @@
 SHELL=/bin/bash
 
-all: install valist
+all: install frontend
 
-valist: frontend
-
-install: install-sdk install-web install-evm-contracts install-evm-subgraph
-
-install-sdk:
-	npm install --prefix ./packages/valist-sdk
-
-install-web:
-	npm install --prefix ./packages/valist-web
-
-install-evm-contracts:
-	npm install --prefix ./packages/evm-contracts
-
-install-evm-subgraph:
-	npm install --prefix ./packages/evm-subgraph
+install:
+	npm i -g lerna
+	lerna bootstrap
 
 sdk:
 	npm run build --prefix ./packages/valist-sdk
 
 web:
-	rm -rf ./packages/web/out
+	rm -rf ./packages/valist-web/out
 	npm run build --prefix ./packages/valist-web
 	npm run export --prefix ./packages/valist-web
 
-frontend: sdk app
+frontend: sdk web
 
-start: sdk
-	npm run start --prefix ./packages/valist-sdk
+dev-sdk:
+	npm run dev --prefix ./packages/valist-sdk
 
-evm-start-subgraph:
-	docker-compose -f ./packages/evm-subgraph/docker-compose.yml up
+dev-web:
+	npm run dev --prefix ./packages/valist-web
+
+dev:
+	$(MAKE) -j 3 up dev-sdk dev-web
+
+up:
+	docker-compose up
+
+down:
+	docker-compose down
+
+bootstrap:
+	npm run deploy:local --prefix ./packages/evm-contracts
+	lerna run bootstrap
 
 evm-build-subgraph:
 	npm run codegen --prefix ./packages/evm-subgraph
 	npm run build --prefix ./packages/evm-subgraph
 
 evm-deploy-subgraph: evm-build-subgraph
-	npm run create-local --prefix ./packages/evm-subgraph
-	npm run deploy-local --prefix ./packages/evm-subgraph
+	npm run deploy:local --prefix ./packages/evm-subgraph
 
 evm-build-contracts:
 	npm run export-abi --prefix ./packages/evm-contracts
@@ -52,14 +52,8 @@ evm-build-contracts:
 evm-deploy-contracts:
 	npm run deploy:local --prefix ./packages/evm-contracts
 
-dev-sdk:
-	npm run dev --prefix ./packages/valist-sdk
-
-dev-web:
-	npm run dev --prefix ./packages/valist-web
-
-dev:
-	@make -j 2 dev-sdk dev-web
+evm-bootstrap:
+	npm run bootstrap --prefix ./packages/evm-contracts
 
 lint-sdk:
 	npm run lint --prefix ./packages/valist-sdk

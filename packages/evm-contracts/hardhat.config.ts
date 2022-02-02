@@ -31,6 +31,7 @@ module.exports = {
     token: "MATIC",
     currency: "USD",
     coinmarketcap: process.env.COINMARKETCAP_API_KEY,
+    gasPriceApi: "https://api.polygonscan.com/api?module=proxy&action=eth_gasPrice"
   },
   contractSizer: {
     alphaSort: true,
