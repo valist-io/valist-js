@@ -2,8 +2,8 @@ import ProjectMemberList from './ProjectMemberList';
 import ReleaseList from '../Releases/ReleaseList';
 import RepoReadme from './ProjectReadme';
 import PublishReleaseSteps from '../Releases/PublishReleaseSteps';
-import RepoDependencies from './ProjectDependencies';
-import { Member, Release, ReleaseMeta } from '../../utils/Apollo/types';
+import { Member, Release } from '../../utils/Apollo/types';
+import { ReleaseMeta } from '../../utils/Valist/types';
 
 interface ReleaseListProps {
   teamName: string,
@@ -23,7 +23,7 @@ export default function RepoContent(props: ReleaseListProps): JSX.Element {
 
     switch (currentView) {
       case 'Readme':
-        return <RepoReadme repoReadme={props.releaseMeta.readme} />;
+        return <RepoReadme repoReadme={props.releaseMeta.description} />;
       case 'Members':
         return (<ProjectMemberList members={props.members} />);
       case 'Versions':
@@ -32,12 +32,10 @@ export default function RepoContent(props: ReleaseListProps): JSX.Element {
           teamName={props.teamName}
           projectName={props.projectName}
         />);
-      case 'Dependencies':
-        return <RepoDependencies releaseMeta={props.releaseMeta} />;
       case 'ReleaseSteps':
         return <PublishReleaseSteps />;
       default:
-        return <RepoReadme repoReadme={props.releaseMeta.readme} />;
+        return <RepoReadme repoReadme={props.releaseMeta.description} />;
     }
   };
 
