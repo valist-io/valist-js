@@ -1,6 +1,11 @@
-import { Team, Project, Release } from './index';
+
+import { providers } from 'ethers';
+import { Team, Project, Release, Contract } from './index';
 import { StorageAPI } from './storage';
 import { ContractAPI } from './contract';
+
+import { deployedAddresses } from './contract/evm';
+import { createIPFS } from './storage/ipfs';
 
 export class Client {
 	public contract: ContractAPI;
@@ -46,3 +51,17 @@ export class Client {
 		await this.contract.createRelease(teamName, projectName, releaseName, metaURI);
 	}
 }
+
+export const createClient = async ({ web3Provider }: { web3Provider: providers.Web3Provider }): Promise<Client> => {
+	const chainID = await web3Provider.getSigner().getChainId();
+	const deployedAddress = deployedAddresses[chainID] || deployedAddresses[80001];
+
+	const storage = createIPFS();
+	const contract = new Contract.EVM(
+		deployedAddress, 
+		web3Provider,
+	);
+
+	const client = new Client(contract, storage);
+	return client;
+};

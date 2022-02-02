@@ -1,6 +1,6 @@
-import { Client } from './client';
+import { Client, createClient } from './client';
 import * as Storage from './storage';
-import * as Contract from './contract';
+import * as Contract from './contract/';
 
 export class Team {
 	/** team image */
@@ -66,4 +66,4 @@ export function reviver(key: any, value: any): any {
 	return value;
 }
 
-export { Client, Storage, Contract };
+export { Client, Storage, Contract, createClient };
