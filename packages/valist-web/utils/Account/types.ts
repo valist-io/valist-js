@@ -48,5 +48,6 @@ export interface AccountCtxInterface {
 }
 
 export interface ValistCtxInterface {
-  valist: Client
+  valist: Client,
+  ipfsGateway: string,
 }

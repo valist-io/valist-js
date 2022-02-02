@@ -1,37 +1,42 @@
 import { useQuery } from "@apollo/client";
 import { useRouter } from "next/router";
-import { create } from "ipfs-http-client";
-import { ethers } from "ethers";
 import { useContext, useEffect, useState } from "react";
-import { Client, Contract, Storage } from '@valist/sdk';
+import getConfig from "next/config";
 import Layout from "../../../components/Layouts/Main";
 import ProjectContent from "../../../components/Projects/ProjectContent";
 import ProjectMetaCard from "../../../components/Projects/ProjectMetaCard";
 import ProjectProfileCard from "../../../components/Projects/ProjectProfileCard";
 import { PROJECT_PROFILE_QUERY } from "../../../utils/Apollo/queries";
-import { Member, ProjectMeta, Release, ReleaseMeta } from "../../../utils/Apollo/types";
+import { Member, Release } from "../../../utils/Apollo/types";
 import { parseCID } from "../../../utils/Ipfs";
 import ValistContext from "../../../components/Valist/ValistContext";
+import { ProjectMeta, ReleaseMeta } from "../../../utils/Valist/types";
 
 export default function ProjectPage():JSX.Element {
   const router = useRouter();
+  const { publicRuntimeConfig } = getConfig();
   const teamName = `${router.query.teamName}`;
   const projectName = `${router.query.projectName}`;
   const valistCtx = useContext(ValistContext);
   const [projectID, setProjectID] = useState<string>('');
+  const [version, setVersion] = useState<string>('');
   const { data, loading, error } = useQuery(PROJECT_PROFILE_QUERY, {
     variables: { project: projectID },
   });
   const [view, setView] = useState<string>('Readme');
   const [projectMeta, setProjectMeta] = useState<ProjectMeta>({
+    image: '',
     name: 'loading',
     description: 'loading',
+    external_url: '',
   });
   const [members, setMembers] = useState<Member[]>([]);
   const [releases, setReleases] = useState<Release[]>([]);
   const [releaseMeta, setReleaseMeta] = useState<ReleaseMeta>({
+    image: '/images/ValistLogo128.png',
     name: 'loading',
-    readme: '# Readme Not Found',
+    description: '# Readme Not Found',
+    external_url: '',
     artifacts: {
       loading: {
         sha256: 'loading',
@@ -41,10 +46,9 @@ export default function ProjectPage():JSX.Element {
   });
 
   const fetchReleaseMeta = async (release: Release) => {
-    console.log('release', release);
     if (release && release.metaURI !== '') {
       const parsedCID = parseCID(release.metaURI);
-      const requestURL = `http://localhost:8080/ipfs/${parsedCID}`;
+      const requestURL = `${publicRuntimeConfig.IPFS_GATEWAY}/ipfs/${parsedCID}`;
       try {
         const req = await fetch(requestURL);
         const metaJson: ReleaseMeta = await req.json();
@@ -61,7 +65,7 @@ export default function ProjectPage():JSX.Element {
 
   const fetchProjectMeta = async (metaCID: string) => {
     const parsedCID = parseCID(metaCID);
-    const requestURL = `http://localhost:8080/ipfs/${parsedCID}`;
+    const requestURL = `${publicRuntimeConfig.IPFS_GATEWAY}/ipfs/${parsedCID}`;
     try {
       const req = await fetch(requestURL);
       const metaJson:ProjectMeta = await req.json();
@@ -74,30 +78,35 @@ export default function ProjectPage():JSX.Element {
       const valist = valistCtx.valist;
       if (teamName !== 'undefined') {
         const teamID = await valist.contract.getTeamID(teamName);
-        const id = await valist.contract.getProjectID(teamID, projectName);
-        setProjectID(id._hex);
+        const _projectID = await valist.contract.getProjectID(teamID, projectName);
+        setProjectID(_projectID._hex);
       }
     })();
 
-    if (data && data.projects && data.projects[0].members) {
+    if (data && data.projects && data.projects[0] && 
+      data.projects[0].members && data.projects[0].releases &&
+      data.projects[0].releases[0]
+    ) {
       setMembers(data.projects[0].members);
       setReleases(data.projects[0].releases);
+      setVersion(data.projects[0].releases[0].name);
       fetchReleaseMeta(data.projects[0].releases[0]);
       fetchProjectMeta(data.projects[0].metaURI);
     }
   }, [data, teamName, valistCtx]);
 
-  console.log('data', data);
-  
   return (
     <Layout title="Valist | Project">
       <div className="grid grid-cols-1 gap-4 items-start lg:grid-cols-6 lg:gap-8">
         <div className="grid grid-cols-1 gap-4 lg:col-span-4">
-          <ProjectProfileCard 
+          <ProjectProfileCard
             view={view}
-            setView={setView} 
+            setView={setView}
             teamName={teamName}
             projectName={projectName} 
+            projectImg={
+              (releaseMeta.image === '') ? '/images/ValistLogo128.png' : `${publicRuntimeConfig.IPFS_GATEWAY}/ipfs/${parseCID(releaseMeta.image)}`
+            }
           />
           <ProjectContent
             projectName={projectName}
@@ -108,7 +117,8 @@ export default function ProjectPage():JSX.Element {
             members={members} />
         </div>
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
-          <ProjectMetaCard 
+          <ProjectMetaCard
+            version={version} 
             teamName={teamName}
             projectName={projectName} 
             projectMeta={projectMeta} 

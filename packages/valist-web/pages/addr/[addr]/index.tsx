@@ -19,12 +19,12 @@ const AddressPage: NextPage = () => {
         {/* Left column */}
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
           <AddressProfileCard address={address} view={view} setView={setView} />
-          <ProjectList />
+          <ProjectList address={address} />
         </div>
         {/* Right column */}
         <div className="grid grid-cols-1 gap-4">
           {/* Recent Activity */}
-          <ActivityCard logType="sender" address={accountCtx.address} />
+          <ActivityCard logType="sender" address={address} />
         </div>
       </div>
     </Layout>

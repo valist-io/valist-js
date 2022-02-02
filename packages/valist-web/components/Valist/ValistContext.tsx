@@ -11,5 +11,6 @@ export default React.createContext<ValistCtxInterface>({
       new ethers.providers.JsonRpcProvider('http://localhost:8545')
     ),
     new Storage.IPFS(create({host:'localhost', port:5001})),
-    )
+  ),
+  ipfsGateway: '',
 });

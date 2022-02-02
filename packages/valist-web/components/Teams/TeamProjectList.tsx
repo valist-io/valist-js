@@ -1,4 +1,4 @@
-import ProjectCard from "../Projects/ProjectCard";
+import ProjectCard from "../Projects/ProjectListCard";
 import Link from "next/link";
 import { Project } from "../../utils/Apollo/types";
 
@@ -13,7 +13,7 @@ export default function ProjectList(props: TeamProjectListProps) {
           {props.projects.map((project) => (
             <Link key={project.id} href={`${project.team.name}/${project.name}`}>
               <a>
-                <ProjectCard teamName={project.team.name} projectName={project.name} metaCID={project.metaURI} />
+                <ProjectCard teamName={project.team.name} projectName={project.name} metaURI={project.metaURI} />
               </a>
             </Link>
           ))}

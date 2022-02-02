@@ -42,12 +42,11 @@ function ValistApp({ Component, pageProps }: AppProps) {
     valist: new Client(
       new Contract.EVM(
         '0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab', 
-        new ethers.providers.JsonRpcProvider(
-          'http://localhost:8545',
-        ),
+        provider
       ),
       new Storage.IPFS(create({host:'localhost', port:5001})),
-      )
+    ),
+    ipfsGateway: publicRuntimeConfig.IPFS_GATEWAY,
   }
 
   useEffect(() => {
@@ -64,17 +63,17 @@ function ValistApp({ Component, pageProps }: AppProps) {
   useEffect(() => console.log("Address:", address), [address]);
 
   return (
-      <ApolloProvider client={client}>
-        <AccountContext.Provider value={accountState}>
-          <ValistContext.Provider value={valistState}>
-            <Component {...pageProps} />
-            {showLogin && <LoginForm 
-              setProvider={setProvider}
-              setAddress={setAddress}
-            />}
-           </ValistContext.Provider>
-        </AccountContext.Provider>
-      </ApolloProvider>
+    <ApolloProvider client={client}>
+      <AccountContext.Provider value={accountState}>
+        <ValistContext.Provider value={valistState}>
+          <Component {...pageProps} />
+          {showLogin && <LoginForm 
+            setProvider={setProvider}
+            setAddress={setAddress}
+          />}
+        </ValistContext.Provider>
+      </AccountContext.Provider>
+    </ApolloProvider>
   );
 }
 
