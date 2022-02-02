@@ -69,7 +69,8 @@ describe("Software License", () => {
         const releaseURI = await license.getReleaseMetaURI("acme", "bin", "0.0.2");
         expect(releaseURI).to.equal(`https://gateway.valist.io${metaURI}`);
 
-        expect(await signers[1].getBalance()).to.equal(BigNumber.from("10000999649878995889850"));
+        const newBalance = await signers[1].getBalance();
+        expect(newBalance.sub(BigNumber.from(ethers.utils.parseEther("100.0")))).to.be.gt(BigNumber.from(0));
       });
 
       it("Should fail to create license when project does not exist", async function() {

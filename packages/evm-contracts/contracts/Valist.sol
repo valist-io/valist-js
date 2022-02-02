@@ -244,7 +244,7 @@ contract Valist is IValist, ERC2771Context {
   ///
   /// @param _teamID Unique ID of the team.
   /// @param _newBeneficiary Address of new beneficiary address.
-  function setBeneficiary(
+  function setTeamBeneficiary(
         uint256 _teamID,
         address _newBeneficiary
     )
@@ -254,7 +254,7 @@ contract Valist is IValist, ERC2771Context {
         require(isTeamMember(_teamID, _msgSender()), "err-team-member");
         address _oldBeneficiary = teamByID[_teamID].beneficiary;
         teamByID[_teamID].beneficiary = _newBeneficiary;
-        emit BeneficiaryUpdated(_teamID, _oldBeneficiary, _newBeneficiary, _msgSender());
+        emit TeamBeneficiaryUpdated(_teamID, _oldBeneficiary, _newBeneficiary, _msgSender());
     }
 
   /// Add a member to the project. Requires the sender to be a member of the team.

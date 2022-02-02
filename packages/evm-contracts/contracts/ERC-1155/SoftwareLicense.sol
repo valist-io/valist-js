@@ -54,7 +54,7 @@ contract SoftwareLicense is IERC1155MetadataURI, ERC1155, ERC2771Context {
     string public symbol = "LICENSE";
     string public name = "Software License";
 
-    // @TODO ADD ROYALTIES SYSTEM, PAYMENT IN ERC-20 tokens
+    // @TODO ADD ROYALTIES SYSTEM, LIMITED SUPPLY LICENSES, PAYMENT IN ERC-20 tokens
 
     /// @dev licenseID => mintPrice (in wei)
     mapping(uint256 => uint256) public priceByID;

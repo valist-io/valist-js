@@ -14,7 +14,7 @@ interface IValist {
 
   /// @dev emitted when a beneficiary is updated on a license.
 
-  event BeneficiaryUpdated(
+  event TeamBeneficiaryUpdated(
     uint256 _teamID,
     address _oldBeneficiary,
     address _newBeneficiary,
@@ -166,7 +166,7 @@ interface IValist {
   ///
   /// @param _teamID Unique ID of the team.
   /// @param _newBeneficiary Address of new beneficiary address.
-  function setBeneficiary(
+  function setTeamBeneficiary(
     uint256 _teamID,
     address _newBeneficiary
   )
