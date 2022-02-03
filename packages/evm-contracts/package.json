@@ -3,6 +3,7 @@
   "scripts": {
     "compile": "hardhat compile",
     "test": "hardhat test",
+    "export-abi": "hardhat export-abi",
     "bootstrap": "hardhat run scripts/bootstrap.ts --network local",
     "deploy:local": "hardhat run scripts/deploy.ts --network local",
     "deploy:mumbai": "hardhat run scripts/deploy.ts --network mumbai"
@@ -31,6 +32,7 @@
     "ethereum-waffle": "^3.4.0",
     "ethers": "^5.5.1",
     "hardhat": "^2.7.0",
+    "hardhat-abi-exporter": "^2.8.0",
     "hardhat-gas-reporter": "^1.0.4",
     "prettier": "^2.5.0",
     "prettier-plugin-solidity": "^1.0.0-beta.19",
