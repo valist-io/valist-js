@@ -3,7 +3,7 @@ import * as Storage from './storage';
 import * as Contract from './contract/';
 import { ValistABIs } from './abis';
 
-export class Team {
+export class TeamMeta {
 	/** team beneficiary */
 	public beneficiary?: string;
 	/** team image */
@@ -16,7 +16,7 @@ export class Team {
 	public external_url?: string;
 }
 
-export class Project {
+export class ProjectMeta {
 	/** project image */
 	public image?: string;
 	/** project friendly name */
@@ -27,7 +27,7 @@ export class Project {
 	public external_url?: string;
 }
 
-export class Release {
+export class ReleaseMeta {
 	/** project image */
 	public image?: string;
 	/** full release name. */
@@ -37,10 +37,10 @@ export class Release {
 	/** link to the release website. */
 	public external_url?: string;
 	/** mapping of names to artifacts. */
-	public artifacts?: Map<string, Artifact>;
+	public artifacts?: Map<string, ArtifactMeta>;
 }
 
-export class Artifact {
+export class ArtifactMeta {
 	/** OS platform architecture */
 	public architecture?: string
 	/** SHA256 hash of the file. */
@@ -64,7 +64,7 @@ export function replacer(key: any, value: any): any {
  */
 export function reviver(key: any, value: any): any {
 	if (key === 'artifacts') {
-		return new Map<string, Artifact>(Object.entries(value));
+		return new Map<string, ArtifactMeta>(Object.entries(value));
 	}
 	return value;
 }

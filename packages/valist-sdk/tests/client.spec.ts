@@ -1,4 +1,4 @@
-import { Client, Contract, Storage, Team, Project, Release, Artifact } from '../src/index';
+import { Client, Contract, Storage, TeamMeta, ProjectMeta, ReleaseMeta, ArtifactMeta } from '../src/index';
 import { abi, bytecode } from '../src/contract/artifacts/Valist.sol/Valist.json';
 import * as IPFS from 'ipfs-core';
 import * as types from 'ipfs-core-types';
@@ -33,44 +33,44 @@ describe('valist client', async () => {
 		const address = await signer.getAddress();
 		const members = [address];
 
-		const team = new Team();
+		const team = new TeamMeta();
 		team.image = 'https://gateway.valist.io/ipfs/Qm456';
 		team.name = 'valist';
 		team.description = 'Web3 digital distribution';
 		team.external_url = 'https://valist.io';
 		team.beneficiary = members[0];
 
-		const project = new Project();
+		const project = new ProjectMeta();
 		project.image = 'https://gateway.valist.io/ipfs/Qm456';
 		project.name = 'sdk';
 		project.description = 'Valist Typescript SDK';
 		project.external_url = 'https://github.com/valist-io/valist-js';
 
-		const release = new Release();
+		const release = new ReleaseMeta();
 		release.image = 'https://gateway.valist.io/ipfs/Qm456';
 		release.name = 'sdk@v0.5.0';
 		release.description = 'Release v0.5.0';
 		release.external_url = 'https://github.com/valist-io/valist/releases/tag/v0.6.3';
 
-		const artifact = new Artifact();
+		const artifact = new ArtifactMeta();
 		artifact.provider = '/ipfs/Qm123';
 
-		release.artifacts = new Map<string, Artifact>();
+		release.artifacts = new Map<string, ArtifactMeta>();
 		release.artifacts.set('package.json', artifact);
 
 		await valist.createTeam('valist', team, team.beneficiary, members);
 		await valist.createProject('valist', 'sdk', project, members);
 		await valist.createRelease('valist', 'sdk', 'v0.5.0', release);
 
-		const otherTeam = await valist.getTeam('valist');
+		const otherTeam = await valist.getTeamMeta('valist');
 		expect(otherTeam).to.deep.equal(team);
 
 		let beneficiary = await valist.getTeamBeneficiary('valist');
 
-		const otherProject = await valist.getProject('valist', 'sdk');
+		const otherProject = await valist.getProjectMeta('valist', 'sdk');
 		expect(otherProject).to.deep.equal(project);
 
-		const otherRelease = await valist.getRelease('valist', 'sdk', 'v0.5.0');
+		const otherRelease = await valist.getReleaseMeta('valist', 'sdk', 'v0.5.0');
 		expect(otherRelease).to.deep.equal(release);
 
 		await valist.setTeamBeneficiary('valist', '0x9399BB24DBB5C4b782C70c2969F58716Ebbd6a3b');
