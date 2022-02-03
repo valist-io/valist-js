@@ -44,7 +44,7 @@ function ValistApp({ Component, pageProps }: AppProps) {
         '0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab', 
         provider
       ),
-      new Storage.IPFS(create({host:'localhost', port:5001})),
+      new Storage.IPFS(create(publicRuntimeConfig.IPFS_GATEWAY)),
     ),
     ipfsGateway: publicRuntimeConfig.IPFS_GATEWAY,
   }

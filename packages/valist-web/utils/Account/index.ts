@@ -47,7 +47,6 @@ export const login = async (
     }
 
     window.localStorage.setItem('loginType', loginType);
-    console.log('address', account);
     setAddress(account);
     setLoginType(loginType);
   }catch(err) {}

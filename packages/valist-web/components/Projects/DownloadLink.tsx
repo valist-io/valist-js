@@ -3,9 +3,9 @@ import {
 } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronDownIcon } from '@heroicons/react/solid';
-import { ReleaseMeta } from '../../utils/Apollo/types';
 import { classNames } from '../../utils/Styles';
 import { parseCID } from '../../utils/Ipfs';
+import { ReleaseMeta } from '../../utils/Valist/types';
 
 interface DownloadBoxProps {
   releaseName: string;
@@ -84,7 +84,8 @@ export default function DownloadBox(props: DownloadBoxProps) {
 
   const artifactFromName = (artifactName: string) => {
     try {
-      const cid = props.releaseMeta.artifacts[artifactName].provider;
+      const cid = props.releaseMeta?.artifacts?.get(artifactName)?.provider;
+      if (!cid) return
       const parsedCID = parseCID(cid);
       const url = `https://gateway.valist.io/ipfs/${parsedCID}?filename=${props.releaseName}`;
       window.location.assign(url);

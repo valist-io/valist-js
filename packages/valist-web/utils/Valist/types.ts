@@ -1,7 +1,8 @@
 
 export declare type ReleaseArtifact = {
-  sha256: string;
-  provider: string;
+  architecure?: string,
+  sha256?: string;
+  provider?: string;
 };
 
 export declare type TeamMeta = {
@@ -19,9 +20,9 @@ export declare type ProjectMeta = {
 };
 
 export type ReleaseMeta = {
-  image: string,
-  name: string;
-  description: string;
-  external_url: string,
-  artifacts: Record<string, ReleaseArtifact>;
+  image?: string,
+  name?: string;
+  description?: string;
+  external_url?: string,
+  artifacts?: Map<string, ReleaseArtifact>;
 };

@@ -59,7 +59,7 @@ const ProjectMetaCard = (props: RepoMetaCardProps) => {
         <div className="pb-4">
           <h1 className="text-xl text-gray-900 mb-1">Total Files</h1>
           <div className="text-gray-600">
-            {Object.keys(releaseMeta.artifacts).length}
+            {releaseMeta.artifacts?.size || 0}
           </div>
         </div>
       </div>

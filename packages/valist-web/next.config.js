@@ -15,7 +15,7 @@ const nextConfig = {
     }
     config.plugins.push(new options.webpack.IgnorePlugin({ resourceRegExp: /^electron$/ }));
     return config;
-  },
+  }
 };
 
 module.exports = nextConfig;

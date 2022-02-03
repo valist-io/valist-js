@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 import { useQuery } from "@apollo/client";
 import Layout from '../../components/Layouts/Main';
@@ -10,6 +10,7 @@ import { Project } from '../../utils/Apollo/types';
 import { TeamMeta } from '../../utils/Valist/types';
 import { parseCID } from '../../utils/Ipfs';
 import getConfig from 'next/config';
+import ValistContext from '../../components/Valist/ValistContext';
 
 type TeamMember = {
   id: string
@@ -19,6 +20,7 @@ export default function TeamProfilePage() {
   const router = useRouter();
   const { publicRuntimeConfig } = getConfig();
   const teamName = `${router.query.teamName}`;
+  const valistCtx = useContext(ValistContext);
   const { data, loading, error } = useQuery(TEAM_PROFILE_QUERY, {
     variables: { team: teamName },
   });
@@ -31,11 +33,8 @@ export default function TeamProfilePage() {
 
   const fetchMeta = async (metaURI: string) => {
     try {
-      const parsedCID = parseCID(metaURI);
-      const resp = await fetch(`http://localhost:8080/ipfs/${parsedCID}`);
-      const metaJSON = await resp.json();
-      console.log(metaJSON);
-      setMeta(metaJSON);
+      const teamMeta = await valistCtx.valist.storage.readTeamMeta(metaURI);
+      setMeta(teamMeta);
     } catch(err) { /* TODO HANDLE */ }
   }
 

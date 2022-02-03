@@ -10,7 +10,6 @@ import ProjectList from "../../../components/Projects/ProjectList";
 const AddressPage: NextPage = () => {
   const router = useRouter();
   const address = router.query.addr?.toString() || '0x0';
-  const accountCtx = useContext(AccountContext);
   const [view, setView] = useState("Projects");
 
   return (

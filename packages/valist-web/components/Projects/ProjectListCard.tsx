@@ -18,15 +18,18 @@ export default function ProjectListCard({ teamName, projectName, metaURI }: Proj
     description: "Loading....",
   });
 
+  const fetchProjectMeta = async (metaURI: string) => {
+    const projectJson = await valistCtx.valist.storage.readReleaseMeta(metaURI);
+    setMeta(projectJson)
+  };
+
   useEffect(() => {
     if (metaURI === 'loading') {
       setMeta({description: metaURI});
     } else {
-      fetchJSONfromIPFS(metaURI).then((metaJson) => {
-        setMeta(JSON.parse(metaJson));
-      });
+     fetchProjectMeta(metaURI);
     }
-  }, [metaURI]);
+  }, [metaURI, setMeta, fetchProjectMeta]);
 
   return (
     <div className="bg-white rounded-lg shadow px-8 py-6 mb-2 flex items-center justify-start border-2 hover:border-indigo-500">

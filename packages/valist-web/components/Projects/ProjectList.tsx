@@ -26,7 +26,7 @@ export default function ProjectList(props: ProjectListProps) {
   return (
     <div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-        {userProjects && userProjects.map((project: Project) => (
+        {userProjects?.map((project: Project) => (
           <Fragment key={project.id}>
             <Link href={`/${project.team.name}/${project.name}`}>
               <a>

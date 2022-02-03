@@ -37,62 +37,46 @@ export default function ProjectPage():JSX.Element {
     name: 'loading',
     description: '# Readme Not Found',
     external_url: '',
-    artifacts: {
-      loading: {
-        sha256: 'loading',
-        provider: 'loading',
-      },
-    },
   });
 
   const fetchReleaseMeta = async (release: Release) => {
-    if (release && release.metaURI !== '') {
-      const parsedCID = parseCID(release.metaURI);
-      const requestURL = `${publicRuntimeConfig.IPFS_GATEWAY}/ipfs/${parsedCID}`;
-      try {
-        const req = await fetch(requestURL);
-        const metaJson: ReleaseMeta = await req.json();
-        if (Object.keys(metaJson.artifacts).length === 0) {
-          metaJson.artifacts.artifact = {
+    if (release?.metaURI !== '') {
+      const metaJson = await valistCtx.valist.storage.readReleaseMeta(release.metaURI);
+      if (metaJson?.artifacts?.size === 0) {
+        metaJson.artifacts.set('Unknown', {
+            architecture: "Unknown",
             sha256: '',
             provider: release.metaURI,
-          };
-        }
-        setReleaseMeta(metaJson);
-      } catch (e) { /* TODO Handle */ }
+        });
+      }
+      setReleaseMeta(metaJson);
     }
   };
 
-  const fetchProjectMeta = async (metaCID: string) => {
-    const parsedCID = parseCID(metaCID);
-    const requestURL = `${publicRuntimeConfig.IPFS_GATEWAY}/ipfs/${parsedCID}`;
-    try {
-      const req = await fetch(requestURL);
-      const metaJson:ProjectMeta = await req.json();
-      setProjectMeta(metaJson);
-    } catch (e) { /* TODO Handle */ }
+  const fetchProjectMeta = async (metaURI: string) => {
+    const projectJson = await valistCtx.valist.storage.readReleaseMeta(metaURI);
+    setProjectMeta(projectJson)
   };
+
+  const getProjectID = async () => {
+    if (teamName !== 'undefined') {
+      const teamID = await valistCtx.valist.contract.getTeamID(teamName);
+      const _projectID = await valistCtx.valist.contract.getProjectID(teamID, projectName);
+      setProjectID(_projectID._hex);
+    }
+  }
 
   useEffect(() => {
-    (async () => {
-      const valist = valistCtx.valist;
-      if (teamName !== 'undefined') {
-        const teamID = await valist.contract.getTeamID(teamName);
-        const _projectID = await valist.contract.getProjectID(teamID, projectName);
-        setProjectID(_projectID._hex);
-      }
-    })();
+    getProjectID();
 
-    if (data && data.projects && data.projects[0] && 
-      data.projects[0].members && data.projects[0].releases &&
-      data.projects[0].releases[0]
-    ) {
-      setMembers(data.projects[0].members);
-      setReleases(data.projects[0].releases);
-      setVersion(data.projects[0].releases[0].name);
-      fetchReleaseMeta(data.projects[0].releases[0]);
-      fetchProjectMeta(data.projects[0].metaURI);
+    if (data?.projects[0]) {
+      setMembers(data?.projects[0]?.members);
+      setReleases(data?.projects[0]?.releases);
+      setVersion(data?.projects[0]?.releases[0]?.name);
+      fetchReleaseMeta(data?.projects[0]?.releases[0]);
+      fetchProjectMeta(data?.projects[0]?.metaURI);
     }
+    
   }, [data, teamName, valistCtx]);
 
   return (
