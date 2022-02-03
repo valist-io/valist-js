@@ -1,8 +1,11 @@
 import { Client, createClient } from './client';
 import * as Storage from './storage';
 import * as Contract from './contract/';
+import { ValistABIs } from './abis';
 
 export class Team {
+	/** team beneficiary */
+	public beneficiary?: string;
 	/** team image */
 	public image?: string;
 	/** team friendly name. */
@@ -62,8 +65,8 @@ export function replacer(key: any, value: any): any {
 export function reviver(key: any, value: any): any {
 	if (key === 'artifacts') {
 		return new Map<string, Artifact>(Object.entries(value));
-	} 
+	}
 	return value;
 }
 
-export { Client, Storage, Contract, createClient };
+export { Client, Storage, Contract, ValistABIs, createClient };

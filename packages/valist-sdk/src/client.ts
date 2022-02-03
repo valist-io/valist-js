@@ -36,9 +36,9 @@ export class Client {
 		return await this.getRelease(teamName, projectName, releaseName);
 	}
 
-	async createTeam(teamName: string, team: Team, members: string[]): Promise<void> {
+	async createTeam(teamName: string, team: Team, beneficiary: string, members: string[]): Promise<void> {
 		const metaURI = await this.storage.writeTeamMeta(team);
-		await this.contract.createTeam(teamName, metaURI, members);
+		await this.contract.createTeam(teamName, metaURI, beneficiary, members);
 	}
 
 	async createProject(teamName: string, projectName: string, project: Project, members: string[]): Promise<void> {
@@ -49,6 +49,14 @@ export class Client {
 	async createRelease(teamName: string, projectName: string, releaseName: string, release: Release): Promise<void> {
 		const metaURI = await this.storage.writeReleaseMeta(release);
 		await this.contract.createRelease(teamName, projectName, releaseName, metaURI);
+	}
+
+	async setTeamBeneficiary(teamName: string, beneficiary: string): Promise<void> {
+		await this.contract.setTeamBeneficiary(teamName, beneficiary);
+	}
+
+	async getTeamBeneficiary(teamName: string): Promise<string> {
+		return await this.contract.getTeamBeneficiary(teamName);
 	}
 }
 
