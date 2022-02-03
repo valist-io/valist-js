@@ -26,6 +26,9 @@ module.exports = {
     local: {
       url: "http://localhost:8545",
     },
+    mumbai: {
+      url: "https://rpc.valist.io/mumbai",
+    }
   },
   gasReporter: {
     token: "MATIC",

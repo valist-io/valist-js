@@ -47,6 +47,7 @@ evm-build-contracts:
 	rm -Rf ./packages/valist-sdk/src/contract/abis
 	rm -Rf ./packages/evm-subgraph/abis
 	cp -R ./packages/evm-contracts/abis ./packages/valist-sdk/src/contract/abis
+	cp -R ./packages/evm-contracts/artifacts/contracts ./packages/valist-sdk/src/contract/artifacts
 	cp -R ./packages/evm-contracts/abis ./packages/evm-subgraph/abis
 
 evm-deploy-contracts:

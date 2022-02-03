@@ -1,5 +1,5 @@
 import { Client, Contract, Storage, Team, Project, Release, Artifact } from '../src/index';
-import { abi, bytecode } from '../src/contract/abis/Valist.json';
+import { abi, bytecode } from '../src/contract/artifacts/Valist.sol/Valist.json';
 import * as IPFS from 'ipfs-core';
 import * as types from 'ipfs-core-types';
 import { ethers } from 'ethers';
@@ -38,6 +38,7 @@ describe('valist client', async () => {
 		team.name = 'valist';
 		team.description = 'Web3 digital distribution';
 		team.external_url = 'https://valist.io';
+		team.beneficiary = members[0];
 
 		const project = new Project();
 		project.image = 'https://gateway.valist.io/ipfs/Qm456';
@@ -57,17 +58,23 @@ describe('valist client', async () => {
 		release.artifacts = new Map<string, Artifact>();
 		release.artifacts.set('package.json', artifact);
 
-		await valist.createTeam('valist', team, members);
+		await valist.createTeam('valist', team, team.beneficiary, members);
 		await valist.createProject('valist', 'sdk', project, members);
 		await valist.createRelease('valist', 'sdk', 'v0.5.0', release);
 
 		const otherTeam = await valist.getTeam('valist');
 		expect(otherTeam).to.deep.equal(team);
 
+		let beneficiary = await valist.getTeamBeneficiary('valist');
+
 		const otherProject = await valist.getProject('valist', 'sdk');
 		expect(otherProject).to.deep.equal(project);
 
 		const otherRelease = await valist.getRelease('valist', 'sdk', 'v0.5.0');
 		expect(otherRelease).to.deep.equal(release);
+
+		await valist.setTeamBeneficiary('valist', '0x9399BB24DBB5C4b782C70c2969F58716Ebbd6a3b');
+		beneficiary = await valist.getTeamBeneficiary('valist');
+		expect(beneficiary).to.equal('0x9399BB24DBB5C4b782C70c2969F58716Ebbd6a3b');
 	});
 });
