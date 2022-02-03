@@ -21,13 +21,13 @@
         {
           "indexed": false,
           "internalType": "string",
-          "name": "_metaCID",
+          "name": "_metaURI",
           "type": "string"
         },
         {
           "indexed": false,
           "internalType": "address",
-          "name": "_member",
+          "name": "_sender",
           "type": "address"
         }
       ],
@@ -54,6 +54,12 @@
           "internalType": "address",
           "name": "_member",
           "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_sender",
+          "type": "address"
         }
       ],
       "name": "ProjectMemberAdded",
@@ -79,6 +85,12 @@
           "internalType": "address",
           "name": "_member",
           "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_sender",
+          "type": "address"
         }
       ],
       "name": "ProjectMemberRemoved",
@@ -102,13 +114,13 @@
         {
           "indexed": false,
           "internalType": "string",
-          "name": "_metaCID",
+          "name": "_metaURI",
           "type": "string"
         },
         {
           "indexed": false,
           "internalType": "address",
-          "name": "_member",
+          "name": "_sender",
           "type": "address"
         }
       ],
@@ -170,13 +182,13 @@
         {
           "indexed": false,
           "internalType": "string",
-          "name": "_metaCID",
+          "name": "_metaURI",
           "type": "string"
         },
         {
           "indexed": false,
           "internalType": "address",
-          "name": "_member",
+          "name": "_sender",
           "type": "address"
         }
       ],
@@ -219,6 +231,37 @@
       "inputs": [
         {
           "indexed": false,
+          "internalType": "uint256",
+          "name": "_teamID",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_oldBeneficiary",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_newBeneficiary",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_sender",
+          "type": "address"
+        }
+      ],
+      "name": "TeamBeneficiaryUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
           "internalType": "string",
           "name": "_teamName",
           "type": "string"
@@ -226,7 +269,7 @@
         {
           "indexed": false,
           "internalType": "string",
-          "name": "_metaCID",
+          "name": "_metaURI",
           "type": "string"
         },
         {
@@ -253,6 +296,12 @@
           "internalType": "address",
           "name": "_member",
           "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_sender",
+          "type": "address"
         }
       ],
       "name": "TeamMemberAdded",
@@ -272,6 +321,12 @@
           "internalType": "address",
           "name": "_member",
           "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_sender",
+          "type": "address"
         }
       ],
       "name": "TeamMemberRemoved",
@@ -289,13 +344,13 @@
         {
           "indexed": false,
           "internalType": "string",
-          "name": "_metaCID",
+          "name": "_metaURI",
           "type": "string"
         },
         {
           "indexed": false,
           "internalType": "address",
-          "name": "_member",
+          "name": "_sender",
           "type": "address"
         }
       ],
@@ -380,7 +435,7 @@
         },
         {
           "internalType": "string",
-          "name": "_metaCID",
+          "name": "_metaURI",
           "type": "string"
         },
         {
@@ -413,7 +468,7 @@
         },
         {
           "internalType": "string",
-          "name": "_metaCID",
+          "name": "_metaURI",
           "type": "string"
         }
       ],
@@ -431,8 +486,13 @@
         },
         {
           "internalType": "string",
-          "name": "_metaCID",
+          "name": "_metaURI",
           "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "_beneficiary",
+          "type": "address"
         },
         {
           "internalType": "address[]",
@@ -464,6 +524,30 @@
           "internalType": "string",
           "name": "",
           "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_teamID",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_projectName",
+          "type": "string"
+        }
+      ],
+      "name": "getProjectID",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -516,7 +600,7 @@
           "type": "string"
         }
       ],
-      "name": "getProjectMetaCID",
+      "name": "getProjectMetaURI",
       "outputs": [
         {
           "internalType": "string",
@@ -598,6 +682,30 @@
     {
       "inputs": [
         {
+          "internalType": "uint256",
+          "name": "_projectID",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_releaseName",
+          "type": "string"
+        }
+      ],
+      "name": "getReleaseID",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "string",
           "name": "_teamName",
           "type": "string"
@@ -613,7 +721,7 @@
           "type": "string"
         }
       ],
-      "name": "getReleaseMetaCID",
+      "name": "getReleaseMetaURI",
       "outputs": [
         {
           "internalType": "string",
@@ -700,6 +808,44 @@
     {
       "inputs": [
         {
+          "internalType": "uint256",
+          "name": "_teamID",
+          "type": "uint256"
+        }
+      ],
+      "name": "getTeamBeneficiary",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        }
+      ],
+      "name": "getTeamID",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "string",
           "name": "_teamName",
           "type": "string"
@@ -734,7 +880,7 @@
           "type": "string"
         }
       ],
-      "name": "getTeamMetaCID",
+      "name": "getTeamMetaURI",
       "outputs": [
         {
           "internalType": "string",
@@ -764,6 +910,73 @@
           "internalType": "string[]",
           "name": "",
           "type": "string[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_projectID",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_member",
+          "type": "address"
+        }
+      ],
+      "name": "isProjectMember",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_teamID",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_member",
+          "type": "address"
+        }
+      ],
+      "name": "isTeamMember",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_id",
+          "type": "uint256"
+        }
+      ],
+      "name": "metaByID",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
         }
       ],
       "stateMutability": "view",
@@ -847,11 +1060,29 @@
         },
         {
           "internalType": "string",
-          "name": "_metaCID",
+          "name": "_metaURI",
           "type": "string"
         }
       ],
-      "name": "setProjectMetaCID",
+      "name": "setProjectMetaURI",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_teamID",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_newBeneficiary",
+          "type": "address"
+        }
+      ],
+      "name": "setTeamBeneficiary",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -865,11 +1096,11 @@
         },
         {
           "internalType": "string",
-          "name": "_metaCID",
+          "name": "_metaURI",
           "type": "string"
         }
       ],
-      "name": "setTeamMetaCID",
+      "name": "setTeamMetaURI",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

@@ -10,9 +10,10 @@ interface ContractAPI {
 	 *
 	 * @param teamName Unique name used to identify the team.
 	 * @param metaURI URI of the team metadata.
+	 * @param beneficiary Address to receive payments on behalf of the team.
 	 * @param members List of members to add to the team.
 	 */
-	createTeam(teamName: string, metaURI: string, members: string[]): Promise<void>;
+	createTeam(teamName: string, metaURI: string, beneficiary: string, members: string[]): Promise<void>;
 
 	/**
 	 * Creates a new project. Requires the sender to be a member of the team.
@@ -75,6 +76,14 @@ interface ContractAPI {
 	 * @param metaURI Metadata URI.
 	 */
 	setTeamMetaURI(teamName: string, metaURI: string): Promise<void>;
+
+	/**
+	 * Sets the team beneficiary to the new address.
+	 * 
+	 * @param teamName Name of the team.
+	 * @param beneficiary New beneficiary.
+	 */
+	setTeamBeneficiary(teamName: string, beneficiary: string): Promise<void>;
 
 	/**
 	 * Sets the project metadata content ID. Requires the sender to be a member of the team.
@@ -172,6 +181,13 @@ interface ContractAPI {
 	 * @param size BigNumber of items to return.
 	 */
 	getTeamMembers(teamName: string, page: BigNumber, size: BigNumber): Promise<string[]>;
+
+	/**
+	 * Gets the team beneficiary.
+	 * 
+	 * @param teamName Name of the team.
+	 */
+	getTeamBeneficiary(teamName: string): Promise<string>;
 
 	/**
 	 * Returns a paginated list of project members.

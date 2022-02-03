@@ -1,4 +1,4 @@
-import { Team, Project, Release } from '../index';
+import { TeamMeta, ProjectMeta, ReleaseMeta } from '../index';
 import { IPFS } from './ipfs';
 
 /**
@@ -10,42 +10,42 @@ export interface StorageAPI {
 	 * 
 	 * @param metaURI Metadata URI.
 	 */
-	readTeamMeta(metaURI: string): Promise<Team>;
+	readTeamMeta(metaURI: string): Promise<TeamMeta>;
 
 	/**
 	 * Read project metadata from storage.
 	 * 
 	 * @param metaURI Metadata URI.
 	 */
-	readProjectMeta(metaURI: string): Promise<Project>;
+	readProjectMeta(metaURI: string): Promise<ProjectMeta>;
 
 	/**
 	 * Read release metadata from storage.
 	 * 
 	 * @param metaURI Metadata URI.
 	 */
-	readReleaseMeta(metaURI: string): Promise<Release>;
+	readReleaseMeta(metaURI: string): Promise<ReleaseMeta>;
 
 	/**
 	 * Write team metadata to storage and return its URI.
 	 * 
 	 * @param team Team metadata.
 	 */
-	writeTeamMeta(team: Team): Promise<string>;
+	writeTeamMeta(team: TeamMeta): Promise<string>;
 
 	/**
 	 * Write project metadata to storage and return its URI.
 	 * 
 	 * @param project Project metadata.
 	 */
-	writeProjectMeta(project: Project): Promise<string>;
+	writeProjectMeta(project: ProjectMeta): Promise<string>;
 
 	/**
 	 * Write release metadata to storage and return its URI.
 	 * 
 	 * @param release Release metadata.
 	 */
-	writeReleaseMeta(release: Release): Promise<string>;
+	writeReleaseMeta(release: ReleaseMeta): Promise<string>;
 
 	/**
 	 * Write data to storage and return its URI.

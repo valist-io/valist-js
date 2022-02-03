@@ -26,11 +26,15 @@ module.exports = {
     local: {
       url: "http://localhost:8545",
     },
+    mumbai: {
+      url: "https://rpc.valist.io/mumbai",
+    }
   },
   gasReporter: {
     token: "MATIC",
     currency: "USD",
     coinmarketcap: process.env.COINMARKETCAP_API_KEY,
+    gasPriceApi: "https://api.polygonscan.com/api?module=proxy&action=eth_gasPrice"
   },
   contractSizer: {
     alphaSort: true,

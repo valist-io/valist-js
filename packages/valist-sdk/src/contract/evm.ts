@@ -1,7 +1,7 @@
 import { ContractAPI } from './index';
 import { Contract, Signer } from 'ethers';
 import { Provider } from '@ethersproject/abstract-provider';
-import { abi } from './abis/Valist.json';
+import { abi } from './artifacts/Valist.sol/Valist.json';
 import { BigNumber } from 'ethers';
 
 export class EVM implements ContractAPI {
@@ -11,8 +11,8 @@ export class EVM implements ContractAPI {
 		this.contract = new Contract(address, abi, signerOrProvider);
 	}
 
-	async createTeam(teamName: string, metaURI: string, members: string[]): Promise<void> {
-		const tx = await this.contract.createTeam(teamName, metaURI, members);
+	async createTeam(teamName: string, metaURI: string, beneficiary: string, members: string[]): Promise<void> {
+		const tx = await this.contract.createTeam(teamName, metaURI, beneficiary, members);
 		await tx.wait();
 	}
 
@@ -53,6 +53,12 @@ export class EVM implements ContractAPI {
 
 	async setProjectMetaURI(teamName: string, projectName: string, metaURI: string): Promise<void> {
 		const tx = await this.contract.setProjectMetaURI(teamName, projectName, metaURI);
+		await tx.wait();
+	}
+
+	async setTeamBeneficiary(teamName: string, beneficiary: string): Promise<void> {
+		const teamID = await this.contract.getTeamID(teamName);
+		const tx = await this.contract.setTeamBeneficiary(teamID, beneficiary);
 		await tx.wait();
 	}
 
@@ -98,6 +104,11 @@ export class EVM implements ContractAPI {
 		return await this.contract.getTeamMembers(teamName, page, size);
 	}
 
+	async getTeamBeneficiary(teamName: string): Promise<string> {
+		const teamID = await this.contract.getTeamID(teamName);
+		return await this.contract.getTeamBeneficiary(teamID);
+	}
+
 	async getProjectMembers(teamName: string, projectName: string, page: BigNumber, size: BigNumber): Promise<string[]> {
 		return await this.contract.getProjectMembers(teamName, projectName, page, size);
 	}
@@ -122,3 +133,12 @@ export class EVM implements ContractAPI {
 		return await this.contract.getReleaseID(projectID, releaseName);
 	}
 }
+
+export const deployedAddresses: {[chainID: number]: string} = {
+	// Deterministic Ganache
+	1337: '0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab',
+	// Mumbai testnet
+	80001: '0x9569bEb0Eba900495cF58028DB094D824d0AE850',
+	// Polygon mainnet
+	// 137: '',
+};
