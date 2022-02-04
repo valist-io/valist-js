@@ -925,6 +925,60 @@ describe("getProjectNames", () => {
   });
 });
 
+describe("getTeamMembers", () => {
+  it("Should return list of team members", async function() {
+    const valist = await deployValist();
+    const members = await getAddresses();
+
+    const createTeamTx = await valist.createTeam("acme", "Qm", members[0], members);
+    await createTeamTx.wait();
+
+    const page1 = await valist.getTeamMembers("acme", 0, 2);
+    expect(page1).to.have.ordered.members([members[0], members[1]]);
+
+    const page2 = await valist.getTeamMembers("acme", 1, 2);
+    expect(page2).to.have.ordered.members([members[2], members[3]]);
+  });
+});
+
+describe("getProjectMembers", () => {
+  it("Should return list of project members", async function() {
+    const valist = await deployValist();
+    const members = await getAddresses();
+
+    const createTeamTx = await valist.createTeam("acme", "Qm", members[0], members);
+    await createTeamTx.wait();
+
+    const createProjectTx = await valist.createProject("acme", "bin", "Qm", members);
+    await createProjectTx.wait();
+
+    const page1 = await valist.getProjectMembers("acme", "bin", 0, 3);
+    expect(page1).to.have.ordered.members([members[0], members[1], members[2]]);
+
+    const page2 = await valist.getProjectMembers("acme", "bin", 1, 3);
+    expect(page2).to.have.ordered.members([members[3], members[4], members[5]]);
+  });
+});
+
+describe("getReleaseMembers", () => {
+  it("Should return list of release members", async function() {
+    const valist = await deployValist();
+    const members = await getAddresses();
+
+    const createTeamTx = await valist.createTeam("acme", "Qm", members[0], members);
+    await createTeamTx.wait();
+
+    const createProjectTx = await valist.createProject("acme", "bin", "Qm", members);
+    await createProjectTx.wait();
+
+    const page1 = await valist.getProjectMembers("acme", "bin", 0, 2);
+    expect(page1).to.have.ordered.members([members[0], members[1]]);
+
+    const page2 = await valist.getProjectMembers("acme", "bin", 1, 2);
+    expect(page2).to.have.ordered.members([members[2], members[3]]);
+  });
+});
+
 describe("getReleaseNames", () => {
   it("Should return release names", async function() {
     const valist = await deployValist();

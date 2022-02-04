@@ -4,8 +4,6 @@ import * as Contract from './contract/';
 import { ValistABIs } from './abis';
 
 export class TeamMeta {
-	/** team beneficiary */
-	public beneficiary?: string;
 	/** team image */
 	public image?: string;
 	/** team friendly name. */
