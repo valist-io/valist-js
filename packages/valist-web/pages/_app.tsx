@@ -2,8 +2,7 @@ import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import getConfig from 'next/config';
 import React, { useEffect, useState } from 'react';
-import { Client, Contract, Storage} from '@valist/sdk';
-import { create } from "ipfs-http-client";
+import { Client, Contract, createIPFS, deployedAddresses } from '@valist/sdk';
 import { ethers } from 'ethers';
 import { ApolloProvider } from '@apollo/client';
 import { Magic } from 'magic-sdk';
@@ -41,10 +40,10 @@ function ValistApp({ Component, pageProps }: AppProps) {
   const valistState = {
     valist: new Client(
       new Contract.EVM(
-        '0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab', 
-        provider
+        deployedAddresses[publicRuntimeConfig.CHAIN_ID], 
+        provider,
       ),
-      new Storage.IPFS(create(publicRuntimeConfig.IPFS_GATEWAY)),
+      createIPFS(),
     ),
     ipfsGateway: publicRuntimeConfig.IPFS_GATEWAY,
   }

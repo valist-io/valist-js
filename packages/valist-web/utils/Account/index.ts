@@ -11,7 +11,7 @@ export const logout = async (
 ) => {
   window.localStorage.setItem('loginType', 'readOnly');
   if (magic) {
-    await magic.user.isLoggedIn();
+    await magic.user.logout();
   }
   setAddress('0x0');
   setLoginType('readOnly');

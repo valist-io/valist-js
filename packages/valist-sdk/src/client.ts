@@ -7,6 +7,8 @@ import { ContractAPI } from './contract';
 import { deployedAddresses } from './contract/evm';
 import { createIPFS } from './storage/ipfs';
 
+export type ValistProvider = providers.JsonRpcProvider | providers.Web3Provider;
+
 export class Client {
 	public contract: ContractAPI;
 	public storage: StorageAPI;
@@ -60,7 +62,7 @@ export class Client {
 	}
 }
 
-export const createClient = async ({ web3Provider }: { web3Provider: providers.Web3Provider }): Promise<Client> => {
+export const createClient = async ({ web3Provider }: { web3Provider: ValistProvider }): Promise<Client> => {
 	const chainID = await web3Provider.getSigner().getChainId();
 	const deployedAddress = deployedAddresses[chainID] || deployedAddresses[80001];
 

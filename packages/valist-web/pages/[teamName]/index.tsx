@@ -8,8 +8,6 @@ import TeamProjectList from '../../components/Teams/TeamProjectList';
 import { TEAM_PROFILE_QUERY } from '../../utils/Apollo/queries';
 import { Project } from '../../utils/Apollo/types';
 import { TeamMeta } from '../../utils/Valist/types';
-import { parseCID } from '../../utils/Ipfs';
-import getConfig from 'next/config';
 import ValistContext from '../../components/Valist/ValistContext';
 
 type TeamMember = {
@@ -18,7 +16,6 @@ type TeamMember = {
 
 export default function TeamProfilePage() {
   const router = useRouter();
-  const { publicRuntimeConfig } = getConfig();
   const teamName = `${router.query.teamName}`;
   const valistCtx = useContext(ValistContext);
   const { data, loading, error } = useQuery(TEAM_PROFILE_QUERY, {
@@ -54,7 +51,7 @@ export default function TeamProfilePage() {
             view={view} 
             setView={setView} 
             teamName={teamName}
-            teamImage={(meta.image === '') ? '/images/ValistLogo128.png' : `${publicRuntimeConfig.IPFS_GATEWAY}/ipfs/${parseCID(meta.image)}`}
+            teamImage={meta.image || '/ipfs/QmfPeC65TKPbA3dxE314Boh82LX5NpkcrPXonCxUuKh6vr' }
             meta={meta}        
           />
           <TeamProjectList 

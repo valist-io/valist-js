@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { fetchJSONfromIPFS, parseCID } from '../../utils/Ipfs';
+import { parseCID } from '../../utils/Ipfs';
 import { ProjectMeta } from '../../utils/Valist/types';
 import AddressIdenticon from '../Identicons/AddressIdenticon';
 import ValistContext from '../Valist/ValistContext';

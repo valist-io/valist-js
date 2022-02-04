@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 
 export const USER_LOGS_QUERY = gql`
   query UserLogs($address: String){
-    logs (where: {sender: $address}, first: 5){
+    logs (where: {member: $address}, first: 5){
       id
       type
       team

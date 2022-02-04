@@ -1,7 +1,7 @@
 export const parseCID = (url: string) => url.replace('/ipfs/', '');
 
 export const fetchJSONfromIPFS = async(ipfsHash: string): Promise<any> => {
-  const url = `http://localhost:8080/ipfs/${parseCID(ipfsHash)}`
+  const url = `https://gateway.valist.io/ipfs/${parseCID(ipfsHash)}`
 
   try {
     const response = await fetch(url);
