@@ -1,3 +1,4 @@
+import getConfig from 'next/config';
 import { Release } from '../../utils/Apollo/types';
 import { parseCID } from '../../utils/Ipfs';
 import DownloadBox from './DownloadBox';
@@ -10,6 +11,7 @@ interface ReleaseListProps {
 
 export default function ReleaseList(props: ReleaseListProps): JSX.Element {
   const { teamName, projectName, projectReleases} = props;
+  const { publicRuntimeConfig } = getConfig();
   return (
     <div className="flex flex-col">
       <div className="-my-2 sm:-mx-6 lg:-mx-8">
@@ -50,7 +52,7 @@ export default function ReleaseList(props: ReleaseListProps): JSX.Element {
                     <td className="hidden lg:block px-4 py-6 whitespace-nowrap text-left
                     text-sm text-gray-500 hover:text-indigo-500">
                       <a className="cursor-pointer"
-                        href={`https://gateway.valist.io/ipfs/${parseCID(release.metaURI)}`}>
+                        href={`${publicRuntimeConfig.IPFS_GATEWAY}/ipfs/${parseCID(release.metaURI)}`}>
                         {parseCID(release.metaURI)}
                       </a>
                     </td>

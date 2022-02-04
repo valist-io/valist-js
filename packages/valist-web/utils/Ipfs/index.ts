@@ -1,7 +1,10 @@
+import getConfig from "next/config";
+
 export const parseCID = (url: string) => url.replace('/ipfs/', '');
 
 export const fetchJSONfromIPFS = async(ipfsHash: string): Promise<any> => {
-  const url = `https://gateway.valist.io/ipfs/${parseCID(ipfsHash)}`
+  const { publicRuntimeConfig } = getConfig();
+  const url = `${publicRuntimeConfig.IPFS_GATEWAY}/ipfs/${parseCID(ipfsHash)}`
 
   try {
     const response = await fetch(url);
