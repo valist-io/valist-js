@@ -38,7 +38,6 @@ describe('valist client', async () => {
 		team.name = 'valist';
 		team.description = 'Web3 digital distribution';
 		team.external_url = 'https://valist.io';
-		team.beneficiary = members[0];
 
 		const project = new ProjectMeta();
 		project.image = 'https://gateway.valist.io/ipfs/Qm456';
@@ -58,7 +57,7 @@ describe('valist client', async () => {
 		release.artifacts = new Map<string, ArtifactMeta>();
 		release.artifacts.set('package.json', artifact);
 
-		await valist.createTeam('valist', team, team.beneficiary, members);
+		await valist.createTeam('valist', team, members[0], members);
 		await valist.createProject('valist', 'sdk', project, members);
 		await valist.createRelease('valist', 'sdk', 'v0.5.0', release);
 
