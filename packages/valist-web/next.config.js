@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   publicRuntimeConfig: {
-    CHAIN_ID: process.env.CHAIN_ID || 80001,
+    CHAIN_ID: process.env.CHAIN_ID || 1337,
     WEB3_PROVIDER: process.env.WEB3_PROVIDER || 'http://localhost:8545',
     IPFS_HOST: process.env.IPFS_HOST || 'http://localhost:5001',
     IPFS_GATEWAY: process.env.IPFS_GATEWAY || 'http://localhost:8080',
