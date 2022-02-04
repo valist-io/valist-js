@@ -33,7 +33,7 @@ export default function ProjectPage():JSX.Element {
   const [members, setMembers] = useState<Member[]>([]);
   const [releases, setReleases] = useState<Release[]>([]);
   const [releaseMeta, setReleaseMeta] = useState<ReleaseMeta>({
-    image: '/images/ValistLogo128.png',
+    image: '/ipfs/QmfPeC65TKPbA3dxE314Boh82LX5NpkcrPXonCxUuKh6vr',
     name: 'loading',
     description: '# Readme Not Found',
     external_url: '',
@@ -89,7 +89,7 @@ export default function ProjectPage():JSX.Element {
             teamName={teamName}
             projectName={projectName} 
             projectImg={
-              (releaseMeta.image === '') ? '/images/ValistLogo128.png' : `${publicRuntimeConfig.IPFS_GATEWAY}/ipfs/${parseCID(releaseMeta.image)}`
+              releaseMeta.image ? `${publicRuntimeConfig.IPFS_GATEWAY}/ipfs/${parseCID(releaseMeta.image)}` : '/ipfs/QmfPeC65TKPbA3dxE314Boh82LX5NpkcrPXonCxUuKh6vr'
             }
           />
           <ProjectContent
