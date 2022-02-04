@@ -75,18 +75,10 @@ lint: lint-sdk lint-web
 
 lint-fix: lint-fix-sdk lint-fix-web
 
-test-sdk:
-	npm run test --prefix ./packages/valist-sdk
-
-test: test-sdk
+test:
+	lerna run test
 
 clean:
-	rm -rf ./packages/valist-web/.next
-	rm -rf ./packages/valist-web/out
-	rm -rf ./packages/valist-web/node_modules
-	rm -rf ./packages/valist-sdk/node_modules
-	rm -rf ./packages/valist-sdk/dist
-	rm -rf ./packages/evm-subgraph/data
-	rm -rf dist
+	git clean -dfx
 
 .PHONY: packages
