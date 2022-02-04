@@ -19,8 +19,13 @@ export default function ProjectListCard({ teamName, projectName, metaURI }: Proj
   });
 
   const fetchProjectMeta = async (metaURI: string) => {
-    const projectJson = await valistCtx.valist.storage.readReleaseMeta(metaURI);
-    setMeta(projectJson)
+    try {
+      const projectJson = await valistCtx.valist.storage.readReleaseMeta(metaURI);
+      setMeta(projectJson)
+    } catch (err) {
+      // @TODO HANDLE
+      console.log()
+    }
   };
 
   useEffect(() => {

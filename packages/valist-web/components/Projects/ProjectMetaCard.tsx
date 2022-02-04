@@ -25,7 +25,7 @@ const ProjectMetaCard = (props: RepoMetaCardProps) => {
           const json = await downloads.json();
           setDownloads(json.downloads);
         }
-      } catch (err) {}
+      } catch (err) { /* @TODO HANDLE */}
     })()
   }, []);
 

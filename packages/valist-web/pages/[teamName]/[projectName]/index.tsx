@@ -40,29 +40,44 @@ export default function ProjectPage():JSX.Element {
   });
 
   const fetchReleaseMeta = async (release: Release) => {
-    if (release?.metaURI !== '') {
-      const metaJson = await valistCtx.valist.storage.readReleaseMeta(release.metaURI);
-      if (metaJson?.artifacts?.size === 0) {
-        metaJson.artifacts.set('Unknown', {
-            architecture: "Unknown",
-            sha256: '',
-            provider: release.metaURI,
-        });
+    try { 
+      if (release?.metaURI !== '') {
+        const metaJson = await valistCtx.valist.storage.readReleaseMeta(release.metaURI);
+        if (metaJson?.artifacts?.size === 0) {
+          metaJson.artifacts.set('Unknown', {
+              architecture: "Unknown",
+              sha256: '',
+              provider: release.metaURI,
+          });
+        }
+        setReleaseMeta(metaJson);
       }
-      setReleaseMeta(metaJson);
+    } catch(err) {
+      /* @TODO HANDLE */
+      console.log("Failed to fetch release metadata.");
     }
   };
 
   const fetchProjectMeta = async (metaURI: string) => {
-    const projectJson = await valistCtx.valist.storage.readReleaseMeta(metaURI);
-    setProjectMeta(projectJson)
+    try {
+      const projectJson = await valistCtx.valist.storage.readProjectMeta(metaURI);
+      setProjectMeta(projectJson)
+    } catch(err) {
+      /* @TODO HANDLE */
+      console.log("Failed to fetch project metadata.");
+    }
   };
 
   const getProjectID = async () => {
     if (teamName !== 'undefined') {
-      const teamID = await valistCtx.valist.contract.getTeamID(teamName);
-      const _projectID = await valistCtx.valist.contract.getProjectID(teamID, projectName);
-      setProjectID(_projectID._hex);
+      try {
+        const teamID = await valistCtx.valist.contract.getTeamID(teamName);
+        const _projectID = await valistCtx.valist.contract.getProjectID(teamID, projectName);
+        setProjectID(_projectID._hex);
+      } catch(err) {
+        /* @TODO HANDLE */
+        console.log("Failed to fetch projectID.");
+      }
     }
   }
 
