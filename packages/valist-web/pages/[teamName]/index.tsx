@@ -9,6 +9,8 @@ import { TEAM_PROFILE_QUERY } from '../../utils/Apollo/queries';
 import { Project } from '../../utils/Apollo/types';
 import { TeamMeta } from '../../utils/Valist/types';
 import ValistContext from '../../components/Valist/ValistContext';
+import LogCard from '../../components/Logs/LogCard';
+import LogTable from '../../components/Logs/LogTable';
 
 type TeamMember = {
   id: string
@@ -54,15 +56,15 @@ export default function TeamProfilePage() {
             teamImage={meta.image || '/ipfs/QmfPeC65TKPbA3dxE314Boh82LX5NpkcrPXonCxUuKh6vr' }
             meta={meta}        
           />
-          <TeamProjectList 
-            projects={projects}         
-          />
+          {view === 'Projects' && <TeamProjectList projects={projects} />}
+          {view === 'Logs' && <LogTable team={teamName} />}
         </div>
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
           <TeamMemberList 
             teamMembers={members} 
             teamName={teamName}          
           />
+          <LogCard team={teamName} />
         </div>
       </div> 
     </Layout>

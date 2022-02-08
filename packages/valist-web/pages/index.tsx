@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import { useContext, useState } from 'react';
 import AccountContext from '../components/Accounts/AccountContext';
-import ActivityCard from '../components/Logs/ActivityCard';
+import LogCard from '../components/Logs/LogCard';
 import HomepageLinks from '../components/Homepage/HomepageLinks';
 import HomepageProfileCard from '../components/Homepage/HomepageProfileCard';
 import Layout from '../components/Layouts/Main';
@@ -22,7 +22,7 @@ const Home: NextPage = () => {
         {/* Right column */}
         <div className="grid grid-cols-1 gap-4">
           <HomepageLinks />
-          <ActivityCard logType={'sender'} address={accountCtx.address} />
+          <LogCard address={accountCtx.address} />
         </div>
       </div>
     </Layout>

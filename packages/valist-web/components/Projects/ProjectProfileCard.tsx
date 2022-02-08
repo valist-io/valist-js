@@ -44,7 +44,7 @@ export default function ProjectProfileCard(props: ProjectProfileCardProps): JSX.
         <Tabs 
           setView={props.setView}
           view={props.view}
-          tabs={['Readme', 'Versions', 'Members']}
+          tabs={['Readme', 'Versions', 'Members', 'Logs']}
         />
       </div>
     </section>

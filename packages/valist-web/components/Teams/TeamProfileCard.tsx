@@ -36,7 +36,7 @@ export default function TeamProfileCard(props: TeamProfileCardProps): JSX.Elemen
         <Tabs 
           setView={props.setView}
           view={props.view}
-          tabs={['Projects']}
+          tabs={['Projects', 'Logs']}
         />
       </div>
     </section>

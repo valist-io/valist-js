@@ -11,6 +11,7 @@ import { Member, Release } from "../../../utils/Apollo/types";
 import { parseCID } from "../../../utils/Ipfs";
 import ValistContext from "../../../components/Valist/ValistContext";
 import { ProjectMeta, ReleaseMeta } from "../../../utils/Valist/types";
+import LogCard from '../../../components/Logs/LogCard';
 
 export default function ProjectPage():JSX.Element {
   const router = useRouter();
@@ -123,6 +124,7 @@ export default function ProjectPage():JSX.Element {
             projectMeta={projectMeta} 
             releaseMeta={releaseMeta} 
           />
+          <LogCard team={teamName} project={projectName} />
         </div>
       </div>
     </Layout>
