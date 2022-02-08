@@ -2,7 +2,6 @@ import WalletConnectProvider from '@walletconnect/web3-provider';
 import { MetaMaskInpageProvider } from "@metamask/providers";
 import { Magic } from 'magic-sdk';
 import getConfig from 'next/config';
-import { ethers } from 'ethers';
 import { SetUseState } from '../Account/types';
 
 const { publicRuntimeConfig } = getConfig();
@@ -38,10 +37,10 @@ export const providers = {
     return wc;
   },
   metaMask: async ({}) => {
-    try{
-     await window.ethereum.request({ method: 'eth_requestAccounts' });
-    }catch(err){
-        console.log(err);
+    try {
+      await window.ethereum.request({ method: 'eth_requestAccounts' });
+    } catch(err) {
+        console.log("Could not connect to MetaMask", err);
     }
       
     return window.ethereum;

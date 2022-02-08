@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 import { Magic } from 'magic-sdk';
+import { wrapMetaTxProvider } from '@valist/sdk';
 import { addressFromProvider, providers } from '../Providers';
 import { ProviderParams } from '../Providers/types';
 import { SetUseState, LoginType, ValistProvider } from './types';
@@ -20,7 +21,7 @@ export const logout = async (
 export const login = async (
   loginType: LoginType,
   setLoginType: SetUseState<LoginType>, 
-  setProvider: SetUseState<ValistProvider>, 
+  setProvider: SetUseState<ValistProvider>,
   setAddress: SetUseState<string>,
   setMagic: SetUseState<Magic | null>,
   email: string,
@@ -40,21 +41,24 @@ export const login = async (
     const provider = new ethers.providers.Web3Provider(
       providerURL
     );
-    setProvider(provider);
 
     if (loginType != 'readOnly') {
       account = await addressFromProvider(provider);
+      // const metaTxProvider = wrapMetaTxProvider(provider);
+      // setProvider(metaTxProvider);
+    // } else {
     }
-
+    setProvider(provider);
+    // }
     window.localStorage.setItem('loginType', loginType);
     setAddress(account);
     setLoginType(loginType);
-  }catch(err) {}
+  } catch (err) {}
 };
 
 export const onAccountChanged = (
   setLoginType: SetUseState<LoginType>,
-  setProvider: SetUseState<ValistProvider>, 
+  setProvider: SetUseState<ValistProvider>,
   setAddress: SetUseState<string>,
   email: string,
 ) => {
@@ -62,7 +66,7 @@ export const onAccountChanged = (
     window.ethereum.on('accountsChanged', () => {
       const loginType = (localStorage.getItem('loginType') as LoginType);
       if (loginType === 'metaMask') {
-        login(loginType, setLoginType, setProvider, setAddress, ()=>{}, email,);
+        login(loginType, setLoginType, setProvider, setAddress, ()=>{}, email);
       }
     });
   };

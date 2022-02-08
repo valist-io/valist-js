@@ -43,6 +43,7 @@
     "typescript": "^4.5.5"
   },
   "dependencies": {
+    "@biconomy/mexa": "^2.0.26",
     "ethers": "^5.5.3",
     "ipfs-core": "^0.13.0",
     "ipfs-http-client": "^55.0.0",
