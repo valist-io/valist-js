@@ -48,18 +48,25 @@ export interface StorageAPI {
 	writeReleaseMeta(release: ReleaseMeta): Promise<string>;
 
 	/**
-	 * Write data to storage and return its URI.
+	 * Write JSON to storage and return its URI.
 	 * 
-	 * @param data File or string to write.
+	 * @param data JSON data to write
 	 */
-	write(data: File | string): Promise<string>
+	writeJSON(data: string): Promise<string>;
+
+	/**
+	 * Write file contents to storage and return its URI.
+	 * 
+	 * @param data File to write
+	 */
+	writeFile(data: File): Promise<string>;
 
 	/**
 	 * Read data from storage.
 	 * 
 	 * @param uri URI of data.
 	 */
-	read(uri: string): Promise<string>
+	read(uri: string): Promise<string>;
 }
 
 export { IPFS };

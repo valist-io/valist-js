@@ -1,16 +1,14 @@
 import { TeamMeta, ProjectMeta, ReleaseMeta, replacer, reviver } from '../index';
 import { StorageAPI } from './index';
-import * as types from 'ipfs-core-types';
-import { create } from 'ipfs-http-client';
-import { toString } from 'uint8arrays/to-string';
-import { concat } from 'uint8arrays/concat';
-import all from 'it-all';
+import { PinataClient } from '@pinata/sdk';
 
-export class IPFS implements StorageAPI {
-	ipfs: types.IPFS;
+export class Pinata implements StorageAPI {
+	pinata: PinataClient;
+	gateway: string;
 
-	constructor(ipfs: types.IPFS) {
-		this.ipfs = ipfs;
+	constructor(pinata: PinataClient, gateway: string) {
+		this.pinata = pinata;
+		this.gateway = gateway;
 	}
 
 	async readTeamMeta(metaURI: string): Promise<TeamMeta> {
@@ -44,25 +42,27 @@ export class IPFS implements StorageAPI {
 	}
 
 	async writeJSON(data: string): Promise<string> {
-		const { cid } = await this.ipfs.add(data);
-		return `/ipfs/${cid.toString()}`;
+		const res = await this.pinata.pinJSONToIPFS(data);
+		return `/ipfs/${res.IpfsHash}`;
 	}
 
 	async writeFile(data: File): Promise<string> {
-		const { cid } = await this.ipfs.add(data);
-		return `/ipfs/${cid.toString()}`;
+		const res = await this.pinata.pinFileToIPFS(data.stream());
+		return `/ipfs/${res.IpfsHash}`;
 	}
 
 	async read(uri: string): Promise<string> {
-		const data = await all(this.ipfs.cat(uri));
-		return toString(concat(data));
+		const res = await fetch(this.gateway + uri);
+		return res.text();
 	}
 }
 
 /**
- * Creates the default IPFS storage provider.
+ * Creates the default Pinata storage provider.
  */
-export function createIPFS(): StorageAPI {
-	const ipfs = create({ host: 'pin.valist.io', port: 443, protocol: 'https' });
-	return new IPFS(ipfs);
+export async function createPinata(apiKey: string, secretApiKey: string, gateway: string): Promise<StorageAPI> {
+	const pinataSDK = require('@pinata/sdk');
+	const pinata = pinataSDK(apiKey, secretApiKey);
+	await pinata.testAuthentication();
+	return new Pinata(pinata, gateway);
 }
