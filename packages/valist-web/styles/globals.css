@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+.tooltip {
+  @apply invisible absolute;
+}
+
+.has-tooltip:hover .tooltip {
+  @apply visible z-50;
+}
+
+
 .markdown > *:first-child {
   margin-top: 0 !important;
 }

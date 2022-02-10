@@ -101,6 +101,7 @@ export default function ProjectPage():JSX.Element {
           <ProjectProfileCard
             view={view}
             setView={setView}
+            tabs={['Readme', 'Versions', 'Members']}
             teamName={teamName}
             projectName={projectName} 
             projectImg={

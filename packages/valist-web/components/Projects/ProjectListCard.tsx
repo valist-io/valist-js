@@ -29,23 +29,13 @@ export default function ProjectListCard({ teamName, projectName, metaURI }: Proj
   };
 
   useEffect(() => {
-    if (metaURI === 'loading') {
-      setMeta({description: metaURI});
-    } else {
-     fetchProjectMeta(metaURI);
-    }
-  }, [metaURI, setMeta, fetchProjectMeta]);
+    fetchProjectMeta(metaURI);
+  }, [metaURI]);
 
   return (
-    <div className="bg-white rounded-lg shadow px-8 py-6 mb-2 flex items-center justify-start border-2 hover:border-indigo-500">
+    <div className="bg-white rounded-lg shadow px-6 py-6 mb-2 flex items-center justify-start border-2 hover:border-indigo-500">
       <div className="mr-7">
-         {meta && meta.image && meta.image !== '' && 
-          <img height={80} width={80} className='mx-auto rounded-full'
-           src={`${valistCtx.ipfsGateway}/ipfs/${parseCID(meta.image)}`} alt="" />           
-         }
-         {meta && meta.image && meta.image === '' && 
-          <AddressIdenticon address={name} height={80} />
-         }
+        
       </div>
       <div className="">
         <h3 className="text-xl">

@@ -15,7 +15,7 @@ export default function RepoMemberListItem(props: OrgAccessCardListItemProps): J
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
         <Link href={`/addr/${props.address}`}>
           <a className="cursor-pointer hover:text-indigo-500">
-            <EnsResolver address={props.address}/>
+            {EnsResolver ({ address: props.address }) || props.address} 
           </a>
         </Link>
       </td>

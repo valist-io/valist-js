@@ -42,9 +42,7 @@ export default function RepoContent(props: ReleaseListProps): JSX.Element {
   return (
     <section className="rounded-lg bg-white shadow ">
       <div className="bg-white lg:min-w-0 lg:flex-1">
-        <div className="border-b border-t border-gray-200 xl:border-t-0">
-          {getRepoView(props.view)}
-        </div>
+        {getRepoView(props.view)}
       </div>
     </section>
   );

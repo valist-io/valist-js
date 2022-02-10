@@ -41,7 +41,7 @@ function ValistApp({ Component, pageProps }: AppProps) {
   const valistState = {
     valist: new Client(
       new Contract.EVM(
-        deployedAddresses[publicRuntimeConfig.CHAIN_ID], 
+        deployedAddresses[publicRuntimeConfig.CHAIN_ID],
         provider,
       ),
       new Storage.IPFS(
@@ -57,7 +57,7 @@ function ValistApp({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
     const _loginType = (localStorage.getItem('loginType') as LoginType) || 'readOnly';
-    
+  
     login(_loginType, setLoginType, setProvider, setAddress, setMagic, '');
     onAccountChanged(setLoginType, setProvider, setAddress, '');
   }, []);

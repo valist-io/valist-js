@@ -13,6 +13,20 @@ export const USER_LOGS_QUERY = gql`
   }
 `;
 
+export const USER_TEAMS = gql`
+  query Projects($address: String){
+    users(where: {id: $address}) {
+      id
+      teams {
+        name
+        projects{
+          name
+        }
+      }
+    }
+  }
+`;
+
 export const USER_PROJECTS = gql`
   query Projects($address: String){
     users(where: {id: $address}) {

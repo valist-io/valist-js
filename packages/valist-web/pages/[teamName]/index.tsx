@@ -9,6 +9,7 @@ import { TEAM_PROFILE_QUERY } from '../../utils/Apollo/queries';
 import { Project } from '../../utils/Apollo/types';
 import { TeamMeta } from '../../utils/Valist/types';
 import ValistContext from '../../components/Valist/ValistContext';
+import config from 'next/config';
 
 type TeamMember = {
   id: string
@@ -16,6 +17,7 @@ type TeamMember = {
 
 export default function TeamProfilePage() {
   const router = useRouter();
+  const { publicRuntimeConfig } = config()
   const teamName = `${router.query.teamName}`;
   const valistCtx = useContext(ValistContext);
   const { data, loading, error } = useQuery(TEAM_PROFILE_QUERY, {
@@ -47,15 +49,16 @@ export default function TeamProfilePage() {
     <Layout title='Valist | Team'>
       <div className="grid grid-cols-1 gap-4 items-start lg:grid-cols-6 lg:gap-8">
         <div className="grid grid-cols-1 gap-4 lg:col-span-4">
-          <TeamProfileCard 
-            view={view} 
-            setView={setView} 
+          <TeamProfileCard
+            view={view}
+            setView={setView}
             teamName={teamName}
-            teamImage={meta.image || '/ipfs/QmfPeC65TKPbA3dxE314Boh82LX5NpkcrPXonCxUuKh6vr' }
-            meta={meta}        
+            teamImage={publicRuntimeConfig.IPFS_GATEWAY + '/ipfs/' + (meta.image || 'QmfPeC65TKPbA3dxE314Boh82LX5NpkcrPXonCxUuKh6vr')}
+            meta={meta} tabs={['Projects']}          
           />
           <TeamProjectList 
-            projects={projects}         
+            projects={projects} 
+            linksDisbaled={false}          
           />
         </div>
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
