@@ -1,5 +1,5 @@
 import { ContractAPI } from './index';
-import { Contract, Signer } from 'ethers';
+import { Contract, providers, Signer } from 'ethers';
 import { Provider } from '@ethersproject/abstract-provider';
 import { abi } from './artifacts/Valist.sol/Valist.json';
 import { BigNumber } from 'ethers';
@@ -7,8 +7,8 @@ import { BigNumber } from 'ethers';
 export class EVM implements ContractAPI {
 	contract: Contract;
 
-	constructor(address: string, signerOrProvider: Signer | Provider) {
-		this.contract = new Contract(address, abi, signerOrProvider);
+	constructor(address: string, signer: Signer) {
+		this.contract = new Contract(address, abi, signer);
 	}
 
 	async createTeam(teamName: string, metaURI: string, beneficiary: string, members: string[]): Promise<void> {

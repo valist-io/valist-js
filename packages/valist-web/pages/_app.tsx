@@ -3,7 +3,7 @@ import type { AppProps } from 'next/app';
 import getConfig from 'next/config';
 import React, { useEffect, useState } from 'react';
 import { Client, Contract, Storage, deployedAddresses } from '@valist/sdk';
-import { ethers } from 'ethers';
+import { ethers, Signer } from 'ethers';
 import { ApolloProvider } from '@apollo/client';
 import { Magic } from 'magic-sdk';
 import { create as createIPFS } from "ipfs-http-client";
@@ -23,6 +23,17 @@ function ValistApp({ Component, pageProps }: AppProps) {
       publicRuntimeConfig.WEB3_PROVIDER,
     ),
   );
+  const [valistClient, setValistClient] = useState<Client>(
+    new Client(
+      new Contract.EVM(
+        deployedAddresses[publicRuntimeConfig.CHAIN_ID], 
+        new ethers.VoidSigner(ethers.constants.AddressZero, provider),
+      ),
+      new Storage.IPFS(
+        createIPFS(publicRuntimeConfig.IPFS_HOST)
+      ),
+    )
+  );
   const [magic, setMagic] = useState<Magic | null>(null);
   const [address, setAddress] = useState<string>('0x0');
   const [loginType, setLoginType] = useState<LoginType>('readOnly');
@@ -39,15 +50,7 @@ function ValistApp({ Component, pageProps }: AppProps) {
   };
 
   const valistState = {
-    valist: new Client(
-      new Contract.EVM(
-        deployedAddresses[publicRuntimeConfig.CHAIN_ID],
-        provider,
-      ),
-      new Storage.IPFS(
-        createIPFS(publicRuntimeConfig.IPFS_HOST)
-      ),
-    ),
+    valist: valistClient,
     ipfsGateway: publicRuntimeConfig.IPFS_GATEWAY,
   }
 
@@ -61,6 +64,24 @@ function ValistApp({ Component, pageProps }: AppProps) {
     login(_loginType, setLoginType, setProvider, setAddress, setMagic, '');
     onAccountChanged(setLoginType, setProvider, setAddress, '');
   }, []);
+
+  useEffect(() => {
+    setValistClient(
+      new Client(
+        new Contract.EVM(
+          deployedAddresses[publicRuntimeConfig.CHAIN_ID], 
+          provider.getSigner(),
+        ),
+        new Storage.IPFS(
+          createIPFS(publicRuntimeConfig.IPFS_HOST)
+        ),
+      ),
+    );
+  }, [provider]);
+
+  useEffect(() => {
+    window.valist = valistClient;
+  }, [valistClient])
 
   useEffect(() => console.log("Address:", address), [address]);
 
