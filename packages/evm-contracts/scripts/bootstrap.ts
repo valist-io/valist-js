@@ -11,6 +11,16 @@ async function PinTeamMeta() {
   );
   const imagePin = await ipfs.add(imageFile);
 
+  /* Pin Empty Image Team Meta */
+  const empty = JSON.stringify({
+    image: "",
+    name: "test",
+    description: "A test description.",
+    external_url: "https://example.com",
+  });
+  const resp = await ipfs.add(empty);
+  console.log("Empty meta CID", resp.cid.toString());
+
   const meta = JSON.stringify({
     image: imagePin.cid.toString(),
     name: "test team",
@@ -81,7 +91,7 @@ async function bootstrap() {
   );
 
   const teamNames1 = ["test1", "test2", "test3", "test4"];
-  const projectName = "test";
+  const projectNames = ["geth", "ipfs", "ganache", "bor"];
   const teamMetaCid = await PinTeamMeta();
   const projectMetaCid = await PinProjectMeta();
   const releaseMetaCid = await PinReleaseMeta();
@@ -100,15 +110,18 @@ async function bootstrap() {
 
   for (let i = 0; i < teamNames1.length; i++) {
     console.log("Creating Team", teamNames1[i]);
-    const createTeamTx = await valist.createTeam(teamNames1[i], teamMetaCid, account0, [
+    const createTeamTx = await valist.createTeam(
+      teamNames1[i],
+      teamMetaCid,
       account0,
-    ]);
+      [account0]
+    );
     await createTeamTx.wait();
 
-    console.log("Creating Project", teamNames1[i], projectName);
+    console.log("Creating Project", teamNames1[i], projectNames[i]);
     const createProjectTx = await valist.createProject(
       teamNames1[i],
-      projectName,
+      projectNames[i],
       projectMetaCid,
       [account0]
     );
@@ -117,15 +130,15 @@ async function bootstrap() {
     console.log(`Add addr1(${account1}) as projectMember`);
     const addProjectMemberTx = await valist.addProjectMember(
       teamNames1[i],
-      projectName,
+      projectNames[i],
       account1
     );
     await addProjectMemberTx.wait();
 
-    console.log("Publishing Release to", `${teamNames1[i]}/${projectName}`);
+    console.log("Publishing Release to", `${teamNames1[i]}/${projectNames[i]}`);
     await valist.createRelease(
       teamNames1[i],
-      projectName,
+      projectNames[i],
       "0.0.1",
       releaseMetaCid
     );
