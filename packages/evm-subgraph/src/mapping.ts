@@ -62,7 +62,7 @@ export function handleTeamMemberAdded(event: TeamMemberAdded): void {
   let user = User.load(event.params._member.toHex());
   if (user == null) user = new User(event.params._member.toHex());
 
-  const teams = _arrayToSet(user.projects);
+  const teams = _arrayToSet(user.teams);
   teams.add(teamID.toHex());
 
   const members = _arrayToSet(team.members);
