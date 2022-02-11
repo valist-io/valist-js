@@ -1,7 +1,6 @@
 import { Client, createClient } from './client';
 import * as Storage from './storage';
 import * as Contract from './contract/';
-import { ValistABIs } from './abis';
 
 export class TeamMeta {
 	/** team image */
@@ -67,4 +66,4 @@ export function reviver(key: any, value: any): any {
 	return value;
 }
 
-export { Client, Storage, Contract, ValistABIs, createClient };
+export { Client, Storage, Contract, createClient };

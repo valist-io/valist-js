@@ -1,8 +1,9 @@
 import { task } from "hardhat/config";
 import "@nomiclabs/hardhat-waffle";
+import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "hardhat-contract-sizer";
-import "hardhat-abi-exporter";
+import "hardhat-deploy";
 
 task("accounts", "Prints the list of accounts", async (args, hre) => {
   const accounts = await hre.ethers.getSigners();
@@ -30,6 +31,15 @@ module.exports = {
       url: "https://rpc.valist.io/mumbai",
     }
   },
+  namedAccounts: {
+    deployer: {
+      default: 0,
+    },
+    forwarder: {
+      default: '0x0000000000000000000000000000000000000000',
+      mumbai: '0x9399BB24DBB5C4b782C70c2969F58716Ebbd6a3b'
+    },
+  },
   gasReporter: {
     token: "MATIC",
     currency: "USD",
@@ -40,10 +50,5 @@ module.exports = {
     alphaSort: true,
     runOnCompile: true,
     disambiguatePaths: false,
-  },
-  abiExporter: { 
-    path: './abis',
-    clear: true,
-    flat: true,
   },
 };

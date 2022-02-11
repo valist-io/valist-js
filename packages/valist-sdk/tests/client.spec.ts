@@ -1,5 +1,5 @@
 import { Client, Contract, Storage, TeamMeta, ProjectMeta, ReleaseMeta, ArtifactMeta } from '../src/index';
-import { abi, bytecode } from '../src/contract/artifacts/Valist.sol/Valist.json';
+import { abi, bytecode } from '@valist/evm-contracts/deployments/local/Valist.json';
 import * as IPFS from 'ipfs-core';
 import * as types from 'ipfs-core-types';
 import { ethers } from 'ethers';

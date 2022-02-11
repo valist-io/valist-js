@@ -1,14 +1,14 @@
 import { ContractAPI } from './index';
-import { Contract, Signer } from 'ethers';
+import { Contract, Signer, BigNumber } from 'ethers';
 import { Provider } from '@ethersproject/abstract-provider';
-import { abi } from './artifacts/Valist.sol/Valist.json';
-import { BigNumber } from 'ethers';
+import * as local from '@valist/evm-contracts/deployments/local/Valist.json';
+import * as mumbai from '@valist/evm-contracts/deployments/mumbai/Valist.json';
 
 export class EVM implements ContractAPI {
 	contract: Contract;
 
 	constructor(address: string, signerOrProvider: Signer | Provider) {
-		this.contract = new Contract(address, abi, signerOrProvider);
+		this.contract = new Contract(address, local.abi, signerOrProvider);
 	}
 
 	async createTeam(teamName: string, metaURI: string, beneficiary: string, members: string[]): Promise<void> {
@@ -134,11 +134,20 @@ export class EVM implements ContractAPI {
 	}
 }
 
-export const deployedAddresses: {[chainID: number]: string} = {
+export const addresses: {[chainID: number]: string} = {
 	// Deterministic Ganache
-	1337: '0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab',
-	// Mumbai testnet
-	80001: '0x9569bEb0Eba900495cF58028DB094D824d0AE850',
+	1337: local.address,
+	// Polygon testnet
+	80001: mumbai.address,
 	// Polygon mainnet
-	// 137: '',
+	// 137: polygon.address,
+};
+
+export const abis: {[chainID: number]: any} = {
+	// Deterministic Ganache
+	1337: local.abi,
+	// Polygon testnet
+	80001: mumbai.abi,
+	// Polygon mainnet
+	// 137: polygon.abi,
 };

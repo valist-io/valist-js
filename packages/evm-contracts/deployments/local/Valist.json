@@ -1,0 +1,1752 @@
+{
+  "address": "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_trustedForwarder",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_projectName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_metaURI",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_sender",
+          "type": "address"
+        }
+      ],
+      "name": "ProjectCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_projectName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_member",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_sender",
+          "type": "address"
+        }
+      ],
+      "name": "ProjectMemberAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_projectName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_member",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_sender",
+          "type": "address"
+        }
+      ],
+      "name": "ProjectMemberRemoved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_projectName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_metaURI",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_sender",
+          "type": "address"
+        }
+      ],
+      "name": "ProjectUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_projectName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_releaseName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_sender",
+          "type": "address"
+        }
+      ],
+      "name": "ReleaseApproved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_projectName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_releaseName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_metaURI",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_sender",
+          "type": "address"
+        }
+      ],
+      "name": "ReleaseCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_projectName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_releaseName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_sender",
+          "type": "address"
+        }
+      ],
+      "name": "ReleaseRejected",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "_teamID",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_oldBeneficiary",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_newBeneficiary",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_sender",
+          "type": "address"
+        }
+      ],
+      "name": "TeamBeneficiaryUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_metaURI",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_sender",
+          "type": "address"
+        }
+      ],
+      "name": "TeamCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_member",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_sender",
+          "type": "address"
+        }
+      ],
+      "name": "TeamMemberAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_member",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_sender",
+          "type": "address"
+        }
+      ],
+      "name": "TeamMemberRemoved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_metaURI",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_sender",
+          "type": "address"
+        }
+      ],
+      "name": "TeamUpdated",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_projectName",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "_address",
+          "type": "address"
+        }
+      ],
+      "name": "addProjectMember",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "_address",
+          "type": "address"
+        }
+      ],
+      "name": "addTeamMember",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_projectName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_releaseName",
+          "type": "string"
+        }
+      ],
+      "name": "approveRelease",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_projectName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_metaURI",
+          "type": "string"
+        },
+        {
+          "internalType": "address[]",
+          "name": "_members",
+          "type": "address[]"
+        }
+      ],
+      "name": "createProject",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_projectName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_releaseName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_metaURI",
+          "type": "string"
+        }
+      ],
+      "name": "createRelease",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_metaURI",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "_beneficiary",
+          "type": "address"
+        },
+        {
+          "internalType": "address[]",
+          "name": "_members",
+          "type": "address[]"
+        }
+      ],
+      "name": "createTeam",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_projectName",
+          "type": "string"
+        }
+      ],
+      "name": "getLatestReleaseName",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_teamID",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_projectName",
+          "type": "string"
+        }
+      ],
+      "name": "getProjectID",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_projectName",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_page",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_size",
+          "type": "uint256"
+        }
+      ],
+      "name": "getProjectMembers",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "",
+          "type": "address[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_projectName",
+          "type": "string"
+        }
+      ],
+      "name": "getProjectMetaURI",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_page",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_size",
+          "type": "uint256"
+        }
+      ],
+      "name": "getProjectNames",
+      "outputs": [
+        {
+          "internalType": "string[]",
+          "name": "",
+          "type": "string[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_projectName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_releaseName",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_page",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_size",
+          "type": "uint256"
+        }
+      ],
+      "name": "getReleaseApprovers",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "",
+          "type": "address[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_projectID",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_releaseName",
+          "type": "string"
+        }
+      ],
+      "name": "getReleaseID",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_projectName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_releaseName",
+          "type": "string"
+        }
+      ],
+      "name": "getReleaseMetaURI",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_projectName",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_page",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_size",
+          "type": "uint256"
+        }
+      ],
+      "name": "getReleaseNames",
+      "outputs": [
+        {
+          "internalType": "string[]",
+          "name": "",
+          "type": "string[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_projectName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_releaseName",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_page",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_size",
+          "type": "uint256"
+        }
+      ],
+      "name": "getReleaseRejectors",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "",
+          "type": "address[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_teamID",
+          "type": "uint256"
+        }
+      ],
+      "name": "getTeamBeneficiary",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        }
+      ],
+      "name": "getTeamID",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_page",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_size",
+          "type": "uint256"
+        }
+      ],
+      "name": "getTeamMembers",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "",
+          "type": "address[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        }
+      ],
+      "name": "getTeamMetaURI",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_page",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_size",
+          "type": "uint256"
+        }
+      ],
+      "name": "getTeamNames",
+      "outputs": [
+        {
+          "internalType": "string[]",
+          "name": "",
+          "type": "string[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_projectID",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_member",
+          "type": "address"
+        }
+      ],
+      "name": "isProjectMember",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_teamID",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_member",
+          "type": "address"
+        }
+      ],
+      "name": "isTeamMember",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "forwarder",
+          "type": "address"
+        }
+      ],
+      "name": "isTrustedForwarder",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "metaByID",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_projectName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_releaseName",
+          "type": "string"
+        }
+      ],
+      "name": "rejectRelease",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_projectName",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "_address",
+          "type": "address"
+        }
+      ],
+      "name": "removeProjectMember",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "_address",
+          "type": "address"
+        }
+      ],
+      "name": "removeTeamMember",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_projectName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_metaURI",
+          "type": "string"
+        }
+      ],
+      "name": "setProjectMetaURI",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_teamID",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_newBeneficiary",
+          "type": "address"
+        }
+      ],
+      "name": "setTeamBeneficiary",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_teamName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_metaURI",
+          "type": "string"
+        }
+      ],
+      "name": "setTeamMetaURI",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "versionRecipient",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x66fef74e5dcd5b24fd21ae3b3cf3a78b7e45a4fd8411d8251932b1a689e9d7b1",
+  "receipt": {
+    "to": null,
+    "from": "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1",
+    "contractAddress": "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab",
+    "transactionIndex": 0,
+    "gasUsed": "2958227",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0x82d676463c28114ea8ec70ffa86a07acc1978b21ab3f4a11a87288e6d909a2fb",
+    "transactionHash": "0x66fef74e5dcd5b24fd21ae3b3cf3a78b7e45a4fd8411d8251932b1a689e9d7b1",
+    "logs": [],
+    "blockNumber": 1,
+    "cumulativeGasUsed": "2958227",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [
+    "0x0000000000000000000000000000000000000000"
+  ],
+  "numDeployments": 1,
+  "solcInputHash": "c98312dc9ecb6937c85c2db08231ade8",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.4+commit.c7e474f2\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_trustedForwarder\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_projectName\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_metaURI\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_sender\",\"type\":\"address\"}],\"name\":\"ProjectCreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_projectName\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_member\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_sender\",\"type\":\"address\"}],\"name\":\"ProjectMemberAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_projectName\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_member\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_sender\",\"type\":\"address\"}],\"name\":\"ProjectMemberRemoved\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_projectName\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_metaURI\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_sender\",\"type\":\"address\"}],\"name\":\"ProjectUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_projectName\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_releaseName\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_sender\",\"type\":\"address\"}],\"name\":\"ReleaseApproved\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_projectName\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_releaseName\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_metaURI\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_sender\",\"type\":\"address\"}],\"name\":\"ReleaseCreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_projectName\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_releaseName\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_sender\",\"type\":\"address\"}],\"name\":\"ReleaseRejected\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_teamID\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_oldBeneficiary\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_newBeneficiary\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_sender\",\"type\":\"address\"}],\"name\":\"TeamBeneficiaryUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_metaURI\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_sender\",\"type\":\"address\"}],\"name\":\"TeamCreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_member\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_sender\",\"type\":\"address\"}],\"name\":\"TeamMemberAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_member\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_sender\",\"type\":\"address\"}],\"name\":\"TeamMemberRemoved\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_metaURI\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_sender\",\"type\":\"address\"}],\"name\":\"TeamUpdated\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_projectName\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"_address\",\"type\":\"address\"}],\"name\":\"addProjectMember\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"_address\",\"type\":\"address\"}],\"name\":\"addTeamMember\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_projectName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_releaseName\",\"type\":\"string\"}],\"name\":\"approveRelease\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_projectName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_metaURI\",\"type\":\"string\"},{\"internalType\":\"address[]\",\"name\":\"_members\",\"type\":\"address[]\"}],\"name\":\"createProject\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_projectName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_releaseName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_metaURI\",\"type\":\"string\"}],\"name\":\"createRelease\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_metaURI\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"_beneficiary\",\"type\":\"address\"},{\"internalType\":\"address[]\",\"name\":\"_members\",\"type\":\"address[]\"}],\"name\":\"createTeam\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_projectName\",\"type\":\"string\"}],\"name\":\"getLatestReleaseName\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_teamID\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"_projectName\",\"type\":\"string\"}],\"name\":\"getProjectID\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_projectName\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"_page\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_size\",\"type\":\"uint256\"}],\"name\":\"getProjectMembers\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_projectName\",\"type\":\"string\"}],\"name\":\"getProjectMetaURI\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"_page\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_size\",\"type\":\"uint256\"}],\"name\":\"getProjectNames\",\"outputs\":[{\"internalType\":\"string[]\",\"name\":\"\",\"type\":\"string[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_projectName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_releaseName\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"_page\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_size\",\"type\":\"uint256\"}],\"name\":\"getReleaseApprovers\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_projectID\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"_releaseName\",\"type\":\"string\"}],\"name\":\"getReleaseID\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_projectName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_releaseName\",\"type\":\"string\"}],\"name\":\"getReleaseMetaURI\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_projectName\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"_page\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_size\",\"type\":\"uint256\"}],\"name\":\"getReleaseNames\",\"outputs\":[{\"internalType\":\"string[]\",\"name\":\"\",\"type\":\"string[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_projectName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_releaseName\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"_page\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_size\",\"type\":\"uint256\"}],\"name\":\"getReleaseRejectors\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_teamID\",\"type\":\"uint256\"}],\"name\":\"getTeamBeneficiary\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"}],\"name\":\"getTeamID\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"_page\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_size\",\"type\":\"uint256\"}],\"name\":\"getTeamMembers\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"}],\"name\":\"getTeamMetaURI\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_page\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_size\",\"type\":\"uint256\"}],\"name\":\"getTeamNames\",\"outputs\":[{\"internalType\":\"string[]\",\"name\":\"\",\"type\":\"string[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_projectID\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"_member\",\"type\":\"address\"}],\"name\":\"isProjectMember\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_teamID\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"_member\",\"type\":\"address\"}],\"name\":\"isTeamMember\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"forwarder\",\"type\":\"address\"}],\"name\":\"isTrustedForwarder\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"metaByID\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_projectName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_releaseName\",\"type\":\"string\"}],\"name\":\"rejectRelease\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_projectName\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"_address\",\"type\":\"address\"}],\"name\":\"removeProjectMember\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"_address\",\"type\":\"address\"}],\"name\":\"removeTeamMember\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_projectName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_metaURI\",\"type\":\"string\"}],\"name\":\"setProjectMetaURI\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_teamID\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"_newBeneficiary\",\"type\":\"address\"}],\"name\":\"setTeamBeneficiary\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_teamName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_metaURI\",\"type\":\"string\"}],\"name\":\"setTeamMetaURI\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"versionRecipient\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"custom:err-empty-members\":\"atleast one member is required\",\"custom:err-empty-meta\":\"metadata URI is required\",\"custom:err-empty-name\":\"name is required\",\"custom:err-member-exist\":\"member already exists\",\"custom:err-member-not-exist\":\"member does not exist\",\"custom:err-name-claimed\":\"name has already been claimed\",\"custom:err-proj-member\":\"sender is not a project member\",\"custom:err-proj-not-exist\":\"project does not exist\",\"custom:err-release-not-exist\":\"release does not exist\",\"custom:err-team-member\":\"sender is not a team member\",\"custom:err-team-not-exist\":\"team does not exist\",\"kind\":\"dev\",\"methods\":{\"addProjectMember(string,string,address)\":{\"params\":{\"_address\":\"Address of member.\",\"_projectName\":\"Name of the project.\",\"_teamName\":\"Name of the team.\"}},\"addTeamMember(string,address)\":{\"params\":{\"_address\":\"Address of member.\",\"_teamName\":\"Name of the team.\"}},\"approveRelease(string,string,string)\":{\"params\":{\"_projectName\":\"Name of the project.\",\"_releaseName\":\"Name of the release.\",\"_teamName\":\"Name of the team.\"}},\"constructor\":{\"params\":{\"_trustedForwarder\":\"Address for meta transactions.\"}},\"createProject(string,string,string,address[])\":{\"params\":{\"_members\":\"Optional list of members to add to the project.\",\"_metaURI\":\"URI of the project metadata.\",\"_projectName\":\"Unique name used to identify the project.\",\"_teamName\":\"Name of the team to create the project under.\"}},\"createRelease(string,string,string,string)\":{\"params\":{\"_metaURI\":\"URI of the project metadata.\",\"_projectName\":\"Name of the project.\",\"_releaseName\":\"Unique name used to identify the release.\",\"_teamName\":\"Name of the team.\"}},\"createTeam(string,string,address,address[])\":{\"params\":{\"_beneficiary\":\"Beneficiary address of the team for recieving payments.\",\"_members\":\"List of members to add to the team.\",\"_metaURI\":\"URI of the team metadata.\",\"_teamName\":\"Unique name used to identify the team.\"}},\"getLatestReleaseName(string,string)\":{\"params\":{\"_projectName\":\"Name of the project.\",\"_teamName\":\"Name of the team.\"}},\"getProjectID(uint256,string)\":{\"params\":{\"_projectName\":\"Name of the project.\",\"_teamID\":\"Unique team ID.\"}},\"getProjectMembers(string,string,uint256,uint256)\":{\"params\":{\"_page\":\"Page to return items from.\",\"_projectName\":\"Name of the project.\",\"_size\":\"Number of items to return.\",\"_teamName\":\"Name of the team.\"}},\"getProjectMetaURI(string,string)\":{\"params\":{\"_projectName\":\"Name of the project.\",\"_teamName\":\"Name of the team.\"}},\"getProjectNames(string,uint256,uint256)\":{\"params\":{\"_page\":\"Page to return items from.\",\"_size\":\"Number of items to return.\",\"_teamName\":\"Name of the team.\"}},\"getReleaseApprovers(string,string,string,uint256,uint256)\":{\"params\":{\"_page\":\"Page to return items from.\",\"_projectName\":\"Name of the project.\",\"_releaseName\":\"Name of the release.\",\"_size\":\"Number of items to return.\",\"_teamName\":\"Name of the team.\"}},\"getReleaseID(uint256,string)\":{\"params\":{\"_projectID\":\"Unique project ID.\",\"_releaseName\":\"Name of the release.\"}},\"getReleaseMetaURI(string,string,string)\":{\"params\":{\"_projectName\":\"Name of the project.\",\"_releaseName\":\"Name of the release.\",\"_teamName\":\"Name of the team.\"}},\"getReleaseNames(string,string,uint256,uint256)\":{\"params\":{\"_page\":\"Page to return items from.\",\"_projectName\":\"Name of the project.\",\"_size\":\"Number of items to return.\",\"_teamName\":\"Name of the team.\"}},\"getReleaseRejectors(string,string,string,uint256,uint256)\":{\"params\":{\"_page\":\"Page to return items from.\",\"_projectName\":\"Name of the project.\",\"_releaseName\":\"Name of the release.\",\"_size\":\"Number of items to return.\",\"_teamName\":\"Name of the team.\"}},\"getTeamBeneficiary(uint256)\":{\"params\":{\"_teamID\":\"Unique ID of the team.\"}},\"getTeamID(string)\":{\"params\":{\"_teamName\":\"Name of the team.\"}},\"getTeamMembers(string,uint256,uint256)\":{\"params\":{\"_page\":\"Page to return items from.\",\"_size\":\"Number of items to return.\",\"_teamName\":\"Name of the team.\"}},\"getTeamMetaURI(string)\":{\"params\":{\"_teamName\":\"Name of the team.\"}},\"getTeamNames(uint256,uint256)\":{\"params\":{\"_page\":\"Page to return items from.\",\"_size\":\"Number of items to return.\"}},\"isProjectMember(uint256,address)\":{\"params\":{\"_member\":\"Address of member.\",\"_projectID\":\"Unique project ID.\"}},\"isTeamMember(uint256,address)\":{\"params\":{\"_member\":\"Address of member.\",\"_teamID\":\"Unique team ID.\"}},\"rejectRelease(string,string,string)\":{\"params\":{\"_projectName\":\"Name of the project.\",\"_releaseName\":\"Name of the release.\",\"_teamName\":\"Name of the team.\"}},\"removeProjectMember(string,string,address)\":{\"params\":{\"_address\":\"Address of member.\",\"_projectName\":\"Name of the project.\",\"_teamName\":\"Name of the team.\"}},\"removeTeamMember(string,address)\":{\"params\":{\"_address\":\"Address of member.\",\"_teamName\":\"Name of the team.\"}},\"setProjectMetaURI(string,string,string)\":{\"params\":{\"_metaURI\":\"Metadata URI.\",\"_projectName\":\"Name of the project.\",\"_teamName\":\"Name of the team.\"}},\"setTeamBeneficiary(uint256,address)\":{\"params\":{\"_newBeneficiary\":\"Address of new beneficiary address.\",\"_teamID\":\"Unique ID of the team.\"}},\"setTeamMetaURI(string,string)\":{\"params\":{\"_metaURI\":\"Metadata URI.\",\"_teamName\":\"Name of the team.\"}}},\"stateVariables\":{\"metaByID\":{\"details\":\"mapping of team, project, and release IDs to metadata URIs\"},\"projectByID\":{\"details\":\"projectID = keccak256(abi.encodePacked(teamID, keccak256(bytes(projectName))))\"},\"releaseByID\":{\"details\":\"releaseID = keccak256(abi.encodePacked(projectID, keccak256(bytes(releaseName))))\"},\"teamByID\":{\"details\":\"teamID = keccak256(abi.encodePacked(block.chainId, keccak256(bytes(teamName))))\"},\"teamNames\":{\"details\":\"list of all team names\"},\"versionRecipient\":{\"details\":\"version of BaseRelayRecipient this contract implements\"}},\"title\":\"Valist registry contract\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"addProjectMember(string,string,address)\":{\"notice\":\"Add a member to the project. Requires the sender to be a member of the team.\"},\"addTeamMember(string,address)\":{\"notice\":\"Add a member to the team. Requires the sender to be a member of the team.\"},\"approveRelease(string,string,string)\":{\"notice\":\"Approve the release by adding the sender's address to the approvers list. The sender's address will be removed from the rejectors list if it exists.\"},\"constructor\":{\"notice\":\"Creates a Valist registry.\"},\"createProject(string,string,string,address[])\":{\"notice\":\"Creates a new project. Requires the sender to be a member of the team.\"},\"createRelease(string,string,string,string)\":{\"notice\":\"Creates a new release. Requires the sender to be a member of the project.\"},\"createTeam(string,string,address,address[])\":{\"notice\":\"Creates a new team with the given members.\"},\"getLatestReleaseName(string,string)\":{\"notice\":\"Returns the latest release name.\"},\"getProjectID(uint256,string)\":{\"notice\":\"Generates projectID from teamID and projectName.\"},\"getProjectMembers(string,string,uint256,uint256)\":{\"notice\":\"Returns a paginated list of project members.\"},\"getProjectMetaURI(string,string)\":{\"notice\":\"Returns the project metadata URI.\"},\"getProjectNames(string,uint256,uint256)\":{\"notice\":\"Returns a paginated list of project names.\"},\"getReleaseApprovers(string,string,string,uint256,uint256)\":{\"notice\":\"Returns a paginated list of release approvers.\"},\"getReleaseID(uint256,string)\":{\"notice\":\"Generates releaseID from projectID and releaseName.\"},\"getReleaseMetaURI(string,string,string)\":{\"notice\":\"Returns the release metadata URI.\"},\"getReleaseNames(string,string,uint256,uint256)\":{\"notice\":\"Returns a paginated list of release names.\"},\"getReleaseRejectors(string,string,string,uint256,uint256)\":{\"notice\":\"Returns a paginated list of release rejectors.\"},\"getTeamBeneficiary(uint256)\":{\"notice\":\"Fetches team beneficiary address.\"},\"getTeamID(string)\":{\"notice\":\"Generates teamID from teamName.\"},\"getTeamMembers(string,uint256,uint256)\":{\"notice\":\"Returns a paginated list of team members.\"},\"getTeamMetaURI(string)\":{\"notice\":\"Returns the team metadata URI.\"},\"getTeamNames(uint256,uint256)\":{\"notice\":\"Returns a paginated list of team names.\"},\"isProjectMember(uint256,address)\":{\"notice\":\"Returns whether a given address is a member of a project.\"},\"isTeamMember(uint256,address)\":{\"notice\":\"Returns whether a given address is a member of a team.\"},\"rejectRelease(string,string,string)\":{\"notice\":\"Reject the release by adding the sender's address to the rejectors list. The sender's address will be removed from the approvers list if it exists.\"},\"removeProjectMember(string,string,address)\":{\"notice\":\"Remove a member from the project. Requires the sender to be a member of the team.\"},\"removeTeamMember(string,address)\":{\"notice\":\"Remove a member from the team. Requires the sender to be a member of the team.\"},\"setProjectMetaURI(string,string,string)\":{\"notice\":\"Sets the project metadata URI. Requires the sender to be a member of the team.\"},\"setTeamBeneficiary(uint256,address)\":{\"notice\":\"Set team beneficiary address for recieving payments.\"},\"setTeamMetaURI(string,string)\":{\"notice\":\"Sets the team metadata URI. Requires the sender to be a member of the team.\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/Valist.sol\":\"Valist\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/metatx/ERC2771Context.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts v4.4.0 (metatx/ERC2771Context.sol)\\n\\npragma solidity ^0.8.0;\\n\\nimport \\\"../utils/Context.sol\\\";\\n\\n/**\\n * @dev Context variant with ERC2771 support.\\n */\\nabstract contract ERC2771Context is Context {\\n    address private _trustedForwarder;\\n\\n    constructor(address trustedForwarder) {\\n        _trustedForwarder = trustedForwarder;\\n    }\\n\\n    function isTrustedForwarder(address forwarder) public view virtual returns (bool) {\\n        return forwarder == _trustedForwarder;\\n    }\\n\\n    function _msgSender() internal view virtual override returns (address sender) {\\n        if (isTrustedForwarder(msg.sender)) {\\n            // The assembly code is more direct than the Solidity version using `abi.decode`.\\n            assembly {\\n                sender := shr(96, calldataload(sub(calldatasize(), 20)))\\n            }\\n        } else {\\n            return super._msgSender();\\n        }\\n    }\\n\\n    function _msgData() internal view virtual override returns (bytes calldata) {\\n        if (isTrustedForwarder(msg.sender)) {\\n            return msg.data[:msg.data.length - 20];\\n        } else {\\n            return super._msgData();\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0x1dbdecf010a3c6781791196dbbc9789a88d6f8252cf267fbe17d404a847ff917\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/Context.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts v4.4.0 (utils/Context.sol)\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @dev Provides information about the current execution context, including the\\n * sender of the transaction and its data. While these are generally available\\n * via msg.sender and msg.data, they should not be accessed in such a direct\\n * manner, since when dealing with meta-transactions the account sending and\\n * paying for execution may not be the actual sender (as far as an application\\n * is concerned).\\n *\\n * This contract is only required for intermediate, library-like contracts.\\n */\\nabstract contract Context {\\n    function _msgSender() internal view virtual returns (address) {\\n        return msg.sender;\\n    }\\n\\n    function _msgData() internal view virtual returns (bytes calldata) {\\n        return msg.data;\\n    }\\n}\\n\",\"keccak256\":\"0x7736c187e6f1358c1ea9350a2a21aa8528dec1c2f43b374a9067465a3a51f5d3\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/structs/EnumerableSet.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts v4.4.0 (utils/structs/EnumerableSet.sol)\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @dev Library for managing\\n * https://en.wikipedia.org/wiki/Set_(abstract_data_type)[sets] of primitive\\n * types.\\n *\\n * Sets have the following properties:\\n *\\n * - Elements are added, removed, and checked for existence in constant time\\n * (O(1)).\\n * - Elements are enumerated in O(n). No guarantees are made on the ordering.\\n *\\n * ```\\n * contract Example {\\n *     // Add the library methods\\n *     using EnumerableSet for EnumerableSet.AddressSet;\\n *\\n *     // Declare a set state variable\\n *     EnumerableSet.AddressSet private mySet;\\n * }\\n * ```\\n *\\n * As of v3.3.0, sets of type `bytes32` (`Bytes32Set`), `address` (`AddressSet`)\\n * and `uint256` (`UintSet`) are supported.\\n */\\nlibrary EnumerableSet {\\n    // To implement this library for multiple types with as little code\\n    // repetition as possible, we write it in terms of a generic Set type with\\n    // bytes32 values.\\n    // The Set implementation uses private functions, and user-facing\\n    // implementations (such as AddressSet) are just wrappers around the\\n    // underlying Set.\\n    // This means that we can only create new EnumerableSets for types that fit\\n    // in bytes32.\\n\\n    struct Set {\\n        // Storage of set values\\n        bytes32[] _values;\\n        // Position of the value in the `values` array, plus 1 because index 0\\n        // means a value is not in the set.\\n        mapping(bytes32 => uint256) _indexes;\\n    }\\n\\n    /**\\n     * @dev Add a value to a set. O(1).\\n     *\\n     * Returns true if the value was added to the set, that is if it was not\\n     * already present.\\n     */\\n    function _add(Set storage set, bytes32 value) private returns (bool) {\\n        if (!_contains(set, value)) {\\n            set._values.push(value);\\n            // The value is stored at length-1, but we add 1 to all indexes\\n            // and use 0 as a sentinel value\\n            set._indexes[value] = set._values.length;\\n            return true;\\n        } else {\\n            return false;\\n        }\\n    }\\n\\n    /**\\n     * @dev Removes a value from a set. O(1).\\n     *\\n     * Returns true if the value was removed from the set, that is if it was\\n     * present.\\n     */\\n    function _remove(Set storage set, bytes32 value) private returns (bool) {\\n        // We read and store the value's index to prevent multiple reads from the same storage slot\\n        uint256 valueIndex = set._indexes[value];\\n\\n        if (valueIndex != 0) {\\n            // Equivalent to contains(set, value)\\n            // To delete an element from the _values array in O(1), we swap the element to delete with the last one in\\n            // the array, and then remove the last element (sometimes called as 'swap and pop').\\n            // This modifies the order of the array, as noted in {at}.\\n\\n            uint256 toDeleteIndex = valueIndex - 1;\\n            uint256 lastIndex = set._values.length - 1;\\n\\n            if (lastIndex != toDeleteIndex) {\\n                bytes32 lastvalue = set._values[lastIndex];\\n\\n                // Move the last value to the index where the value to delete is\\n                set._values[toDeleteIndex] = lastvalue;\\n                // Update the index for the moved value\\n                set._indexes[lastvalue] = valueIndex; // Replace lastvalue's index to valueIndex\\n            }\\n\\n            // Delete the slot where the moved value was stored\\n            set._values.pop();\\n\\n            // Delete the index for the deleted slot\\n            delete set._indexes[value];\\n\\n            return true;\\n        } else {\\n            return false;\\n        }\\n    }\\n\\n    /**\\n     * @dev Returns true if the value is in the set. O(1).\\n     */\\n    function _contains(Set storage set, bytes32 value) private view returns (bool) {\\n        return set._indexes[value] != 0;\\n    }\\n\\n    /**\\n     * @dev Returns the number of values on the set. O(1).\\n     */\\n    function _length(Set storage set) private view returns (uint256) {\\n        return set._values.length;\\n    }\\n\\n    /**\\n     * @dev Returns the value stored at position `index` in the set. O(1).\\n     *\\n     * Note that there are no guarantees on the ordering of values inside the\\n     * array, and it may change when more values are added or removed.\\n     *\\n     * Requirements:\\n     *\\n     * - `index` must be strictly less than {length}.\\n     */\\n    function _at(Set storage set, uint256 index) private view returns (bytes32) {\\n        return set._values[index];\\n    }\\n\\n    /**\\n     * @dev Return the entire set in an array\\n     *\\n     * WARNING: This operation will copy the entire storage to memory, which can be quite expensive. This is designed\\n     * to mostly be used by view accessors that are queried without any gas fees. Developers should keep in mind that\\n     * this function has an unbounded cost, and using it as part of a state-changing function may render the function\\n     * uncallable if the set grows to a point where copying to memory consumes too much gas to fit in a block.\\n     */\\n    function _values(Set storage set) private view returns (bytes32[] memory) {\\n        return set._values;\\n    }\\n\\n    // Bytes32Set\\n\\n    struct Bytes32Set {\\n        Set _inner;\\n    }\\n\\n    /**\\n     * @dev Add a value to a set. O(1).\\n     *\\n     * Returns true if the value was added to the set, that is if it was not\\n     * already present.\\n     */\\n    function add(Bytes32Set storage set, bytes32 value) internal returns (bool) {\\n        return _add(set._inner, value);\\n    }\\n\\n    /**\\n     * @dev Removes a value from a set. O(1).\\n     *\\n     * Returns true if the value was removed from the set, that is if it was\\n     * present.\\n     */\\n    function remove(Bytes32Set storage set, bytes32 value) internal returns (bool) {\\n        return _remove(set._inner, value);\\n    }\\n\\n    /**\\n     * @dev Returns true if the value is in the set. O(1).\\n     */\\n    function contains(Bytes32Set storage set, bytes32 value) internal view returns (bool) {\\n        return _contains(set._inner, value);\\n    }\\n\\n    /**\\n     * @dev Returns the number of values in the set. O(1).\\n     */\\n    function length(Bytes32Set storage set) internal view returns (uint256) {\\n        return _length(set._inner);\\n    }\\n\\n    /**\\n     * @dev Returns the value stored at position `index` in the set. O(1).\\n     *\\n     * Note that there are no guarantees on the ordering of values inside the\\n     * array, and it may change when more values are added or removed.\\n     *\\n     * Requirements:\\n     *\\n     * - `index` must be strictly less than {length}.\\n     */\\n    function at(Bytes32Set storage set, uint256 index) internal view returns (bytes32) {\\n        return _at(set._inner, index);\\n    }\\n\\n    /**\\n     * @dev Return the entire set in an array\\n     *\\n     * WARNING: This operation will copy the entire storage to memory, which can be quite expensive. This is designed\\n     * to mostly be used by view accessors that are queried without any gas fees. Developers should keep in mind that\\n     * this function has an unbounded cost, and using it as part of a state-changing function may render the function\\n     * uncallable if the set grows to a point where copying to memory consumes too much gas to fit in a block.\\n     */\\n    function values(Bytes32Set storage set) internal view returns (bytes32[] memory) {\\n        return _values(set._inner);\\n    }\\n\\n    // AddressSet\\n\\n    struct AddressSet {\\n        Set _inner;\\n    }\\n\\n    /**\\n     * @dev Add a value to a set. O(1).\\n     *\\n     * Returns true if the value was added to the set, that is if it was not\\n     * already present.\\n     */\\n    function add(AddressSet storage set, address value) internal returns (bool) {\\n        return _add(set._inner, bytes32(uint256(uint160(value))));\\n    }\\n\\n    /**\\n     * @dev Removes a value from a set. O(1).\\n     *\\n     * Returns true if the value was removed from the set, that is if it was\\n     * present.\\n     */\\n    function remove(AddressSet storage set, address value) internal returns (bool) {\\n        return _remove(set._inner, bytes32(uint256(uint160(value))));\\n    }\\n\\n    /**\\n     * @dev Returns true if the value is in the set. O(1).\\n     */\\n    function contains(AddressSet storage set, address value) internal view returns (bool) {\\n        return _contains(set._inner, bytes32(uint256(uint160(value))));\\n    }\\n\\n    /**\\n     * @dev Returns the number of values in the set. O(1).\\n     */\\n    function length(AddressSet storage set) internal view returns (uint256) {\\n        return _length(set._inner);\\n    }\\n\\n    /**\\n     * @dev Returns the value stored at position `index` in the set. O(1).\\n     *\\n     * Note that there are no guarantees on the ordering of values inside the\\n     * array, and it may change when more values are added or removed.\\n     *\\n     * Requirements:\\n     *\\n     * - `index` must be strictly less than {length}.\\n     */\\n    function at(AddressSet storage set, uint256 index) internal view returns (address) {\\n        return address(uint160(uint256(_at(set._inner, index))));\\n    }\\n\\n    /**\\n     * @dev Return the entire set in an array\\n     *\\n     * WARNING: This operation will copy the entire storage to memory, which can be quite expensive. This is designed\\n     * to mostly be used by view accessors that are queried without any gas fees. Developers should keep in mind that\\n     * this function has an unbounded cost, and using it as part of a state-changing function may render the function\\n     * uncallable if the set grows to a point where copying to memory consumes too much gas to fit in a block.\\n     */\\n    function values(AddressSet storage set) internal view returns (address[] memory) {\\n        bytes32[] memory store = _values(set._inner);\\n        address[] memory result;\\n\\n        assembly {\\n            result := store\\n        }\\n\\n        return result;\\n    }\\n\\n    // UintSet\\n\\n    struct UintSet {\\n        Set _inner;\\n    }\\n\\n    /**\\n     * @dev Add a value to a set. O(1).\\n     *\\n     * Returns true if the value was added to the set, that is if it was not\\n     * already present.\\n     */\\n    function add(UintSet storage set, uint256 value) internal returns (bool) {\\n        return _add(set._inner, bytes32(value));\\n    }\\n\\n    /**\\n     * @dev Removes a value from a set. O(1).\\n     *\\n     * Returns true if the value was removed from the set, that is if it was\\n     * present.\\n     */\\n    function remove(UintSet storage set, uint256 value) internal returns (bool) {\\n        return _remove(set._inner, bytes32(value));\\n    }\\n\\n    /**\\n     * @dev Returns true if the value is in the set. O(1).\\n     */\\n    function contains(UintSet storage set, uint256 value) internal view returns (bool) {\\n        return _contains(set._inner, bytes32(value));\\n    }\\n\\n    /**\\n     * @dev Returns the number of values on the set. O(1).\\n     */\\n    function length(UintSet storage set) internal view returns (uint256) {\\n        return _length(set._inner);\\n    }\\n\\n    /**\\n     * @dev Returns the value stored at position `index` in the set. O(1).\\n     *\\n     * Note that there are no guarantees on the ordering of values inside the\\n     * array, and it may change when more values are added or removed.\\n     *\\n     * Requirements:\\n     *\\n     * - `index` must be strictly less than {length}.\\n     */\\n    function at(UintSet storage set, uint256 index) internal view returns (uint256) {\\n        return uint256(_at(set._inner, index));\\n    }\\n\\n    /**\\n     * @dev Return the entire set in an array\\n     *\\n     * WARNING: This operation will copy the entire storage to memory, which can be quite expensive. This is designed\\n     * to mostly be used by view accessors that are queried without any gas fees. Developers should keep in mind that\\n     * this function has an unbounded cost, and using it as part of a state-changing function may render the function\\n     * uncallable if the set grows to a point where copying to memory consumes too much gas to fit in a block.\\n     */\\n    function values(UintSet storage set) internal view returns (uint256[] memory) {\\n        bytes32[] memory store = _values(set._inner);\\n        uint256[] memory result;\\n\\n        assembly {\\n            result := store\\n        }\\n\\n        return result;\\n    }\\n}\\n\",\"keccak256\":\"0xfac19be5f0d198ac556731a5589a4ae1c0c1622437d0b6b53b2cf3f317071acd\",\"license\":\"MIT\"},\"contracts/IValist.sol\":{\"content\":\"// SPDX-License-Identifier: MPL-2.0\\npragma solidity >=0.8.4;\\n\\ninterface IValist {\\n\\n  /// @dev emitted when a new team is created\\n  event TeamCreated(string _teamName, string _metaURI, address _sender);\\n  /// @dev emitted when an exsting team is updated\\n  event TeamUpdated(string _teamName, string _metaURI, address _sender);\\n  /// @dev emitted when a new team member is added\\n  event TeamMemberAdded(string _teamName, address _member, address _sender);\\n  /// @dev emitted when an existing team member is removed\\n  event TeamMemberRemoved(string _teamName, address _member, address _sender);\\n\\n  /// @dev emitted when a beneficiary is updated on a license.\\n  event TeamBeneficiaryUpdated(\\n    uint256 _teamID,\\n    address _oldBeneficiary,\\n    address _newBeneficiary,\\n    address _sender\\n  );\\n\\n  /// @dev emitted when a new project is created\\n  event ProjectCreated(\\n    string _teamName, \\n    string _projectName, \\n    string _metaURI, \\n    address _sender\\n  );\\n\\n  /// @dev emitted when an existing project is updated\\n  event ProjectUpdated(\\n    string _teamName,\\n    string _projectName,\\n    string _metaURI,\\n    address _sender\\n  );\\n\\n  /// @dev emitted when a new project member is added\\n  event ProjectMemberAdded(\\n    string _teamName, \\n    string _projectName, \\n    address _member,\\n    address _sender\\n  );\\n\\n  /// @dev emitted when an existing project member is removed\\n  event ProjectMemberRemoved(\\n    string _teamName, \\n    string _projectName, \\n    address _member,\\n    address _sender\\n  );\\n\\n  /// @dev emitted when a new release is created\\n  event ReleaseCreated(\\n    string _teamName, \\n    string _projectName, \\n    string _releaseName, \\n    string _metaURI, \\n    address _sender\\n  );\\n\\n  /// @dev emitted when an existing release is approved by a signer\\n  event ReleaseApproved(\\n    string _teamName, \\n    string _projectName, \\n    string _releaseName, \\n    address _sender\\n  );\\n\\n  /// @dev emitted when an existing release is rejected by a signer\\n  event ReleaseRejected(\\n    string _teamName, \\n    string _projectName, \\n    string _releaseName, \\n    address _sender\\n  );\\n\\n  /// Return metadata URIs associated with team, project, or release\\n  ///\\n  /// @param _id Unique ID of team, project, or release\\n  function metaByID(uint256 _id) external view returns (string memory);\\n\\n  /// Creates a new team with the given members.\\n  ///\\n  /// @param _teamName Unique name used to identify the team.\\n  /// @param _metaURI URI of the team metadata.\\n  /// @param _members List of members to add to the team.\\n  function createTeam(\\n    string memory _teamName, \\n    string memory _metaURI, \\n    address _beneficiary,\\n    address[] memory _members\\n  ) \\n    external;\\n  \\n  /// Creates a new project. Requires the sender to be a member of the team.\\n  ///\\n  /// @param _teamName Name of the team to create the project under.\\n  /// @param _projectName Unique name used to identify the project.\\n  /// @param _metaURI URI of the project metadata.\\n  /// @param _members Optional list of members to add to the project.\\n  function createProject(\\n    string memory _teamName, \\n    string memory _projectName,\\n    string memory _metaURI,\\n    address[] memory _members\\n  )\\n    external;\\n\\n  /// Creates a new release. Requires the sender to be a member of the project.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _projectName Name of the project.\\n  /// @param _releaseName Unique name used to identify the release.\\n  /// @param _metaURI URI of the project metadata.\\n  function createRelease(\\n    string memory _teamName, \\n    string memory _projectName,\\n    string memory _releaseName,\\n    string memory _metaURI\\n  )\\n    external;\\n\\n  /// Approve the release by adding the sender's address to the approvers list.\\n  /// The sender's address will be removed from the rejectors list if it exists.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _projectName Name of the project.\\n  /// @param _releaseName Name of the release.\\n  function approveRelease(\\n    string memory _teamName, \\n    string memory _projectName,\\n    string memory _releaseName\\n  )\\n    external;\\n\\n  /// Reject the release by adding the sender's address to the rejectors list.\\n  /// The sender's address will be removed from the approvers list if it exists.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _projectName Name of the project.\\n  /// @param _releaseName Name of the release.\\n  function rejectRelease(\\n    string memory _teamName, \\n    string memory _projectName,\\n    string memory _releaseName\\n  ) \\n    external;\\n\\n  /// Add a member to the team. Requires the sender to be a member of the team.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _address Address of member.\\n  function addTeamMember(string memory _teamName, address _address) external;\\n\\n  /// Remove a member from the team. Requires the sender to be a member of the team.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _address Address of member.\\n  function removeTeamMember(string memory _teamName, address _address) external;\\n\\n  /// Set team beneficiary address for recieving payments.\\n  ///\\n  /// @param _teamID Unique ID of the team.\\n  /// @param _newBeneficiary Address of new beneficiary address.\\n  function setTeamBeneficiary(\\n    uint256 _teamID,\\n    address _newBeneficiary\\n  )\\n      external;\\n\\n  /// Add a member to the project. Requires the sender to be a member of the team.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _projectName Name of the project.\\n  /// @param _address Address of member.\\n  function addProjectMember(\\n    string memory _teamName, \\n    string memory _projectName, \\n    address _address\\n  )\\n    external;\\n\\n  /// Remove a member from the project. Requires the sender to be a member of the team.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _projectName Name of the project.\\n  /// @param _address Address of member.\\n  function removeProjectMember(\\n    string memory _teamName, \\n    string memory _projectName, \\n    address _address\\n  )\\n    external;\\n\\n  /// Sets the team metadata URI. Requires the sender to be a member of the team.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _metaURI Metadata URI.\\n  function setTeamMetaURI(\\n    string memory _teamName,\\n    string memory _metaURI\\n  )\\n    external;\\n\\n  /// Sets the project metadata URI. Requires the sender to be a member of the team.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _projectName Name of the project.\\n  /// @param _metaURI Metadata URI.\\n  function setProjectMetaURI(\\n    string memory _teamName,\\n    string memory _projectName,\\n    string memory _metaURI\\n  )\\n    external;\\n\\n  \\n  /// Generates teamID from teamName.\\n  ///\\n  /// @param _teamName Name of the team.\\n  function getTeamID(\\n    string memory _teamName\\n  )\\n    external\\n    view\\n    returns (uint);\\n\\n  /// Fetches team beneficiary address.\\n  ///\\n  /// @param _teamID Unique ID of the team.\\n  function getTeamBeneficiary(\\n    uint256 _teamID\\n  )\\n    external\\n    view\\n    returns (address);\\n\\n  /// Generates projectID from teamID and projectName.\\n  ///\\n  /// @param _teamID Unique team ID.\\n  /// @param _projectName Name of the project.\\n  function getProjectID(\\n    uint _teamID,\\n    string memory _projectName\\n  )\\n    external\\n    view\\n    returns (uint);\\n\\n  /// Generates releaseID from projectID and releaseName.\\n  ///\\n  /// @param _projectID Unique project ID.\\n  /// @param _releaseName Name of the release.\\n  function getReleaseID(\\n    uint _projectID,\\n    string memory _releaseName\\n  )\\n    external\\n    view\\n    returns (uint);\\n\\n  /// Returns whether a given address is a member of a team.\\n  ///\\n  /// @param _teamID Unique team ID.\\n  /// @param _member Address of member.\\n  function isTeamMember(\\n    uint _teamID,\\n    address _member\\n  )\\n    external\\n    view\\n    returns (bool);\\n\\n  /// Returns whether a given address is a member of a project.\\n  ///\\n  /// @param _projectID Unique project ID.\\n  /// @param _member Address of member.\\n  function isProjectMember(\\n    uint _projectID,\\n    address _member\\n  )\\n    external\\n    view\\n    returns (bool);\\n\\n  /// Returns the team metadata URI.\\n  ///\\n  /// @param _teamName Name of the team.\\n  function getTeamMetaURI(\\n    string memory _teamName\\n  )\\n    external\\n    view\\n    returns (string memory);\\n\\n  /// Returns the project metadata URI.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _projectName Name of the project.\\n  function getProjectMetaURI(\\n    string memory _teamName,\\n    string memory _projectName\\n  )\\n    external\\n    view\\n    returns (string memory);\\n\\n  /// Returns the release metadata URI.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _projectName Name of the project.\\n  /// @param _releaseName Name of the release.\\n  function getReleaseMetaURI(\\n    string memory _teamName,\\n    string memory _projectName,\\n    string memory _releaseName\\n  )\\n    external\\n    view\\n    returns (string memory);\\n\\n  /// Returns the latest release name.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _projectName Name of the project.\\n  function getLatestReleaseName(\\n    string memory _teamName,\\n    string memory _projectName\\n  )\\n    external\\n    view\\n    returns (string memory);\\n\\n  /// Returns a paginated list of team names.\\n  ///\\n  /// @param _page Page to return items from.\\n  /// @param _size Number of items to return.\\n  function getTeamNames(\\n    uint _page,\\n    uint _size\\n  )\\n    external\\n    view\\n    returns (string[] memory);\\n\\n  /// Returns a paginated list of project names.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _page Page to return items from.\\n  /// @param _size Number of items to return.\\n  function getProjectNames(\\n    string memory _teamName, \\n    uint _page, \\n    uint _size\\n  ) \\n    external\\n    view\\n    returns (string[] memory);\\n\\n  /// Returns a paginated list of team members.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _page Page to return items from.\\n  /// @param _size Number of items to return.\\n  function getTeamMembers(\\n    string memory _teamName, \\n    uint _page, \\n    uint _size\\n  ) \\n    external\\n    view\\n    returns (address[] memory);\\n\\n  /// Returns a paginated list of project members.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _projectName Name of the project.\\n  /// @param _page Page to return items from.\\n  /// @param _size Number of items to return.\\n  function getProjectMembers(\\n    string memory _teamName,\\n    string memory _projectName,\\n    uint _page,\\n    uint _size\\n  )\\n    external\\n    view\\n    returns (address[] memory);\\n\\n  /// Returns a paginated list of release names.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _projectName Name of the project.\\n  /// @param _page Page to return items from.\\n  /// @param _size Number of items to return.\\n  function getReleaseNames(\\n    string memory _teamName,\\n    string memory _projectName,\\n    uint _page,\\n    uint _size\\n  )\\n    external\\n    view\\n    returns (string[] memory);\\n\\n  /// Returns a paginated list of release approvers.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _projectName Name of the project.\\n  /// @param _releaseName Name of the release.\\n  /// @param _page Page to return items from.\\n  /// @param _size Number of items to return.\\n  function getReleaseApprovers(\\n    string memory _teamName,\\n    string memory _projectName,\\n    string memory _releaseName,\\n    uint _page,\\n    uint _size\\n  )\\n    external\\n    view\\n    returns (address[] memory);\\n\\n  /// Returns a paginated list of release rejectors.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _projectName Name of the project.\\n  /// @param _releaseName Name of the release.\\n  /// @param _page Page to return items from.\\n  /// @param _size Number of items to return.\\n  function getReleaseRejectors(\\n    string memory _teamName,\\n    string memory _projectName,\\n    string memory _releaseName,\\n    uint _page,\\n    uint _size\\n  )\\n    external\\n    view\\n    returns (address[] memory);\\n}\",\"keccak256\":\"0x5ac30d64a746ddd15d35d3208b6b8aad40f3cc4de09dcb63a84366fac75cc51a\",\"license\":\"MPL-2.0\"},\"contracts/Valist.sol\":{\"content\":\"// SPDX-License-Identifier: MPL-2.0\\npragma solidity >=0.8.4;\\n\\nimport \\\"./IValist.sol\\\";\\nimport \\\"@openzeppelin/contracts/metatx/ERC2771Context.sol\\\";\\nimport \\\"@openzeppelin/contracts/utils/structs/EnumerableSet.sol\\\";\\n\\n/// @title Valist registry contract\\n///\\n/// @custom:err-empty-meta metadata URI is required\\n/// @custom:err-empty-members atleast one member is required\\n/// @custom:err-empty-name name is required\\n/// @custom:err-name-claimed name has already been claimed\\n/// @custom:err-team-member sender is not a team member\\n/// @custom:err-proj-member sender is not a project member\\n/// @custom:err-member-exist member already exists\\n/// @custom:err-member-not-exist member does not exist\\n/// @custom:err-release-not-exist release does not exist\\n/// @custom:err-team-not-exist team does not exist\\n/// @custom:err-proj-not-exist project does not exist\\ncontract Valist is IValist, ERC2771Context {\\n  using EnumerableSet for EnumerableSet.AddressSet;\\n\\n  struct Team {\\n    address beneficiary;\\n    string[] projectNames;\\n    EnumerableSet.AddressSet members;\\n  }\\n\\n  struct Project {\\n    string[] releaseNames;\\n    EnumerableSet.AddressSet members;\\n  }\\n\\n  struct Release {\\n    EnumerableSet.AddressSet approvers;\\n    EnumerableSet.AddressSet rejectors;\\n  }\\n\\n  /// @dev list of all team names\\n  string[] private teamNames;\\n\\n  /// @dev teamID = keccak256(abi.encodePacked(block.chainId, keccak256(bytes(teamName))))\\n  mapping(uint256 => Team) private teamByID;\\n  /// @dev projectID = keccak256(abi.encodePacked(teamID, keccak256(bytes(projectName))))\\n  mapping(uint256 => Project) private projectByID;\\n  /// @dev releaseID = keccak256(abi.encodePacked(projectID, keccak256(bytes(releaseName))))\\n  mapping(uint256 => Release) private releaseByID;\\n  /// @dev mapping of team, project, and release IDs to metadata URIs\\n  mapping(uint256 => string) public override metaByID;\\n\\n  /// @dev version of BaseRelayRecipient this contract implements\\n  string public versionRecipient = \\\"2.2.0\\\";\\n\\n  /// Creates a Valist registry.\\n  ///\\n  /// @param _trustedForwarder Address for meta transactions.\\n  constructor(address _trustedForwarder) ERC2771Context(_trustedForwarder) {}\\n\\n  /// Creates a new team with the given members.\\n  ///\\n  /// @param _teamName Unique name used to identify the team.\\n  /// @param _metaURI URI of the team metadata.\\n  /// @param _beneficiary Beneficiary address of the team for recieving payments.\\n  /// @param _members List of members to add to the team.\\n  function createTeam(\\n    string memory _teamName,\\n    string memory _metaURI,\\n    address _beneficiary,\\n    address[] memory _members\\n  ) \\n    public\\n    override\\n  {\\n    require(bytes(_metaURI).length > 0, \\\"err-empty-meta\\\");\\n    require(bytes(_teamName).length > 0, \\\"err-empty-name\\\");\\n    require(_members.length > 0, \\\"err-empty-members\\\");\\n\\n    uint256 teamID = getTeamID(_teamName);\\n\\n    require(bytes(metaByID[teamID]).length == 0, \\\"err-name-claimed\\\");\\n\\n    metaByID[teamID] = _metaURI;\\n    teamNames.push(_teamName);\\n\\n    teamByID[teamID].beneficiary = _beneficiary;\\n\\n    // emit first so the TeamMemberAdded event comes after\\n    emit TeamCreated(_teamName, _metaURI, _msgSender());\\n\\n    for (uint i = 0; i < _members.length; ++i) {\\n      teamByID[teamID].members.add(_members[i]);\\n      emit TeamMemberAdded(_teamName, _members[i], _msgSender());\\n    }\\n  }\\n  \\n  /// Creates a new project. Requires the sender to be a member of the team.\\n  ///\\n  /// @param _teamName Name of the team to create the project under.\\n  /// @param _projectName Unique name used to identify the project.\\n  /// @param _metaURI URI of the project metadata.\\n  /// @param _members Optional list of members to add to the project.\\n  function createProject(\\n    string memory _teamName, \\n    string memory _projectName,\\n    string memory _metaURI,\\n    address[] memory _members\\n  )\\n    public\\n    override\\n  {\\n    require(bytes(_metaURI).length > 0, \\\"err-empty-meta\\\");\\n    require(bytes(_projectName).length > 0, \\\"err-empty-name\\\");\\n\\n    uint256 teamID = getTeamID(_teamName);\\n    uint256 projectID = getProjectID(teamID, _projectName);\\n\\n    require(isTeamMember(teamID, _msgSender()), \\\"err-team-member\\\");\\n    require(bytes(metaByID[projectID]).length == 0, \\\"err-name-claimed\\\");\\n\\n    metaByID[projectID] = _metaURI;\\n    teamByID[teamID].projectNames.push(_projectName);\\n\\n    // emit first so the ProjectMemberAdded event comes after\\n    emit ProjectCreated(_teamName, _projectName, _metaURI, _msgSender());\\n\\n    for (uint i = 0; i < _members.length; ++i) {\\n      projectByID[projectID].members.add(_members[i]);\\n      emit ProjectMemberAdded(_teamName, _projectName, _members[i], _msgSender());\\n    }\\n  }\\n\\n  /// Creates a new release. Requires the sender to be a member of the project.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _projectName Name of the project.\\n  /// @param _releaseName Unique name used to identify the release.\\n  /// @param _metaURI URI of the project metadata.\\n  function createRelease(\\n    string memory _teamName, \\n    string memory _projectName,\\n    string memory _releaseName,\\n    string memory _metaURI\\n  )\\n    public\\n    override\\n  {\\n    require(bytes(_metaURI).length > 0, \\\"err-empty-meta\\\");\\n    require(bytes(_projectName).length > 0, \\\"err-empty-name\\\");\\n    require(bytes(_releaseName).length > 0, \\\"err-empty-name\\\");\\n\\n    uint256 teamID = getTeamID(_teamName);\\n    uint256 projectID = getProjectID(teamID, _projectName);\\n    uint256 releaseID = getReleaseID(projectID, _releaseName);\\n\\n    require(\\n      isTeamMember(teamID, _msgSender()) ||\\n      isProjectMember(projectID, _msgSender()),\\n      \\\"err-proj-member\\\"\\n    );\\n\\n    require(bytes(metaByID[releaseID]).length == 0, \\\"err-name-claimed\\\");\\n\\n    metaByID[releaseID] = _metaURI;\\n    projectByID[projectID].releaseNames.push(_releaseName);\\n    emit ReleaseCreated(_teamName, _projectName, _releaseName, _metaURI, _msgSender());\\n  }\\n\\n  /// Approve the release by adding the sender's address to the approvers list.\\n  /// The sender's address will be removed from the rejectors list if it exists.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _projectName Name of the project.\\n  /// @param _releaseName Name of the release.\\n  function approveRelease(\\n    string memory _teamName, \\n    string memory _projectName,\\n    string memory _releaseName\\n  )\\n    public\\n    override\\n  {\\n    uint256 teamID = getTeamID(_teamName);\\n    uint256 projectID = getProjectID(teamID, _projectName);\\n    uint256 releaseID = getReleaseID(projectID, _releaseName);\\n\\n    require(bytes(metaByID[releaseID]).length > 0, \\\"err-release-not-exist\\\");\\n    require(!releaseByID[releaseID].approvers.contains(_msgSender()), \\\"err-member-exist\\\");\\n\\n    releaseByID[releaseID].approvers.add(_msgSender());\\n    releaseByID[releaseID].rejectors.remove(_msgSender());\\n    emit ReleaseApproved(_teamName, _projectName, _releaseName, _msgSender());\\n  }\\n\\n  /// Reject the release by adding the sender's address to the rejectors list.\\n  /// The sender's address will be removed from the approvers list if it exists.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _projectName Name of the project.\\n  /// @param _releaseName Name of the release.\\n  function rejectRelease(\\n    string memory _teamName, \\n    string memory _projectName,\\n    string memory _releaseName\\n  ) \\n    public\\n    override \\n  {\\n    uint256 teamID = getTeamID(_teamName);\\n    uint256 projectID = getProjectID(teamID, _projectName);\\n    uint256 releaseID = getReleaseID(projectID, _releaseName);\\n\\n    require(bytes(metaByID[releaseID]).length > 0, \\\"err-release-not-exist\\\");\\n    require(!releaseByID[releaseID].rejectors.contains(_msgSender()), \\\"err-member-exist\\\");\\n\\n    releaseByID[releaseID].rejectors.add(_msgSender());\\n    releaseByID[releaseID].approvers.remove(_msgSender());\\n    emit ReleaseRejected(_teamName, _projectName, _releaseName, _msgSender());\\n  }\\n\\n  /// Add a member to the team. Requires the sender to be a member of the team.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _address Address of member.\\n  function addTeamMember(string memory _teamName, address _address) public override {\\n    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));\\n    \\n    require(teamByID[teamID].members.contains(_msgSender()) == true, \\\"err-team-member\\\");\\n    require(teamByID[teamID].members.contains(_address) == false, \\\"err-member-exist\\\");\\n\\n    teamByID[teamID].members.add(_address);\\n    emit TeamMemberAdded(_teamName, _address, _msgSender());\\n  }\\n\\n  /// Remove a member from the team. Requires the sender to be a member of the team.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _address Address of member.\\n  function removeTeamMember(string memory _teamName, address _address) public override {\\n    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));\\n\\n    require(teamByID[teamID].members.contains(_msgSender()) == true, \\\"err-team-member\\\");\\n    require(teamByID[teamID].members.contains(_address) == true, \\\"err-member-not-exist\\\");\\n\\n    teamByID[teamID].members.remove(_address);\\n    emit TeamMemberRemoved(_teamName, _address, _msgSender());\\n  }\\n\\n  /// Set team beneficiary address for recieving payments.\\n  ///\\n  /// @param _teamID Unique ID of the team.\\n  /// @param _newBeneficiary Address of new beneficiary address.\\n  function setTeamBeneficiary(\\n        uint256 _teamID,\\n        address _newBeneficiary\\n    )\\n        public\\n        override\\n    {\\n        require(isTeamMember(_teamID, _msgSender()), \\\"err-team-member\\\");\\n        address _oldBeneficiary = teamByID[_teamID].beneficiary;\\n        teamByID[_teamID].beneficiary = _newBeneficiary;\\n        emit TeamBeneficiaryUpdated(_teamID, _oldBeneficiary, _newBeneficiary, _msgSender());\\n    }\\n\\n  /// Add a member to the project. Requires the sender to be a member of the team.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _projectName Name of the project.\\n  /// @param _address Address of member.\\n  function addProjectMember(\\n    string memory _teamName, \\n    string memory _projectName, \\n    address _address\\n  )\\n    public\\n    override\\n  {\\n    uint256 teamID = getTeamID(_teamName);\\n    uint256 projectID = getProjectID(teamID, _projectName);\\n    \\n    require(bytes(metaByID[projectID]).length > 0, \\\"err-proj-not-exist\\\");\\n    require(teamByID[teamID].members.contains(_msgSender()) == true, \\\"err-team-member\\\");\\n    require(projectByID[projectID].members.contains(_address) == false, \\\"err-member-exist\\\");\\n\\n    projectByID[projectID].members.add(_address);\\n    emit ProjectMemberAdded(_teamName, _projectName, _address, _msgSender());\\n  }\\n\\n  /// Remove a member from the project. Requires the sender to be a member of the team.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _projectName Name of the project.\\n  /// @param _address Address of member.\\n  function removeProjectMember(\\n    string memory _teamName, \\n    string memory _projectName, \\n    address _address\\n  )\\n    public\\n    override\\n  {\\n    uint256 teamID = getTeamID(_teamName);\\n    uint256 projectID = getProjectID(teamID, _projectName);\\n    \\n    require(bytes(metaByID[projectID]).length > 0, \\\"err-proj-not-exist\\\");\\n    require(teamByID[teamID].members.contains(_msgSender()) == true, \\\"err-team-member\\\");\\n    require(projectByID[projectID].members.contains(_address) == true, \\\"err-member-not-exist\\\"); \\n\\n    projectByID[projectID].members.remove(_address);\\n    emit ProjectMemberRemoved(_teamName, _projectName, _address, _msgSender());   \\n  }\\n\\n  /// Sets the team metadata URI. Requires the sender to be a member of the team.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _metaURI Metadata URI.\\n  function setTeamMetaURI(\\n    string memory _teamName,\\n    string memory _metaURI\\n  )\\n    public\\n    override\\n  {\\n    require(bytes(_metaURI).length > 0, \\\"err-empty-meta\\\");\\n\\n    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));\\n\\n    require(teamByID[teamID].members.contains(_msgSender()), \\\"err-team-member\\\");\\n    require(bytes(metaByID[teamID]).length > 0, \\\"err-team-not-exist\\\");\\n\\n    metaByID[teamID] = _metaURI;\\n    emit TeamUpdated(_teamName, _metaURI, _msgSender());\\n  }\\n\\n  /// Sets the project metadata URI. Requires the sender to be a member of the team.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _projectName Name of the project.\\n  /// @param _metaURI Metadata URI.\\n  function setProjectMetaURI(\\n    string memory _teamName,\\n    string memory _projectName,\\n    string memory _metaURI\\n  )\\n    public\\n    override\\n  {\\n    require(bytes(_metaURI).length > 0, \\\"err-empty-meta\\\");\\n\\n    uint256 teamID = getTeamID(_teamName);\\n    uint256 projectID = getProjectID(teamID, _projectName);\\n\\n    require(teamByID[teamID].members.contains(_msgSender()), \\\"err-team-member\\\");\\n    require(bytes(metaByID[projectID]).length > 0, \\\"err-proj-not-exist\\\");\\n\\n    metaByID[projectID] = _metaURI;\\n    emit ProjectUpdated(_teamName, _projectName, _metaURI, _msgSender());\\n  }\\n\\n  /// Generates teamID from teamName.\\n  ///\\n  /// @param _teamName Name of the team.\\n  function getTeamID(\\n    string memory _teamName\\n  )\\n    public\\n    view\\n    override\\n    returns (uint)\\n  {\\n    return uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));\\n  }\\n\\n  /// Fetches team beneficiary address.\\n  ///\\n  /// @param _teamID Unique ID of the team.\\n  function getTeamBeneficiary(\\n    uint256 _teamID\\n  )\\n    public\\n    view\\n    override\\n    returns (address)\\n  {\\n    return teamByID[_teamID].beneficiary;\\n  }\\n\\n  /// Generates projectID from teamID and projectName.\\n  ///\\n  /// @param _teamID Unique team ID.\\n  /// @param _projectName Name of the project.\\n  function getProjectID(\\n    uint _teamID,\\n    string memory _projectName\\n  )\\n    public\\n    pure\\n    override\\n    returns (uint)\\n  {\\n    return uint(keccak256(abi.encodePacked(_teamID, keccak256(bytes(_projectName)))));\\n  }\\n\\n  /// Generates releaseID from projectID and releaseName.\\n  ///\\n  /// @param _projectID Unique project ID.\\n  /// @param _releaseName Name of the release.\\n  function getReleaseID(\\n    uint _projectID,\\n    string memory _releaseName\\n  )\\n    public\\n    pure\\n    override\\n    returns (uint)\\n  {\\n    return uint(keccak256(abi.encodePacked(_projectID, keccak256(bytes(_releaseName)))));\\n  }\\n\\n  /// Returns whether a given address is a member of a team.\\n  ///\\n  /// @param _teamID Unique team ID.\\n  /// @param _member Address of member.\\n  function isTeamMember(\\n    uint _teamID,\\n    address _member\\n  )\\n    public\\n    view\\n    override\\n    returns (bool)\\n  {\\n    return teamByID[_teamID].members.contains(_member);\\n  }\\n\\n  /// Returns whether a given address is a member of a project.\\n  ///\\n  /// @param _projectID Unique project ID.\\n  /// @param _member Address of member.\\n  function isProjectMember(\\n    uint _projectID,\\n    address _member\\n  )\\n    public\\n    view\\n    override\\n    returns (bool)\\n  {\\n    return projectByID[_projectID].members.contains(_member);\\n  }\\n\\n  /// Returns the team metadata URI.\\n  ///\\n  /// @param _teamName Name of the team.\\n  function getTeamMetaURI(\\n    string memory _teamName\\n  )\\n    public\\n    view\\n    override\\n    returns (string memory)\\n  {\\n    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));\\n    require(bytes(metaByID[teamID]).length > 0, \\\"err-team-not-exist\\\");\\n    return metaByID[teamID];\\n  }\\n\\n  /// Returns the project metadata URI.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _projectName Name of the project.\\n  function getProjectMetaURI(\\n    string memory _teamName,\\n    string memory _projectName\\n  )\\n    public\\n    view\\n    override\\n    returns (string memory)\\n  {\\n    uint256 teamID = getTeamID(_teamName);\\n    uint256 projectID = getProjectID(teamID, _projectName);\\n    require(bytes(metaByID[projectID]).length > 0, \\\"err-proj-not-exist\\\");\\n    return metaByID[projectID];\\n  }\\n\\n  /// Returns the release metadata URI.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _projectName Name of the project.\\n  /// @param _releaseName Name of the release.\\n  function getReleaseMetaURI(\\n    string memory _teamName,\\n    string memory _projectName,\\n    string memory _releaseName\\n  )\\n    public\\n    view\\n    override\\n    returns (string memory)\\n  {\\n    uint256 teamID = getTeamID(_teamName);\\n    uint256 projectID = getProjectID(teamID, _projectName);\\n    uint256 releaseID = getReleaseID(projectID, _releaseName);\\n    require(bytes(metaByID[releaseID]).length > 0, \\\"err-release-not-exist\\\");\\n    return metaByID[releaseID];\\n  }\\n\\n  /// Returns the latest release name.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _projectName Name of the project.\\n  function getLatestReleaseName(\\n    string memory _teamName,\\n    string memory _projectName\\n  )\\n    public\\n    view\\n    override\\n    returns (string memory)\\n  {\\n    uint256 teamID = getTeamID(_teamName);\\n    uint256 projectID = getProjectID(teamID, _projectName);\\n    Project storage project = projectByID[projectID];\\n    require(project.releaseNames.length > 0, \\\"err-proj-not-exist\\\");\\n    return project.releaseNames[project.releaseNames.length - 1];\\n  }\\n\\n  /// Returns a paginated list of team names.\\n  ///\\n  /// @param _page Page to return items from.\\n  /// @param _size Number of items to return.\\n  function getTeamNames(\\n    uint _page,\\n    uint _size\\n  )\\n    public\\n    view\\n    override\\n    returns (string[] memory)\\n  {\\n    uint start = _page * _size;\\n    uint limit = start + _size;\\n\\n    if (limit > teamNames.length) {\\n      limit = teamNames.length;\\n    }\\n    \\n    string[] memory values = new string[](limit - start);\\n    for (uint i = start; i < limit; ++i) {\\n      values[i - start] = teamNames[i];\\n    }\\n    \\n    return values;\\n  }\\n\\n  /// Returns a paginated list of project names.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _page Page to return items from.\\n  /// @param _size Number of items to return.\\n  function getProjectNames(\\n    string memory _teamName, \\n    uint _page, \\n    uint _size\\n  ) \\n    public\\n    view\\n    override\\n    returns (string[] memory)\\n  {\\n    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));\\n\\n    uint start = _page * _size;\\n    uint limit = start + _size;\\n\\n    if (limit > teamByID[teamID].projectNames.length) {\\n      limit = teamByID[teamID].projectNames.length;\\n    }\\n\\n    string[] memory values = new string[](limit - start);\\n    for (uint i = start; i < limit; ++i) {\\n      values[i - start] = teamByID[teamID].projectNames[i];\\n    }\\n\\n    return values;\\n  }\\n\\n  /// Returns a paginated list of team members.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _page Page to return items from.\\n  /// @param _size Number of items to return.\\n  function getTeamMembers(\\n    string memory _teamName, \\n    uint _page, \\n    uint _size\\n  ) \\n    public\\n    view\\n    override\\n    returns (address[] memory)\\n  {\\n    uint256 teamID = uint(keccak256(abi.encodePacked(block.chainid, keccak256(bytes(_teamName)))));\\n\\n    uint start = _page * _size;\\n    uint limit = start + _size;\\n\\n    if (limit > teamByID[teamID].members.length()) {\\n      limit = teamByID[teamID].members.length();\\n    }\\n\\n    address[] memory values = new address[](limit - start);\\n    for (uint i = start; i < limit; ++i) {\\n      values[i - start] = teamByID[teamID].members.at(i);\\n    }\\n\\n    return values;\\n  }\\n\\n  /// Returns a paginated list of project members.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _projectName Name of the project.\\n  /// @param _page Page to return items from.\\n  /// @param _size Number of items to return.\\n  function getProjectMembers(\\n    string memory _teamName,\\n    string memory _projectName,\\n    uint _page,\\n    uint _size\\n  )\\n    public\\n    view\\n    override\\n    returns (address[] memory)\\n  {\\n    uint256 teamID = getTeamID(_teamName);\\n    uint256 projectID = getProjectID(teamID, _projectName);\\n\\n    uint start = _page * _size;\\n    uint limit = start + _size;\\n\\n    if (limit > projectByID[projectID].members.length()) {\\n      limit = projectByID[projectID].members.length();\\n    }\\n\\n    address[] memory values = new address[](limit - start);\\n    for (uint i = start; i < limit; ++i) {\\n      values[i - start] = projectByID[projectID].members.at(i);\\n    }\\n\\n    return values;\\n  }\\n\\n  /// Returns a paginated list of release names.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _projectName Name of the project.\\n  /// @param _page Page to return items from.\\n  /// @param _size Number of items to return.\\n  function getReleaseNames(\\n    string memory _teamName,\\n    string memory _projectName,\\n    uint _page,\\n    uint _size\\n  )\\n    public\\n    view\\n    override\\n    returns (string[] memory)\\n  {\\n    uint256 teamID = getTeamID(_teamName);\\n    uint256 projectID = getProjectID(teamID, _projectName);\\n\\n    uint start = _page * _size;\\n    uint limit = start + _size;\\n\\n    if (limit > projectByID[projectID].releaseNames.length) {\\n      limit = projectByID[projectID].releaseNames.length;\\n    }\\n    \\n    string[] memory values = new string[](limit - start);\\n    for (uint i = start; i < limit; ++i) {\\n      values[i - start] = projectByID[projectID].releaseNames[i];\\n    }\\n    \\n    return values;\\n  }\\n\\n  /// Returns a paginated list of release approvers.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _projectName Name of the project.\\n  /// @param _releaseName Name of the release.\\n  /// @param _page Page to return items from.\\n  /// @param _size Number of items to return.\\n  function getReleaseApprovers(\\n    string memory _teamName,\\n    string memory _projectName,\\n    string memory _releaseName,\\n    uint _page,\\n    uint _size\\n  )\\n    public\\n    view\\n    override\\n    returns (address[] memory)\\n  {\\n    uint256 teamID = getTeamID(_teamName);\\n    uint256 projectID = getProjectID(teamID, _projectName);\\n    uint256 releaseID = getReleaseID(projectID, _releaseName);\\n\\n    uint start = _page * _size;\\n    uint limit = start + _size;\\n\\n    if (limit > releaseByID[releaseID].approvers.length()) {\\n      limit = releaseByID[releaseID].approvers.length();\\n    }\\n\\n    address[] memory values = new address[](limit - start);\\n    for (uint i = start; i < limit; ++i) {\\n      values[i - start] = releaseByID[releaseID].approvers.at(i);\\n    }\\n    \\n    return values;\\n  }\\n\\n  /// Returns a paginated list of release rejectors.\\n  ///\\n  /// @param _teamName Name of the team.\\n  /// @param _projectName Name of the project.\\n  /// @param _releaseName Name of the release.\\n  /// @param _page Page to return items from.\\n  /// @param _size Number of items to return.\\n  function getReleaseRejectors(\\n    string memory _teamName,\\n    string memory _projectName,\\n    string memory _releaseName,\\n    uint _page,\\n    uint _size\\n  )\\n    public\\n    view\\n    override\\n    returns (address[] memory)\\n  {\\n    uint256 teamID = getTeamID(_teamName);\\n    uint256 projectID = getProjectID(teamID, _projectName);\\n    uint256 releaseID = getReleaseID(projectID, _releaseName);\\n\\n    uint start = _page * _size;\\n    uint limit = start + _size;\\n\\n    if (limit > releaseByID[releaseID].rejectors.length()) {\\n      limit = releaseByID[releaseID].rejectors.length();\\n    }\\n    \\n    address[] memory values = new address[](limit - start);\\n    for (uint i = start; i < limit; ++i) {\\n      values[i - start] = releaseByID[releaseID].rejectors.at(i);\\n    }\\n    \\n    return values;\\n  }\\n}\\n\",\"keccak256\":\"0x523963f111417b6dc90b7b533f692e8b3b0169aaa7fcff6c62fae6047c2e616a\",\"license\":\"MPL-2.0\"}},\"version\":1}",
+  "bytecode": "0x60c060405260056080819052640322e322e360dc1b60a09081526200002891600691906200007f565b503480156200003657600080fd5b50604051620035a1380380620035a1833981016040819052620000599162000125565b600080546001600160a01b0319166001600160a01b039290921691909117905562000192565b8280546200008d9062000155565b90600052602060002090601f016020900481019282620000b15760008555620000fc565b82601f10620000cc57805160ff1916838001178555620000fc565b82800160010185558215620000fc579182015b82811115620000fc578251825591602001919060010190620000df565b506200010a9291506200010e565b5090565b5b808211156200010a57600081556001016200010f565b60006020828403121562000137578081fd5b81516001600160a01b03811681146200014e578182fd5b9392505050565b600181811c908216806200016a57607f821691505b602082108114156200018c57634e487b7160e01b600052602260045260246000fd5b50919050565b6133ff80620001a26000396000f3fe608060405234801561001057600080fd5b50600436106101f05760003560e01c80635b9c29c61161010f578063a6a54ec5116100a2578063cfc5efac11610071578063cfc5efac14610446578063d93379d114610459578063ecb0a33d1461049a578063f8b24915146104ad57600080fd5b8063a6a54ec5146103fa578063b1a5042b1461040d578063b1bc8c8d14610420578063baffd3da1461043357600080fd5b806383dfd03e116100de57806383dfd03e146103ae57806399bb69c1146103c15780639e97c317146103d45780639fe1fb72146103e757600080fd5b80635b9c29c6146103625780635c53709614610375578063600c39111461038857806381ded1501461039b57600080fd5b806347566e4f116101875780634ff3ec60116101565780634ff3ec601461031a57806351de13bf1461032d578063572b6c051461034057806358f700061461021d57600080fd5b806347566e4f146102cc578063486ff0cd146102df5780634ce72c75146102e75780634eec58a3146102fa57600080fd5b806317289818116101c3578063172898181461026657806325ca6b03146102865780632aa2fd641461029957806343417c06146102ac57600080fd5b806301738281146101f5578063052470f41461021d5780630716dfa01461023e57806311bc1ce014610253575b600080fd5b610208610203366004612ea2565b6104c0565b60405190151581526020015b60405180910390f35b61023061022b366004612ec4565b6104e4565b604051908152602001610214565b61025161024c366004612c9f565b610528565b005b610251610261366004612ba3565b6106f3565b610279610274366004612d3a565b610822565b6040516102149190612f6a565b610251610294366004612ba3565b61098b565b6102516102a7366004612a9f565b610aa9565b6102bf6102ba366004612e8a565b610bbb565b6040516102149190613018565b6102bf6102da366004612a3f565b610c55565b6102bf610d6c565b6102796102f5366004612dcf565b610d79565b61030d610308366004612efe565b610ed2565b6040516102149190612fb7565b610251610328366004612c26565b611076565b61025161033b366004612a3f565b6112ad565b61020861034e3660046129a0565b6000546001600160a01b0391821691161490565b610251610370366004612b0f565b611411565b610251610383366004612a9f565b611688565b610208610396366004612ea2565b6117b5565b6102516103a93660046129f4565b6117d0565b61030d6103bc366004612dcf565b6118cc565b6102516103cf366004612ea2565b611aa6565b6102bf6103e2366004612ba3565b611b54565b6102bf6103f53660046129ba565b611c5d565b61030d610408366004612e3f565b611d9b565b6102bf61041b366004612a3f565b611fae565b61027961042e366004612d3a565b6120a7565b610251610441366004612ba3565b6121f7565b610279610454366004612e3f565b612309565b610482610467366004612e8a565b6000908152600260205260409020546001600160a01b031690565b6040516001600160a01b039091168152602001610214565b6102516104a83660046129f4565b61247d565b6102306104bb3660046129ba565b612595565b600082815260026020819052604082206104db9101836125d8565b90505b92915050565b6000828280519060200120604051602001610509929190918252602082015260400190565b60408051601f1981840301815291905280516020909101209392505050565b60008151116105525760405162461bcd60e51b815260040161054990613221565b60405180910390fd5b60008351116105735760405162461bcd60e51b815260040161054990613249565b60008251116105945760405162461bcd60e51b815260040161054990613249565b600061059f85612595565b905060006105ad82866104e4565b905060006105bb82866104e4565b90506105c9836102036125fa565b806105db57506105db826103966125fa565b6106195760405162461bcd60e51b815260206004820152600f60248201526e32b93916b83937b516b6b2b6b132b960891b6044820152606401610549565b6000818152600560205260409020805461063290613347565b1590506106515760405162461bcd60e51b8152600401610549906131f7565b6000818152600560209081526040909120855161067092870190612804565b506000828152600360209081526040822080546001810182559083529181902087516106a3939190910191880190612804565b507f15fb1d214ed195f7210e450a416a0640362c37a0a2d2d0ab63481f967aae0e00878787876106d16125fa565b6040516106e2959493929190613139565b60405180910390a150505050505050565b60006106fe84612595565b9050600061070c82856104e4565b9050600061071a82856104e4565b60008181526005602052604081208054929350909161073890613347565b9050116107575760405162461bcd60e51b815260040161054990613271565b6107766107626125fa565b6000838152600460205260409020906125d8565b156107935760405162461bcd60e51b8152600401610549906131cd565b6107b261079e6125fa565b600083815260046020526040902090612620565b506107d56107be6125fa565b600083815260046020526040902060020190612635565b507fa70c9d49a7ef09401d07a7aad126689c097b80db50504ce9ba5ca8b6f6477fb88686866108026125fa565b60405161081294939291906130e6565b60405180910390a1505050505050565b6060600061082f87612595565b9050600061083d82886104e4565b9050600061084b82886104e4565b905060006108598688613311565b9050600061086787836132f9565b60008481526004602052604090209091506108849060020161264a565b8111156108a85760008381526004602052604090206108a59060020161264a565b90505b60006108b48383613330565b6001600160401b038111156108d957634e487b7160e01b600052604160045260246000fd5b604051908082528060200260200182016040528015610902578160200160208202803683370190505b509050825b8281101561097b57600085815260046020526040902061092a9060020182612654565b826109358684613330565b8151811061095357634e487b7160e01b600052603260045260246000fd5b6001600160a01b039092166020928302919091019091015261097481613382565b9050610907565b509b9a5050505050505050505050565b60008151116109ac5760405162461bcd60e51b815260040161054990613221565b60006109b784612595565b905060006109c582856104e4565b90506109ea6109d26125fa565b600084815260026020819052604090912001906125d8565b610a065760405162461bcd60e51b8152600401610549906132a0565b60008181526005602052604081208054610a1f90613347565b905011610a3e5760405162461bcd60e51b8152600401610549906131a1565b60008181526005602090815260409091208451610a5d92860190612804565b507fd837747757bf732c911148d7c5825d52de171f849e76143eec98fa514e263c8a858585610a8a6125fa565b604051610a9a94939291906130e6565b60405180910390a15050505050565b6000610ab484612595565b90506000610ac282856104e4565b600081815260056020526040812080549293509091610ae090613347565b905011610aff5760405162461bcd60e51b8152600401610549906131a1565b610b0a6109d26125fa565b1515600114610b2b5760405162461bcd60e51b8152600401610549906132a0565b6000818152600360205260409020610b4690600101846125d8565b15610b635760405162461bcd60e51b8152600401610549906131cd565b6000818152600360205260409020610b7e9060010184612620565b507fced6bdcf281bb4d710257a8516d36a47f2d6d4642c8d0af57824cff05d3f300e858585610bab6125fa565b604051610a9a949392919061309c565b60056020526000908152604090208054610bd490613347565b80601f0160208091040260200160405190810160405280929190818152602001828054610c0090613347565b8015610c4d5780601f10610c2257610100808354040283529160200191610c4d565b820191906000526020600020905b815481529060010190602001808311610c3057829003601f168201915b505050505081565b60606000610c6284612595565b90506000610c7082856104e4565b6000818152600360205260409020805491925090610ca05760405162461bcd60e51b8152600401610549906131a1565b80548190610cb090600190613330565b81548110610cce57634e487b7160e01b600052603260045260246000fd5b906000526020600020018054610ce390613347565b80601f0160208091040260200160405190810160405280929190818152602001828054610d0f90613347565b8015610d5c5780601f10610d3157610100808354040283529160200191610d5c565b820191906000526020600020905b815481529060010190602001808311610d3f57829003601f168201915b5050505050935050505092915050565b60068054610bd490613347565b60606000610d8686612595565b90506000610d9482876104e4565b90506000610da28587613311565b90506000610db086836132f9565b6000848152600360205260409020909150610dcd9060010161264a565b811115610df1576000838152600360205260409020610dee9060010161264a565b90505b6000610dfd8383613330565b6001600160401b03811115610e2257634e487b7160e01b600052604160045260246000fd5b604051908082528060200260200182016040528015610e4b578160200160208202803683370190505b509050825b82811015610ec4576000858152600360205260409020610e739060010182612654565b82610e7e8684613330565b81518110610e9c57634e487b7160e01b600052603260045260246000fd5b6001600160a01b0390921660209283029190910190910152610ebd81613382565b9050610e50565b509998505050505050505050565b60606000610ee08385613311565b90506000610eee84836132f9565b600154909150811115610f0057506001545b6000610f0c8383613330565b6001600160401b03811115610f3157634e487b7160e01b600052604160045260246000fd5b604051908082528060200260200182016040528015610f6457816020015b6060815260200190600190039081610f4f5790505b509050825b8281101561106c5760018181548110610f9257634e487b7160e01b600052603260045260246000fd5b906000526020600020018054610fa790613347565b80601f0160208091040260200160405190810160405280929190818152602001828054610fd390613347565b80156110205780601f10610ff557610100808354040283529160200191611020565b820191906000526020600020905b81548152906001019060200180831161100357829003601f168201915b50505050508285836110329190613330565b8151811061105057634e487b7160e01b600052603260045260246000fd5b60200260200101819052508061106590613382565b9050610f69565b5095945050505050565b60008251116110975760405162461bcd60e51b815260040161054990613221565b60008351116110b85760405162461bcd60e51b815260040161054990613249565b60006110c385612595565b905060006110d182866104e4565b90506110df826102036125fa565b6110fb5760405162461bcd60e51b8152600401610549906132a0565b6000818152600560205260409020805461111490613347565b1590506111335760405162461bcd60e51b8152600401610549906131f7565b6000818152600560209081526040909120855161115292870190612804565b50600082815260026020908152604082206001908101805491820181558352918190208751611188939190910191880190612804565b507f11f7f07de1d35c43b47edd8a19e7f8208259cdf66344de81856c5bb7c798db268686866111b56125fa565b6040516111c594939291906130e6565b60405180910390a160005b83518110156112a4576112288482815181106111fc57634e487b7160e01b600052603260045260246000fd5b60200260200101516003600085815260200190815260200160002060010161262090919063ffffffff16565b507fced6bdcf281bb4d710257a8516d36a47f2d6d4642c8d0af57824cff05d3f300e878786848151811061126c57634e487b7160e01b600052603260045260246000fd5b602002602001015161127c6125fa565b60405161128c949392919061309c565b60405180910390a161129d81613382565b90506111d0565b50505050505050565b60008151116112ce5760405162461bcd60e51b815260040161054990613221565b60004683805190602001206040516020016112f3929190918252602082015260400190565b6040516020818303038152906040528051906020012060001c90506113316113196125fa565b600083815260026020819052604090912001906125d8565b61134d5760405162461bcd60e51b8152600401610549906132a0565b6000818152600560205260408120805461136690613347565b9050116113aa5760405162461bcd60e51b8152602060048201526012602482015271195c9c8b5d19585b4b5b9bdd0b595e1a5cdd60721b6044820152606401610549565b600081815260056020908152604090912083516113c992850190612804565b507f337efabade1b5802f3a562a44eb0b3222d30ad7717e865d76f4db7ecbea56e8083836113f56125fa565b6040516114049392919061305e565b60405180910390a1505050565b60008351116114325760405162461bcd60e51b815260040161054990613221565b60008451116114535760405162461bcd60e51b815260040161054990613249565b60008151116114985760405162461bcd60e51b81526020600482015260116024820152706572722d656d7074792d6d656d6265727360781b6044820152606401610549565b60006114a385612595565b60008181526005602052604090208054919250906114c090613347565b1590506114df5760405162461bcd60e51b8152600401610549906131f7565b600081815260056020908152604090912085516114fe92870190612804565b506001805480820182556000919091528551611541917fb10e2d527612073b26eecdfd717e6a320cf44b4afac2b0732d9fcbe2b7fa0cf601906020880190612804565b50600081815260026020526040902080546001600160a01b0319166001600160a01b0385161790557f234eb9d37ed58b55e52e99246bb2b0cebb55311292e5d3de44a6df95a9af250185856115946125fa565b6040516115a39392919061305e565b60405180910390a160005b8251811015611680576116068382815181106115da57634e487b7160e01b600052603260045260246000fd5b60200260200101516002600085815260200190815260200160002060020161262090919063ffffffff16565b507f98e10b6306823e1fdc72d0589b2d7b9ebe62196c538882d20daa97c94ce6ba398684838151811061164957634e487b7160e01b600052603260045260246000fd5b60200260200101516116596125fa565b6040516116689392919061302b565b60405180910390a161167981613382565b90506115ae565b505050505050565b600061169384612595565b905060006116a182856104e4565b6000818152600560205260408120805492935090916116bf90613347565b9050116116de5760405162461bcd60e51b8152600401610549906131a1565b6116e96109d26125fa565b151560011461170a5760405162461bcd60e51b8152600401610549906132a0565b600081815260036020526040902061172590600101846125d8565b151560011461176d5760405162461bcd60e51b8152602060048201526014602482015273195c9c8b5b595b58995c8b5b9bdd0b595e1a5cdd60621b6044820152606401610549565b60008181526003602052604090206117889060010184612635565b507fc4d6fb859224b6f607a861ed7c71ab6f509e54dce94d5fc5ca56b54b8d5495aa858585610bab6125fa565b60008281526003602052604081206104db90600101836125d8565b60004683805190602001206040516020016117f5929190918252602082015260400190565b6040516020818303038152906040528051906020012060001c905061181b6113196125fa565b151560011461183c5760405162461bcd60e51b8152600401610549906132a0565b60008181526002602081905260409091206118589101836125d8565b156118755760405162461bcd60e51b8152600401610549906131cd565b6000818152600260208190526040909120611891910183612620565b507f98e10b6306823e1fdc72d0589b2d7b9ebe62196c538882d20daa97c94ce6ba3983836118bd6125fa565b6040516114049392919061302b565b606060006118d986612595565b905060006118e782876104e4565b905060006118f58587613311565b9050600061190386836132f9565b60008481526003602052604090205490915081111561192d57506000828152600360205260409020545b60006119398383613330565b6001600160401b0381111561195e57634e487b7160e01b600052604160045260246000fd5b60405190808252806020026020018201604052801561199157816020015b606081526020019060019003908161197c5790505b509050825b82811015610ec45760008581526003602052604090208054829081106119cc57634e487b7160e01b600052603260045260246000fd5b9060005260206000200180546119e190613347565b80601f0160208091040260200160405190810160405280929190818152602001828054611a0d90613347565b8015611a5a5780601f10611a2f57610100808354040283529160200191611a5a565b820191906000526020600020905b815481529060010190602001808311611a3d57829003601f168201915b5050505050828583611a6c9190613330565b81518110611a8a57634e487b7160e01b600052603260045260246000fd5b602002602001018190525080611a9f90613382565b9050611996565b611ab2826102036125fa565b611ace5760405162461bcd60e51b8152600401610549906132a0565b600082815260026020526040902080546001600160a01b038381166001600160a01b0319831617909255167fee3cd2395369f53e6494e3283648cbb3a49b6dc16a4a85ee5add02f11c160213838284611b256125fa565b604080519485526001600160a01b03938416602086015291831691840191909152166060820152608001611404565b60606000611b6185612595565b90506000611b6f82866104e4565b90506000611b7d82866104e4565b600081815260056020526040812080549293509091611b9b90613347565b905011611bba5760405162461bcd60e51b815260040161054990613271565b60008181526005602052604090208054611bd390613347565b80601f0160208091040260200160405190810160405280929190818152602001828054611bff90613347565b8015611c4c5780601f10611c2157610100808354040283529160200191611c4c565b820191906000526020600020905b815481529060010190602001808311611c2f57829003601f168201915b505050505093505050509392505050565b60606000468380519060200120604051602001611c84929190918252602082015260400190565b60408051601f19818403018152918152815160209283012060008181526005909352908220805491935090611cb890613347565b905011611cfc5760405162461bcd60e51b8152602060048201526012602482015271195c9c8b5d19585b4b5b9bdd0b595e1a5cdd60721b6044820152606401610549565b60008181526005602052604090208054611d1590613347565b80601f0160208091040260200160405190810160405280929190818152602001828054611d4190613347565b8015611d8e5780601f10611d6357610100808354040283529160200191611d8e565b820191906000526020600020905b815481529060010190602001808311611d7157829003601f168201915b5050505050915050919050565b60606000468580519060200120604051602001611dc2929190918252602082015260400190565b60408051601f19818403018152919052805160209091012090506000611de88486613311565b90506000611df685836132f9565b600084815260026020526040902060010154909150811115611e2657506000828152600260205260409020600101545b6000611e328383613330565b6001600160401b03811115611e5757634e487b7160e01b600052604160045260246000fd5b604051908082528060200260200182016040528015611e8a57816020015b6060815260200190600190039081611e755790505b509050825b82811015611fa2576000858152600260205260409020600101805482908110611ec857634e487b7160e01b600052603260045260246000fd5b906000526020600020018054611edd90613347565b80601f0160208091040260200160405190810160405280929190818152602001828054611f0990613347565b8015611f565780601f10611f2b57610100808354040283529160200191611f56565b820191906000526020600020905b815481529060010190602001808311611f3957829003601f168201915b5050505050828583611f689190613330565b81518110611f8657634e487b7160e01b600052603260045260246000fd5b602002602001018190525080611f9b90613382565b9050611e8f565b50979650505050505050565b60606000611fbb84612595565b90506000611fc982856104e4565b600081815260056020526040812080549293509091611fe790613347565b9050116120065760405162461bcd60e51b8152600401610549906131a1565b6000818152600560205260409020805461201f90613347565b80601f016020809104026020016040519081016040528092919081815260200182805461204b90613347565b80156120985780601f1061206d57610100808354040283529160200191612098565b820191906000526020600020905b81548152906001019060200180831161207b57829003601f168201915b50505050509250505092915050565b606060006120b487612595565b905060006120c282886104e4565b905060006120d082886104e4565b905060006120de8688613311565b905060006120ec87836132f9565b60008481526004602052604090209091506121069061264a565b8111156121275760008381526004602052604090206121249061264a565b90505b60006121338383613330565b6001600160401b0381111561215857634e487b7160e01b600052604160045260246000fd5b604051908082528060200260200182016040528015612181578160200160208202803683370190505b509050825b8281101561097b5760008581526004602052604090206121a69082612654565b826121b18684613330565b815181106121cf57634e487b7160e01b600052603260045260246000fd5b6001600160a01b03909216602092830291909101909101526121f081613382565b9050612186565b600061220284612595565b9050600061221082856104e4565b9050600061221e82856104e4565b60008181526005602052604081208054929350909161223c90613347565b90501161225b5760405162461bcd60e51b815260040161054990613271565b61227d6122666125fa565b6000838152600460205260409020600201906125d8565b1561229a5760405162461bcd60e51b8152600401610549906131cd565b6122bc6122a56125fa565b600083815260046020526040902060020190612620565b506122dc6122c86125fa565b600083815260046020526040902090612635565b507f30ca79684c561b1b6fbda88d9779021eb510471ea1df05c10dc39c46d6ed94eb8686866108026125fa565b60606000468580519060200120604051602001612330929190918252602082015260400190565b60408051601f198184030181529190528051602090910120905060006123568486613311565b9050600061236485836132f9565b90506123846002600085815260200190815260200160002060020161264a565b8111156123a95760008381526002602081905260409091206123a6910161264a565b90505b60006123b58383613330565b6001600160401b038111156123da57634e487b7160e01b600052604160045260246000fd5b604051908082528060200260200182016040528015612403578160200160208202803683370190505b509050825b82811015611fa257600085815260026020819052604090912061242c910182612654565b826124378684613330565b8151811061245557634e487b7160e01b600052603260045260246000fd5b6001600160a01b039092166020928302919091019091015261247681613382565b9050612408565b60004683805190602001206040516020016124a2929190918252602082015260400190565b6040516020818303038152906040528051906020012060001c90506124c86113196125fa565b15156001146124e95760405162461bcd60e51b8152600401610549906132a0565b60008181526002602081905260409091206125059101836125d8565b151560011461254d5760405162461bcd60e51b8152602060048201526014602482015273195c9c8b5b595b58995c8b5b9bdd0b595e1a5cdd60621b6044820152606401610549565b6000818152600260208190526040909120612569910183612635565b507fb4cbe992be60a57bec13c1e476783a0869bfeb99857c45d05cfc4dd417f7940a83836118bd6125fa565b60004682805190602001206040516020016125ba929190918252602082015260400190565b60408051601f19818403018152919052805160209091012092915050565b6001600160a01b038116600090815260018301602052604081205415156104db565b600080546001600160a01b031633141561261b575060131936013560601c90565b503390565b60006104db836001600160a01b038416612660565b60006104db836001600160a01b0384166126af565b60006104de825490565b60006104db83836127cc565b60008181526001830160205260408120546126a7575081546001818101845560008481526020808220909301849055845484825282860190935260409020919091556104de565b5060006104de565b600081815260018301602052604081205480156127c25760006126d3600183613330565b85549091506000906126e790600190613330565b905081811461276857600086600001828154811061271557634e487b7160e01b600052603260045260246000fd5b906000526020600020015490508087600001848154811061274657634e487b7160e01b600052603260045260246000fd5b6000918252602080832090910192909255918252600188019052604090208390555b855486908061278757634e487b7160e01b600052603160045260246000fd5b6001900381819060005260206000200160009055905585600101600086815260200190815260200160002060009055600193505050506104de565b60009150506104de565b60008260000182815481106127f157634e487b7160e01b600052603260045260246000fd5b9060005260206000200154905092915050565b82805461281090613347565b90600052602060002090601f0160209004810192826128325760008555612878565b82601f1061284b57805160ff1916838001178555612878565b82800160010185558215612878579182015b8281111561287857825182559160200191906001019061285d565b50612884929150612888565b5090565b5b808211156128845760008155600101612889565b80356001600160a01b03811681146128b457600080fd5b919050565b600082601f8301126128c9578081fd5b813560206001600160401b038211156128e4576128e46133b3565b8160051b6128f38282016132c9565b83815282810190868401838801850189101561290d578687fd5b8693505b85841015611fa2576129228161289d565b835260019390930192918401918401612911565b600082601f830112612946578081fd5b81356001600160401b0381111561295f5761295f6133b3565b612972601f8201601f19166020016132c9565b818152846020838601011115612986578283fd5b816020850160208301379081016020019190915292915050565b6000602082840312156129b1578081fd5b6104db8261289d565b6000602082840312156129cb578081fd5b81356001600160401b038111156129e0578182fd5b6129ec84828501612936565b949350505050565b60008060408385031215612a06578081fd5b82356001600160401b03811115612a1b578182fd5b612a2785828601612936565b925050612a366020840161289d565b90509250929050565b60008060408385031215612a51578182fd5b82356001600160401b0380821115612a67578384fd5b612a7386838701612936565b93506020850135915080821115612a88578283fd5b50612a9585828601612936565b9150509250929050565b600080600060608486031215612ab3578081fd5b83356001600160401b0380821115612ac9578283fd5b612ad587838801612936565b94506020860135915080821115612aea578283fd5b50612af786828701612936565b925050612b066040850161289d565b90509250925092565b60008060008060808587031215612b24578081fd5b84356001600160401b0380821115612b3a578283fd5b612b4688838901612936565b95506020870135915080821115612b5b578283fd5b612b6788838901612936565b9450612b756040880161289d565b93506060870135915080821115612b8a578283fd5b50612b97878288016128b9565b91505092959194509250565b600080600060608486031215612bb7578283fd5b83356001600160401b0380821115612bcd578485fd5b612bd987838801612936565b94506020860135915080821115612bee578384fd5b612bfa87838801612936565b93506040860135915080821115612c0f578283fd5b50612c1c86828701612936565b9150509250925092565b60008060008060808587031215612c3b578384fd5b84356001600160401b0380821115612c51578586fd5b612c5d88838901612936565b95506020870135915080821115612c72578485fd5b612c7e88838901612936565b94506040870135915080821115612c93578384fd5b612b7588838901612936565b60008060008060808587031215612cb4578384fd5b84356001600160401b0380821115612cca578586fd5b612cd688838901612936565b95506020870135915080821115612ceb578485fd5b612cf788838901612936565b94506040870135915080821115612d0c578384fd5b612d1888838901612936565b93506060870135915080821115612d2d578283fd5b50612b9787828801612936565b600080600080600060a08688031215612d51578081fd5b85356001600160401b0380821115612d67578283fd5b612d7389838a01612936565b96506020880135915080821115612d88578283fd5b612d9489838a01612936565b95506040880135915080821115612da9578283fd5b50612db688828901612936565b9598949750949560608101359550608001359392505050565b60008060008060808587031215612de4578384fd5b84356001600160401b0380821115612dfa578586fd5b612e0688838901612936565b95506020870135915080821115612e1b578485fd5b50612e2887828801612936565b949794965050505060408301359260600135919050565b600080600060608486031215612e53578081fd5b83356001600160401b03811115612e68578182fd5b612e7486828701612936565b9660208601359650604090950135949350505050565b600060208284031215612e9b578081fd5b5035919050565b60008060408385031215612eb4578182fd5b82359150612a366020840161289d565b60008060408385031215612ed6578182fd5b8235915060208301356001600160401b03811115612ef2578182fd5b612a9585828601612936565b60008060408385031215612f10578182fd5b50508035926020909101359150565b60008151808452815b81811015612f4457602081850181015186830182015201612f28565b81811115612f555782602083870101525b50601f01601f19169290920160200192915050565b6020808252825182820181905260009190848201906040850190845b81811015612fab5783516001600160a01b031683529284019291840191600101612f86565b50909695505050505050565b6000602080830181845280855180835260408601915060408160051b8701019250838701855b8281101561300b57603f19888603018452612ff9858351612f1f565b94509285019290850190600101612fdd565b5092979650505050505050565b6020815260006104db6020830184612f1f565b60608152600061303e6060830186612f1f565b6001600160a01b0394851660208401529290931660409091015292915050565b6060815260006130716060830186612f1f565b82810360208401526130838186612f1f565b91505060018060a01b0383166040830152949350505050565b6080815260006130af6080830187612f1f565b82810360208401526130c18187612f1f565b6001600160a01b03958616604085015293909416606090920191909152509392505050565b6080815260006130f96080830187612f1f565b828103602084015261310b8187612f1f565b9050828103604084015261311f8186612f1f565b91505060018060a01b038316606083015295945050505050565b60a08152600061314c60a0830188612f1f565b828103602084015261315e8188612f1f565b905082810360408401526131728187612f1f565b905082810360608401526131868186612f1f565b91505060018060a01b03831660808301529695505050505050565b602080825260129082015271195c9c8b5c1c9bda8b5b9bdd0b595e1a5cdd60721b604082015260600190565b60208082526010908201526f195c9c8b5b595b58995c8b595e1a5cdd60821b604082015260600190565b60208082526010908201526f195c9c8b5b985b594b58db185a5b595960821b604082015260600190565b6020808252600e908201526d6572722d656d7074792d6d65746160901b604082015260600190565b6020808252600e908201526d6572722d656d7074792d6e616d6560901b604082015260600190565b602080825260159082015274195c9c8b5c995b19585cd94b5b9bdd0b595e1a5cdd605a1b604082015260600190565b6020808252600f908201526e32b93916ba32b0b696b6b2b6b132b960891b604082015260600190565b604051601f8201601f191681016001600160401b03811182821017156132f1576132f16133b3565b604052919050565b6000821982111561330c5761330c61339d565b500190565b600081600019048311821515161561332b5761332b61339d565b500290565b6000828210156133425761334261339d565b500390565b600181811c9082168061335b57607f821691505b6020821081141561337c57634e487b7160e01b600052602260045260246000fd5b50919050565b60006000198214156133965761339661339d565b5060010190565b634e487b7160e01b600052601160045260246000fd5b634e487b7160e01b600052604160045260246000fdfea26469706673582212204eb4f03a3a3b46a06913860160cf1c00bc4ac702b15e3242f2ed0ca9828d072d64736f6c63430008040033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106101f05760003560e01c80635b9c29c61161010f578063a6a54ec5116100a2578063cfc5efac11610071578063cfc5efac14610446578063d93379d114610459578063ecb0a33d1461049a578063f8b24915146104ad57600080fd5b8063a6a54ec5146103fa578063b1a5042b1461040d578063b1bc8c8d14610420578063baffd3da1461043357600080fd5b806383dfd03e116100de57806383dfd03e146103ae57806399bb69c1146103c15780639e97c317146103d45780639fe1fb72146103e757600080fd5b80635b9c29c6146103625780635c53709614610375578063600c39111461038857806381ded1501461039b57600080fd5b806347566e4f116101875780634ff3ec60116101565780634ff3ec601461031a57806351de13bf1461032d578063572b6c051461034057806358f700061461021d57600080fd5b806347566e4f146102cc578063486ff0cd146102df5780634ce72c75146102e75780634eec58a3146102fa57600080fd5b806317289818116101c3578063172898181461026657806325ca6b03146102865780632aa2fd641461029957806343417c06146102ac57600080fd5b806301738281146101f5578063052470f41461021d5780630716dfa01461023e57806311bc1ce014610253575b600080fd5b610208610203366004612ea2565b6104c0565b60405190151581526020015b60405180910390f35b61023061022b366004612ec4565b6104e4565b604051908152602001610214565b61025161024c366004612c9f565b610528565b005b610251610261366004612ba3565b6106f3565b610279610274366004612d3a565b610822565b6040516102149190612f6a565b610251610294366004612ba3565b61098b565b6102516102a7366004612a9f565b610aa9565b6102bf6102ba366004612e8a565b610bbb565b6040516102149190613018565b6102bf6102da366004612a3f565b610c55565b6102bf610d6c565b6102796102f5366004612dcf565b610d79565b61030d610308366004612efe565b610ed2565b6040516102149190612fb7565b610251610328366004612c26565b611076565b61025161033b366004612a3f565b6112ad565b61020861034e3660046129a0565b6000546001600160a01b0391821691161490565b610251610370366004612b0f565b611411565b610251610383366004612a9f565b611688565b610208610396366004612ea2565b6117b5565b6102516103a93660046129f4565b6117d0565b61030d6103bc366004612dcf565b6118cc565b6102516103cf366004612ea2565b611aa6565b6102bf6103e2366004612ba3565b611b54565b6102bf6103f53660046129ba565b611c5d565b61030d610408366004612e3f565b611d9b565b6102bf61041b366004612a3f565b611fae565b61027961042e366004612d3a565b6120a7565b610251610441366004612ba3565b6121f7565b610279610454366004612e3f565b612309565b610482610467366004612e8a565b6000908152600260205260409020546001600160a01b031690565b6040516001600160a01b039091168152602001610214565b6102516104a83660046129f4565b61247d565b6102306104bb3660046129ba565b612595565b600082815260026020819052604082206104db9101836125d8565b90505b92915050565b6000828280519060200120604051602001610509929190918252602082015260400190565b60408051601f1981840301815291905280516020909101209392505050565b60008151116105525760405162461bcd60e51b815260040161054990613221565b60405180910390fd5b60008351116105735760405162461bcd60e51b815260040161054990613249565b60008251116105945760405162461bcd60e51b815260040161054990613249565b600061059f85612595565b905060006105ad82866104e4565b905060006105bb82866104e4565b90506105c9836102036125fa565b806105db57506105db826103966125fa565b6106195760405162461bcd60e51b815260206004820152600f60248201526e32b93916b83937b516b6b2b6b132b960891b6044820152606401610549565b6000818152600560205260409020805461063290613347565b1590506106515760405162461bcd60e51b8152600401610549906131f7565b6000818152600560209081526040909120855161067092870190612804565b506000828152600360209081526040822080546001810182559083529181902087516106a3939190910191880190612804565b507f15fb1d214ed195f7210e450a416a0640362c37a0a2d2d0ab63481f967aae0e00878787876106d16125fa565b6040516106e2959493929190613139565b60405180910390a150505050505050565b60006106fe84612595565b9050600061070c82856104e4565b9050600061071a82856104e4565b60008181526005602052604081208054929350909161073890613347565b9050116107575760405162461bcd60e51b815260040161054990613271565b6107766107626125fa565b6000838152600460205260409020906125d8565b156107935760405162461bcd60e51b8152600401610549906131cd565b6107b261079e6125fa565b600083815260046020526040902090612620565b506107d56107be6125fa565b600083815260046020526040902060020190612635565b507fa70c9d49a7ef09401d07a7aad126689c097b80db50504ce9ba5ca8b6f6477fb88686866108026125fa565b60405161081294939291906130e6565b60405180910390a1505050505050565b6060600061082f87612595565b9050600061083d82886104e4565b9050600061084b82886104e4565b905060006108598688613311565b9050600061086787836132f9565b60008481526004602052604090209091506108849060020161264a565b8111156108a85760008381526004602052604090206108a59060020161264a565b90505b60006108b48383613330565b6001600160401b038111156108d957634e487b7160e01b600052604160045260246000fd5b604051908082528060200260200182016040528015610902578160200160208202803683370190505b509050825b8281101561097b57600085815260046020526040902061092a9060020182612654565b826109358684613330565b8151811061095357634e487b7160e01b600052603260045260246000fd5b6001600160a01b039092166020928302919091019091015261097481613382565b9050610907565b509b9a5050505050505050505050565b60008151116109ac5760405162461bcd60e51b815260040161054990613221565b60006109b784612595565b905060006109c582856104e4565b90506109ea6109d26125fa565b600084815260026020819052604090912001906125d8565b610a065760405162461bcd60e51b8152600401610549906132a0565b60008181526005602052604081208054610a1f90613347565b905011610a3e5760405162461bcd60e51b8152600401610549906131a1565b60008181526005602090815260409091208451610a5d92860190612804565b507fd837747757bf732c911148d7c5825d52de171f849e76143eec98fa514e263c8a858585610a8a6125fa565b604051610a9a94939291906130e6565b60405180910390a15050505050565b6000610ab484612595565b90506000610ac282856104e4565b600081815260056020526040812080549293509091610ae090613347565b905011610aff5760405162461bcd60e51b8152600401610549906131a1565b610b0a6109d26125fa565b1515600114610b2b5760405162461bcd60e51b8152600401610549906132a0565b6000818152600360205260409020610b4690600101846125d8565b15610b635760405162461bcd60e51b8152600401610549906131cd565b6000818152600360205260409020610b7e9060010184612620565b507fced6bdcf281bb4d710257a8516d36a47f2d6d4642c8d0af57824cff05d3f300e858585610bab6125fa565b604051610a9a949392919061309c565b60056020526000908152604090208054610bd490613347565b80601f0160208091040260200160405190810160405280929190818152602001828054610c0090613347565b8015610c4d5780601f10610c2257610100808354040283529160200191610c4d565b820191906000526020600020905b815481529060010190602001808311610c3057829003601f168201915b505050505081565b60606000610c6284612595565b90506000610c7082856104e4565b6000818152600360205260409020805491925090610ca05760405162461bcd60e51b8152600401610549906131a1565b80548190610cb090600190613330565b81548110610cce57634e487b7160e01b600052603260045260246000fd5b906000526020600020018054610ce390613347565b80601f0160208091040260200160405190810160405280929190818152602001828054610d0f90613347565b8015610d5c5780601f10610d3157610100808354040283529160200191610d5c565b820191906000526020600020905b815481529060010190602001808311610d3f57829003601f168201915b5050505050935050505092915050565b60068054610bd490613347565b60606000610d8686612595565b90506000610d9482876104e4565b90506000610da28587613311565b90506000610db086836132f9565b6000848152600360205260409020909150610dcd9060010161264a565b811115610df1576000838152600360205260409020610dee9060010161264a565b90505b6000610dfd8383613330565b6001600160401b03811115610e2257634e487b7160e01b600052604160045260246000fd5b604051908082528060200260200182016040528015610e4b578160200160208202803683370190505b509050825b82811015610ec4576000858152600360205260409020610e739060010182612654565b82610e7e8684613330565b81518110610e9c57634e487b7160e01b600052603260045260246000fd5b6001600160a01b0390921660209283029190910190910152610ebd81613382565b9050610e50565b509998505050505050505050565b60606000610ee08385613311565b90506000610eee84836132f9565b600154909150811115610f0057506001545b6000610f0c8383613330565b6001600160401b03811115610f3157634e487b7160e01b600052604160045260246000fd5b604051908082528060200260200182016040528015610f6457816020015b6060815260200190600190039081610f4f5790505b509050825b8281101561106c5760018181548110610f9257634e487b7160e01b600052603260045260246000fd5b906000526020600020018054610fa790613347565b80601f0160208091040260200160405190810160405280929190818152602001828054610fd390613347565b80156110205780601f10610ff557610100808354040283529160200191611020565b820191906000526020600020905b81548152906001019060200180831161100357829003601f168201915b50505050508285836110329190613330565b8151811061105057634e487b7160e01b600052603260045260246000fd5b60200260200101819052508061106590613382565b9050610f69565b5095945050505050565b60008251116110975760405162461bcd60e51b815260040161054990613221565b60008351116110b85760405162461bcd60e51b815260040161054990613249565b60006110c385612595565b905060006110d182866104e4565b90506110df826102036125fa565b6110fb5760405162461bcd60e51b8152600401610549906132a0565b6000818152600560205260409020805461111490613347565b1590506111335760405162461bcd60e51b8152600401610549906131f7565b6000818152600560209081526040909120855161115292870190612804565b50600082815260026020908152604082206001908101805491820181558352918190208751611188939190910191880190612804565b507f11f7f07de1d35c43b47edd8a19e7f8208259cdf66344de81856c5bb7c798db268686866111b56125fa565b6040516111c594939291906130e6565b60405180910390a160005b83518110156112a4576112288482815181106111fc57634e487b7160e01b600052603260045260246000fd5b60200260200101516003600085815260200190815260200160002060010161262090919063ffffffff16565b507fced6bdcf281bb4d710257a8516d36a47f2d6d4642c8d0af57824cff05d3f300e878786848151811061126c57634e487b7160e01b600052603260045260246000fd5b602002602001015161127c6125fa565b60405161128c949392919061309c565b60405180910390a161129d81613382565b90506111d0565b50505050505050565b60008151116112ce5760405162461bcd60e51b815260040161054990613221565b60004683805190602001206040516020016112f3929190918252602082015260400190565b6040516020818303038152906040528051906020012060001c90506113316113196125fa565b600083815260026020819052604090912001906125d8565b61134d5760405162461bcd60e51b8152600401610549906132a0565b6000818152600560205260408120805461136690613347565b9050116113aa5760405162461bcd60e51b8152602060048201526012602482015271195c9c8b5d19585b4b5b9bdd0b595e1a5cdd60721b6044820152606401610549565b600081815260056020908152604090912083516113c992850190612804565b507f337efabade1b5802f3a562a44eb0b3222d30ad7717e865d76f4db7ecbea56e8083836113f56125fa565b6040516114049392919061305e565b60405180910390a1505050565b60008351116114325760405162461bcd60e51b815260040161054990613221565b60008451116114535760405162461bcd60e51b815260040161054990613249565b60008151116114985760405162461bcd60e51b81526020600482015260116024820152706572722d656d7074792d6d656d6265727360781b6044820152606401610549565b60006114a385612595565b60008181526005602052604090208054919250906114c090613347565b1590506114df5760405162461bcd60e51b8152600401610549906131f7565b600081815260056020908152604090912085516114fe92870190612804565b506001805480820182556000919091528551611541917fb10e2d527612073b26eecdfd717e6a320cf44b4afac2b0732d9fcbe2b7fa0cf601906020880190612804565b50600081815260026020526040902080546001600160a01b0319166001600160a01b0385161790557f234eb9d37ed58b55e52e99246bb2b0cebb55311292e5d3de44a6df95a9af250185856115946125fa565b6040516115a39392919061305e565b60405180910390a160005b8251811015611680576116068382815181106115da57634e487b7160e01b600052603260045260246000fd5b60200260200101516002600085815260200190815260200160002060020161262090919063ffffffff16565b507f98e10b6306823e1fdc72d0589b2d7b9ebe62196c538882d20daa97c94ce6ba398684838151811061164957634e487b7160e01b600052603260045260246000fd5b60200260200101516116596125fa565b6040516116689392919061302b565b60405180910390a161167981613382565b90506115ae565b505050505050565b600061169384612595565b905060006116a182856104e4565b6000818152600560205260408120805492935090916116bf90613347565b9050116116de5760405162461bcd60e51b8152600401610549906131a1565b6116e96109d26125fa565b151560011461170a5760405162461bcd60e51b8152600401610549906132a0565b600081815260036020526040902061172590600101846125d8565b151560011461176d5760405162461bcd60e51b8152602060048201526014602482015273195c9c8b5b595b58995c8b5b9bdd0b595e1a5cdd60621b6044820152606401610549565b60008181526003602052604090206117889060010184612635565b507fc4d6fb859224b6f607a861ed7c71ab6f509e54dce94d5fc5ca56b54b8d5495aa858585610bab6125fa565b60008281526003602052604081206104db90600101836125d8565b60004683805190602001206040516020016117f5929190918252602082015260400190565b6040516020818303038152906040528051906020012060001c905061181b6113196125fa565b151560011461183c5760405162461bcd60e51b8152600401610549906132a0565b60008181526002602081905260409091206118589101836125d8565b156118755760405162461bcd60e51b8152600401610549906131cd565b6000818152600260208190526040909120611891910183612620565b507f98e10b6306823e1fdc72d0589b2d7b9ebe62196c538882d20daa97c94ce6ba3983836118bd6125fa565b6040516114049392919061302b565b606060006118d986612595565b905060006118e782876104e4565b905060006118f58587613311565b9050600061190386836132f9565b60008481526003602052604090205490915081111561192d57506000828152600360205260409020545b60006119398383613330565b6001600160401b0381111561195e57634e487b7160e01b600052604160045260246000fd5b60405190808252806020026020018201604052801561199157816020015b606081526020019060019003908161197c5790505b509050825b82811015610ec45760008581526003602052604090208054829081106119cc57634e487b7160e01b600052603260045260246000fd5b9060005260206000200180546119e190613347565b80601f0160208091040260200160405190810160405280929190818152602001828054611a0d90613347565b8015611a5a5780601f10611a2f57610100808354040283529160200191611a5a565b820191906000526020600020905b815481529060010190602001808311611a3d57829003601f168201915b5050505050828583611a6c9190613330565b81518110611a8a57634e487b7160e01b600052603260045260246000fd5b602002602001018190525080611a9f90613382565b9050611996565b611ab2826102036125fa565b611ace5760405162461bcd60e51b8152600401610549906132a0565b600082815260026020526040902080546001600160a01b038381166001600160a01b0319831617909255167fee3cd2395369f53e6494e3283648cbb3a49b6dc16a4a85ee5add02f11c160213838284611b256125fa565b604080519485526001600160a01b03938416602086015291831691840191909152166060820152608001611404565b60606000611b6185612595565b90506000611b6f82866104e4565b90506000611b7d82866104e4565b600081815260056020526040812080549293509091611b9b90613347565b905011611bba5760405162461bcd60e51b815260040161054990613271565b60008181526005602052604090208054611bd390613347565b80601f0160208091040260200160405190810160405280929190818152602001828054611bff90613347565b8015611c4c5780601f10611c2157610100808354040283529160200191611c4c565b820191906000526020600020905b815481529060010190602001808311611c2f57829003601f168201915b505050505093505050509392505050565b60606000468380519060200120604051602001611c84929190918252602082015260400190565b60408051601f19818403018152918152815160209283012060008181526005909352908220805491935090611cb890613347565b905011611cfc5760405162461bcd60e51b8152602060048201526012602482015271195c9c8b5d19585b4b5b9bdd0b595e1a5cdd60721b6044820152606401610549565b60008181526005602052604090208054611d1590613347565b80601f0160208091040260200160405190810160405280929190818152602001828054611d4190613347565b8015611d8e5780601f10611d6357610100808354040283529160200191611d8e565b820191906000526020600020905b815481529060010190602001808311611d7157829003601f168201915b5050505050915050919050565b60606000468580519060200120604051602001611dc2929190918252602082015260400190565b60408051601f19818403018152919052805160209091012090506000611de88486613311565b90506000611df685836132f9565b600084815260026020526040902060010154909150811115611e2657506000828152600260205260409020600101545b6000611e328383613330565b6001600160401b03811115611e5757634e487b7160e01b600052604160045260246000fd5b604051908082528060200260200182016040528015611e8a57816020015b6060815260200190600190039081611e755790505b509050825b82811015611fa2576000858152600260205260409020600101805482908110611ec857634e487b7160e01b600052603260045260246000fd5b906000526020600020018054611edd90613347565b80601f0160208091040260200160405190810160405280929190818152602001828054611f0990613347565b8015611f565780601f10611f2b57610100808354040283529160200191611f56565b820191906000526020600020905b815481529060010190602001808311611f3957829003601f168201915b5050505050828583611f689190613330565b81518110611f8657634e487b7160e01b600052603260045260246000fd5b602002602001018190525080611f9b90613382565b9050611e8f565b50979650505050505050565b60606000611fbb84612595565b90506000611fc982856104e4565b600081815260056020526040812080549293509091611fe790613347565b9050116120065760405162461bcd60e51b8152600401610549906131a1565b6000818152600560205260409020805461201f90613347565b80601f016020809104026020016040519081016040528092919081815260200182805461204b90613347565b80156120985780601f1061206d57610100808354040283529160200191612098565b820191906000526020600020905b81548152906001019060200180831161207b57829003601f168201915b50505050509250505092915050565b606060006120b487612595565b905060006120c282886104e4565b905060006120d082886104e4565b905060006120de8688613311565b905060006120ec87836132f9565b60008481526004602052604090209091506121069061264a565b8111156121275760008381526004602052604090206121249061264a565b90505b60006121338383613330565b6001600160401b0381111561215857634e487b7160e01b600052604160045260246000fd5b604051908082528060200260200182016040528015612181578160200160208202803683370190505b509050825b8281101561097b5760008581526004602052604090206121a69082612654565b826121b18684613330565b815181106121cf57634e487b7160e01b600052603260045260246000fd5b6001600160a01b03909216602092830291909101909101526121f081613382565b9050612186565b600061220284612595565b9050600061221082856104e4565b9050600061221e82856104e4565b60008181526005602052604081208054929350909161223c90613347565b90501161225b5760405162461bcd60e51b815260040161054990613271565b61227d6122666125fa565b6000838152600460205260409020600201906125d8565b1561229a5760405162461bcd60e51b8152600401610549906131cd565b6122bc6122a56125fa565b600083815260046020526040902060020190612620565b506122dc6122c86125fa565b600083815260046020526040902090612635565b507f30ca79684c561b1b6fbda88d9779021eb510471ea1df05c10dc39c46d6ed94eb8686866108026125fa565b60606000468580519060200120604051602001612330929190918252602082015260400190565b60408051601f198184030181529190528051602090910120905060006123568486613311565b9050600061236485836132f9565b90506123846002600085815260200190815260200160002060020161264a565b8111156123a95760008381526002602081905260409091206123a6910161264a565b90505b60006123b58383613330565b6001600160401b038111156123da57634e487b7160e01b600052604160045260246000fd5b604051908082528060200260200182016040528015612403578160200160208202803683370190505b509050825b82811015611fa257600085815260026020819052604090912061242c910182612654565b826124378684613330565b8151811061245557634e487b7160e01b600052603260045260246000fd5b6001600160a01b039092166020928302919091019091015261247681613382565b9050612408565b60004683805190602001206040516020016124a2929190918252602082015260400190565b6040516020818303038152906040528051906020012060001c90506124c86113196125fa565b15156001146124e95760405162461bcd60e51b8152600401610549906132a0565b60008181526002602081905260409091206125059101836125d8565b151560011461254d5760405162461bcd60e51b8152602060048201526014602482015273195c9c8b5b595b58995c8b5b9bdd0b595e1a5cdd60621b6044820152606401610549565b6000818152600260208190526040909120612569910183612635565b507fb4cbe992be60a57bec13c1e476783a0869bfeb99857c45d05cfc4dd417f7940a83836118bd6125fa565b60004682805190602001206040516020016125ba929190918252602082015260400190565b60408051601f19818403018152919052805160209091012092915050565b6001600160a01b038116600090815260018301602052604081205415156104db565b600080546001600160a01b031633141561261b575060131936013560601c90565b503390565b60006104db836001600160a01b038416612660565b60006104db836001600160a01b0384166126af565b60006104de825490565b60006104db83836127cc565b60008181526001830160205260408120546126a7575081546001818101845560008481526020808220909301849055845484825282860190935260409020919091556104de565b5060006104de565b600081815260018301602052604081205480156127c25760006126d3600183613330565b85549091506000906126e790600190613330565b905081811461276857600086600001828154811061271557634e487b7160e01b600052603260045260246000fd5b906000526020600020015490508087600001848154811061274657634e487b7160e01b600052603260045260246000fd5b6000918252602080832090910192909255918252600188019052604090208390555b855486908061278757634e487b7160e01b600052603160045260246000fd5b6001900381819060005260206000200160009055905585600101600086815260200190815260200160002060009055600193505050506104de565b60009150506104de565b60008260000182815481106127f157634e487b7160e01b600052603260045260246000fd5b9060005260206000200154905092915050565b82805461281090613347565b90600052602060002090601f0160209004810192826128325760008555612878565b82601f1061284b57805160ff1916838001178555612878565b82800160010185558215612878579182015b8281111561287857825182559160200191906001019061285d565b50612884929150612888565b5090565b5b808211156128845760008155600101612889565b80356001600160a01b03811681146128b457600080fd5b919050565b600082601f8301126128c9578081fd5b813560206001600160401b038211156128e4576128e46133b3565b8160051b6128f38282016132c9565b83815282810190868401838801850189101561290d578687fd5b8693505b85841015611fa2576129228161289d565b835260019390930192918401918401612911565b600082601f830112612946578081fd5b81356001600160401b0381111561295f5761295f6133b3565b612972601f8201601f19166020016132c9565b818152846020838601011115612986578283fd5b816020850160208301379081016020019190915292915050565b6000602082840312156129b1578081fd5b6104db8261289d565b6000602082840312156129cb578081fd5b81356001600160401b038111156129e0578182fd5b6129ec84828501612936565b949350505050565b60008060408385031215612a06578081fd5b82356001600160401b03811115612a1b578182fd5b612a2785828601612936565b925050612a366020840161289d565b90509250929050565b60008060408385031215612a51578182fd5b82356001600160401b0380821115612a67578384fd5b612a7386838701612936565b93506020850135915080821115612a88578283fd5b50612a9585828601612936565b9150509250929050565b600080600060608486031215612ab3578081fd5b83356001600160401b0380821115612ac9578283fd5b612ad587838801612936565b94506020860135915080821115612aea578283fd5b50612af786828701612936565b925050612b066040850161289d565b90509250925092565b60008060008060808587031215612b24578081fd5b84356001600160401b0380821115612b3a578283fd5b612b4688838901612936565b95506020870135915080821115612b5b578283fd5b612b6788838901612936565b9450612b756040880161289d565b93506060870135915080821115612b8a578283fd5b50612b97878288016128b9565b91505092959194509250565b600080600060608486031215612bb7578283fd5b83356001600160401b0380821115612bcd578485fd5b612bd987838801612936565b94506020860135915080821115612bee578384fd5b612bfa87838801612936565b93506040860135915080821115612c0f578283fd5b50612c1c86828701612936565b9150509250925092565b60008060008060808587031215612c3b578384fd5b84356001600160401b0380821115612c51578586fd5b612c5d88838901612936565b95506020870135915080821115612c72578485fd5b612c7e88838901612936565b94506040870135915080821115612c93578384fd5b612b7588838901612936565b60008060008060808587031215612cb4578384fd5b84356001600160401b0380821115612cca578586fd5b612cd688838901612936565b95506020870135915080821115612ceb578485fd5b612cf788838901612936565b94506040870135915080821115612d0c578384fd5b612d1888838901612936565b93506060870135915080821115612d2d578283fd5b50612b9787828801612936565b600080600080600060a08688031215612d51578081fd5b85356001600160401b0380821115612d67578283fd5b612d7389838a01612936565b96506020880135915080821115612d88578283fd5b612d9489838a01612936565b95506040880135915080821115612da9578283fd5b50612db688828901612936565b9598949750949560608101359550608001359392505050565b60008060008060808587031215612de4578384fd5b84356001600160401b0380821115612dfa578586fd5b612e0688838901612936565b95506020870135915080821115612e1b578485fd5b50612e2887828801612936565b949794965050505060408301359260600135919050565b600080600060608486031215612e53578081fd5b83356001600160401b03811115612e68578182fd5b612e7486828701612936565b9660208601359650604090950135949350505050565b600060208284031215612e9b578081fd5b5035919050565b60008060408385031215612eb4578182fd5b82359150612a366020840161289d565b60008060408385031215612ed6578182fd5b8235915060208301356001600160401b03811115612ef2578182fd5b612a9585828601612936565b60008060408385031215612f10578182fd5b50508035926020909101359150565b60008151808452815b81811015612f4457602081850181015186830182015201612f28565b81811115612f555782602083870101525b50601f01601f19169290920160200192915050565b6020808252825182820181905260009190848201906040850190845b81811015612fab5783516001600160a01b031683529284019291840191600101612f86565b50909695505050505050565b6000602080830181845280855180835260408601915060408160051b8701019250838701855b8281101561300b57603f19888603018452612ff9858351612f1f565b94509285019290850190600101612fdd565b5092979650505050505050565b6020815260006104db6020830184612f1f565b60608152600061303e6060830186612f1f565b6001600160a01b0394851660208401529290931660409091015292915050565b6060815260006130716060830186612f1f565b82810360208401526130838186612f1f565b91505060018060a01b0383166040830152949350505050565b6080815260006130af6080830187612f1f565b82810360208401526130c18187612f1f565b6001600160a01b03958616604085015293909416606090920191909152509392505050565b6080815260006130f96080830187612f1f565b828103602084015261310b8187612f1f565b9050828103604084015261311f8186612f1f565b91505060018060a01b038316606083015295945050505050565b60a08152600061314c60a0830188612f1f565b828103602084015261315e8188612f1f565b905082810360408401526131728187612f1f565b905082810360608401526131868186612f1f565b91505060018060a01b03831660808301529695505050505050565b602080825260129082015271195c9c8b5c1c9bda8b5b9bdd0b595e1a5cdd60721b604082015260600190565b60208082526010908201526f195c9c8b5b595b58995c8b595e1a5cdd60821b604082015260600190565b60208082526010908201526f195c9c8b5b985b594b58db185a5b595960821b604082015260600190565b6020808252600e908201526d6572722d656d7074792d6d65746160901b604082015260600190565b6020808252600e908201526d6572722d656d7074792d6e616d6560901b604082015260600190565b602080825260159082015274195c9c8b5c995b19585cd94b5b9bdd0b595e1a5cdd605a1b604082015260600190565b6020808252600f908201526e32b93916ba32b0b696b6b2b6b132b960891b604082015260600190565b604051601f8201601f191681016001600160401b03811182821017156132f1576132f16133b3565b604052919050565b6000821982111561330c5761330c61339d565b500190565b600081600019048311821515161561332b5761332b61339d565b500290565b6000828210156133425761334261339d565b500390565b600181811c9082168061335b57607f821691505b6020821081141561337c57634e487b7160e01b600052602260045260246000fd5b50919050565b60006000198214156133965761339661339d565b5060010190565b634e487b7160e01b600052601160045260246000fd5b634e487b7160e01b600052604160045260246000fdfea26469706673582212204eb4f03a3a3b46a06913860160cf1c00bc4ac702b15e3242f2ed0ca9828d072d64736f6c63430008040033",
+  "devdoc": {
+    "custom:err-empty-members": "atleast one member is required",
+    "custom:err-empty-meta": "metadata URI is required",
+    "custom:err-empty-name": "name is required",
+    "custom:err-member-exist": "member already exists",
+    "custom:err-member-not-exist": "member does not exist",
+    "custom:err-name-claimed": "name has already been claimed",
+    "custom:err-proj-member": "sender is not a project member",
+    "custom:err-proj-not-exist": "project does not exist",
+    "custom:err-release-not-exist": "release does not exist",
+    "custom:err-team-member": "sender is not a team member",
+    "custom:err-team-not-exist": "team does not exist",
+    "kind": "dev",
+    "methods": {
+      "addProjectMember(string,string,address)": {
+        "params": {
+          "_address": "Address of member.",
+          "_projectName": "Name of the project.",
+          "_teamName": "Name of the team."
+        }
+      },
+      "addTeamMember(string,address)": {
+        "params": {
+          "_address": "Address of member.",
+          "_teamName": "Name of the team."
+        }
+      },
+      "approveRelease(string,string,string)": {
+        "params": {
+          "_projectName": "Name of the project.",
+          "_releaseName": "Name of the release.",
+          "_teamName": "Name of the team."
+        }
+      },
+      "constructor": {
+        "params": {
+          "_trustedForwarder": "Address for meta transactions."
+        }
+      },
+      "createProject(string,string,string,address[])": {
+        "params": {
+          "_members": "Optional list of members to add to the project.",
+          "_metaURI": "URI of the project metadata.",
+          "_projectName": "Unique name used to identify the project.",
+          "_teamName": "Name of the team to create the project under."
+        }
+      },
+      "createRelease(string,string,string,string)": {
+        "params": {
+          "_metaURI": "URI of the project metadata.",
+          "_projectName": "Name of the project.",
+          "_releaseName": "Unique name used to identify the release.",
+          "_teamName": "Name of the team."
+        }
+      },
+      "createTeam(string,string,address,address[])": {
+        "params": {
+          "_beneficiary": "Beneficiary address of the team for recieving payments.",
+          "_members": "List of members to add to the team.",
+          "_metaURI": "URI of the team metadata.",
+          "_teamName": "Unique name used to identify the team."
+        }
+      },
+      "getLatestReleaseName(string,string)": {
+        "params": {
+          "_projectName": "Name of the project.",
+          "_teamName": "Name of the team."
+        }
+      },
+      "getProjectID(uint256,string)": {
+        "params": {
+          "_projectName": "Name of the project.",
+          "_teamID": "Unique team ID."
+        }
+      },
+      "getProjectMembers(string,string,uint256,uint256)": {
+        "params": {
+          "_page": "Page to return items from.",
+          "_projectName": "Name of the project.",
+          "_size": "Number of items to return.",
+          "_teamName": "Name of the team."
+        }
+      },
+      "getProjectMetaURI(string,string)": {
+        "params": {
+          "_projectName": "Name of the project.",
+          "_teamName": "Name of the team."
+        }
+      },
+      "getProjectNames(string,uint256,uint256)": {
+        "params": {
+          "_page": "Page to return items from.",
+          "_size": "Number of items to return.",
+          "_teamName": "Name of the team."
+        }
+      },
+      "getReleaseApprovers(string,string,string,uint256,uint256)": {
+        "params": {
+          "_page": "Page to return items from.",
+          "_projectName": "Name of the project.",
+          "_releaseName": "Name of the release.",
+          "_size": "Number of items to return.",
+          "_teamName": "Name of the team."
+        }
+      },
+      "getReleaseID(uint256,string)": {
+        "params": {
+          "_projectID": "Unique project ID.",
+          "_releaseName": "Name of the release."
+        }
+      },
+      "getReleaseMetaURI(string,string,string)": {
+        "params": {
+          "_projectName": "Name of the project.",
+          "_releaseName": "Name of the release.",
+          "_teamName": "Name of the team."
+        }
+      },
+      "getReleaseNames(string,string,uint256,uint256)": {
+        "params": {
+          "_page": "Page to return items from.",
+          "_projectName": "Name of the project.",
+          "_size": "Number of items to return.",
+          "_teamName": "Name of the team."
+        }
+      },
+      "getReleaseRejectors(string,string,string,uint256,uint256)": {
+        "params": {
+          "_page": "Page to return items from.",
+          "_projectName": "Name of the project.",
+          "_releaseName": "Name of the release.",
+          "_size": "Number of items to return.",
+          "_teamName": "Name of the team."
+        }
+      },
+      "getTeamBeneficiary(uint256)": {
+        "params": {
+          "_teamID": "Unique ID of the team."
+        }
+      },
+      "getTeamID(string)": {
+        "params": {
+          "_teamName": "Name of the team."
+        }
+      },
+      "getTeamMembers(string,uint256,uint256)": {
+        "params": {
+          "_page": "Page to return items from.",
+          "_size": "Number of items to return.",
+          "_teamName": "Name of the team."
+        }
+      },
+      "getTeamMetaURI(string)": {
+        "params": {
+          "_teamName": "Name of the team."
+        }
+      },
+      "getTeamNames(uint256,uint256)": {
+        "params": {
+          "_page": "Page to return items from.",
+          "_size": "Number of items to return."
+        }
+      },
+      "isProjectMember(uint256,address)": {
+        "params": {
+          "_member": "Address of member.",
+          "_projectID": "Unique project ID."
+        }
+      },
+      "isTeamMember(uint256,address)": {
+        "params": {
+          "_member": "Address of member.",
+          "_teamID": "Unique team ID."
+        }
+      },
+      "rejectRelease(string,string,string)": {
+        "params": {
+          "_projectName": "Name of the project.",
+          "_releaseName": "Name of the release.",
+          "_teamName": "Name of the team."
+        }
+      },
+      "removeProjectMember(string,string,address)": {
+        "params": {
+          "_address": "Address of member.",
+          "_projectName": "Name of the project.",
+          "_teamName": "Name of the team."
+        }
+      },
+      "removeTeamMember(string,address)": {
+        "params": {
+          "_address": "Address of member.",
+          "_teamName": "Name of the team."
+        }
+      },
+      "setProjectMetaURI(string,string,string)": {
+        "params": {
+          "_metaURI": "Metadata URI.",
+          "_projectName": "Name of the project.",
+          "_teamName": "Name of the team."
+        }
+      },
+      "setTeamBeneficiary(uint256,address)": {
+        "params": {
+          "_newBeneficiary": "Address of new beneficiary address.",
+          "_teamID": "Unique ID of the team."
+        }
+      },
+      "setTeamMetaURI(string,string)": {
+        "params": {
+          "_metaURI": "Metadata URI.",
+          "_teamName": "Name of the team."
+        }
+      }
+    },
+    "stateVariables": {
+      "metaByID": {
+        "details": "mapping of team, project, and release IDs to metadata URIs"
+      },
+      "projectByID": {
+        "details": "projectID = keccak256(abi.encodePacked(teamID, keccak256(bytes(projectName))))"
+      },
+      "releaseByID": {
+        "details": "releaseID = keccak256(abi.encodePacked(projectID, keccak256(bytes(releaseName))))"
+      },
+      "teamByID": {
+        "details": "teamID = keccak256(abi.encodePacked(block.chainId, keccak256(bytes(teamName))))"
+      },
+      "teamNames": {
+        "details": "list of all team names"
+      },
+      "versionRecipient": {
+        "details": "version of BaseRelayRecipient this contract implements"
+      }
+    },
+    "title": "Valist registry contract",
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {
+      "addProjectMember(string,string,address)": {
+        "notice": "Add a member to the project. Requires the sender to be a member of the team."
+      },
+      "addTeamMember(string,address)": {
+        "notice": "Add a member to the team. Requires the sender to be a member of the team."
+      },
+      "approveRelease(string,string,string)": {
+        "notice": "Approve the release by adding the sender's address to the approvers list. The sender's address will be removed from the rejectors list if it exists."
+      },
+      "constructor": {
+        "notice": "Creates a Valist registry."
+      },
+      "createProject(string,string,string,address[])": {
+        "notice": "Creates a new project. Requires the sender to be a member of the team."
+      },
+      "createRelease(string,string,string,string)": {
+        "notice": "Creates a new release. Requires the sender to be a member of the project."
+      },
+      "createTeam(string,string,address,address[])": {
+        "notice": "Creates a new team with the given members."
+      },
+      "getLatestReleaseName(string,string)": {
+        "notice": "Returns the latest release name."
+      },
+      "getProjectID(uint256,string)": {
+        "notice": "Generates projectID from teamID and projectName."
+      },
+      "getProjectMembers(string,string,uint256,uint256)": {
+        "notice": "Returns a paginated list of project members."
+      },
+      "getProjectMetaURI(string,string)": {
+        "notice": "Returns the project metadata URI."
+      },
+      "getProjectNames(string,uint256,uint256)": {
+        "notice": "Returns a paginated list of project names."
+      },
+      "getReleaseApprovers(string,string,string,uint256,uint256)": {
+        "notice": "Returns a paginated list of release approvers."
+      },
+      "getReleaseID(uint256,string)": {
+        "notice": "Generates releaseID from projectID and releaseName."
+      },
+      "getReleaseMetaURI(string,string,string)": {
+        "notice": "Returns the release metadata URI."
+      },
+      "getReleaseNames(string,string,uint256,uint256)": {
+        "notice": "Returns a paginated list of release names."
+      },
+      "getReleaseRejectors(string,string,string,uint256,uint256)": {
+        "notice": "Returns a paginated list of release rejectors."
+      },
+      "getTeamBeneficiary(uint256)": {
+        "notice": "Fetches team beneficiary address."
+      },
+      "getTeamID(string)": {
+        "notice": "Generates teamID from teamName."
+      },
+      "getTeamMembers(string,uint256,uint256)": {
+        "notice": "Returns a paginated list of team members."
+      },
+      "getTeamMetaURI(string)": {
+        "notice": "Returns the team metadata URI."
+      },
+      "getTeamNames(uint256,uint256)": {
+        "notice": "Returns a paginated list of team names."
+      },
+      "isProjectMember(uint256,address)": {
+        "notice": "Returns whether a given address is a member of a project."
+      },
+      "isTeamMember(uint256,address)": {
+        "notice": "Returns whether a given address is a member of a team."
+      },
+      "rejectRelease(string,string,string)": {
+        "notice": "Reject the release by adding the sender's address to the rejectors list. The sender's address will be removed from the approvers list if it exists."
+      },
+      "removeProjectMember(string,string,address)": {
+        "notice": "Remove a member from the project. Requires the sender to be a member of the team."
+      },
+      "removeTeamMember(string,address)": {
+        "notice": "Remove a member from the team. Requires the sender to be a member of the team."
+      },
+      "setProjectMetaURI(string,string,string)": {
+        "notice": "Sets the project metadata URI. Requires the sender to be a member of the team."
+      },
+      "setTeamBeneficiary(uint256,address)": {
+        "notice": "Set team beneficiary address for recieving payments."
+      },
+      "setTeamMetaURI(string,string)": {
+        "notice": "Sets the team metadata URI. Requires the sender to be a member of the team."
+      }
+    },
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 7,
+        "contract": "contracts/Valist.sol:Valist",
+        "label": "_trustedForwarder",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_address"
+      },
+      {
+        "astId": 3719,
+        "contract": "contracts/Valist.sol:Valist",
+        "label": "teamNames",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_array(t_string_storage)dyn_storage"
+      },
+      {
+        "astId": 3725,
+        "contract": "contracts/Valist.sol:Valist",
+        "label": "teamByID",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_mapping(t_uint256,t_struct(Team)3701_storage)"
+      },
+      {
+        "astId": 3731,
+        "contract": "contracts/Valist.sol:Valist",
+        "label": "projectByID",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_mapping(t_uint256,t_struct(Project)3708_storage)"
+      },
+      {
+        "astId": 3737,
+        "contract": "contracts/Valist.sol:Valist",
+        "label": "releaseByID",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_mapping(t_uint256,t_struct(Release)3715_storage)"
+      },
+      {
+        "astId": 3743,
+        "contract": "contracts/Valist.sol:Valist",
+        "label": "metaByID",
+        "offset": 0,
+        "slot": "5",
+        "type": "t_mapping(t_uint256,t_string_storage)"
+      },
+      {
+        "astId": 3747,
+        "contract": "contracts/Valist.sol:Valist",
+        "label": "versionRecipient",
+        "offset": 0,
+        "slot": "6",
+        "type": "t_string_storage"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_array(t_bytes32)dyn_storage": {
+        "base": "t_bytes32",
+        "encoding": "dynamic_array",
+        "label": "bytes32[]",
+        "numberOfBytes": "32"
+      },
+      "t_array(t_string_storage)dyn_storage": {
+        "base": "t_string_storage",
+        "encoding": "dynamic_array",
+        "label": "string[]",
+        "numberOfBytes": "32"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_mapping(t_bytes32,t_uint256)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => uint256)",
+        "numberOfBytes": "32",
+        "value": "t_uint256"
+      },
+      "t_mapping(t_uint256,t_string_storage)": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => string)",
+        "numberOfBytes": "32",
+        "value": "t_string_storage"
+      },
+      "t_mapping(t_uint256,t_struct(Project)3708_storage)": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => struct Valist.Project)",
+        "numberOfBytes": "32",
+        "value": "t_struct(Project)3708_storage"
+      },
+      "t_mapping(t_uint256,t_struct(Release)3715_storage)": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => struct Valist.Release)",
+        "numberOfBytes": "32",
+        "value": "t_struct(Release)3715_storage"
+      },
+      "t_mapping(t_uint256,t_struct(Team)3701_storage)": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => struct Valist.Team)",
+        "numberOfBytes": "32",
+        "value": "t_struct(Team)3701_storage"
+      },
+      "t_string_storage": {
+        "encoding": "bytes",
+        "label": "string",
+        "numberOfBytes": "32"
+      },
+      "t_struct(AddressSet)2017_storage": {
+        "encoding": "inplace",
+        "label": "struct EnumerableSet.AddressSet",
+        "members": [
+          {
+            "astId": 2016,
+            "contract": "contracts/Valist.sol:Valist",
+            "label": "_inner",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_struct(Set)1716_storage"
+          }
+        ],
+        "numberOfBytes": "64"
+      },
+      "t_struct(Project)3708_storage": {
+        "encoding": "inplace",
+        "label": "struct Valist.Project",
+        "members": [
+          {
+            "astId": 3704,
+            "contract": "contracts/Valist.sol:Valist",
+            "label": "releaseNames",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_array(t_string_storage)dyn_storage"
+          },
+          {
+            "astId": 3707,
+            "contract": "contracts/Valist.sol:Valist",
+            "label": "members",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_struct(AddressSet)2017_storage"
+          }
+        ],
+        "numberOfBytes": "96"
+      },
+      "t_struct(Release)3715_storage": {
+        "encoding": "inplace",
+        "label": "struct Valist.Release",
+        "members": [
+          {
+            "astId": 3711,
+            "contract": "contracts/Valist.sol:Valist",
+            "label": "approvers",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_struct(AddressSet)2017_storage"
+          },
+          {
+            "astId": 3714,
+            "contract": "contracts/Valist.sol:Valist",
+            "label": "rejectors",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_struct(AddressSet)2017_storage"
+          }
+        ],
+        "numberOfBytes": "128"
+      },
+      "t_struct(Set)1716_storage": {
+        "encoding": "inplace",
+        "label": "struct EnumerableSet.Set",
+        "members": [
+          {
+            "astId": 1711,
+            "contract": "contracts/Valist.sol:Valist",
+            "label": "_values",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_array(t_bytes32)dyn_storage"
+          },
+          {
+            "astId": 1715,
+            "contract": "contracts/Valist.sol:Valist",
+            "label": "_indexes",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_mapping(t_bytes32,t_uint256)"
+          }
+        ],
+        "numberOfBytes": "64"
+      },
+      "t_struct(Team)3701_storage": {
+        "encoding": "inplace",
+        "label": "struct Valist.Team",
+        "members": [
+          {
+            "astId": 3694,
+            "contract": "contracts/Valist.sol:Valist",
+            "label": "beneficiary",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_address"
+          },
+          {
+            "astId": 3697,
+            "contract": "contracts/Valist.sol:Valist",
+            "label": "projectNames",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_string_storage)dyn_storage"
+          },
+          {
+            "astId": 3700,
+            "contract": "contracts/Valist.sol:Valist",
+            "label": "members",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_struct(AddressSet)2017_storage"
+          }
+        ],
+        "numberOfBytes": "128"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  }
+}

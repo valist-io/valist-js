@@ -1,13 +1,17 @@
 {
-  "name": "valist-evm-contracts",
+  "name": "@valist/evm-contracts",
   "scripts": {
     "compile": "hardhat compile",
+    "clean": "hardhat clean",
     "test": "hardhat test",
-    "export-abi": "hardhat export-abi",
     "bootstrap": "hardhat run scripts/bootstrap.ts --network local",
-    "deploy:local": "hardhat run scripts/deploy.ts --network local",
-    "deploy:mumbai": "hardhat run scripts/deploy.ts --network mumbai"
+    "deploy:local": "hardhat deploy --network local",
+    "deploy:mumbai": "hardhat deploy --network mumbai"
   },
+  "files": [
+    "contracts",
+    "deployments"
+  ],
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@nomiclabs/hardhat-etherscan": "^2.1.8",
@@ -32,7 +36,7 @@
     "ethereum-waffle": "^3.4.0",
     "ethers": "^5.5.1",
     "hardhat": "^2.7.0",
-    "hardhat-abi-exporter": "^2.8.0",
+    "hardhat-deploy": "^0.10.5",
     "hardhat-gas-reporter": "^1.0.4",
     "prettier": "^2.5.0",
     "prettier-plugin-solidity": "^1.0.0-beta.19",

@@ -1,11 +1,9 @@
-
 import { providers } from 'ethers';
 import { TeamMeta, ProjectMeta, ReleaseMeta, Contract } from './index';
 import { StorageAPI } from './storage';
 import { ContractAPI } from './contract';
-
-import { deployedAddresses } from './contract/evm';
 import { createIPFS } from './storage/ipfs';
+import { addresses } from './contract/evm';
 
 export class Client {
 	public contract: ContractAPI;
@@ -62,13 +60,10 @@ export class Client {
 
 export const createClient = async ({ web3Provider }: { web3Provider: providers.Web3Provider }): Promise<Client> => {
 	const chainID = await web3Provider.getSigner().getChainId();
-	const deployedAddress = deployedAddresses[chainID] || deployedAddresses[80001];
+	const address = addresses[chainID];
 
 	const storage = createIPFS();
-	const contract = new Contract.EVM(
-		deployedAddress, 
-		web3Provider,
-	);
+	const contract = new Contract.EVM(address, web3Provider);
 
 	const client = new Client(contract, storage);
 	return client;
