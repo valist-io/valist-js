@@ -1,4 +1,4 @@
-import { Client, createClient, wrapMetaTxProvider } from './client';
+import { Client, createClient } from './client';
 import * as Storage from './storage';
 import { createIPFS } from './storage/ipfs';
 import * as Contract from './contract/';
@@ -77,5 +77,4 @@ export {
 	deployedAddresses,
 	createClient,
 	createIPFS,
-	wrapMetaTxProvider,
 };

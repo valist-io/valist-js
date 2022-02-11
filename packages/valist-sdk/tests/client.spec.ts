@@ -27,7 +27,7 @@ describe('valist client', async () => {
 		await deploy.deployed();
 
 		const storage = new Storage.IPFS(ipfs);
-		const contract = new Contract.EVM(deploy.address, signer);
+		const contract = new Contract.EVM(deploy.address, provider);
 		const valist = new Client(contract, storage);
 
 		const address = await signer.getAddress();

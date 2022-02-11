@@ -13,7 +13,7 @@ interface ContractAPI {
 	 * @param beneficiary Address to receive payments on behalf of the team.
 	 * @param members List of members to add to the team.
 	 */
-	createTeam(teamName: string, metaURI: string, beneficiary: string, members: string[]): Promise<void>;
+	createTeam(teamName: string, metaURI: string, beneficiary: string, members: string[]): Promise<string>;
 
 	/**
 	 * Creates a new project. Requires the sender to be a member of the team.
@@ -23,7 +23,7 @@ interface ContractAPI {
 	 * @param metaURI URI of the project metadata.
 	 * @param members Optional list of members to add to the project.
 	 */
-	createProject(teamName: string, projectName: string, metaURI: string, members: string[]): Promise<void>;
+	createProject(teamName: string, projectName: string, metaURI: string, members: string[]): Promise<string>;
 
 	/**
 	 * Creates a new release. Requires the sender to be a member of the project.
@@ -33,7 +33,7 @@ interface ContractAPI {
 	 * @param releaseName Unique name used to identify the release.
 	 * @param metaURI URI of the project metadata.
 	 */
-	createRelease(teamName: string, projectName: string, releaseName: string, metaURI: string): Promise<void>;
+	createRelease(teamName: string, projectName: string, releaseName: string, metaURI: string): Promise<string>;
 
 	/**
 	 * Adds a member to the team. Requires the sender to be a member of the team.
@@ -41,7 +41,7 @@ interface ContractAPI {
 	 * @param teamName Name of the team.
 	 * @param address Address of member.
 	 */
-	addTeamMember(teamName: string, address: string): Promise<void>;
+	addTeamMember(teamName: string, address: string): Promise<string>;
 
 	/**
 	 * Removes a member from the team. Requires the sender to be a member of the team.
@@ -49,7 +49,7 @@ interface ContractAPI {
 	 * @param teamName Name of the team.
 	 * @param address Address of member.
 	 */
-	removeTeamMember(teamName: string, address: string): Promise<void>;
+	removeTeamMember(teamName: string, address: string): Promise<string>;
 
 	/**
 	 * Adds a member to the project. Requires the sender to be a member of the team.
@@ -58,7 +58,7 @@ interface ContractAPI {
 		 * @param projectName Name of the project.
 		 * @param address Address of member.
 	 */
-	addProjectMember(teamName: string, projectName: string, address: string): Promise<void>;
+	addProjectMember(teamName: string, projectName: string, address: string): Promise<string>;
 
 	/**
 	 * Removes a member from the project. Requires the sender to be a member of the team.
@@ -67,7 +67,7 @@ interface ContractAPI {
 	 * @param projectName Name of the project.
 	 * @param address Address of member.
 	 */
-	removeProjectMember(teamName: string, projectName: string, address: string): Promise<void>;
+	removeProjectMember(teamName: string, projectName: string, address: string): Promise<string>;
 
 	/**
 	 * Sets the team metadata content ID. Requires the sender to be a member of the team.
@@ -75,7 +75,7 @@ interface ContractAPI {
 	 * @param teamName Name of the team.
 	 * @param metaURI Metadata URI.
 	 */
-	setTeamMetaURI(teamName: string, metaURI: string): Promise<void>;
+	setTeamMetaURI(teamName: string, metaURI: string): Promise<string>;
 
 	/**
 	 * Sets the team beneficiary to the new address.
@@ -83,7 +83,7 @@ interface ContractAPI {
 	 * @param teamName Name of the team.
 	 * @param beneficiary New beneficiary.
 	 */
-	setTeamBeneficiary(teamName: string, beneficiary: string): Promise<void>;
+	setTeamBeneficiary(teamName: string, beneficiary: string): Promise<string>;
 
 	/**
 	 * Sets the project metadata content ID. Requires the sender to be a member of the team.
@@ -92,7 +92,7 @@ interface ContractAPI {
 	 * @param projectName Name of the project.
 	 * @param metaURI Metadata URI.
 	 */
-	setProjectMetaURI(teamName: string, projectName: string, metaURI: string): Promise<void>;
+	setProjectMetaURI(teamName: string, projectName: string, metaURI: string): Promise<string>;
 
 	/**
 	 * Approves the release by adding the sender's address to the approvers list.
@@ -102,7 +102,7 @@ interface ContractAPI {
 	 * @param projectName Name of the project.
 	 * @param releaseName Name of the release.
 	 */
-	approveRelease(teamName: string, projectName: string, releaseName: string): Promise<void>;
+	approveRelease(teamName: string, projectName: string, releaseName: string): Promise<string>;
 
 	/**
 	 * Rejects the release by adding the sender's address to the rejectors list.
@@ -112,7 +112,7 @@ interface ContractAPI {
 	 * @param projectName Name of the project.
 	 * @param releaseName Name of the release.
 	 */
-	rejectRelease(teamName: string, projectName: string, releaseName: string): Promise<void>;
+	rejectRelease(teamName: string, projectName: string, releaseName: string): Promise<string>;
 
 	/**
 	 * Returns the latest release name.

@@ -62,33 +62,14 @@ export class Client {
 	}
 }
 
-export const wrapMetaTxProvider = (web3Provider: providers.Web3Provider): providers.Web3Provider => {
-	// public api key
-	const biconomy = new Biconomy(web3Provider, { apiKey: 'w93agzbb5.62441f94-359a-43fd-b49e-fb960b62687f', strict: true, debug: true });
-	const metaTxProvider = new providers.Web3Provider(biconomy);
-
-	// @TODO wrap in promise
-	biconomy.onEvent(biconomy.READY, () => {
-		console.log("Meta Transactions Enabled");
-	}).onEvent(biconomy.ERROR, (e: any, message: any) => {
-		console.log(e, message);
-	});
-
-	return metaTxProvider;
-}
-
 export const createClient = async ({ web3Provider }: { web3Provider: providers.Web3Provider }): Promise<Client> => {
 	const chainID = await web3Provider.getSigner().getChainId();
 	const deployedAddress = deployedAddresses[chainID] || deployedAddresses[80001];
 
-	const metaTxProvider = wrapMetaTxProvider(web3Provider);
-
-	const signer = metaTxProvider.getSigner();
-
 	const storage = createIPFS();
 	const contract = new Contract.EVM(
 		deployedAddress, 
-		signer,
+		web3Provider,
 	);
 
 	const client = new Client(contract, storage);
