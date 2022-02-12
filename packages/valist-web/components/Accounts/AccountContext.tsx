@@ -9,4 +9,5 @@ export default React.createContext<AccountCtxInterface>({
   setLoginType: () => {},
   setAddress: () => {},
   setMagic: () => {},
+  notify: (type: string) => { return type },
 });

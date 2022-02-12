@@ -15,7 +15,7 @@ async function PinTeamMeta() {
   const empty = JSON.stringify({
     image: "",
     name: "test",
-    description: "A test description.",
+    description: "An example library for demoing valist.",
     external_url: "https://example.com",
   });
   const resp = await ipfs.add(empty);
@@ -41,7 +41,7 @@ const PinProjectMeta = async () => {
   const meta = JSON.stringify({
     image: imagePin.cid.toString(),
     name: "test project",
-    description: "A test project description.",
+    description: "An example library for demoing valist.",
     external_url: "https://git.example.com",
   });
   const metaPin = await ipfs.add(meta);

@@ -7,6 +7,7 @@ import { ethers, Signer } from 'ethers';
 import { ApolloProvider } from '@apollo/client';
 import { Magic } from 'magic-sdk';
 import { create as createIPFS } from "ipfs-http-client";
+import toast, { Toaster } from "react-hot-toast";
 
 import AccountContext from '../components/Accounts/AccountContext';
 import ValistContext from '../components/Valist/ValistContext';
@@ -39,6 +40,17 @@ function ValistApp({ Component, pageProps }: AppProps) {
   const [loginType, setLoginType] = useState<LoginType>('readOnly');
   const [showLogin, setShowLogin] = useState(false);
 
+  const notify = (type: string) => {
+    switch (type) {
+      case 'transaction':
+        toast('An error has occurred.');
+        break;
+      case 'error':
+        toast('An error has occurred.');
+        break;
+    }
+  }
+
   const accountState = {
     magic,
     address,
@@ -47,6 +59,7 @@ function ValistApp({ Component, pageProps }: AppProps) {
     setShowLogin,
     setAddress,
     setMagic,
+    notify,
   };
 
   const valistState = {
@@ -81,7 +94,7 @@ function ValistApp({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
     window.valist = valistClient;
-  }, [valistClient])
+  }, [valistClient]);
 
   useEffect(() => console.log("Address:", address), [address]);
 
@@ -94,6 +107,7 @@ function ValistApp({ Component, pageProps }: AppProps) {
             setProvider={setProvider}
             setAddress={setAddress}
           />}
+          <Toaster />
         </ValistContext.Provider>
       </AccountContext.Provider>
     </ApolloProvider>

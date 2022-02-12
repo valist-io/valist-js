@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SetUseState } from "../../utils/Account/types";
 import { truncate } from "../../utils/Formatting/truncate";
 import EnsResolver from "../Ens";
@@ -32,6 +33,16 @@ export default function HomepageProfileCard(props:HomepageProfileCardProps) {
                 </p>
               </div>
             </div>
+
+            <div style={{marginTop: 30}} className="mr-10 flex content-end sm:mt-0">
+              <Link href="create?action=release">
+                <a className="flex justify-center items-center px-4 py-2 border
+                border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                  Publish Release
+                </a>
+              </Link>
+            </div>
+
           </div>
         </div>
         <Tabs 
