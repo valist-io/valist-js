@@ -146,13 +146,8 @@ export class EVM implements ContractAPI {
 	
 		tx.gasLimit = await this.provider.estimateGas(tx);
 		tx.gasPrice = await this.provider.getGasPrice();
-		console.log({...tx, gasLimit: tx.gasLimit.toHexString(), gasPrice: tx.gasPrice.toHexString() })
 
-		// const signed = await this.provider.getSigner().signTransaction(tx);
-		// console.log(signed);
-		// const txReq = await this.provider.send('eth_sendRawTransaction', [signed]);
 		const txReq = await this.provider.send('eth_sendTransaction', [{...tx, gasLimit: tx.gasLimit.toHexString(), gasPrice: tx.gasPrice.toHexString() }]);
-		// const txReq = await this.provider.sendTransaction(tx)
 		return txReq;
 	}
 
