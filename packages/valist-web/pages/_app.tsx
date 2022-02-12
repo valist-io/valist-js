@@ -28,7 +28,7 @@ function ValistApp({ Component, pageProps }: AppProps) {
       new Contract.EVM(
         deployedAddresses[publicRuntimeConfig.CHAIN_ID], 
         provider,
-        false,
+        publicRuntimeConfig.METATX_ENABLED,
       ),
       new Storage.IPFS(
         createIPFS(publicRuntimeConfig.IPFS_HOST)

@@ -2,7 +2,7 @@ import { ContractAPI } from './index';
 import { Contract, PopulatedTransaction } from 'ethers';
 import { abi } from './artifacts/Valist.sol/Valist.json';
 import { BigNumber } from 'ethers';
-import { JsonRpcProvider, Web3Provider, TransactionReceipt, TransactionRequest } from '@ethersproject/providers';
+import { JsonRpcProvider, Web3Provider, TransactionReceipt } from '@ethersproject/providers';
 import { sendMetaTx } from './metatx';
 
 export class EVM implements ContractAPI {
@@ -14,6 +14,7 @@ export class EVM implements ContractAPI {
 		this.contract = new Contract(address, abi, web3Provider.getSigner());
 		this.provider = web3Provider;
 		this.metaTx = metaTx;
+		console.log("HUHH?", metaTx)
 	}
 
 	async createTeam(teamName: string, metaURI: string, beneficiary: string, members: string[]): Promise<string> {
@@ -142,7 +143,7 @@ export class EVM implements ContractAPI {
 		functionName: string,
 		tx: PopulatedTransaction,
 	): Promise<string> {
-		if (this.metaTx === true) return sendMetaTx(this.provider, functionName, tx);
+		if (`${this.metaTx}` === "true") return sendMetaTx(this.provider, functionName, tx);
 	
 		tx.gasLimit = await this.provider.estimateGas(tx);
 		tx.gasPrice = await this.provider.getGasPrice();
