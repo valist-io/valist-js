@@ -129,3 +129,28 @@
   height: 0;
   visibility: hidden;
 }
+
+
+.notificationWrapper {
+  @apply flex flex-row items-center justify-between w-96 bg-gray-900 px-4 py-6 text-white shadow-2xl hover:shadow-none transform-gpu translate-y-0 hover:translate-y-1 rounded-xl relative transition-all duration-500 ease-in-out;
+}
+
+.iconWrapper {
+  @apply text-xl;
+}
+
+.contentWrapper {
+  @apply flex flex-col items-start justify-center ml-4 cursor-default;
+}
+
+.contentWrapper h1 {
+  @apply text-base text-gray-200 font-semibold leading-none tracking-wider;
+}
+
+.contentWrapper p {
+  @apply text-sm text-gray-400 mt-2 leading-relaxed tracking-wider;
+}
+
+.closeIcon {
+  @apply absolute top-2 right-2 cursor-pointer text-lg;
+}

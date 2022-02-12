@@ -33,20 +33,31 @@ export default function ProjectListCard({ teamName, projectName, metaURI }: Proj
   }, [metaURI]);
 
   return (
-    <div className="bg-white rounded-lg shadow px-6 py-6 mb-2 flex items-center justify-start border-2 hover:border-indigo-500">
-      <div className="mr-7">
-        
-      </div>
-      <div className="">
-        <h3 className="text-xl">
-          {projectName}
-        </h3>
-        <div>Published by: 
-          <span className="ml-1 cursor-pointer text-gray-900 py-1">
-            <span style={{marginBottom: "-4px"}} className='inline-block'></span>
-              {teamName}
-            </span>
+    <div className="bg-white rounded-lg shadow px-6 py-6 mb-2 border-2 hover:border-indigo-500 cursor-pointer">
+      <div className='flex mb-3'>
+        <div className="flex-shrink-0 mr-5">
+          {meta.image ?
+            <img height={50} width={50} className='rounded-full'
+            src={`${valistCtx.ipfsGateway}/ipfs/${parseCID(meta.image)}`} alt="" />      
+            :
+            <AddressIdenticon address={name} height={50} />
+          }
         </div>
+
+        <div>
+          <h3 className="text-xl">
+            {projectName}
+          </h3>
+          <div>Published by: 
+            <span className="ml-1 cursor-pointer text-gray-900 py-1">
+              <span style={{marginBottom: "-4px"}} className='inline-block'></span>
+                {teamName}
+              </span>
+          </div>
+        </div>
+      </div>
+     
+      <div>
         <p>
           {meta.description}
         </p>

@@ -3,17 +3,13 @@ import { SetUseState } from "../../utils/Account/types";
 
 interface ImageUploadProps {
   text: string
-  setImage: SetUseState<string>
+  setImage: SetUseState<File | null>
 }
 
 export default function ImageUpload(props: ImageUploadProps) {
-  const [imageObject, setImageObject] = useState<File | null>(null);
-  const [imagePrev, setImagePrev] = useState<string| null>(null);
-
   const handleImage = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target?.files) {
-      props.setImage(URL.createObjectURL(e.target.files[0]));
-      setImageObject(e.target.files[0]);
+      props.setImage(e.target.files[0]);
     };
   };
 

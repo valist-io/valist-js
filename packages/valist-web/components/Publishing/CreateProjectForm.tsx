@@ -5,12 +5,14 @@ import Tooltip from "./Tooltip";
 interface CreateProjectFormProps {
   projectName: string,
   projectDescription: string,
+  projectWebsite: string,
   userTeams: string[],
   setView: SetUseState<string>,
   setRenderTeam: SetUseState<boolean>,
   setName: SetUseState<string>,
-  setImage: SetUseState<string>,
+  setImage: SetUseState<File | null>,
   setDescription: SetUseState<string>,
+  setWebsite: SetUseState<string>,
   setMembers: SetUseState<string[]>,
   setTeam: SetUseState<string>,
   submit: () => void
@@ -73,6 +75,25 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
       </div>
 
       <div>
+        <label htmlFor="website" className="block text-sm font-medium text-gray-700">
+          Website <span className="float-right"><Tooltip text="The link to your proejct's website." /></span>
+        </label>
+        <div className="mt-1">
+          <input
+            id="website"
+            name="website"
+            type="text"
+            onChange={(e) => props.setWebsite(e.target.value)}
+            placeholder='Website URL'
+            required
+            className="appearance-none block w-full px-3 py-2 border border-gray-300 
+            rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 
+            focus:border-indigo-500 sm:text-sm"
+          />
+        </div>
+      </div>
+
+      <div>
         <label htmlFor="description" className="block text-sm font-medium text-gray-700">
           Description <span className="float-right"><Tooltip text='Plain text or markdown describing your project.' /></span>
         </label>
@@ -81,7 +102,7 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
             id="description"
             name="description"
             onChange={(e) => props.setDescription(e.target.value)}
-            rows={6}
+            rows={4}
             className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block 
             w-full sm:text-sm border border-gray-300 rounded-md"
             placeholder="Description"
