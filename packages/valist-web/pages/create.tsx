@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/client';
-import { BigNumber } from 'ethers';
 import type { NextPage } from 'next';
+import getConfig from 'next/config';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import AccountContext from '../components/Accounts/AccountContext';
@@ -9,13 +9,15 @@ import Accordion from '../components/Publishing/Accordion';
 import CreateProjectForm from '../components/Publishing/CreateProjectForm';
 import CreateTeamForm from '../components/Publishing/CreateTeamForm';
 import ProjectPreview from '../components/Publishing/ProjectPreview';
-import PublishReleaseForm from '../components/Publishing/PublishReleaseForm';
+import PublishReleaseForm from '../components/Publishing/CreateReleaseForm';
 import ReleasePreview from '../components/Publishing/ReleasePreview';
 import TeamPreview from '../components/Publishing/TeamPreview';
 import ValistContext from '../components/Valist/ValistContext';
 import { USER_TEAMS } from '../utils/Apollo/queries';
+import CreateLicenseForm from '../components/Publishing/CreateLicenseForm';
+import LicensePreview from '../components/Publishing/LicensePreview';
 
-type TeamMember = {
+type Member = {
   id: string
 }
 
@@ -23,6 +25,9 @@ const CreateTeamPage: NextPage = () => {
   const accountCtx = useContext(AccountContext);
   const valistCtx = useContext(ValistContext);
   const router = useRouter();
+  const { publicRuntimeConfig } = getConfig();
+
+  // Get sepcific action/task from query params
   let { action } = router.query
   if (Array.isArray(action)) {
     action = action.join('');
@@ -36,79 +41,105 @@ const CreateTeamPage: NextPage = () => {
   const [renderTeam, setRenderTeam] = useState<boolean>(false);
   const [renderProject, setRenderProject] = useState<boolean>(false);
   const [renderRelease, setRenderRelease] = useState<boolean>(false);
+  const [renderLicense, setRenderLicense] = useState<boolean>(false);
   const { data, loading, error } = useQuery(USER_TEAMS, {
     variables: { address: accountCtx.address.toLowerCase() },
   });
-  const [userTeams, setUserTeams] = useState<any>([]);
-  const [teamProjects, setTeamProjects] = useState<any>([]);
+  const [userTeams, setUserTeams] = useState<any>({});
+  const [userTeamNames, setUserTeamNames] = useState<any>([]);
+  const [teamProjectNames, setTeamProjectNames] = useState<any>([]);
 
   // Team State
-  const [teamImage, setTeamImage] = useState<string>('');
+  const [teamImage, setTeamImage] = useState<File | null>(null);
   const [teamName, setTeamName] = useState<string>('teamName');
   const [teamDescription, setTeamDescription] = useState<string>('An example team description.');
+  const [teamWebsite, setTeamWebsite] = useState<string>('');
   const [teamBeneficiary, setTeamBeneficiary] = useState<string>('');
   const [teamMembers, setTeamMembers] = useState<string[]>([]);
-  const [teamMembersParsed, setTeamMembersParsed] = useState<TeamMember[]>([]);
+  const [teamMembersParsed, setTeamMembersParsed] = useState<Member[]>([]);
 
   // Project State
   const [projectTeam, setProjectTeam] = useState<string>('');
-  const [projectImage, setProjectImage] = useState<string>('');
+  const [projectImage, setProjectImage] = useState<File | null>(null);
   const [projectName, setProjectName] = useState<string>('projectName');
   const [projectDescription, setProjectDescription] = useState<string>('');
+  const [projectWebsite, setProjectWebsite] = useState<string>('');
   const [projectMembers, setProjectMembers] = useState<string[]>([]);
-  const [projectMembersParsed, setprojectMembersParsed] = useState<TeamMember[]>([]);
+  const [projectMembersParsed, setprojectMembersParsed] = useState<Member[]>([]);
 
   // Release State
-  const [releaseImage, setReleaseImage] = useState<string>('');
+  const [releaseImage, setReleaseImage] = useState<File | null>(null);
   const [releaseTeam, setReleaseTeam] = useState<string>('');
   const [releaseProject, setReleaseProject] = useState<string>('');
   const [releaseName, setReleaseName] = useState<string>('0.0.1');
   const [releaseDescription, setReleaseDescription] = useState<string>('');
-  const [releaseArtifacts, setReleaseArtifacts] = useState<string[]>([]);
+  const [releaseWebsite, setReleaseWebsite] = useState<string>('');
+  const [releaseFiles, setReleaseFiles] = useState<any>({});
 
+  // License State
+  const [licenseImage, setLicenseImage] = useState<File | null>(null);
+  const [licenseTeam, setLicenseTeam] = useState<string>('');
+  const [licenseProject, setLicenseProject] = useState<string>('');
+  const [licenseName, setLicenseName] = useState<string>('');
+  const [licenseDescription, setLicenseDescription] = useState<string>('');
+
+  // Set which sections/steps to render
   useEffect(() => {
-    setRenderTeam(action === 'team')
-    setRenderProject(action === 'project')
-    setRenderRelease(action === 'release')
+    setRenderTeam(action === 'team');
+    setRenderProject(action === 'project');
+    setRenderRelease(action === 'release');
+    setRenderLicense(action === 'license');
     setView(action as string);
   }, [action]);
 
+  // Set page state for user's teams and projects
   useEffect(() => {
     if (data && data?.users && data?.users[0] && data?.users[0].teams) {
-      const teams = [];
-      for (const team of data.users[0].teams) {
-        teams.push(team.name);
+      const rawTeams = data.users[0].teams;
+      const teamNames = [];
+      let teams:any = {};
+
+      for (let i = 0; i < rawTeams.length; i++) {
+        teams[rawTeams[i].name] = rawTeams[i]
+        teamNames.push(rawTeams[i].name);
       }
       setUserTeams(teams);
-      console.log('teams', teams);
-      if (teams.length > 0) {
-        setProjectTeam(teams[0]);
-        setReleaseTeam(teams[0]);
+      setUserTeamNames(teamNames);
 
+      if (teamNames.length > 0) {
+        setProjectTeam(teamNames[0]);
+        setReleaseTeam(teamNames[0]);
+        setLicenseTeam(teamNames[0]);
         if (data.users[0].teams[0].projects) {
-          const projects = [];
-          for (const project of data.users[0].teams[0].projects) {
-            projects.push(project.name);
+          const projectNames = [];
+          for (const name of data.users[0].teams[0].projects) {
+            projectNames.push(name.name);
           }
-          setTeamProjects(projects);
-          setReleaseProject(projects[0]);
+          setTeamProjectNames(projectNames);
+          setReleaseProject(projectNames[0]);
+          setLicenseProject(projectNames[0])
         }
       }
     }
   }, [data]);
 
+  // If the selected releaseTeam changes set the projectNames under that team
   useEffect(() => {
     (async () => {
-      console.log("releaseTeam", releaseTeam)
       if (releaseTeam) {
-        // const projects = await valistCtx.valist.getProjectNames(releaseTeam, BigNumber.from(1), BigNumber.from(10));
-        // setTeamProjects(projects);
+        const projectNames = [];
+        for (const name of userTeams[releaseTeam].projects) {
+          projectNames.push(name.name);
+        }
+        setTeamProjectNames(projectNames);
+        setReleaseProject(projectNames[0] || '');
       }
     })();
   }, [releaseTeam]);
 
+  // Normalize teamMember data for TeamPreview component
   useEffect(() => {
-    const members:TeamMember[] = []
+    const members:Member[] = []
     for (const teamMember of teamMembers) {
       members.push({
         id: teamMember,
@@ -117,8 +148,9 @@ const CreateTeamPage: NextPage = () => {
     setTeamMembersParsed(members);
   }, [teamMembers]);
 
+  // Normalize projectMember data for ProjectPreview component
   useEffect(() => {
-    const members:TeamMember[] = []
+    const members:Member[] = []
     for (const projectMember of projectMembers) {
       members.push({
         id: projectMember,
@@ -127,48 +159,107 @@ const CreateTeamPage: NextPage = () => {
     setprojectMembersParsed(members);
   }, [projectMembers]);
 
-  const createTeam = () => {
-    valistCtx.valist.createTeam(
+  // Wrap Valist Sdk calls for create (team, project release)
+  const createTeam = async () => {
+    let imgURL = "";
+
+    if (teamImage) {
+      const imgCID = await valistCtx.valist.storage.write(teamImage);
+      imgURL = `${publicRuntimeConfig.IPFS_GATEWAY}${imgCID}`;
+    }
+
+    const meta = {
+      image: imgURL,
+      name: teamName,
+      description: teamDescription,
+      external_url: teamWebsite,
+    };
+
+    console.log("Beneficiary", teamBeneficiary);
+    console.log("Team Name", teamName);
+    console.log("Team Members", teamMembers);
+    console.log("Meta", meta);
+
+    accountCtx.notify('transaction');
+
+    await valistCtx.valist.createTeam(
       teamName,
-      {
-        image: teamImage,
-        name: teamName,
-        description: teamDescription,
-        external_url: '',
-      },
+      meta,
       teamBeneficiary, 
       teamMembers,
-    )
+    );
   }
 
-  const createProject = () => {
-    valistCtx.valist.createProject(
+  const createProject = async () => {
+    let imgURL = "";
+
+    if (projectImage) {
+      const imgCID = await valistCtx.valist.storage.write(projectImage);
+      imgURL = `${publicRuntimeConfig.IPFS_GATEWAY}${imgCID}`;
+    }
+
+    const meta = {
+      image: imgURL,
+      name: projectName,
+      description: projectDescription,
+      external_url: projectWebsite,
+     };
+
+     console.log("Project Team", projectTeam);
+     console.log("Project Name", projectName);
+     console.log("Project Members", projectMembers);
+     console.log("Meta", meta);
+
+    await valistCtx.valist.createProject(
       projectTeam,
       projectName,
-      {
-        image: projectImage,
-        name: projectName,
-        description: teamDescription,
-        external_url: '',
-      },
+      meta,
       projectMembers,
-    )
+    );
   }
 
-  const createRelease = () => {
-    valistCtx.valist.createRelease(
+  const createRelease = async () => {
+    let imgURL = "";
+    let artifacts = new Map();
+
+    if (releaseImage) {
+      const imgCID = await valistCtx.valist.storage.write(releaseImage);
+      imgURL = `${publicRuntimeConfig.IPFS_GATEWAY}${imgCID}`;
+    }
+
+    if (releaseFiles) {
+      Object.keys(releaseFiles).map(async (key) => {
+        const current = releaseFiles[key];
+        const artifactCID = await valistCtx.valist.storage.write(current.file);
+        artifacts.set(releaseFiles[key].arch, {
+          architecture: releaseFiles[key].arch,
+          provider: artifactCID,
+        });
+      });
+    }
+
+    const meta = {
+      image: imgURL,
+      name: releaseName,
+      description: releaseDescription,
+      external_url: releaseWebsite,
+    };
+
+    console.log("Release Team", releaseTeam);
+    console.log("Release Project", releaseProject);
+    console.log("Release Name", releaseName);
+    console.log("Meta", meta);
+    console.log("Artifacts", artifacts);
+
+    await valistCtx.valist.createRelease(
       releaseTeam,
       releaseProject,
       releaseName,
-      {
-        image: releaseImage,
-        name: releaseProject,
-        description: releaseDescription,
-        external_url: '',
-      },
-    )
+      meta
+    );
   }
 
+  // Render preview based on view state
   const renderPreview = (view: string) => {
     switch (view) {
       case 'team':
@@ -193,8 +284,16 @@ const CreateTeamPage: NextPage = () => {
         releaseImage={releaseImage}
         releaseDescription={releaseDescription}            
       />
+      case 'license':
+        return <LicensePreview 
+        licenseTeam={licenseTeam}
+        licenseProject={licenseProject}
+        licenseName={licenseName} 
+        licenseImage={licenseImage}
+        licenseDescription={licenseDescription}            
+      />
       default:
-        return (<div>Page Not Found</div>)
+        return (<div>Action Not Found</div>)
     }
   };
 
@@ -203,25 +302,21 @@ const CreateTeamPage: NextPage = () => {
       <div className="grid grid-cols-1 gap-4 items-start gap-y-6 lg:grid-cols-12 lg:gap-8">
         {/* Right Column */}
         <div className="grid grid-cols-1 gap-x-4 gap-y-6 lg:col-span-5">
-          {renderTeam && <Accordion view={view} name={'team'} setView={setView} title={<div><span className='mr-4'></span>Create a Team or Personal Account</div>} active={true}>
+          {renderTeam && <Accordion view={view} name={'team'} setView={setView} title={<div><span className='mr-4'></span>Create a Team or Personal Account</div>}>
             <div className="p-4">
               <CreateTeamForm
                 teamName={teamName} 
                 teamMembers={teamMembers} 
-                teamDescription={teamDescription}   
+                teamDescription={teamDescription}
+                teamWebsite={teamWebsite}   
                 setName={setTeamName}
                 setImage={setTeamImage}
                 setDescription={setTeamDescription}
+                setWebsite={setTeamWebsite}
                 setMembers={setTeamMembers}
                 setBeneficiary={setTeamBeneficiary}
                 submitText={(action != 'project') ? 'Create Team' : 'Continue to Project'}
-                submit={() => {
-                  if (action != 'team') {
-                    setView(action as string);
-                  } else {
-                    createTeam();
-                  }
-                }}           
+                submit={createTeam}        
               />
             </div>
           </Accordion>}
@@ -229,22 +324,18 @@ const CreateTeamPage: NextPage = () => {
           {renderProject && <Accordion view={view} name={'project'} setView={setView} title={<div><span className='mr-4'></span>Create a New Project</div>}>
             <div className="p-4">
               <CreateProjectForm
+                projectName={''}
+                projectDescription={''}
+                projectWebsite={''}
+                userTeams={userTeamNames}
                 setView={setView}
-                userTeams={userTeams}
                 setRenderTeam={setRenderTeam}
                 setName={setProjectName}
                 setImage={setProjectImage}
                 setDescription={setProjectDescription}
+                setWebsite={setProjectWebsite}
                 setMembers={setProjectMembers}
-                submit={() => {
-                  if (action === 'release') {
-                    setView(action as string);
-                  } else {
-                    createProject();
-                  };
-                } }
-                projectName={''}
-                projectDescription={''} 
+                submit={createProject}
                 setTeam={setProjectTeam}              
               />
             </div>
@@ -253,21 +344,41 @@ const CreateTeamPage: NextPage = () => {
           {renderRelease && <Accordion view={view} name={'release'} setView={setView} title={<div><span className='mr-4'> </span>Publish Release</div>}>
             <div className="p-4">
               <PublishReleaseForm
-                teamNames={userTeams}
-                projectNames={teamProjects}
+                teamNames={userTeamNames}
+                projectNames={teamProjectNames}
                 releaseTeam={releaseTeam}
                 releaseProject={releaseProject}
-                releaseName={releaseName}  
+                releaseName={releaseName}
+                releaseFiles={releaseFiles}  
                 setImage={setReleaseImage}
                 setTeam={setReleaseTeam}
                 setProject={setReleaseProject}
                 setName={setReleaseName}
                 setDescription={setReleaseDescription}
-                setAritfacts={setReleaseArtifacts}
+                setFiles={setReleaseFiles}
                 setRenderTeam={setRenderTeam}
                 setRenderProject={setRenderProject}
                 submit={() => {createRelease()}}
                 setView={setView} 
+              />
+            </div>
+          </Accordion>}
+
+          {renderLicense && <Accordion view={view} name={'license'} setView={setView} title={<div><span className='mr-4'></span>Create a License</div>}>
+            <div className="p-4">
+              <CreateLicenseForm
+                teamNames={userTeamNames}
+                projectNames={teamProjectNames}
+                licenseTeam={licenseTeam}
+                licenseProject={licenseProject}
+                licenseName={licenseName}
+                setImage={setReleaseImage}
+                setTeam={setReleaseTeam}
+                setProject={setReleaseProject}
+                setName={setReleaseName}
+                setDescription={setReleaseDescription}
+                submit={() => {}}
+                setView={setView}
               />
             </div>
           </Accordion>}

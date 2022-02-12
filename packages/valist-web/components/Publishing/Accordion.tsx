@@ -46,7 +46,7 @@ export default function Accordion(props:AccordionProps) {
         style={{ maxHeight: `${height}` }}
         className="overflow-auto border transition-max-height duration-700 ease-in-out"
       >
-        <div className="pb-10">
+        <div className="pb-5">
           {props.children}
         </div>
       </div>

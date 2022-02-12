@@ -7,21 +7,25 @@ import ProjectContent from "./ProjectContent";
 interface ProjectPreviewProps {
   teamName: string,
   projectName: string,
-  projectImage: string,
+  projectImage: File | null,
   projectDescription: string,
   projectMembers: Member[],
 }
 
 export default function ProjectPreview(props: ProjectPreviewProps) {
-  const { publicRuntimeConfig } = config();
   const [ view, setView ] = useState<string>("Readme");
+
+  let imgUrl = "";
+  if (props.projectImage) {
+    imgUrl = URL.createObjectURL(props.projectImage);
+  }
 
   return (
     <div>
       <ProjectProfileCard 
         teamName={props.teamName} 
         projectName={props.projectName} 
-        projectImg={props.projectImage}
+        projectImg={imgUrl}
         tabs={['Readme', 'Members']}
         view={view}
         setView={setView} />

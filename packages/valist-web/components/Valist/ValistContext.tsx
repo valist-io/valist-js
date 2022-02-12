@@ -14,4 +14,4 @@ export default React.createContext<ValistCtxInterface>({
     createIPFS(),
   ),
   ipfsGateway: '',
-})
+});

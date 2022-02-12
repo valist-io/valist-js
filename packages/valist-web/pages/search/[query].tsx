@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import Layout from '../../components/Layouts/Main';
-import SearchCard from '../../components/Search/SearchCard';
+import ProjectListCard from '../../components/Projects/ProjectListCard';
 import { PROJECT_SEARCH_QUERY } from '../../utils/Apollo/queries';
 import { Project } from '../../utils/Apollo/types';
 
@@ -32,7 +32,7 @@ const SearchPage: NextPage = () => {
           {list.map((project: Project) => (
             <Link key={project.id} href={`/${project.team.name}/${project.name}`}>
               <a>
-                <SearchCard name={`${project.team.name}/${project.name}`} metaURI={project.metaURI}/>
+                <ProjectListCard teamName={project.team.name} projectName={project.name} metaURI={project.metaURI} />
               </a>
             </Link>
           ))}

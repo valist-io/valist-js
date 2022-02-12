@@ -8,13 +8,18 @@ type TeamMember = {
 
 interface TeamPreviewProps {
   teamName: string,
-  teamImage: string,
+  teamImage: File | null,
   teamDescription: string,
   teamMembers: TeamMember[],
 }
 
 export default function TeamPreview(props: TeamPreviewProps) {
   const [view, setView] = useState<string>("Projects");
+  
+  let imgUrl = "";
+  if (props.teamImage) {
+    imgUrl = URL.createObjectURL(props.teamImage);
+  }
   
   return (
     <div>
@@ -23,7 +28,7 @@ export default function TeamPreview(props: TeamPreviewProps) {
         tabs={['Projects', 'Members']} 
         setView={setView}
         teamName={props.teamName} 
-        teamImage={props.teamImage}
+        teamImage={imgUrl}
         meta={{
           image: "",
           name: "",
