@@ -1,5 +1,6 @@
 import { EVM } from './evm';
-import { BigNumber } from 'ethers';
+import { BigNumber, PopulatedTransaction } from 'ethers';
+import { TransactionReceipt } from '@ethersproject/abstract-provider';
 
 /**
  * Contract abstraction API.
@@ -243,6 +244,10 @@ interface ContractAPI {
 	 * @param releaseName Name of the release.
 	 */
 	getReleaseID(projectID: BigNumber, releaseName: string): Promise<BigNumber>;
+
+	sendTx(functionName: string, tx: PopulatedTransaction): Promise<string>;
+
+	waitTx(txHash: string): Promise<TransactionReceipt>;
 }
 
 export { ContractAPI, EVM };

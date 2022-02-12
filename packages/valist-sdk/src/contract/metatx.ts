@@ -164,7 +164,7 @@ const sendMetaTx = async (
     const forwarder = getBiconomyForwarderConfig(networkID);
     const forwarderContract = new ethers.Contract(forwarder.address, forwarder.abi, provider);
     const batchNonce = await forwarderContract.getNonce(account, 0);
-    const gasLimit = Number(await provider.estimateGas({...tx}));
+    const gasLimit = Number(await provider.estimateGas(tx));
   
     const request = buildForwardTxRequest({
       account,

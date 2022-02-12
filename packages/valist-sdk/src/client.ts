@@ -1,7 +1,5 @@
 
 import { providers } from 'ethers';
-// @ts-ignore
-import { Biconomy } from '@biconomy/mexa';
 import { TeamMeta, ProjectMeta, ReleaseMeta, Contract } from './index';
 import { StorageAPI } from './storage';
 import { ContractAPI } from './contract';
@@ -38,27 +36,31 @@ export class Client {
 		return await this.getReleaseMeta(teamName, projectName, releaseName);
 	}
 
-	async createTeam(teamName: string, team: TeamMeta, beneficiary: string, members: string[]): Promise<void> {
+	async createTeam(teamName: string, team: TeamMeta, beneficiary: string, members: string[]): Promise<string> {
 		const metaURI = await this.storage.writeTeamMeta(team);
-		await this.contract.createTeam(teamName, metaURI, beneficiary, members);
+		return this.contract.createTeam(teamName, metaURI, beneficiary, members);
 	}
 
-	async createProject(teamName: string, projectName: string, project: ProjectMeta, members: string[]): Promise<void> {
+	async createProject(teamName: string, projectName: string, project: ProjectMeta, members: string[]): Promise<string> {
 		const metaURI = await this.storage.writeProjectMeta(project);
-		await this.contract.createProject(teamName, projectName, metaURI, members);
+		return this.contract.createProject(teamName, projectName, metaURI, members);
 	}
 
-	async createRelease(teamName: string, projectName: string, releaseName: string, release: ReleaseMeta): Promise<void> {
+	async createRelease(teamName: string, projectName: string, releaseName: string, release: ReleaseMeta): Promise<string> {
 		const metaURI = await this.storage.writeReleaseMeta(release);
-		await this.contract.createRelease(teamName, projectName, releaseName, metaURI);
+		return this.contract.createRelease(teamName, projectName, releaseName, metaURI);
 	}
 
-	async setTeamBeneficiary(teamName: string, beneficiary: string): Promise<void> {
-		await this.contract.setTeamBeneficiary(teamName, beneficiary);
+	async setTeamBeneficiary(teamName: string, beneficiary: string): Promise<string> {
+		return this.contract.setTeamBeneficiary(teamName, beneficiary);
 	}
 
 	async getTeamBeneficiary(teamName: string): Promise<string> {
-		return await this.contract.getTeamBeneficiary(teamName);
+		return this.contract.getTeamBeneficiary(teamName);
+	}
+
+	async waitTx(txHash: string) {
+		return this.contract.waitTx(txHash);
 	}
 }
 
