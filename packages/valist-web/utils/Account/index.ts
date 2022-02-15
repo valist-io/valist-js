@@ -1,6 +1,5 @@
 import { ethers } from 'ethers';
 import { Magic } from 'magic-sdk';
-import { wrapMetaTxProvider } from '@valist/sdk';
 import { addressFromProvider, providers } from '../Providers';
 import { ProviderParams } from '../Providers/types';
 import { SetUseState, LoginType, ValistProvider } from './types';
@@ -44,12 +43,10 @@ export const login = async (
 
     if (loginType != 'readOnly') {
       account = await addressFromProvider(provider);
-      // const metaTxProvider = wrapMetaTxProvider(provider);
-      // setProvider(metaTxProvider);
-    // } else {
     }
+
     setProvider(provider);
-    // }
+
     window.localStorage.setItem('loginType', loginType);
     setAddress(account);
     setLoginType(loginType);

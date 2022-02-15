@@ -3,7 +3,7 @@ import type { AppProps } from 'next/app';
 import getConfig from 'next/config';
 import React, { useEffect, useState } from 'react';
 import { Client, Contract, Storage, deployedAddresses } from '@valist/sdk';
-import { ethers, Signer } from 'ethers';
+import { ethers } from 'ethers';
 import { ApolloProvider } from '@apollo/client';
 import { Magic } from 'magic-sdk';
 import { create as createIPFS } from "ipfs-http-client";
@@ -28,7 +28,8 @@ function ValistApp({ Component, pageProps }: AppProps) {
     new Client(
       new Contract.EVM(
         deployedAddresses[publicRuntimeConfig.CHAIN_ID], 
-        new ethers.VoidSigner(ethers.constants.AddressZero, provider),
+        provider,
+        publicRuntimeConfig.METATX_ENABLED,
       ),
       new Storage.IPFS(
         createIPFS(publicRuntimeConfig.IPFS_HOST)
@@ -83,7 +84,8 @@ function ValistApp({ Component, pageProps }: AppProps) {
       new Client(
         new Contract.EVM(
           deployedAddresses[publicRuntimeConfig.CHAIN_ID], 
-          provider.getSigner(),
+          provider,
+          publicRuntimeConfig.METATX_ENABLED,
         ),
         new Storage.IPFS(
           createIPFS(publicRuntimeConfig.IPFS_HOST)
@@ -93,6 +95,7 @@ function ValistApp({ Component, pageProps }: AppProps) {
   }, [provider]);
 
   useEffect(() => {
+    // @ts-ignore
     window.valist = valistClient;
   }, [valistClient]);
 
