@@ -36,7 +36,7 @@ export default function CreateLicenseForm(props: CreateLicenseFormProps) {
 
   return (
     <form className="grid grid-cols-1 gap-y-6 sm:gap-x-8" action="#" method="POST">
-      <ImageUpload setImage={props.setImage} text={'Set Release Image'} />
+      <ImageUpload setImage={props.setImage} text={'Set License Image'} />
       <div>
         <label htmlFor="projectType" className="block text-sm leading-5 font-medium
         text-gray-700">

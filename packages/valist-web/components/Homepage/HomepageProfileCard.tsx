@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { SetUseState } from "../../utils/Account/types";
 import { truncate } from "../../utils/Formatting/truncate";
 import EnsResolver from "../Ens";
@@ -16,8 +15,8 @@ export default function HomepageProfileCard(props:HomepageProfileCardProps) {
     <section aria-labelledby="profile-overview-title">
       <div className="rounded-lg bg-white overflow-hidden shadow">
         <div className="bg-white pt-6 px-6">
-          <div className="sm:flex sm:items-center sm:justify-between">
-            <div className="sm:flex sm:space-x-5">
+          <div className="sm:flex sm:items-center">
+            <div className="sm:flex sm:space-x-5 mr-10">
               <div className="flex-shrink-0">
                 <AddressIdenticon address={props.address} height={85} />
               </div>
@@ -33,22 +32,12 @@ export default function HomepageProfileCard(props:HomepageProfileCardProps) {
                 </p>
               </div>
             </div>
-
-            <div style={{marginTop: 30}} className="mr-10 flex content-end sm:mt-0">
-              <Link href="create?action=release">
-                <a className="flex justify-center items-center px-4 py-2 border
-                border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                  Publish Release
-                </a>
-              </Link>
-            </div>
-
           </div>
         </div>
         <Tabs 
           setView={props.setView}
           view={props.view}
-          tabs={['Projects']}
+          tabs={['Projects', 'Teams', 'Licenses', 'Activity']}
         />
       </div>
     </section>
