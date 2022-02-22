@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { useRouter } from 'next/router';
 import AccountContext from '../components/Accounts/AccountContext';
-import ActivityCard from '../components/Logs/ActivityCard';
+import LogCard from '../components/Logs/LogCard';
 import HomepageLinks from '../components/Homepage/HomepageLinks';
 import HomepageProfileCard from '../components/Homepage/HomepageProfileCard';
 import Layout from '../components/Layouts/Main';
@@ -61,7 +61,7 @@ const Dashboard: NextPage = () => {
             </div>
           </div>
           <HomepageLinks />
-          <ActivityCard logType={'sender'} address={accountCtx.address} />
+          <LogCard address={accountCtx.address} />
         </div>
       </div>}
     </Layout>

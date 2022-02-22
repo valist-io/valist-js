@@ -10,6 +10,8 @@ import { Project } from '../../utils/Apollo/types';
 import { TeamMeta } from '../../utils/Valist/types';
 import ValistContext from '../../components/Valist/ValistContext';
 import config from 'next/config';
+import LogCard from '../../components/Logs/LogCard';
+import LogTable from '../../components/Logs/LogTable';
 
 type TeamMember = {
   id: string
@@ -60,12 +62,15 @@ export default function TeamProfilePage() {
             projects={projects} 
             linksDisbaled={false}          
           />
+          {view === 'Projects' && <TeamProjectList projects={projects} linksDisbaled={false} />}
+          {view === 'Logs' && <LogTable team={teamName} project={''} address={''} />}
         </div>
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
           <TeamMemberList 
             teamMembers={members} 
             teamName={teamName}          
           />
+          <LogCard team={teamName} project={''} address={''} />
         </div>
       </div> 
     </Layout>

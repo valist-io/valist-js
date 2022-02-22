@@ -4,6 +4,7 @@ import RepoReadme from './ProjectReadme';
 import PublishReleaseSteps from '../Releases/PublishReleaseSteps';
 import { Member, Release } from '../../utils/Apollo/types';
 import { ReleaseMeta } from '../../utils/Valist/types';
+import LogTable from '../../components/Logs/LogTable';
 
 interface ReleaseListProps {
   teamName: string,
@@ -34,6 +35,8 @@ export default function RepoContent(props: ReleaseListProps): JSX.Element {
         />);
       case 'ReleaseSteps':
         return <PublishReleaseSteps />;
+      case 'Logs':
+        return <LogTable team={props.teamName} project={props.projectName} />
       default:
         return <RepoReadme repoReadme={props.releaseMeta.description} />;
     }

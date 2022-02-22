@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { TeamMeta } from '../../utils/Valist/types';
 import AddressIdenticon from '../Identicons/AddressIdenticon';
 import Tabs from '../Tabs';
