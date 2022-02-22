@@ -1,5 +1,5 @@
-import { EVM } from './evm';
-import { BigNumber, PopulatedTransaction } from 'ethers';
+import { EVM, EVM_Options } from './evm';
+import { BigNumberish, PopulatedTransaction } from 'ethers';
 import { TransactionReceipt } from '@ethersproject/abstract-provider';
 
 /**
@@ -151,18 +151,18 @@ interface ContractAPI {
 	 * Returns a paginated list of team names.
 	 * 
 	 * @param page Page to return items from.
-	 * @param size BigNumber of items to return.
+	 * @param size Number of items to return.
 	 */
-	getTeamNames(page: BigNumber, size: BigNumber): Promise<string[]>;
+	getTeamNames(page: BigNumberish, size: BigNumberish): Promise<string[]>;
 
 	/**
 	 * Returns a paginated list of project names.
 	 * 
 	 * @param teamName Name of the team.
 	 * @param page Page to return items from.
-	 * @param size BigNumber of items to return.
+	 * @param size Number of items to return.
 	 */
-	getProjectNames(teamName: string, page: BigNumber, size: BigNumber): Promise<string[]>;
+	getProjectNames(teamName: string, page: BigNumberish, size: BigNumberish): Promise<string[]>;
 
 	/**
 	 * Returns a paginated list of release names.
@@ -170,18 +170,18 @@ interface ContractAPI {
 	 * @param teamName Name of the team.
 	 * @param projectName Name of the project.
 	 * @param page Page to return items from.
-	 * @param size BigNumber of items to return.
+	 * @param size Number of items to return.
 	 */
-	getReleaseNames(teamName: string, projectName: string, page: BigNumber, size: BigNumber): Promise<string[]>;
+	getReleaseNames(teamName: string, projectName: string, page: BigNumberish, size: BigNumberish): Promise<string[]>;
 
 	/**
 	 * Returns a paginated list of team members.
 	 * 
 	 * @param teamName Name of the team.
 	 * @param page Page to return items from.
-	 * @param size BigNumber of items to return.
+	 * @param size Number of items to return.
 	 */
-	getTeamMembers(teamName: string, page: BigNumber, size: BigNumber): Promise<string[]>;
+	getTeamMembers(teamName: string, page: BigNumberish, size: BigNumberish): Promise<string[]>;
 
 	/**
 	 * Gets the team beneficiary.
@@ -196,9 +196,9 @@ interface ContractAPI {
 	 * @param teamName Name of the team.
 	 * @param projectName Name of the project.
 	 * @param page Page to return items from.
-	 * @param size BigNumber of items to return.
+	 * @param size Number of items to return.
 	 */
-	getProjectMembers(teamName: string, projectName: string, page: BigNumber, size: BigNumber): Promise<string[]>;
+	getProjectMembers(teamName: string, projectName: string, page: BigNumberish, size: BigNumberish): Promise<string[]>;
 
 	/**
 	 * Returns a paginated list of release approvers.
@@ -207,9 +207,9 @@ interface ContractAPI {
 	 * @param projectName Name of the project.
 	 * @param releaseName Name of the release.
 	 * @param page Page to return items from.
-	 * @param size BigNumber of items to return.
+	 * @param size Number of items to return.
 	 */
-	getReleaseApprovers(teamName: string, projectName: string, releaseName: string, page: BigNumber, size: BigNumber): Promise<string[]>;
+	getReleaseApprovers(teamName: string, projectName: string, releaseName: string, page: BigNumberish, size: BigNumberish): Promise<string[]>;
 
 	/**
 	 * Returns a paginated list of release rejectors.
@@ -218,16 +218,16 @@ interface ContractAPI {
 	 * @param projectName Name of the project.
 	 * @param releaseName Name of the release.
 	 * @param page Page to return items from.
-	 * @param size BigNumber of items to return.
+	 * @param size Number of items to return.
 	 */
-	getReleaseRejectors(teamName: string, projectName: string, releaseName: string, page: BigNumber, size: BigNumber): Promise<string[]>;
+	getReleaseRejectors(teamName: string, projectName: string, releaseName: string, page: BigNumberish, size: BigNumberish): Promise<string[]>;
 
 	/**
 	 * Generates teamID from teamName.
 	 *
 	 * @param teamName Name of the team.
 	 */
-	getTeamID(teamName: string): Promise<BigNumber>;
+	getTeamID(teamName: string): Promise<BigNumberish>;
 
 	/**
 	 * Generates projectID from teamID and projectName.
@@ -235,7 +235,7 @@ interface ContractAPI {
 	 * @param teamID Unique team ID.
 	 * @param projectName Name of the project.
 	 */
-	getProjectID(teamID: BigNumber, projectName: string): Promise<BigNumber>;
+	getProjectID(teamID: BigNumberish, projectName: string): Promise<BigNumberish>;
 
 	/**
 	 * Generates releaseID from projectID and releaseName.
@@ -243,11 +243,56 @@ interface ContractAPI {
 	 * @param projectID Unique project ID.
 	 * @param releaseName Name of the release.
 	 */
-	getReleaseID(projectID: BigNumber, releaseName: string): Promise<BigNumber>;
+	getReleaseID(projectID: BigNumberish, releaseName: string): Promise<BigNumberish>;
 
-	sendTx(functionName: string, tx: PopulatedTransaction): Promise<string>;
+	/** 
+     * Creates a new License and establishes the mint price.
+     *
+     * @param teamName Name of the team.
+     * @param projectName Name of the project.
+     * @param licenseName Unique name used to identify the license.
+     * @param metaURI metaURI of the license.
+     * @param mintPrice mint price of the license in wei.
+     */
+	createLicense(teamName: string, projectName: string, licenseName: string, metaURI: string, mintPrice: BigNumberish): Promise<string>;
 
-	waitTx(txHash: string): Promise<TransactionReceipt>;
+	/**
+	 * Mints a new license to a recipient.
+     *
+     * @param teamName Name of the team.
+     * @param projectName Name of the project.
+     * @param licenseName Unique name used to identify the license.
+     * @param recipient mint price of the license in wei.
+	 */
+	mintLicense(teamName: string, projectName: string, licenseName: string, recipient: string): Promise<string>;
+
+	/**
+	 * Fetches metaURI of the Software License the software is linked to.
+     *
+     * @param teamName Name of the team.
+     * @param projectName Name of the project.
+     * @param licenseName Unique name used to identify the license.
+     */
+	getLicenseMetaURI(teamName: string, projectName: string, licenseName: string): Promise<string>;
+
+	/**
+	 * Generates a licenseID given a projectID and licenseName.
+     * Salts the ID with the token symbol to prevent collisions with releaseIDs.
+     *
+     * @param projectID Unique ID of the project.
+     * @param licenseName Unique name of the license.
+     */
+	getLicenseID(projectID: BigNumberish, licenseName: string): Promise<BigNumberish>;
+
+	/**
+	 * Fetches licenseIDs within a project.
+     *
+	 * @param teamName Name of the team.
+     * @param projectName Name of the project.
+     * @param page Page to return items from.
+     * @param size Number of items to return.
+     */
+	getProjectLicenses(teamName: string, projectName: string, page: BigNumberish, size: BigNumberish): Promise<BigNumberish[]>;
 }
 
-export { ContractAPI, EVM };
+export { ContractAPI, EVM, EVM_Options };

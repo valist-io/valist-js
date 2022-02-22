@@ -49,6 +49,17 @@ export class ArtifactMeta {
 	public provider?: string;
 }
 
+export class LicenseMeta {
+	/** license image */
+	public image?: string;
+	/** license friendly name */
+	public name?: string;
+	/** short description of the license. */
+	public description?: string;
+	/** link to the license website. */
+	public external_url?: string;
+}
+
 /**
  * Replacer is used to correctly serialize fields to JSON.
  */

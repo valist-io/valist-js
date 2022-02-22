@@ -124,7 +124,7 @@ contract SoftwareLicense is IERC1155MetadataURI, ERC1155, ERC2771Context {
     /// @param _teamName Name of the team.
     /// @param _projectName Name of the project.
     /// @param _licenseName Unique name used to identify the license.
-    /// @param _recipient mint price of the license in wei.
+    /// @param _recipient Address of the license recipient.
     function mintLicense(
         string memory _teamName,
         string memory _projectName,
