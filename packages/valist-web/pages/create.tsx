@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/client';
+import { useLazyQuery, useQuery } from '@apollo/client';
 import type { NextPage } from 'next';
 import getConfig from 'next/config';
 import { useRouter } from 'next/router';
@@ -42,9 +42,7 @@ const CreateTeamPage: NextPage = () => {
   const [renderProject, setRenderProject] = useState<boolean>(false);
   const [renderRelease, setRenderRelease] = useState<boolean>(false);
   const [renderLicense, setRenderLicense] = useState<boolean>(false);
-  const { data, loading, error } = useQuery(USER_TEAMS, {
-    variables: { address: accountCtx.address.toLowerCase() },
-  });
+  const [ getData, { data, loading, error }] = useLazyQuery(USER_TEAMS);
   const [userTeams, setUserTeams] = useState<any>({});
   const [userTeamNames, setUserTeamNames] = useState<any>([]);
   const [teamProjectNames, setTeamProjectNames] = useState<any>([]);
@@ -92,8 +90,17 @@ const CreateTeamPage: NextPage = () => {
     setView(action as string);
   }, [action]);
 
+  useEffect(() => {
+    (async () => {
+      await getData( {
+        variables: { address: accountCtx.address.toLowerCase() },
+      });
+    })();
+  }, [accountCtx.address]);
+
   // Set page state for user's teams and projects
   useEffect(() => {
+    console.log('data', data);
     if (data && data?.users && data?.users[0] && data?.users[0].teams) {
       const rawTeams = data.users[0].teams;
       const teamNames = [];
@@ -180,14 +187,19 @@ const CreateTeamPage: NextPage = () => {
     console.log("Team Members", teamMembers);
     console.log("Meta", meta);
 
-    accountCtx.notify('transaction');
+    try { 
+      accountCtx.notify('transaction');
+      await valistCtx.valist.createTeam(
+        teamName,
+        meta,
+        teamBeneficiary, 
+        teamMembers,
+      );
+    } catch(err) {
+      accountCtx.notify('error');
+    }
 
-    await valistCtx.valist.createTeam(
-      teamName,
-      meta,
-      teamBeneficiary, 
-      teamMembers,
-    );
+    router.push('/create?action=project');
   }
 
   const createProject = async () => {
@@ -257,6 +269,10 @@ const CreateTeamPage: NextPage = () => {
       releaseName,
       meta
     );
+  }
+
+  const createLicense = async () => {
+    console.log('Creating License!');
   }
 
   // Render preview based on view state
@@ -372,12 +388,12 @@ const CreateTeamPage: NextPage = () => {
                 licenseTeam={licenseTeam}
                 licenseProject={licenseProject}
                 licenseName={licenseName}
-                setImage={setReleaseImage}
-                setTeam={setReleaseTeam}
-                setProject={setReleaseProject}
-                setName={setReleaseName}
-                setDescription={setReleaseDescription}
-                submit={() => {}}
+                setImage={setLicenseImage}
+                setTeam={setLicenseTeam}
+                setProject={setLicenseProject}
+                setName={setLicenseName}
+                setDescription={setLicenseDescription}
+                submit={createLicense}
                 setView={setView}
               />
             </div>

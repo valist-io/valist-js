@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { TeamMeta } from '../../utils/Valist/types';
 import AddressIdenticon from '../Identicons/AddressIdenticon';
 import Tabs from '../Tabs';
@@ -33,7 +34,7 @@ export default function TeamProfileCard(props: TeamProfileCardProps): JSX.Elemen
               <p>
                 {props.meta.description}
               </p>
-            </div>
+            </div> 
           </div>
         </div>
         <Tabs 

@@ -44,10 +44,20 @@ function ValistApp({ Component, pageProps }: AppProps) {
   const notify = (type: string) => {
     switch (type) {
       case 'transaction':
-        toast('An error has occurred.');
+        toast('Transaction pending.', {
+          style: {
+            backgroundColor: '#61ff69',
+          },
+          position: 'top-right'
+        });
         break;
       case 'error':
-        toast('An error has occurred.');
+        toast('An error has occurred.', {
+          style: {
+            backgroundColor: '#ff6961',
+          },
+          position: 'top-right'
+        });
         break;
     }
   }

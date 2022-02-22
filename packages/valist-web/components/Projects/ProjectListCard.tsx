@@ -3,6 +3,7 @@ import { parseCID } from '../../utils/Ipfs';
 import { ProjectMeta } from '../../utils/Valist/types';
 import AddressIdenticon from '../Identicons/AddressIdenticon';
 import ValistContext from '../Valist/ValistContext';
+import removeMd from 'remove-markdown';
 
 type ProjectCardProps = {
   teamName: string,
@@ -58,8 +59,8 @@ export default function ProjectListCard({ teamName, projectName, metaURI }: Proj
       </div>
      
       <div>
-        <p>
-          {meta.description}
+        <p style={{maxHeight: 48, overflow: 'hidden'}}>
+          {removeMd(meta.description || '')}
         </p>
       </div>
     </div>

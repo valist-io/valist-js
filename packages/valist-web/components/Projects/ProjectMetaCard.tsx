@@ -38,7 +38,7 @@ const ProjectMetaCard = (props: RepoMetaCardProps) => {
       />
       {projectMeta.external_url
         && <div className="pb-4">
-          <h1 className="text-xl text-gray-900  mb-1">Repository</h1>
+          <h1 className="text-xl text-gray-900  mb-1">Website</h1>
           <a className="text-gray-600 hover:text-indigo-500" href={projectMeta.external_url}>
             {projectMeta.external_url}
           </a>

@@ -123,7 +123,7 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
 
       <div>
         <label htmlFor="members" className="block text-sm font-medium text-gray-700">
-          Members <span className="float-right"><Tooltip text='A list of team members seperated by new line.' /></span>
+          Members <span className="float-right"><Tooltip text='A list of team members seperated by new-line.' /></span>
         </label>
         <div className="mt-1">
           <textarea

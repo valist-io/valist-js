@@ -43,7 +43,7 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
       <ImageUpload setImage={props.setImage} text={"Set Project Image"} />
       <div>
           <label htmlFor="projectType" className="block text-sm leading-5 font-medium text-gray-700">
-            Team <span className="float-right"><Tooltip text='The team where this project will be published.' /></span>
+            Account or Team <span className="float-right"><Tooltip text='The team where this project will be published.' /></span>
           </label>
           <select onChange={(e) => {handleTeamChange(e.target.value)}}
           id="projectType" className="mt-1 form-select block w-full pl-3 pr-10 py-2
