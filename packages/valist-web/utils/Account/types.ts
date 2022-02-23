@@ -1,6 +1,4 @@
 import React from 'react';
-import WalletConnectProvider from '@walletconnect/web3-provider';
-import { MetaMaskInpageProvider } from "@metamask/providers";
 import { ethers } from 'ethers';
 import { Magic } from 'magic-sdk';
 import { Client } from '@valist/sdk';
