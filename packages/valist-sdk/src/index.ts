@@ -2,7 +2,6 @@ import { Client, createClient } from './client';
 import * as Storage from './storage';
 import { createIPFS } from './storage/ipfs';
 import * as Contract from './contract/';
-import { deployedAddresses, deployedLicenseAddresses } from './contract/evm';
 import { ValistABIs } from './abis';
 
 export class TeamMeta {
@@ -85,8 +84,6 @@ export {
 	Storage,
 	Contract,
 	ValistABIs,
-	deployedAddresses,
-	deployedLicenseAddresses,
 	createClient,
 	createIPFS,
 };

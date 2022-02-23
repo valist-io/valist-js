@@ -10,9 +10,15 @@ import * as license_contract from './artifacts/ERC-1155/SoftwareLicense.sol/Soft
 export type EVM_Provider = Web3Provider | JsonRpcProvider;
 
 export class EVM_Options {
-	public valistAddress: string = '';
-	public licenseAddress: string = '';
-	public metaTx: boolean = true;
+	public valistAddress: string;
+	public licenseAddress: string;
+	public metaTx: boolean;
+
+	constructor(chainID: number = 1337, metaTx: boolean = true) {
+		this.valistAddress = valistAddresses[chainID] || valistAddresses[80001];
+		this.licenseAddress = licenseAddresses[chainID] || licenseAddresses[80001];
+		this.metaTx = metaTx;
+	}
 }
 
 export class EVM implements ContractAPI {
@@ -191,7 +197,7 @@ export class EVM implements ContractAPI {
 	}
 }
 
-export const deployedAddresses: {[chainID: number]: string} = {
+export const valistAddresses: {[chainID: number]: string} = {
 	// Deterministic Ganache
 	1337: '0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab',
 	// Mumbai testnet
@@ -200,9 +206,9 @@ export const deployedAddresses: {[chainID: number]: string} = {
 	// 137: '',
 };
 
-export const deployedLicenseAddresses: {[chainID: number]: string} = {
+export const licenseAddresses: {[chainID: number]: string} = {
 	// Deterministic Ganache
-	1337: '',
+	1337: '0x5b1869D9A4C187F2EAa108f3062412ecf0526b24',
 	// Mumbai testnet
 	80001: '0x911B399C56C735c6f462022546C505dB8D8910E5',
 	// Polygon mainnet

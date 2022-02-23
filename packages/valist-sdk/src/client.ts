@@ -4,7 +4,7 @@ import { TeamMeta, ProjectMeta, ReleaseMeta, LicenseMeta, Contract } from './ind
 import { StorageAPI } from './storage';
 import { ContractAPI } from './contract';
 
-import { deployedAddresses } from './contract/evm';
+import { valistAddresses, licenseAddresses } from './contract/evm';
 import { createIPFS } from './storage/ipfs';
 
 export class Client {
@@ -72,13 +72,7 @@ export class Client {
 
 export const createClient = async ({ web3Provider }: { web3Provider: providers.Web3Provider }): Promise<Client> => {
 	const chainID = await web3Provider.getSigner().getChainId();
-	const deployedAddress = deployedAddresses[chainID] || deployedAddresses[80001];
-
-	const options: Contract.EVM_Options = {
-		valistAddress: deployedAddress,
-		licenseAddress: 'TODO',
-		metaTx: true,
-	};
+	const options = new Contract.EVM_Options(chainID, true);
 
 	const storage = createIPFS();
 	const contract = new Contract.EVM(options, web3Provider);
