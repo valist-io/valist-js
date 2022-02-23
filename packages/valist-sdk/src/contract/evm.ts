@@ -181,16 +181,11 @@ export class EVM implements ContractAPI {
 	}
 
 	async getLicenseMetaURI(teamName: string, projectName: string, licenseName: string): Promise<string> {
-		const teamID = await this.getTeamID(teamName);
-		const projectID = await this.getProjectID(teamID, projectName);
-		const licenseID = this.getLicenseID(projectID, licenseName);
-		return await this.license.metaByID(licenseID);
+		return await this.license.getLicenseMetaURI(teamName, projectName, licenseName);
 	}
 
-	async getProjectLicenses(teamName: string, projectName: string, page: BigNumberish, size: BigNumberish): Promise<BigNumberish[]> {
-		const teamID = await this.getTeamID(teamName);
-		const projectID = await this.getProjectID(teamID, projectName);
-		return await this.license.getLicensesByProjectID(projectID, page, size);
+	async getLicenseNames(teamName: string, projectName: string, page: BigNumberish, size: BigNumberish): Promise<string[]> {
+		return await this.license.getNamesByProjectID(teamName, projectName, page, size);
 	}
 
 	async getLicenseID(projectID: BigNumberish, licenseName: string): Promise<BigNumberish> {

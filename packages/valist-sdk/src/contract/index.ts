@@ -292,14 +292,14 @@ interface ContractAPI {
 	getLicenseID(projectID: BigNumberish, licenseName: string): Promise<BigNumberish>;
 
 	/**
-	 * Fetches licenseIDs within a project.
+	 * Fetches license names within a project.
      *
 	 * @param teamName Name of the team.
      * @param projectName Name of the project.
      * @param page Page to return items from.
      * @param size Number of items to return.
      */
-	getProjectLicenses(teamName: string, projectName: string, page: BigNumberish, size: BigNumberish): Promise<BigNumberish[]>;
+	getLicenseNames(teamName: string, projectName: string, page: BigNumberish, size: BigNumberish): Promise<string[]>;
 }
 
 export { ContractAPI, TransactionAPI, EVM, EVM_Options, valistAddresses, licenseAddresses };

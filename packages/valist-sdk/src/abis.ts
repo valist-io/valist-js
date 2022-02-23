@@ -1,7 +1,7 @@
-import IValistABI from './contract/abis/IValist.json';
-import ValistABI from './contract/abis/Valist.json';
+import * as valist_contract from './contract/artifacts/Valist.sol/Valist.json';
+import * as license_contract from './contract/artifacts/ERC-1155/SoftwareLicense.sol/SoftwareLicense.json';
 
 export const ValistABIs = {
-    IValistABI,
-    ValistABI
+    valistABI: valist_contract.abi,
+    licenseABI: license_contract.abi,
 };
