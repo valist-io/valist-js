@@ -49,12 +49,6 @@ const ProjectMetaCard = (props: RepoMetaCardProps) => {
           <h1 className="text-xl text-gray-900 mb-1">Downloads</h1>
           <div className="text-gray-600">{downloads}</div>
         </div>
-
-        {props.version &&
-          <div className="pb-4">
-            <h1 className="text-xl text-gray-900 mb-1">Version</h1>
-            <div className="text-gray-600">{props.version}</div>
-          </div>}
           
         <div className="pb-4">
           <h1 className="text-xl text-gray-900 mb-1">Total Files</h1>
@@ -62,6 +56,12 @@ const ProjectMetaCard = (props: RepoMetaCardProps) => {
             {releaseMeta.artifacts?.size || 0}
           </div>
         </div>
+
+        {props.version &&
+          <div className="pb-4">
+            <h1 className="text-xl text-gray-900 mb-1">Version</h1>
+            <div className="text-gray-600">{props.version}</div>
+          </div>}
       </div>
     </div>
   );

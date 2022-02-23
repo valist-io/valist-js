@@ -39,7 +39,7 @@ export default function ProjectListCard({ teamName, projectName, metaURI }: Proj
         <div className="flex-shrink-0 mr-5">
           {meta.image ?
             <img height={50} width={50} className='rounded-full'
-            src={`${valistCtx.ipfsGateway}/ipfs/${parseCID(meta.image)}`} alt="" />      
+            src={meta.image} alt="" />      
             :
             <AddressIdenticon address={name} height={50} />
           }
