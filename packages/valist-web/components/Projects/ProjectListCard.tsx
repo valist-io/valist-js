@@ -59,7 +59,7 @@ export default function ProjectListCard({ teamName, projectName, metaURI }: Proj
       </div>
      
       <div>
-        <p style={{maxHeight: 48, overflow: 'hidden'}}>
+        <p style={{height: 48, maxHeight: 48, overflow: 'hidden'}}>
           {removeMd(meta.description || '')}
         </p>
       </div>

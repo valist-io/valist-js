@@ -106,9 +106,7 @@ export default function ProjectPage():JSX.Element {
             tabs={['Readme', 'Versions', 'Activity', 'Members']}
             teamName={teamName}
             projectName={projectName} 
-            projectImg={
-              releaseMeta.image ? `${publicRuntimeConfig.IPFS_GATEWAY}/ipfs/${parseCID(releaseMeta.image)}` : ''
-            }
+            projectImg={projectMeta.image ? projectMeta.image : '' }
           />
           <ProjectContent
             projectName={projectName}

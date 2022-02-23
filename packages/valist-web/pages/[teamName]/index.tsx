@@ -46,6 +46,8 @@ export default function TeamProfilePage() {
     }
   }, [data, loading, error, setMeta]);
 
+  console.log('meta', meta)
+
   return (
     <Layout title='Valist | Team'>
       <div className="grid grid-cols-1 gap-4 items-start lg:grid-cols-6 lg:gap-8">
@@ -54,7 +56,7 @@ export default function TeamProfilePage() {
             view={view}
             setView={setView}
             teamName={teamName}
-            teamImage={meta.image ? `${meta.image}` : ''}
+            teamImage={meta.image ? meta.image : ''}
             meta={meta}
             tabs={['Projects', 'Activity']}          
           />

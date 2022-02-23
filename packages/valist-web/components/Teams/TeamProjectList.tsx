@@ -13,7 +13,7 @@ export default function ProjectList(props: TeamProjectListProps) {
     <div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
           {props.projects.map((project) => (
-            <Fragment>
+            <Fragment key={project.name}>
               {props.linksDisbaled ? 
                 <ProjectCard teamName={project.team.name} projectName={project.name} metaURI={project.metaURI} />
               :
