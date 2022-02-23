@@ -28,13 +28,13 @@ export default function ProjectPage():JSX.Element {
   const [projectMeta, setProjectMeta] = useState<ProjectMeta>({
     image: '',
     name: 'loading',
-    description: 'loading',
+    description: '# Not Found',
     external_url: '',
   });
   const [members, setMembers] = useState<Member[]>([]);
   const [releases, setReleases] = useState<Release[]>([]);
   const [releaseMeta, setReleaseMeta] = useState<ReleaseMeta>({
-    image: '/ipfs/QmfPeC65TKPbA3dxE314Boh82LX5NpkcrPXonCxUuKh6vr',
+    image: '',
     name: 'loading',
     description: '# Readme Not Found',
     external_url: '',
@@ -84,7 +84,9 @@ export default function ProjectPage():JSX.Element {
 
   useEffect(() => {
     getProjectID();
+  }, [valistCtx, teamName]);
 
+  useEffect(() => {
     if (data?.projects[0]) {
       setMembers(data?.projects[0]?.members);
       setReleases(data?.projects[0]?.releases);
@@ -92,8 +94,7 @@ export default function ProjectPage():JSX.Element {
       fetchReleaseMeta(data?.projects[0]?.releases[0]);
       fetchProjectMeta(data?.projects[0]?.metaURI);
     }
-    
-  }, [data, teamName, valistCtx]);
+  }, [data]);
 
   return (
     <Layout title="Valist | Project">
@@ -102,16 +103,17 @@ export default function ProjectPage():JSX.Element {
           <ProjectProfileCard
             view={view}
             setView={setView}
-            tabs={['Readme', 'Versions', 'Members']}
+            tabs={['Readme', 'Versions', 'Activity', 'Members']}
             teamName={teamName}
             projectName={projectName} 
             projectImg={
-              releaseMeta.image ? `${publicRuntimeConfig.IPFS_GATEWAY}/ipfs/${parseCID(releaseMeta.image)}` : '/ipfs/QmfPeC65TKPbA3dxE314Boh82LX5NpkcrPXonCxUuKh6vr'
+              releaseMeta.image ? `${publicRuntimeConfig.IPFS_GATEWAY}/ipfs/${parseCID(releaseMeta.image)}` : ''
             }
           />
           <ProjectContent
             projectName={projectName}
             projectReleases={releases}
+            projectMeta={projectMeta}
             releaseMeta={releaseMeta}
             view={view}
             teamName={teamName}

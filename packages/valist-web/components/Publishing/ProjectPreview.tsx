@@ -20,6 +20,11 @@ export default function ProjectPreview(props: ProjectPreviewProps) {
     imgUrl = URL.createObjectURL(props.projectImage);
   }
 
+  let { projectDescription } = props;
+  if (projectDescription === '') {
+    projectDescription = '# Readme Not Found';
+  }
+
   return (
     <div>
       <ProjectProfileCard 
@@ -33,7 +38,7 @@ export default function ProjectPreview(props: ProjectPreviewProps) {
        <ProjectContent 
         view={view} 
         teamName={props.teamName} 
-        description={props.projectDescription}
+        description={projectDescription}
         members={props.projectMembers} />
       </div>
     </div>
