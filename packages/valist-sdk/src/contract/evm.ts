@@ -199,3 +199,12 @@ export const deployedAddresses: {[chainID: number]: string} = {
 	// Polygon mainnet
 	// 137: '',
 };
+
+export const deployedLicenseAddresses: {[chainID: number]: string} = {
+	// Deterministic Ganache
+	1337: '',
+	// Mumbai testnet
+	80001: '0x911B399C56C735c6f462022546C505dB8D8910E5',
+	// Polygon mainnet
+	// 137: '',
+}
