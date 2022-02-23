@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import Layout from "../../../components/Layouts/Main";
 import { NextPage } from "next";
 import AddressProfileCard from "../../../components/Address/AddressProfileCard";
-import ActivityCard from "../../../components/Logs/ActivityCard";
+import LogCard from '../../../components/Logs/LogCard';
 import ProjectList from "../../../components/Projects/ProjectList";
 import { useQuery } from "@apollo/client";
 import { USER_PROJECTS } from "../../../utils/Apollo/queries";
@@ -37,7 +37,7 @@ const AddressPage: NextPage = () => {
         {/* Right column */}
         <div className="grid grid-cols-1 gap-4">
           {/* Recent Activity */}
-          <ActivityCard logType="sender" address={address} />
+          <LogCard address={address}/>
         </div>
       </div>
     </Layout>

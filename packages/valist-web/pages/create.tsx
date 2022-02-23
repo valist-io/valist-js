@@ -1,4 +1,4 @@
-import { useLazyQuery, useQuery } from '@apollo/client';
+import { useLazyQuery } from '@apollo/client';
 import type { NextPage } from 'next';
 import getConfig from 'next/config';
 import { useRouter } from 'next/router';
@@ -16,19 +16,20 @@ import ValistContext from '../components/Valist/ValistContext';
 import { USER_TEAMS } from '../utils/Apollo/queries';
 import CreateLicenseForm from '../components/Publishing/CreateLicenseForm';
 import LicensePreview from '../components/Publishing/LicensePreview';
+import { Client, Contract, Storage, TeamMeta, ProjectMeta, ReleaseMeta, ArtifactMeta } from '@valist/sdk';
 
 type Member = {
-  id: string
+  id: string,
 }
 
-const CreateTeamPage: NextPage = () => {
+const CreatePage: NextPage = () => {
   const accountCtx = useContext(AccountContext);
   const valistCtx = useContext(ValistContext);
   const router = useRouter();
   const { publicRuntimeConfig } = getConfig();
 
   // Get sepcific action/task from query params
-  let { action } = router.query
+  let { action } = router.query;
   if (Array.isArray(action)) {
     action = action.join('');
   }
@@ -46,6 +47,7 @@ const CreateTeamPage: NextPage = () => {
   const [userTeams, setUserTeams] = useState<any>({});
   const [userTeamNames, setUserTeamNames] = useState<any>([]);
   const [teamProjectNames, setTeamProjectNames] = useState<any>([]);
+  const [teamsCreated, setTeamsCreated] = useState<number>(0);
 
   // Team State
   const [teamImage, setTeamImage] = useState<File | null>(null);
@@ -73,6 +75,7 @@ const CreateTeamPage: NextPage = () => {
   const [releaseDescription, setReleaseDescription] = useState<string>('');
   const [releaseWebsite, setReleaseWebsite] = useState<string>('');
   const [releaseFiles, setReleaseFiles] = useState<any>({});
+  const [releaseArchs, setReleaseArchs] = useState<string[]>([]);
 
   // License State
   const [licenseImage, setLicenseImage] = useState<File | null>(null);
@@ -96,11 +99,10 @@ const CreateTeamPage: NextPage = () => {
         variables: { address: accountCtx.address.toLowerCase() },
       });
     })();
-  }, [accountCtx.address]);
+  }, [accountCtx.address, teamsCreated]);
 
   // Set page state for user's teams and projects
   useEffect(() => {
-    console.log('data', data);
     if (data && data?.users && data?.users[0] && data?.users[0].teams) {
       const rawTeams = data.users[0].teams;
       const teamNames = [];
@@ -146,7 +148,7 @@ const CreateTeamPage: NextPage = () => {
 
   // Normalize teamMember data for TeamPreview component
   useEffect(() => {
-    const members:Member[] = []
+    const members:Member[] = [];
     for (const teamMember of teamMembers) {
       members.push({
         id: teamMember,
@@ -195,11 +197,12 @@ const CreateTeamPage: NextPage = () => {
         teamBeneficiary, 
         teamMembers,
       );
+
+      setUserTeamNames([...userTeamNames, teamName]);
+      router.push('/create?action=project');
     } catch(err) {
       accountCtx.notify('error');
     }
-
-    router.push('/create?action=project');
   }
 
   const createProject = async () => {
@@ -222,53 +225,65 @@ const CreateTeamPage: NextPage = () => {
      console.log("Project Members", projectMembers);
      console.log("Meta", meta);
 
-    await valistCtx.valist.createProject(
-      projectTeam,
-      projectName,
-      meta,
-      projectMembers,
-    );
+     try { 
+      accountCtx.notify('transaction');
+      await valistCtx.valist.createProject(
+        projectTeam,
+        projectName,
+        meta,
+        projectMembers,
+      );
+
+      router.push('/');
+    } catch(err) {
+      accountCtx.notify('error');
+    }
   }
 
   const createRelease = async () => {
     let imgURL = "";
-    let artifacts = new Map();
 
     if (releaseImage) {
       const imgCID = await valistCtx.valist.storage.write(releaseImage);
       imgURL = `${publicRuntimeConfig.IPFS_GATEWAY}${imgCID}`;
     }
 
-    if (releaseFiles) {
-      Object.keys(releaseFiles).map(async (key) => {
-        const current = releaseFiles[key];
-        const artifactCID = await valistCtx.valist.storage.write(current.file);
-        artifacts.set(releaseFiles[key].arch, {
-          architecture: releaseFiles[key].arch,
-          provider: artifactCID,
-        });
-      });
-    }
+    console.log('archs', releaseArchs);
+    const release = new ReleaseMeta();
+		release.image = imgURL;
+		release.name = releaseName;
+		release.description = releaseDescription;
+		release.external_url = releaseWebsite;
 
-    const meta = {
-      image: imgURL,
-      name: releaseName,
-      description: releaseDescription,
-      external_url: releaseWebsite,
-    };
+		release.artifacts = new Map<string, ArtifactMeta>();
+
+    if (releaseFiles) {
+      for (let i = 0; i < Object.keys(releaseFiles).length; i++) {
+        const artifactCID = await valistCtx.valist.storage.write(releaseFiles[i]);
+        const artifact = new ArtifactMeta();
+        artifact.provider = artifactCID;
+
+        release.artifacts.set(releaseArchs[i], artifact);
+      }
+    }
 
     console.log("Release Team", releaseTeam);
     console.log("Release Project", releaseProject);
     console.log("Release Name", releaseName);
-    console.log("Meta", meta);
-    console.log("Artifacts", artifacts);
+    console.log("Meta", release);
 
-    await valistCtx.valist.createRelease(
-      releaseTeam,
-      releaseProject,
-      releaseName,
-      meta
-    );
+    try {
+      accountCtx.notify('transaction');
+      await valistCtx.valist.createRelease(
+        releaseTeam,
+        releaseProject,
+        releaseName,
+        release,
+      );    
+      router.push('/');
+    } catch(err) {
+      accountCtx.notify('error');
+    }
   }
 
   const createLicense = async () => {
@@ -365,13 +380,15 @@ const CreateTeamPage: NextPage = () => {
                 releaseTeam={releaseTeam}
                 releaseProject={releaseProject}
                 releaseName={releaseName}
-                releaseFiles={releaseFiles}  
+                releaseFiles={releaseFiles}
+                archs={releaseArchs}
                 setImage={setReleaseImage}
                 setTeam={setReleaseTeam}
                 setProject={setReleaseProject}
                 setName={setReleaseName}
                 setDescription={setReleaseDescription}
                 setFiles={setReleaseFiles}
+                setArchs={setReleaseArchs}
                 setRenderTeam={setRenderTeam}
                 setRenderProject={setRenderProject}
                 submit={() => {createRelease()}}
@@ -409,4 +426,4 @@ const CreateTeamPage: NextPage = () => {
   );
 };
 
-export default CreateTeamPage;
+export default CreatePage;

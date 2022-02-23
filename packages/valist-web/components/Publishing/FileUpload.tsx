@@ -1,25 +1,35 @@
-import React, { useEffect } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { TrashIcon } from '@heroicons/react/solid';
+import React, { ChangeEvent, useEffect } from 'react';
+// import { useDropzone } from 'react-dropzone';
+// import { TrashIcon } from '@heroicons/react/solid';
 import { SetUseState } from '../../utils/Account/types';
 
 interface FileUploadProps {
-  files: any
-  setFiles: SetUseState<any>
+  files: FileList
+  archs: string[]
+  setFiles: SetUseState<FileList>
+  setArchs: SetUseState<string[]>
 }
 
 interface FileItemProps {
-  file: File
-  files: any
-  size?: string
-  setFiles: SetUseState<any>
+  file: File,
+  files: FileList
+  archs: string[]
+  number: string
+  setFiles: SetUseState<FileList>
+  setArchs: SetUseState<string[]>
 }
 
-function FileItem(props:FileItemProps){
+function FileItem(props:FileItemProps) {
   const updateFileArch = (e: any) => {
-    let files = Object.assign({}, props.files);
-    files[e.target.id].arch = e.target.value;
-    props.setFiles(files);
+    let archs = [...props.archs];
+    for (let i = 0; i < Object.keys(props.files).length; i++) {
+      console.log('value', e.target.id);
+      if (i.toString() === e.target.id) {
+        console.log('updating', e.target.id);
+        archs[i] = e.target.value;
+      }
+    }
+    props.setArchs(archs);
   }
 
   return (
@@ -33,10 +43,10 @@ function FileItem(props:FileItemProps){
         shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 
         focus:border-indigo-500 sm:text-sm rounded-l-lg"
         placeholder='os/arch'
-        id={props.file.path}
+        id={props.number}
       />
       <div className="flex border border-gray-300 p-2 rounded-r-lg w-full">
-        <div className='my-auto'>{props.file.path}</div>
+        <div className='my-auto'>{props.file.name}</div>
       </div>
       {/* <TrashIcon className="my-auto" height={25} name={props.file.path} onClick={(e) => removeFile(e)} /> */}
     </li>
@@ -44,43 +54,44 @@ function FileItem(props:FileItemProps){
 }
 
 export default function FileUpload(props: FileUploadProps) {
-  const {acceptedFiles, getRootProps, getInputProps} = useDropzone();
+  const handleImage = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target?.files) {
+      console.log('files', e.target.files);
+      props.setFiles(e.target.files);
+    };
+  };
 
-  useEffect(() => {
-    const files:any = {}
-
-    for (const file of acceptedFiles) {
-      const fileObject = {
-        file: file,
-        arch: "",
-      }
-      files[file.path] = fileObject;
+  const fileItems = () => {
+    const items = []
+    for (let i = 0; i < Object.keys(props.files).length; i++) {
+      items.push(
+        <FileItem 
+          key={i}
+          number={i.toString()} 
+          archs={props.archs}
+          file={props.files[i]} 
+          files={props.files} 
+          setArchs={props.setArchs} 
+          setFiles={props.setFiles} 
+        />
+      )
     }
 
-    props.setFiles(files);
-  }, [acceptedFiles]);
-
-  const renderFileList = () => {
-    const fileItems: JSX.Element[] = [];
-    Object.keys(props.files).map((key) => {
-      const current = props.files[key];
-      fileItems.push(
-        <FileItem key={current.file.path} file={current.file} setFiles={props.setFiles} files={props.files} />
-      );
-    });
-    return fileItems;
+    return items;
   }
 
   return (
     <section>
       <h4 className='mb-1 block text-sm font-medium text-gray-700'>Atifacts</h4>
-      <div style={{minHeight: "150px"}} {...getRootProps({className: 'dropzone border-4 border-dashed border-gray-200 p-4'})}>
-        <input {...getInputProps()} />
-        <p className='text-center align-middle'>Drag files here, or click to select files</p>
-      </div>
+      <label style={{minHeight: "150px"}} className='flex justify-center py-2 px-4 border border-transparent rounded-md 
+        shadow-sm text-sm font-medium focus:outline-none 
+        mt-4 mx-auto border-4 border-dashed border-gray-200 p-4'>
+        <input type='file' onChange={(e) => handleImage(e)} multiple="multiple" className="hidden" />
+        <p className='text-center text-gray-400 align-middle'>Click to select files</p>
+      </label>
       <aside className='mt-4'>
         <ul>
-          {renderFileList()}
+          {fileItems()}
         </ul>
       </aside>
     </section>

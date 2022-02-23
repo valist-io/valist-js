@@ -10,6 +10,7 @@ interface PublishReleaseFormProps {
   releaseProject: string,
   releaseName: string,
   releaseFiles: any,
+  archs: string[],
   setView: SetUseState<string>
   setRenderTeam: SetUseState<boolean>
   setRenderProject: SetUseState<boolean>
@@ -18,7 +19,8 @@ interface PublishReleaseFormProps {
   setProject: SetUseState<string>,
   setName: SetUseState<string>,
   setDescription: SetUseState<string>,
-  setFiles: SetUseState<any>,
+  setFiles: SetUseState<FileList>,
+  setArchs: SetUseState<string[]>,
   submit: () => void
 }
 
@@ -110,7 +112,9 @@ export default function PublishReleaseForm(props: PublishReleaseFormProps) {
 
       <FileUpload 
         files={props.releaseFiles}
+        archs={props.archs}
         setFiles={props.setFiles}
+        setArchs={props.setArchs}
       />
 
       <span className="w-full inline-flex rounded-md shadow-sm">
