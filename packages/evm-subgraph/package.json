@@ -4,7 +4,7 @@
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ valist-io/valist",
+    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ valist-io/valist-registry",
     "bootstrap": "graph codegen && graph build && npm run deploy:local",
     "deploy:local": "npm run create-local && npm run deploy-local",
     "create-local": "graph create --node http://localhost:8020/ valist-io/valist",
