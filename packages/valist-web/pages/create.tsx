@@ -16,7 +16,7 @@ import ValistContext from '../components/Valist/ValistContext';
 import { USER_TEAMS } from '../utils/Apollo/queries';
 import CreateLicenseForm from '../components/Publishing/CreateLicenseForm';
 import LicensePreview from '../components/Publishing/LicensePreview';
-import { Client, Contract, Storage, TeamMeta, ProjectMeta, ReleaseMeta, ArtifactMeta } from '@valist/sdk';
+import { ReleaseMeta, ArtifactMeta } from '@valist/sdk';
 
 type Member = {
   id: string,
@@ -190,16 +190,20 @@ const CreatePage: NextPage = () => {
     console.log("Meta", meta);
 
     try { 
-      accountCtx.notify('transaction');
-      await valistCtx.valist.createTeam(
-        teamName,
-        meta,
-        teamBeneficiary, 
-        teamMembers,
-      );
+      const toastID = accountCtx.notify('transaction');
+      await valistCtx.valist.waitTx(
+        await valistCtx.valist.createTeam(
+          teamName,
+          meta,
+          teamBeneficiary, 
+          teamMembers,
+        )
+      )
 
       setUserTeamNames([...userTeamNames, teamName]);
-      router.push('/create?action=project');
+      accountCtx.dismiss(toastID);
+      accountCtx.notify('success');
+      router.push('/');
     } catch(err) {
       accountCtx.notify('error');
     }
@@ -226,14 +230,17 @@ const CreatePage: NextPage = () => {
      console.log("Meta", meta);
 
      try { 
-      accountCtx.notify('transaction');
-      await valistCtx.valist.createProject(
-        projectTeam,
-        projectName,
-        meta,
-        projectMembers,
-      );
-
+      const toastID = accountCtx.notify('transaction');
+      await valistCtx.valist.waitTx(
+        await valistCtx.valist.createProject(
+          projectTeam,
+          projectName,
+          meta,
+          projectMembers,
+        )
+      )
+      accountCtx.dismiss(toastID);
+      accountCtx.notify('success');
       router.push('/');
     } catch(err) {
       accountCtx.notify('error');
@@ -248,7 +255,6 @@ const CreatePage: NextPage = () => {
       imgURL = `${publicRuntimeConfig.IPFS_GATEWAY}${imgCID}`;
     }
 
-    console.log('archs', releaseArchs);
     const release = new ReleaseMeta();
 		release.image = imgURL;
 		release.name = releaseName;
@@ -273,13 +279,17 @@ const CreatePage: NextPage = () => {
     console.log("Meta", release);
 
     try {
-      accountCtx.notify('transaction');
-      await valistCtx.valist.createRelease(
-        releaseTeam,
-        releaseProject,
-        releaseName,
-        release,
-      );    
+      const toastID = accountCtx.notify('transaction');
+      await valistCtx.valist.waitTx(
+        await valistCtx.valist.createRelease(
+          releaseTeam,
+          releaseProject,
+          releaseName,
+          release,
+        )
+      );
+      accountCtx.dismiss(toastID);
+      accountCtx.notify('success');
       router.push('/');
     } catch(err) {
       accountCtx.notify('error');
