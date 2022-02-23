@@ -189,8 +189,9 @@ const CreatePage: NextPage = () => {
     console.log("Team Members", teamMembers);
     console.log("Meta", meta);
 
+    let toastID = '';
     try { 
-      const toastID = accountCtx.notify('transaction');
+      toastID = accountCtx.notify('transaction');
       await valistCtx.valist.waitTx(
         await valistCtx.valist.createTeam(
           teamName,
@@ -205,6 +206,7 @@ const CreatePage: NextPage = () => {
       accountCtx.notify('success');
       router.push('/');
     } catch(err) {
+      accountCtx.dismiss(toastID);
       accountCtx.notify('error');
     }
   }
@@ -229,8 +231,9 @@ const CreatePage: NextPage = () => {
      console.log("Project Members", projectMembers);
      console.log("Meta", meta);
 
+     let toastID = '';
      try { 
-      const toastID = accountCtx.notify('transaction');
+      toastID = accountCtx.notify('transaction');
       await valistCtx.valist.waitTx(
         await valistCtx.valist.createProject(
           projectTeam,
@@ -243,6 +246,7 @@ const CreatePage: NextPage = () => {
       accountCtx.notify('success');
       router.push('/');
     } catch(err) {
+      accountCtx.dismiss(toastID);
       accountCtx.notify('error');
     }
   }
@@ -278,8 +282,9 @@ const CreatePage: NextPage = () => {
     console.log("Release Name", releaseName);
     console.log("Meta", release);
 
+    let toastID = '';
     try {
-      const toastID = accountCtx.notify('transaction');
+      toastID = accountCtx.notify('transaction');
       await valistCtx.valist.waitTx(
         await valistCtx.valist.createRelease(
           releaseTeam,
@@ -292,6 +297,7 @@ const CreatePage: NextPage = () => {
       accountCtx.notify('success');
       router.push('/');
     } catch(err) {
+      accountCtx.dismiss(toastID);
       accountCtx.notify('error');
     }
   }

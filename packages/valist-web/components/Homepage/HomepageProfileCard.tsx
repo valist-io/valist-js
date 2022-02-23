@@ -37,7 +37,7 @@ export default function HomepageProfileCard(props:HomepageProfileCardProps) {
         <Tabs 
           setView={props.setView}
           view={props.view}
-          tabs={['Projects', 'Licenses', 'Activity']}
+          tabs={['Projects', 'Activity']}
         />
       </div>
     </section>
