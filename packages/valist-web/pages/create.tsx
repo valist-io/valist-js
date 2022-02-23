@@ -146,6 +146,20 @@ const CreatePage: NextPage = () => {
     })();
   }, [releaseTeam]);
 
+    // If the selected licenseTeam changes set the projectNames under that team
+    useEffect(() => {
+      (async () => {
+        if (licenseTeam) {
+          const projectNames = [];
+          for (const name of userTeams[licenseTeam].projects) {
+            projectNames.push(name.name);
+          }
+          setTeamProjectNames(projectNames);
+          setLicenseProject(projectNames[0] || '');
+        }
+      })();
+    }, [licenseTeam]);
+
   // Normalize teamMember data for TeamPreview component
   useEffect(() => {
     const members:Member[] = [];
@@ -303,7 +317,44 @@ const CreatePage: NextPage = () => {
   }
 
   const createLicense = async () => {
-    console.log('Creating License!');
+    let imgURL = "";
+
+    if (licenseImage) {
+      const imgCID = await valistCtx.valist.storage.write(licenseImage);
+      imgURL = `${publicRuntimeConfig.IPFS_GATEWAY}${imgCID}`;
+    }
+
+    const meta = {
+      image: imgURL,
+      name: licenseName,
+      description: licenseDescription,
+      external_url: '',
+    };
+
+    console.log("License Team", licenseTeam);
+    console.log("License Project", licenseProject);
+    console.log("License Name", licenseName);
+    console.log("Meta", meta);
+
+    let toastID = '';
+    try {
+      toastID = accountCtx.notify('transaction');
+      await valistCtx.valist.waitTx(
+        await valistCtx.valist.createLicense(
+          licenseTeam,
+          licenseProject,
+          licenseName,
+          meta,
+        )
+      );
+      accountCtx.dismiss(toastID);
+      accountCtx.notify('success');
+      router.push('/');
+    } catch(err) {
+      console.warn(err);
+      accountCtx.dismiss(toastID);
+      accountCtx.notify('error');
+    }
   }
 
   // Render preview based on view state

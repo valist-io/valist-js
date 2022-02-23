@@ -17,7 +17,7 @@ interface LogTableProps {
 
 export default function LogTable(props: LogTableProps) {
   let query = RECENT_LOGS_QUERY;
-  let variables = { count: 100 };
+  let variables: any = { count: 100 };
 
   if (props.project && props.team) {
     query = PROJECT_LOGS_QUERY;

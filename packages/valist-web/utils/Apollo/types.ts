@@ -24,4 +24,5 @@ export type Log = {
   sender: string,
   team: string,
   type: string,
+  member: string,
 }

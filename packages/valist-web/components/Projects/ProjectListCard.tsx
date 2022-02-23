@@ -41,7 +41,7 @@ export default function ProjectListCard({ teamName, projectName, metaURI }: Proj
             <img height={50} width={50} className='rounded-full'
             src={meta.image} alt="" />      
             :
-            <AddressIdenticon address={name} height={50} />
+            <AddressIdenticon address={name} height={50} width={50} />
           }
         </div>
 
