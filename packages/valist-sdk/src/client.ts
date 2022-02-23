@@ -2,7 +2,7 @@
 import { providers, BigNumberish } from 'ethers';
 import { TeamMeta, ProjectMeta, ReleaseMeta, LicenseMeta, Contract } from './index';
 import { StorageAPI } from './storage';
-import { ContractAPI } from './contract';
+import { ContractAPI, TransactionAPI } from './contract';
 
 import { valistAddresses, licenseAddresses } from './contract/evm';
 import { createIPFS } from './storage/ipfs';
@@ -41,27 +41,27 @@ export class Client {
 		return await this.storage.readLicenseMeta(metaURI);
 	}
 
-	async createTeam(teamName: string, team: TeamMeta, beneficiary: string, members: string[]): Promise<string> {
+	async createTeam(teamName: string, team: TeamMeta, beneficiary: string, members: string[]): Promise<TransactionAPI> {
 		const metaURI = await this.storage.writeTeamMeta(team);
 		return this.contract.createTeam(teamName, metaURI, beneficiary, members);
 	}
 
-	async createProject(teamName: string, projectName: string, project: ProjectMeta, members: string[]): Promise<string> {
+	async createProject(teamName: string, projectName: string, project: ProjectMeta, members: string[]): Promise<TransactionAPI> {
 		const metaURI = await this.storage.writeProjectMeta(project);
 		return this.contract.createProject(teamName, projectName, metaURI, members);
 	}
 
-	async createRelease(teamName: string, projectName: string, releaseName: string, release: ReleaseMeta): Promise<string> {
+	async createRelease(teamName: string, projectName: string, releaseName: string, release: ReleaseMeta): Promise<TransactionAPI> {
 		const metaURI = await this.storage.writeReleaseMeta(release);
 		return this.contract.createRelease(teamName, projectName, releaseName, metaURI);
 	}
 
-	async createLicense(teamName: string, projectName: string, licenseName: string, license: LicenseMeta, mintPrice: BigNumberish): Promise<string> {
+	async createLicense(teamName: string, projectName: string, licenseName: string, license: LicenseMeta, mintPrice: BigNumberish): Promise<TransactionAPI> {
 		const metaURI = await this.storage.writeLicenseMeta(license);
 		return this.contract.createLicense(teamName, projectName, licenseName, metaURI, mintPrice);
 	}
 
-	async setTeamBeneficiary(teamName: string, beneficiary: string): Promise<string> {
+	async setTeamBeneficiary(teamName: string, beneficiary: string): Promise<TransactionAPI> {
 		return this.contract.setTeamBeneficiary(teamName, beneficiary);
 	}
 

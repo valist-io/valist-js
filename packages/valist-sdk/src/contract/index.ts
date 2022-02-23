@@ -2,6 +2,13 @@ import { EVM, EVM_Options, valistAddresses, licenseAddresses } from './evm';
 import { BigNumberish, PopulatedTransaction } from 'ethers';
 import { TransactionReceipt } from '@ethersproject/abstract-provider';
 
+interface TransactionAPI {
+	/**
+	 * Waits for a transaction to be confirmed.
+	 */
+	wait(): Promise<any>;
+}
+
 /**
  * Contract abstraction API.
  */
@@ -14,7 +21,7 @@ interface ContractAPI {
 	 * @param beneficiary Address to receive payments on behalf of the team.
 	 * @param members List of members to add to the team.
 	 */
-	createTeam(teamName: string, metaURI: string, beneficiary: string, members: string[]): Promise<string>;
+	createTeam(teamName: string, metaURI: string, beneficiary: string, members: string[]): Promise<TransactionAPI>;
 
 	/**
 	 * Creates a new project. Requires the sender to be a member of the team.
@@ -24,7 +31,7 @@ interface ContractAPI {
 	 * @param metaURI URI of the project metadata.
 	 * @param members Optional list of members to add to the project.
 	 */
-	createProject(teamName: string, projectName: string, metaURI: string, members: string[]): Promise<string>;
+	createProject(teamName: string, projectName: string, metaURI: string, members: string[]): Promise<TransactionAPI>;
 
 	/**
 	 * Creates a new release. Requires the sender to be a member of the project.
@@ -34,7 +41,7 @@ interface ContractAPI {
 	 * @param releaseName Unique name used to identify the release.
 	 * @param metaURI URI of the project metadata.
 	 */
-	createRelease(teamName: string, projectName: string, releaseName: string, metaURI: string): Promise<string>;
+	createRelease(teamName: string, projectName: string, releaseName: string, metaURI: string): Promise<TransactionAPI>;
 
 	/**
 	 * Adds a member to the team. Requires the sender to be a member of the team.
@@ -42,7 +49,7 @@ interface ContractAPI {
 	 * @param teamName Name of the team.
 	 * @param address Address of member.
 	 */
-	addTeamMember(teamName: string, address: string): Promise<string>;
+	addTeamMember(teamName: string, address: string): Promise<TransactionAPI>;
 
 	/**
 	 * Removes a member from the team. Requires the sender to be a member of the team.
@@ -50,16 +57,16 @@ interface ContractAPI {
 	 * @param teamName Name of the team.
 	 * @param address Address of member.
 	 */
-	removeTeamMember(teamName: string, address: string): Promise<string>;
+	removeTeamMember(teamName: string, address: string): Promise<TransactionAPI>;
 
 	/**
 	 * Adds a member to the project. Requires the sender to be a member of the team.
 	 *
 	 * @param teamName Name of the team.
-		 * @param projectName Name of the project.
-		 * @param address Address of member.
+	 * @param projectName Name of the project.
+	 * @param address Address of member.
 	 */
-	addProjectMember(teamName: string, projectName: string, address: string): Promise<string>;
+	addProjectMember(teamName: string, projectName: string, address: string): Promise<TransactionAPI>;
 
 	/**
 	 * Removes a member from the project. Requires the sender to be a member of the team.
@@ -68,7 +75,7 @@ interface ContractAPI {
 	 * @param projectName Name of the project.
 	 * @param address Address of member.
 	 */
-	removeProjectMember(teamName: string, projectName: string, address: string): Promise<string>;
+	removeProjectMember(teamName: string, projectName: string, address: string): Promise<TransactionAPI>;
 
 	/**
 	 * Sets the team metadata content ID. Requires the sender to be a member of the team.
@@ -76,7 +83,7 @@ interface ContractAPI {
 	 * @param teamName Name of the team.
 	 * @param metaURI Metadata URI.
 	 */
-	setTeamMetaURI(teamName: string, metaURI: string): Promise<string>;
+	setTeamMetaURI(teamName: string, metaURI: string): Promise<TransactionAPI>;
 
 	/**
 	 * Sets the team beneficiary to the new address.
@@ -84,7 +91,7 @@ interface ContractAPI {
 	 * @param teamName Name of the team.
 	 * @param beneficiary New beneficiary.
 	 */
-	setTeamBeneficiary(teamName: string, beneficiary: string): Promise<string>;
+	setTeamBeneficiary(teamName: string, beneficiary: string): Promise<TransactionAPI>;
 
 	/**
 	 * Sets the project metadata content ID. Requires the sender to be a member of the team.
@@ -93,7 +100,7 @@ interface ContractAPI {
 	 * @param projectName Name of the project.
 	 * @param metaURI Metadata URI.
 	 */
-	setProjectMetaURI(teamName: string, projectName: string, metaURI: string): Promise<string>;
+	setProjectMetaURI(teamName: string, projectName: string, metaURI: string): Promise<TransactionAPI>;
 
 	/**
 	 * Approves the release by adding the sender's address to the approvers list.
@@ -103,7 +110,7 @@ interface ContractAPI {
 	 * @param projectName Name of the project.
 	 * @param releaseName Name of the release.
 	 */
-	approveRelease(teamName: string, projectName: string, releaseName: string): Promise<string>;
+	approveRelease(teamName: string, projectName: string, releaseName: string): Promise<TransactionAPI>;
 
 	/**
 	 * Rejects the release by adding the sender's address to the rejectors list.
@@ -113,7 +120,7 @@ interface ContractAPI {
 	 * @param projectName Name of the project.
 	 * @param releaseName Name of the release.
 	 */
-	rejectRelease(teamName: string, projectName: string, releaseName: string): Promise<string>;
+	rejectRelease(teamName: string, projectName: string, releaseName: string): Promise<TransactionAPI>;
 
 	/**
 	 * Returns the latest release name.
@@ -254,7 +261,7 @@ interface ContractAPI {
      * @param metaURI metaURI of the license.
      * @param mintPrice mint price of the license in wei.
      */
-	createLicense(teamName: string, projectName: string, licenseName: string, metaURI: string, mintPrice: BigNumberish): Promise<string>;
+	createLicense(teamName: string, projectName: string, licenseName: string, metaURI: string, mintPrice: BigNumberish): Promise<TransactionAPI>;
 
 	/**
 	 * Mints a new license to a recipient.
@@ -264,7 +271,7 @@ interface ContractAPI {
      * @param licenseName Unique name used to identify the license.
      * @param recipient mint price of the license in wei.
 	 */
-	mintLicense(teamName: string, projectName: string, licenseName: string, recipient: string): Promise<string>;
+	mintLicense(teamName: string, projectName: string, licenseName: string, recipient: string): Promise<TransactionAPI>;
 
 	/**
 	 * Fetches metaURI of the Software License the software is linked to.
@@ -295,4 +302,4 @@ interface ContractAPI {
 	getProjectLicenses(teamName: string, projectName: string, page: BigNumberish, size: BigNumberish): Promise<BigNumberish[]>;
 }
 
-export { ContractAPI, EVM, EVM_Options, valistAddresses, licenseAddresses };
+export { ContractAPI, TransactionAPI, EVM, EVM_Options, valistAddresses, licenseAddresses };
