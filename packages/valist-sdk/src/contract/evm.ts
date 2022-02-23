@@ -1,7 +1,7 @@
 import { ContractAPI } from './index';
 import { Contract, PopulatedTransaction } from 'ethers';
 import { BigNumberish } from 'ethers';
-import { JsonRpcProvider, Web3Provider, TransactionReceipt } from '@ethersproject/providers';
+import { JsonRpcProvider, Web3Provider } from '@ethersproject/providers';
 import { sendMetaTx } from './metatx';
 
 import * as valist_contract from './artifacts/Valist.sol/Valist.json';
