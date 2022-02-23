@@ -146,6 +146,20 @@ const CreatePage: NextPage = () => {
     })();
   }, [releaseTeam]);
 
+    // If the selected licenseTeam changes set the projectNames under that team
+    useEffect(() => {
+      (async () => {
+        if (licenseTeam) {
+          const projectNames = [];
+          for (const name of userTeams[licenseTeam].projects) {
+            projectNames.push(name.name);
+          }
+          setTeamProjectNames(projectNames);
+          setLicenseProject(projectNames[0] || '');
+        }
+      })();
+    }, [licenseTeam]);
+
   // Normalize teamMember data for TeamPreview component
   useEffect(() => {
     const members:Member[] = [];
@@ -229,8 +243,9 @@ const CreatePage: NextPage = () => {
      console.log("Project Members", projectMembers);
      console.log("Meta", meta);
 
+     let toastID = '';
      try { 
-      const toastID = accountCtx.notify('transaction');
+      toastID = accountCtx.notify('transaction');
       await valistCtx.valist.waitTx(
         await valistCtx.valist.createProject(
           projectTeam,
@@ -243,6 +258,7 @@ const CreatePage: NextPage = () => {
       accountCtx.notify('success');
       router.push('/');
     } catch(err) {
+      accountCtx.dismiss(toastID);
       accountCtx.notify('error');
     }
   }
@@ -278,8 +294,9 @@ const CreatePage: NextPage = () => {
     console.log("Release Name", releaseName);
     console.log("Meta", release);
 
+    let toastID = '';
     try {
-      const toastID = accountCtx.notify('transaction');
+      toastID = accountCtx.notify('transaction');
       await valistCtx.valist.waitTx(
         await valistCtx.valist.createRelease(
           releaseTeam,
@@ -292,12 +309,50 @@ const CreatePage: NextPage = () => {
       accountCtx.notify('success');
       router.push('/');
     } catch(err) {
+      accountCtx.dismiss(toastID);
       accountCtx.notify('error');
     }
   }
 
   const createLicense = async () => {
-    console.log('Creating License!');
+    let imgURL = "";
+
+    if (licenseImage) {
+      const imgCID = await valistCtx.valist.storage.write(licenseImage);
+      imgURL = `${publicRuntimeConfig.IPFS_GATEWAY}${imgCID}`;
+    }
+
+    const meta = {
+      image: imgURL,
+      name: licenseName,
+      description: licenseDescription,
+      external_url: '',
+    };
+
+    console.log("License Team", licenseTeam);
+    console.log("License Project", licenseProject);
+    console.log("License Name", licenseName);
+    console.log("Meta", meta);
+
+    let toastID = '';
+    try {
+      toastID = accountCtx.notify('transaction');
+      await valistCtx.valist.waitTx(
+        await valistCtx.valist.createLicense(
+          licenseTeam,
+          licenseProject,
+          licenseName,
+          meta,
+        )
+      );
+      accountCtx.dismiss(toastID);
+      accountCtx.notify('success');
+      router.push('/');
+    } catch(err) {
+      console.warn(err);
+      accountCtx.dismiss(toastID);
+      accountCtx.notify('error');
+    }
   }
 
   // Render preview based on view state
