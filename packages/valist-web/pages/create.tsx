@@ -204,7 +204,7 @@ const CreatePage: NextPage = () => {
       setUserTeamNames([...userTeamNames, teamName]);
       accountCtx.dismiss(toastID);
       accountCtx.notify('success');
-      router.push('/');
+      router.push('/create?action=project');
     } catch(err) {
       accountCtx.dismiss(toastID);
       accountCtx.notify('error');
