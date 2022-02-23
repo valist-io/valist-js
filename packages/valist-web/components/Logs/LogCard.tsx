@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery } from "@apollo/client";
 import { Log } from '../../utils/Apollo/types';
-import { truncate } from "../../utils/Formatting/truncate";
 import LogText from "./LogText";
 import {
-    RECENT_LOGS_QUERY, 
+    RECENT_LOGS_QUERY,
     USER_LOGS_QUERY, 
-    TEAM_LOGS_QUERY, 
+    TEAM_LOGS_QUERY,
     PROJECT_LOGS_QUERY 
 } from '../../utils/Apollo/queries';
 
 interface LogCardProps {
-  team: string,
-  project: string,
-  address: string,
+  team?: string,
+  project?: string,
+  address?: string,
 }
 
 export default function LogCard(props: LogCardProps) {
@@ -44,7 +43,7 @@ export default function LogCard(props: LogCardProps) {
   return (
     <section aria-labelledby="announcements-title">
       <div className="rounded-lg bg-white overflow-hidden shadow">
-        <div className="p-6">
+        <div className="px-6 pt-6 pb-2">
           <h2 className="text-base font-medium text-gray-900" id="announcements-title">
             Recent Activity
           </h2>
@@ -56,8 +55,8 @@ export default function LogCard(props: LogCardProps) {
                     <p className="text-sm">
                       <LogText log={log} />
                     </p>
-                    <a href={`https://polygonscan.com/tx/${log.id}`} className="text-sm text-gray-500">
-                      view on polygonscan
+                    <a href={`https://mumbai.polygonscan.com//tx/${log.id}`} className="text-sm text-gray-500">
+                      view transaction
                     </a>
                   </div>
                 </li>

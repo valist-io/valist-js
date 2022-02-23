@@ -19,7 +19,6 @@ type TeamMember = {
 
 export default function TeamProfilePage() {
   const router = useRouter();
-  const { publicRuntimeConfig } = config()
   const teamName = `${router.query.teamName}`;
   const valistCtx = useContext(ValistContext);
   const { data, loading, error } = useQuery(TEAM_PROFILE_QUERY, {
@@ -55,22 +54,19 @@ export default function TeamProfilePage() {
             view={view}
             setView={setView}
             teamName={teamName}
-            teamImage={publicRuntimeConfig.IPFS_GATEWAY + '/ipfs/' + (meta.image || 'QmfPeC65TKPbA3dxE314Boh82LX5NpkcrPXonCxUuKh6vr')}
-            meta={meta} tabs={['Projects']}          
-          />
-          <TeamProjectList 
-            projects={projects} 
-            linksDisbaled={false}          
+            teamImage={meta.image ? `${meta.image}` : ''}
+            meta={meta}
+            tabs={['Projects', 'Activity']}          
           />
           {view === 'Projects' && <TeamProjectList projects={projects} linksDisbaled={false} />}
-          {view === 'Logs' && <LogTable team={teamName} project={''} address={''} />}
+          {view === 'Activity' && <LogTable team={teamName} project={''} address={''} />}
         </div>
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
           <TeamMemberList 
             teamMembers={members} 
             teamName={teamName}          
           />
-          <LogCard team={teamName} project={''} address={''} />
+          <LogCard team={teamName} />
         </div>
       </div> 
     </Layout>

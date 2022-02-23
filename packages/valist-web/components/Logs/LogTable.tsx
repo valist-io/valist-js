@@ -10,9 +10,9 @@ import {
 } from '../../utils/Apollo/queries';
 
 interface LogTableProps {
-  team: string,
-  project: string,
-  address: string,
+  team?: string,
+  project?: string,
+  address?: string,
 }
 
 export default function LogTable(props: LogTableProps) {
@@ -71,8 +71,8 @@ export default function LogTable(props: LogTableProps) {
                     </td>
               
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <a href={`https://polygonscan.com/tx/${log.id}`} className="text-sm text-gray-500">
-                        view on polygonscan
+                      <a href={`https://mumbai.polygonscan.com//tx/${log.id}`} className="text-sm text-gray-500">
+                        view transaction
                       </a>
                     </td>
                   </tr>
