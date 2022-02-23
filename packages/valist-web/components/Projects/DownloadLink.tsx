@@ -119,7 +119,7 @@ export default function DownloadBox(props: DownloadBoxProps) {
           </div>
         </div>
         <ReleaseDownloads
-          releaseArtifacts={Object.keys(props.releaseMeta.artifacts)}
+          releaseArtifacts={Object.keys(props.releaseMeta.artifacts || {})}
           setChosenArtifact={setChosenArtifact}
         />
       </div>

@@ -19,7 +19,7 @@ export default function AddressProfileCard(props: AddressProfileCardProps) {
           <div className="sm:flex sm:items-center sm:justify-between">
             <div className="sm:flex sm:space-x-5">
               <div className="flex-shrink-0">
-                <AddressIdenticon address={props.address} height={80} />
+                <AddressIdenticon address={props.address} height={80} width={80}/>
               </div>
               <div className="mt-4 text-center sm:mt-0 sm:pt-1 sm:text-left align-middle">
                 <Link href={`https://polygonscan.com/address/${props.address}`} >

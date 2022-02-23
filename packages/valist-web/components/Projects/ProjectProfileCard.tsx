@@ -24,7 +24,7 @@ export default function ProjectProfileCard(props: ProjectProfileCardProps): JSX.
                 <img src={props.projectImg} alt="profile-image" />
               </div>            
               :
-              <AddressIdenticon address={`${props.teamName}/${props.projectName}`} height={80} />
+              <AddressIdenticon address={`${props.teamName}/${props.projectName}`} height={80} width={80} />
             }
             <div>
               <p className={`lg:text-3xl text-gray-900 sm:text-2xl font-medium`}>
@@ -34,7 +34,7 @@ export default function ProjectProfileCard(props: ProjectProfileCardProps): JSX.
                 <Link href={`/${props.teamName}`}>
                   <a>Published by: 
                     <span className="ml-2 hover:text-indigo-500 cursor-pointer text-gray-900 rounded-lg border-2 px-2 shadow-sm py-1">
-                      <span style={{marginBottom: "-4px"}} className='inline-block mr-1'><AddressIdenticon address={props.teamName} height={20} /></span>
+                      <span style={{marginBottom: "-4px"}} className='inline-block mr-1'><AddressIdenticon address={props.teamName} height={20} width={20} /></span>
                       {props.teamName}
                     </span>
                   </a>
