@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { parseCID } from '../../utils/Ipfs';
+import Image from 'next/image';
 import { ProjectMeta } from '../../utils/Valist/types';
 import AddressIdenticon from '../Identicons/AddressIdenticon';
 import ValistContext from '../Valist/ValistContext';
@@ -19,27 +19,27 @@ export default function ProjectListCard({ teamName, projectName, metaURI }: Proj
     description: "Loading....",
   });
 
-  const fetchProjectMeta = async (metaURI: string) => {
-    try {
-      const projectJson = await valistCtx.valist.storage.readReleaseMeta(metaURI);
-      setMeta(projectJson)
-    } catch (err) {
-      // @TODO HANDLE
-      console.log()
-    }
-  };
-
   useEffect(() => {
+    const fetchProjectMeta = async (metaURI: string) => {
+      try {
+        const projectJson = await valistCtx.valist.storage.readReleaseMeta(metaURI);
+        setMeta(projectJson);
+      } catch (err) {
+        // @TODO HANDLE
+        console.log();
+      }
+    };
+
     fetchProjectMeta(metaURI);
-  }, [metaURI]);
+  }, [metaURI, valistCtx.valist.storage]);
 
   return (
     <div className="bg-white rounded-lg shadow px-6 py-6 mb-2 border-2 hover:border-indigo-500 cursor-pointer">
       <div className='flex mb-3'>
         <div className="flex-shrink-0 mr-5">
           {meta.image ?
-            <img height={50} width={50} className='rounded-full'
-            src={meta.image} alt="" />      
+            <Image height={50} width={50} className='rounded-full'
+            src={meta.image} alt="Profile Pic" />      
             :
             <AddressIdenticon address={name} height={50} width={50} />
           }
@@ -51,7 +51,7 @@ export default function ProjectListCard({ teamName, projectName, metaURI }: Proj
           </h3>
           <div>Published by: 
             <span className="ml-1 cursor-pointer text-gray-900 py-1">
-              <span style={{marginBottom: "-4px"}} className='inline-block'></span>
+              <span style={{ marginBottom: "-4px" }} className='inline-block'></span>
                 {teamName}
               </span>
           </div>
@@ -59,10 +59,10 @@ export default function ProjectListCard({ teamName, projectName, metaURI }: Proj
       </div>
      
       <div>
-        <p style={{height: 48, maxHeight: 48, overflow: 'hidden'}}>
+        <p style={{ height: 48, maxHeight: 48, overflow: 'hidden' }}>
           {removeMd(meta.description || '')}
         </p>
       </div>
     </div>
-  )
+  );
 };

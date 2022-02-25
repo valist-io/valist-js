@@ -21,18 +21,18 @@ export default function CreateLicenseForm(props: CreateLicenseFormProps) {
   const handleSubmit = async () => {
     if (props.licenseName === '' || props.licenseName === undefined) {
       alert("Please enter a valid license name.");
-      return
+      return;
     }
     props.submit();
   };
 
   const handleTeamChange = (option: string) => {
     props.setTeam(option);
-  }
+  };
 
   const handleProjectChange = (option: string) => {
     props.setProject(option);
-  }
+  };
 
   return (
     <form className="grid grid-cols-1 gap-y-6 sm:gap-x-8" action="#" method="POST">
@@ -42,7 +42,7 @@ export default function CreateLicenseForm(props: CreateLicenseFormProps) {
         text-gray-700">
           Team <span className="float-right"><Tooltip text='The team where this license will be published.' /></span>
         </label>
-        <select onChange={(e) => {handleTeamChange(e.target.value)}}
+        <select onChange={(e) => {handleTeamChange(e.target.value);}}
         id="projectType" className="mt-1 form-select block w-full pl-3 pr-10 py-2
         text-base leading-6 border-gray-300 focus:outline-none focus:shadow-outline-blue
         focus:border-blue-300 sm:text-sm sm:leading-5">
@@ -57,7 +57,7 @@ export default function CreateLicenseForm(props: CreateLicenseFormProps) {
         text-gray-700">
           Project <span className="float-right"><Tooltip text='The project where this license will be published.' /></span>
         </label>
-        <select onChange={(e) => {handleProjectChange(e.target.value)}}
+        <select onChange={(e) => {handleProjectChange(e.target.value);}}
         id="projectType" className="mt-1 form-select block w-full pl-3 pr-10 py-2
         text-base leading-6 border-gray-300 focus:outline-none focus:shadow-outline-blue
         focus:border-blue-300 sm:text-sm sm:leading-5">

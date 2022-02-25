@@ -1,6 +1,4 @@
-import React, { ChangeEvent, useEffect } from 'react';
-// import { useDropzone } from 'react-dropzone';
-// import { TrashIcon } from '@heroicons/react/solid';
+import React, { ChangeEvent } from 'react';
 import { SetUseState } from '../../utils/Account/types';
 
 interface FileUploadProps {
@@ -30,7 +28,7 @@ function FileItem(props:FileItemProps) {
       }
     }
     props.setArchs(archs);
-  }
+  };
 
   return (
     <li className="flex mb-2 overflow-hidden">
@@ -48,9 +46,8 @@ function FileItem(props:FileItemProps) {
       <div className="flex border border-gray-300 p-2 rounded-r-lg w-full">
         <div className='my-auto'>{props.file.name}</div>
       </div>
-      {/* <TrashIcon className="my-auto" height={25} name={props.file.path} onClick={(e) => removeFile(e)} /> */}
     </li>
-  )
+  );
 }
 
 export default function FileUpload(props: FileUploadProps) {
@@ -62,7 +59,7 @@ export default function FileUpload(props: FileUploadProps) {
   };
 
   const fileItems = () => {
-    const items = []
+    const items = [];
     for (let i = 0; i < Object.keys(props.files).length; i++) {
       items.push(
         <FileItem 
@@ -73,20 +70,20 @@ export default function FileUpload(props: FileUploadProps) {
           files={props.files} 
           setArchs={props.setArchs} 
           setFiles={props.setFiles} 
-        />
-      )
+        />,
+      );
     }
 
     return items;
-  }
+  };
 
   return (
     <section>
       <h4 className='mb-1 block text-sm font-medium text-gray-700'>Atifacts</h4>
-      <label style={{minHeight: "150px"}} className='flex justify-center py-2 px-4 border border-transparent rounded-md 
+      <label style={{ minHeight: "150px" }} className='flex justify-center py-2 px-4 border border-transparent rounded-md 
         shadow-sm text-sm font-medium focus:outline-none 
         mt-4 mx-auto border-4 border-dashed border-gray-200 p-4'>
-        <input type='file' onChange={(e) => handleImage(e)} multiple="multiple" className="hidden" />
+        <input type='file' onChange={(e) => handleImage(e)} multiple={true} className="hidden" />
         <p className='text-center text-gray-400 align-middle'>Click to select files</p>
       </label>
       <aside className='mt-4'>

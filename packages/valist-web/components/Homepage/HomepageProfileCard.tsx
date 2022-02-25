@@ -25,7 +25,7 @@ export default function HomepageProfileCard(props:HomepageProfileCardProps) {
                 <a target="_blank" rel="noopener noreferrer" 
                   href={`https://polygonscan.com/address/${props.address}`} 
                   className="sm:text-xl lg:text-3xl font-bold text-gray-900 hover:text-indigo-500">
-                  {EnsResolver({address: props.address}) || truncate(props.address, 8)}
+                  {EnsResolver({ address: props.address }) || truncate(props.address, 8)}
                 </a>
                 <p className="lg:text-sm font-medium text-gray-600 hidden md:block">
                   {props.address}
@@ -41,5 +41,5 @@ export default function HomepageProfileCard(props:HomepageProfileCardProps) {
         />
       </div>
     </section>
-  )
+  );
 }

@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
+import Image from 'next/image';
 interface ReleasePreviewProps {
   releaseTeam: string,
   releaseProject: string,

@@ -22,5 +22,5 @@ export default function ImageUpload(props: ImageUploadProps) {
         <input type='file' onChange={(e) => handleImage(e)} className="hidden" />
       </label>
     </div>
-  )
+  );
 }

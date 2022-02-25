@@ -11,5 +11,5 @@ export default function Tooltip(props: TooltipProps): JSX.Element {
         <span className='tooltip rounded shadow-lg bg-gray-700 border text-white p-2 -ml-10 -mt-10'>{props.text}</span>
         <InformationCircleIcon height={18} />
       </div>
-    </div>)
+    </div>);
 }

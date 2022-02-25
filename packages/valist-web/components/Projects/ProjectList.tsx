@@ -33,5 +33,5 @@ export default function ProjectList(props: ProjectListProps) {
         ))}
       </div>
     </div>
-  )
+  );
 }

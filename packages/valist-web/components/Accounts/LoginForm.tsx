@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React, { useEffect, useContext, useRef, useState } from 'react';
 import { login } from '../../utils/Account';
 import { LoginType, SetUseState, ValistProvider } from '../../utils/Account/types';
@@ -84,7 +85,7 @@ const LoginForm = (props: LoginFormProps): JSX.Element => {
                                                     text-gray-500 hover:text-gray-400 focus:outline-none
                                                     focus:border-blue-300 focus:shadow-outline-blue transition
                                                     duration-150 ease-in-out" aria-label="Sign in with GitHub">
-                                                    <img width="85px" src={loginButton.img}/>
+                                                    <img alt="Login" width="85px" src={loginButton.img}/>
                                                 </button>
                                             }
                                             {loginButton.spacer && 

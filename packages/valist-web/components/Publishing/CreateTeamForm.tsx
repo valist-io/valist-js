@@ -21,27 +21,27 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
   const handleSubmit = async () => {
     if (props.teamName === "" || props.teamName === "teamName") {
       alert("Please enter a valid team name!");
-      return
+      return;
     }
 
     if (props.teamDescription === "" || props.teamDescription === "An example team description.") {
       alert("Please enter a valid team description!");
-      return
+      return;
     }
 
-    await props.submit()
+    await props.submit();
   };
 
   const handleMembersList = (text:string) => {
     const membersList = text.split('\n');
-    let members: string[] = []
+    let members: string[] = [];
     for (const member of membersList) {
       if (member !== '') {
          members.push(member);
       }
     }
     props.setMembers(members);
-  }
+  };
   
   return (
     <form className="grid grid-cols-1 gap-y-6 sm:gap-x-8" action="#" method="POST">

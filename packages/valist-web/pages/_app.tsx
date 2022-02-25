@@ -32,36 +32,35 @@ function ValistApp({ Component, pageProps }: AppProps) {
         publicRuntimeConfig.METATX_ENABLED,
       ),
       new Storage.IPFS(
-        createIPFS(publicRuntimeConfig.IPFS_HOST)
+        createIPFS(publicRuntimeConfig.IPFS_HOST),
       ),
-    )
+    ),
   );
   const [magic, setMagic] = useState<Magic | null>(null);
   const [address, setAddress] = useState<string>('0x0');
   const [loginType, setLoginType] = useState<LoginType>('readOnly');
   const [showLogin, setShowLogin] = useState(false);
 
-  const notify = (type: string) => {
+  const notify = (type: string): string => {
     switch (type) {
       case 'transaction':
-        toast.loading('Transaction pending...');
-        break;
+        return toast.loading('Transaction pending...');
       case 'success':
-        toast.success('Transaction Successfull!');
-        break;
+        return toast.success('Transaction Successfull!');
       case 'error':
-        toast('An error has occurred.', {
+        return toast('An error has occurred.', {
           style: {
             backgroundColor: '#ff6961',
-          }
+          },
         });
-        break;
     }
-  }
+
+    return '';
+  };
 
   const dismiss = (id: string) => {
     toast.dismiss(id);
-  }
+  };
 
   const accountState = {
     magic,
@@ -78,7 +77,7 @@ function ValistApp({ Component, pageProps }: AppProps) {
   const valistState = {
     valist: valistClient,
     ipfsGateway: publicRuntimeConfig.IPFS_GATEWAY,
-  }
+  };
 
   useEffect(() => {
     setMagic(newMagic());
@@ -100,11 +99,11 @@ function ValistApp({ Component, pageProps }: AppProps) {
           publicRuntimeConfig.METATX_ENABLED,
         ),
         new Storage.IPFS(
-          createIPFS(publicRuntimeConfig.IPFS_HOST)
+          createIPFS(publicRuntimeConfig.IPFS_HOST),
         ),
       ),
     );
-  }, [provider]);
+  }, [provider, publicRuntimeConfig.CHAIN_ID, publicRuntimeConfig.IPFS_HOST, publicRuntimeConfig.METATX_ENABLED]);
 
   useEffect(() => {
     // @ts-ignore

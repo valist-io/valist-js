@@ -25,18 +25,18 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
 
   const handleTeamChange = (option: string) => {
     props.setTeam(option);
-  }
+  };
 
   const handleMembersList = (text:string) => {
     const membersList = text.split('\n');
-    let members: string[] = []
+    let members: string[] = [];
     for (const member of membersList) {
       if (member !== '') {
          members.push(member);
       }
     }
     props.setMembers(members);
-  }
+  };
   
   return (
     <form className="grid grid-cols-1 gap-y-6 sm:gap-x-8" action="#" method="POST">
@@ -45,12 +45,12 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
           <label htmlFor="projectType" className="block text-sm leading-5 font-medium text-gray-700">
             Account or Team <span className="float-right"><Tooltip text='The team where this project will be published.' /></span>
           </label>
-          <select onChange={(e) => {handleTeamChange(e.target.value)}}
+          <select onChange={(e) => {handleTeamChange(e.target.value);}}
           id="projectType" className="mt-1 form-select block w-full pl-3 pr-10 py-2
           text-base leading-6 border-gray-300 focus:outline-none focus:shadow-outline-blue
           focus:border-blue-300 sm:text-sm sm:leading-5">
             {props.userTeams?.map((teamName) => (
-               <option value={teamName}>{teamName}</option>
+               <option key={teamName} value={teamName}>{teamName}</option>
             ))}
           </select>
       </div>

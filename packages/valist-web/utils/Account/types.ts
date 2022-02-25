@@ -44,7 +44,7 @@ export interface AccountCtxInterface {
   setAddress: SetUseState<string>,
   setMagic: SetUseState<Magic | null>,
   notify: (type: string) => string,
-  dismiss: (type: string) => string,
+  dismiss: (type: string) => void,
 }
 
 export interface ValistCtxInterface {

@@ -12,7 +12,7 @@ interface RepoMetaCardProps {
 
 const ProjectMetaCard = (props: RepoMetaCardProps) => {
   const {
-   teamName, projectName, projectMeta, releaseMeta 
+   teamName, projectName, projectMeta, releaseMeta, 
   } = props;
 
   const [downloads, setDownloads] = useState(0);
@@ -26,8 +26,8 @@ const ProjectMetaCard = (props: RepoMetaCardProps) => {
           setDownloads(json.downloads);
         }
       } catch (err) { /* @TODO HANDLE */}
-    })()
-  }, []);
+    })();
+  }, [projectName, teamName]);
 
   return (
     <div className="rounded-lg bg-white shadow p-6">

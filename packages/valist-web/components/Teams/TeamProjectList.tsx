@@ -26,5 +26,5 @@ export default function ProjectList(props: TeamProjectListProps) {
             </Fragment>
           ))}
       </div>
-    </div>)
+    </div>);
 }

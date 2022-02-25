@@ -37,7 +37,7 @@ export default function RepoContent(props: ReleaseListProps): JSX.Element {
       case 'ReleaseSteps':
         return <PublishReleaseSteps />;
       case 'Activity':
-        return <LogTable team={props.teamName} project={props.projectName} />
+        return <LogTable team={props.teamName} project={props.projectName} />;
       default:
         return <RepoReadme repoReadme={props.projectMeta.description || ''} />;
     }

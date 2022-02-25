@@ -1,4 +1,6 @@
+/* eslint-disable @next/next/no-img-element */
 import { toSvg } from 'jdenticon';
+import Image from 'next/image';
 
 interface AddressIdenticonProps {
   address: string,

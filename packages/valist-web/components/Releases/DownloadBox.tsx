@@ -71,8 +71,7 @@ const ReleaseDownloads = (props: ReleaseDownloadsProps) => (
         && <ReleaseArtifact
           artifact={'Loading'}
           setChosenArtifact={(() => {
-            const [, setState] = useState();
-            return setState;
+            return () => {};
           })()}
         />
       }
@@ -105,34 +104,35 @@ export default function DownloadBox(props: DownloadBoxProps) {
     window.open(url, '_blank');
   };
 
-  const fetchData = async () => {
-    const parsedCID = parseCID(props.metaURI);
-    const url = `${publicRuntimeConfig.IPFS_GATEWAY}/ipfs/${parsedCID}`;
-    let artifactNames: string[] = [];
-    let response: any;
-    let json: any;
-
-    if (releaseArtifacts.length === 0) {
-      try {
-        response = await fetch(url);
-        json = await response.json();
-        artifactNames = Object.keys(json.artifacts);
-      } catch (err) {
-        console.log('Error while fetching artifacts:', err);
-      }
-
-      if (artifactNames.length === 0) {
-        artifactNames.push('artifact');
-      }
-
-      setReleaseMeta(json);
-      setReleaseArtifacts(artifactNames);
-    }
-  };
 
   useEffect(() => {
+    const fetchData = async () => {
+      const parsedCID = parseCID(props.metaURI);
+      const url = `${publicRuntimeConfig.IPFS_GATEWAY}/ipfs/${parsedCID}`;
+      let artifactNames: string[] = [];
+      let response: any;
+      let json: any;
+  
+      if (releaseArtifacts.length === 0) {
+        try {
+          response = await fetch(url);
+          json = await response.json();
+          artifactNames = Object.keys(json.artifacts);
+        } catch (err) {
+          console.log('Error while fetching artifacts:', err);
+        }
+  
+        if (artifactNames.length === 0) {
+          artifactNames.push('artifact');
+        }
+  
+        setReleaseMeta(json);
+        setReleaseArtifacts(artifactNames);
+      }
+    };
+
     fetchData();
-  }, [fetchData]);
+  }, [props.metaURI, publicRuntimeConfig.IPFS_GATEWAY, releaseArtifacts.length]);
 
   return (
     <Listbox value={selected} onChange={setSelected}>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react';
 import { ChevronUpIcon } from '@heroicons/react/solid';
 import { SetUseState } from '../../utils/Account/types';
 
@@ -51,5 +51,5 @@ export default function Accordion(props:AccordionProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

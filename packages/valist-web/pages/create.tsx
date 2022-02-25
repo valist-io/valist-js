@@ -34,7 +34,7 @@ const CreatePage: NextPage = () => {
     action = action.join('');
   }
   if (!action) {
-    action = ''
+    action = '';
   }
 
   // Page State
@@ -99,7 +99,7 @@ const CreatePage: NextPage = () => {
         variables: { address: accountCtx.address.toLowerCase() },
       });
     })();
-  }, [accountCtx.address, teamsCreated]);
+  }, [accountCtx.address, getData, teamsCreated]);
 
   // Set page state for user's teams and projects
   useEffect(() => {
@@ -109,7 +109,7 @@ const CreatePage: NextPage = () => {
       let teams:any = {};
 
       for (let i = 0; i < rawTeams.length; i++) {
-        teams[rawTeams[i].name] = rawTeams[i]
+        teams[rawTeams[i].name] = rawTeams[i];
         teamNames.push(rawTeams[i].name);
       }
       setUserTeams(teams);
@@ -126,7 +126,7 @@ const CreatePage: NextPage = () => {
           }
           setTeamProjectNames(projectNames);
           setReleaseProject(projectNames[0]);
-          setLicenseProject(projectNames[0])
+          setLicenseProject(projectNames[0]);
         }
       }
     }
@@ -144,7 +144,7 @@ const CreatePage: NextPage = () => {
         setReleaseProject(projectNames[0] || '');
       }
     })();
-  }, [releaseTeam]);
+  }, [releaseTeam, userTeams]);
 
     // If the selected licenseTeam changes set the projectNames under that team
     useEffect(() => {
@@ -158,7 +158,7 @@ const CreatePage: NextPage = () => {
           setLicenseProject(projectNames[0] || '');
         }
       })();
-    }, [licenseTeam]);
+    }, [licenseTeam, userTeams]);
 
   // Normalize teamMember data for TeamPreview component
   useEffect(() => {
@@ -173,7 +173,7 @@ const CreatePage: NextPage = () => {
 
   // Normalize projectMember data for ProjectPreview component
   useEffect(() => {
-    const members:Member[] = []
+    const members:Member[] = [];
     for (const projectMember of projectMembers) {
       members.push({
         id: projectMember,
@@ -210,10 +210,10 @@ const CreatePage: NextPage = () => {
         await valistCtx.valist.createTeam(
           teamName,
           meta,
-          teamBeneficiary, 
+          teamBeneficiary,
           teamMembers,
-        )
-      )
+        ),
+      );
 
       setUserTeamNames([...userTeamNames, teamName]);
       accountCtx.dismiss(toastID);
@@ -223,7 +223,7 @@ const CreatePage: NextPage = () => {
       accountCtx.dismiss(toastID);
       accountCtx.notify('error');
     }
-  }
+  };
 
   const createProject = async () => {
     let imgURL = "";
@@ -254,8 +254,8 @@ const CreatePage: NextPage = () => {
           projectName,
           meta,
           projectMembers,
-        )
-      )
+        ),
+      );
       accountCtx.dismiss(toastID);
       accountCtx.notify('success');
       router.push('/');
@@ -263,7 +263,7 @@ const CreatePage: NextPage = () => {
       accountCtx.dismiss(toastID);
       accountCtx.notify('error');
     }
-  }
+  };
 
   const createRelease = async () => {
     let imgURL = "";
@@ -305,7 +305,7 @@ const CreatePage: NextPage = () => {
           releaseProject,
           releaseName,
           release,
-        )
+        ),
       );
       accountCtx.dismiss(toastID);
       accountCtx.notify('success');
@@ -314,7 +314,7 @@ const CreatePage: NextPage = () => {
       accountCtx.dismiss(toastID);
       accountCtx.notify('error');
     }
-  }
+  };
 
   const createLicense = async () => {
     let imgURL = "";
@@ -335,27 +335,7 @@ const CreatePage: NextPage = () => {
     console.log("License Project", licenseProject);
     console.log("License Name", licenseName);
     console.log("Meta", meta);
-
-    let toastID = '';
-    try {
-      toastID = accountCtx.notify('transaction');
-      await valistCtx.valist.waitTx(
-        await valistCtx.valist.createLicense(
-          licenseTeam,
-          licenseProject,
-          licenseName,
-          meta,
-        )
-      );
-      accountCtx.dismiss(toastID);
-      accountCtx.notify('success');
-      router.push('/');
-    } catch(err) {
-      console.warn(err);
-      accountCtx.dismiss(toastID);
-      accountCtx.notify('error');
-    }
-  }
+  };
 
   // Render preview based on view state
   const renderPreview = (view: string) => {
@@ -365,7 +345,7 @@ const CreatePage: NextPage = () => {
         teamDescription={teamDescription}
         teamName={teamName}
         teamImage={teamImage}
-        teamMembers={teamMembersParsed}/>)
+        teamMembers={teamMembersParsed}/>);
       case 'project':
         return <ProjectPreview 
         teamName={projectTeam} 
@@ -373,7 +353,7 @@ const CreatePage: NextPage = () => {
         projectImage={projectImage} 
         projectDescription={projectDescription} 
         projectMembers={projectMembersParsed} 
-      />
+      />;
       case 'release':
         return <ReleasePreview 
         releaseTeam={releaseTeam}
@@ -381,7 +361,7 @@ const CreatePage: NextPage = () => {
         releaseName={releaseName} 
         releaseImage={releaseImage}
         releaseDescription={releaseDescription}            
-      />
+      />;
       case 'license':
         return <LicensePreview 
         licenseTeam={licenseTeam}
@@ -389,9 +369,9 @@ const CreatePage: NextPage = () => {
         licenseName={licenseName} 
         licenseImage={licenseImage}
         licenseDescription={licenseDescription}            
-      />
+      />;
       default:
-        return (<div>Action Not Found</div>)
+        return (<div>Action Not Found</div>);
     }
   };
 
@@ -458,7 +438,7 @@ const CreatePage: NextPage = () => {
                 setArchs={setReleaseArchs}
                 setRenderTeam={setRenderTeam}
                 setRenderProject={setRenderProject}
-                submit={() => {createRelease()}}
+                submit={() => {createRelease();}}
                 setView={setView} 
               />
             </div>

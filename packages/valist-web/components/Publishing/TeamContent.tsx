@@ -16,34 +16,34 @@ export default function TeamContent(props: TeamContentProps): JSX.Element {
       name: "exampleProject1",
       metaURI: "QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
       team: {
-        name: props.teamName
-      }
+        name: props.teamName,
+      },
     },
     {
       id: "test2",
       name: "exampleProject2",
       metaURI: "QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
       team: {
-        name: props.teamName
-      }
+        name: props.teamName,
+      },
     },
     {
       id: "test3",
       name: "exampleProject3",
       metaURI: "QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
       team: {
-        name: props.teamName
-      }
+        name: props.teamName,
+      },
     },
     {
       id: "test4",
       name: "exampleProject4",
       metaURI: "QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
       team: {
-        name: props.teamName
-      }
-    }
-  ]
+        name: props.teamName,
+      },
+    },
+  ];
 
   const getTeamView = (view: string) => {
     switch (view) {

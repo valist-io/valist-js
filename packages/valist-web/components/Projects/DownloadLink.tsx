@@ -69,6 +69,7 @@ const ReleaseDownloads = (props: ReleaseDownloadsProps) => (
         && <ReleaseArtifact
           artifact={'Loading'}
           setChosenArtifact={(() => {
+            // eslint-disable-next-line react-hooks/rules-of-hooks
             const [, setState] = useState();
             return setState;
           })()}
@@ -85,7 +86,7 @@ export default function DownloadBox(props: DownloadBoxProps) {
   const artifactFromName = (artifactName: string) => {
     try {
       const cid = props.releaseMeta?.artifacts?.get(artifactName)?.provider;
-      if (!cid) return
+      if (!cid) return;
       const parsedCID = parseCID(cid);
       const url = `https://gateway.valist.io/ipfs/${parsedCID}?filename=${props.releaseName}`;
       window.location.assign(url);

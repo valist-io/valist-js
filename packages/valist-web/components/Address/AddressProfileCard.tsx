@@ -25,7 +25,7 @@ export default function AddressProfileCard(props: AddressProfileCardProps) {
                 <Link href={`https://polygonscan.com/address/${props.address}`} >
                   <a className="cursor-pointer hover:text-indigo-500" rel="noreferrer" target="_blank">
                     <p className="lg:text-3xl font-bold text-gray-900 sm:text-xl hover:text-indigo-500">
-                      {EnsResolver({address: props.address}) || truncate(props.address, 8)}
+                      {EnsResolver({ address: props.address }) || truncate(props.address, 8)}
                     </p>
                   </a>
                 </Link>
@@ -43,5 +43,5 @@ export default function AddressProfileCard(props: AddressProfileCardProps) {
         />
       </div>
     </section>
-  )
+  );
 }

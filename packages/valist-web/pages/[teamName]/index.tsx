@@ -9,7 +9,6 @@ import { TEAM_PROFILE_QUERY } from '../../utils/Apollo/queries';
 import { Project } from '../../utils/Apollo/types';
 import { TeamMeta } from '../../utils/Valist/types';
 import ValistContext from '../../components/Valist/ValistContext';
-import config from 'next/config';
 import LogCard from '../../components/Logs/LogCard';
 import LogTable from '../../components/Logs/LogTable';
 
@@ -31,22 +30,20 @@ export default function TeamProfilePage() {
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [projects, setaProjects] = useState<Project[]>([]);
 
-  const fetchMeta = async (metaURI: string) => {
-    try {
-      const teamMeta = await valistCtx.valist.storage.readTeamMeta(metaURI);
-      setMeta(teamMeta);
-    } catch(err) { /* TODO HANDLE */ }
-  }
-
   useEffect(() => {
+    const fetchMeta = async (metaURI: string) => {
+      try {
+        const teamMeta = await valistCtx.valist.storage.readTeamMeta(metaURI);
+        setMeta(teamMeta);
+      } catch(err) { /* TODO HANDLE */ }
+    };
+
     if (data && data.teams && data.teams[0] && data.teams[0].metaURI) {
       fetchMeta(data.teams[0].metaURI);
       setaProjects(data.teams[0].projects);
       setMembers(data.teams[0].members);
     }
-  }, [data, loading, error, setMeta]);
-
-  console.log('meta', meta)
+  }, [data, loading, error, setMeta, valistCtx.valist.storage]);
 
   return (
     <Layout title='Valist | Team'>

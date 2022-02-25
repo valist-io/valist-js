@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  images: {
+    domains: ['gateway.valist.io', 'https://gateway.valist.io'],
+  },
   publicRuntimeConfig: {
     CHAIN_ID: process.env.CHAIN_ID || 1337,
     WEB3_PROVIDER: process.env.WEB3_PROVIDER || 'http://localhost:8545',

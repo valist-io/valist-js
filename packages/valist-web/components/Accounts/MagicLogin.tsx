@@ -43,7 +43,7 @@ export default function MagicLogin(props: MagicLoginProps) {
     }
 
     return () => {
-      (magicRequest = false)
+      (magicRequest = false);
     };
   }, [accountCtx.magic, setMagicAddress, setMagicChecked]);
 
@@ -112,7 +112,7 @@ export default function MagicLogin(props: MagicLoginProps) {
         </span>
       </div>
     );
-  }
+  };
 
   return (
     <div className="text-center">

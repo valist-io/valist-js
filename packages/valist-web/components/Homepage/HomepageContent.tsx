@@ -13,15 +13,15 @@ export default function HomepageContent(props: ReleaseListProps): JSX.Element {
   const getHoempageView = (view: string) => {
     switch (view) {
       case 'Projects':
-        return <ProjectList linksDisabled={false} projects={props.userProjects}/>
+        return <ProjectList linksDisabled={false} projects={props.userProjects}/>;
       case 'Teams':
-        return <div></div>
+        return <div></div>;
       case 'Activity':
-        return <LogTable  address={props.address} />
+        return <LogTable  address={props.address} />;
       case 'Licenses':
-        return <LicenseList />
+        return <LicenseList />;
       default:
-        return <ProjectList linksDisabled={false} projects={props.userProjects}/>
+        return <ProjectList linksDisabled={false} projects={props.userProjects}/>;
     }
   };
 

@@ -31,5 +31,5 @@ export default function HomepageLinks():JSX.Element {
         </div>
       </div>
     </section>
-  )
+  );
 }

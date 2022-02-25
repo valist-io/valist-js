@@ -40,6 +40,6 @@ const SearchPage: NextPage = () => {
       </div>
     </Layout>
   );
-}
+};
 
 export default SearchPage;

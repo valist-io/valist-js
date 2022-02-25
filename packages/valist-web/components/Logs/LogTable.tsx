@@ -6,7 +6,7 @@ import {
     RECENT_LOGS_QUERY, 
     USER_LOGS_QUERY, 
     TEAM_LOGS_QUERY, 
-    PROJECT_LOGS_QUERY 
+    PROJECT_LOGS_QUERY, 
 } from '../../utils/Apollo/queries';
 
 interface LogTableProps {
