@@ -224,7 +224,7 @@ export const licenseAddresses: {[chainID: number]: string} = {
 	// Deterministic Ganache
 	1337: '0x5b1869D9A4C187F2EAa108f3062412ecf0526b24',
 	// Mumbai testnet
-	80001: '0x911B399C56C735c6f462022546C505dB8D8910E5',
+	80001: '0x597bfcE7F9363b6eBc229f2023F9EcD716C88120',
 	// Polygon mainnet
 	// 137: '',
 }
