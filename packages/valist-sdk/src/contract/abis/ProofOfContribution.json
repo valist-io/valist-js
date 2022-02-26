@@ -44,80 +44,6 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
-        "internalType": "string",
-        "name": "_teamName",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "_projectName",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "_licenseName",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_mintPrice",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_licenseID",
-        "type": "uint256"
-      }
-    ],
-    "name": "LicenseCreated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "_teamName",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "_projectName",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "_licenseName",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_recipient",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_licenseID",
-        "type": "uint256"
-      }
-    ],
-    "name": "LicenseMinted",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
         "indexed": true,
         "internalType": "address",
         "name": "operator",
@@ -258,126 +184,6 @@
   {
     "inputs": [
       {
-        "internalType": "string",
-        "name": "_teamName",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_projectName",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_licenseName",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_metaURI",
-        "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_mintPrice",
-        "type": "uint256"
-      }
-    ],
-    "name": "createLicense",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_projectID",
-        "type": "uint256"
-      },
-      {
-        "internalType": "string",
-        "name": "_licenseName",
-        "type": "string"
-      }
-    ],
-    "name": "getLicenseID",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "_teamName",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_projectName",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_licenseName",
-        "type": "string"
-      }
-    ],
-    "name": "getLicenseMetaURI",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "_teamName",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_projectName",
-        "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_page",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_size",
-        "type": "uint256"
-      }
-    ],
-    "name": "getNamesByProjectID",
-    "outputs": [
-      {
-        "internalType": "string[]",
-        "name": "",
-        "type": "string[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
         "name": "account",
         "type": "address"
@@ -421,48 +227,57 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "metaByID",
-    "outputs": [
+        "internalType": "string",
+        "name": "teamName",
+        "type": "string"
+      },
       {
         "internalType": "string",
-        "name": "",
+        "name": "projectName",
         "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "releaseName",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "contributor",
+        "type": "address"
       }
     ],
-    "stateMutability": "view",
+    "name": "mint",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [
       {
         "internalType": "string",
-        "name": "_teamName",
+        "name": "teamName",
         "type": "string"
       },
       {
         "internalType": "string",
-        "name": "_projectName",
+        "name": "projectName",
         "type": "string"
       },
       {
         "internalType": "string",
-        "name": "_licenseName",
+        "name": "releaseName",
         "type": "string"
       },
       {
-        "internalType": "address",
-        "name": "_recipient",
-        "type": "address"
+        "internalType": "address[]",
+        "name": "contributors",
+        "type": "address[]"
       }
     ],
-    "name": "mintLicense",
+    "name": "mintBatch",
     "outputs": [],
-    "stateMutability": "payable",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -473,25 +288,6 @@
         "internalType": "string",
         "name": "",
         "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "priceByID",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
       }
     ],
     "stateMutability": "view",
