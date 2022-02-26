@@ -3,8 +3,7 @@ SHELL=/bin/bash
 all: install frontend
 
 install:
-	npm i -g lerna
-	lerna bootstrap
+	npx lerna bootstrap
 
 sdk:
 	npm run build --prefix ./packages/valist-sdk
@@ -36,7 +35,7 @@ down:
 
 bootstrap:
 	npm run deploy:local --prefix ./packages/evm-contracts
-	lerna run bootstrap
+	npx lerna run bootstrap
 
 evm-build-subgraph:
 	npm run codegen --prefix ./packages/evm-subgraph
@@ -76,7 +75,7 @@ lint: lint-sdk lint-web
 lint-fix: lint-fix-sdk lint-fix-web
 
 test:
-	lerna run test
+	npx lerna run test
 
 clean:
 	git clean -dfx

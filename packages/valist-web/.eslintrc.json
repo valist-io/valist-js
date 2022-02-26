@@ -1,5 +1,5 @@
 {
-  "extends": ["next/core-web-vitals", "next/babel"],
+  "extends": ["next"],
   "rules": {
     "semi": [2, "always"],
     "object-curly-spacing": ["error", "always"],

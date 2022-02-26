@@ -12,7 +12,7 @@ interface RepoMetaCardProps {
 
 const ProjectMetaCard = (props: RepoMetaCardProps) => {
   const {
-   teamName, projectName, projectMeta, releaseMeta 
+   teamName, projectName, projectMeta, releaseMeta, 
   } = props;
 
   const [downloads, setDownloads] = useState(0);
@@ -26,8 +26,8 @@ const ProjectMetaCard = (props: RepoMetaCardProps) => {
           setDownloads(json.downloads);
         }
       } catch (err) { /* @TODO HANDLE */}
-    })()
-  }, []);
+    })();
+  }, [projectName, teamName]);
 
   return (
     <div className="rounded-lg bg-white shadow p-6">
@@ -38,7 +38,7 @@ const ProjectMetaCard = (props: RepoMetaCardProps) => {
       />
       {projectMeta.external_url
         && <div className="pb-4">
-          <h1 className="text-xl text-gray-900  mb-1">Repository</h1>
+          <h1 className="text-xl text-gray-900  mb-1">Website</h1>
           <a className="text-gray-600 hover:text-indigo-500" href={projectMeta.external_url}>
             {projectMeta.external_url}
           </a>
@@ -49,12 +49,6 @@ const ProjectMetaCard = (props: RepoMetaCardProps) => {
           <h1 className="text-xl text-gray-900 mb-1">Downloads</h1>
           <div className="text-gray-600">{downloads}</div>
         </div>
-
-        {props.version &&
-          <div className="pb-4">
-            <h1 className="text-xl text-gray-900 mb-1">Version</h1>
-            <div className="text-gray-600">{props.version}</div>
-          </div>}
           
         <div className="pb-4">
           <h1 className="text-xl text-gray-900 mb-1">Total Files</h1>
@@ -62,6 +56,12 @@ const ProjectMetaCard = (props: RepoMetaCardProps) => {
             {releaseMeta.artifacts?.size || 0}
           </div>
         </div>
+
+        {props.version &&
+          <div className="pb-4">
+            <h1 className="text-xl text-gray-900 mb-1">Version</h1>
+            <div className="text-gray-600">{props.version}</div>
+          </div>}
       </div>
     </div>
   );

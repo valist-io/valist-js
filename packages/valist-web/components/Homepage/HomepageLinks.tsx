@@ -21,9 +21,9 @@ export default function HomepageLinks():JSX.Element {
         <div className="p-6">
           <h2 className="text-base font-medium text-gray-900" id="references-title">Quick Links</h2>
           <div className="flow-root mt-2">
-            <ul className="list-disc ml-4">
+            <ul className="">
               {links.map((link) => <li key={link.href}>
-                <span>{link.name} - <a className="text-blue-500" href={link.href}>
+                <span>{link.name} - <a className="font-sm text-blue-500" href={link.href}>
                   {link.href}</a>
                 </span></li>)}
             </ul>
@@ -31,5 +31,5 @@ export default function HomepageLinks():JSX.Element {
         </div>
       </div>
     </section>
-  )
+  );
 }

@@ -29,7 +29,7 @@ export default function MobileMenu(props: MobileMenuProps):JSX.Element {
       <div className="border-t border-gray-200 pt-4 pb-3">
         <div className="max-w-3xl mx-auto px-4 flex items-center sm:px-6">
           <div className="flex-shrink-0">
-            <AddressIdenticon height={35} address={props.address} />
+            <AddressIdenticon height={35} width={35} address={props.address} />
           </div>
           <div className="ml-3">
             <div className="text-base font-medium text-gray-800">{truncate(props.address, 10)}</div>

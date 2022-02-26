@@ -10,11 +10,11 @@ function TeamMemberListItem(props: TeamMemberListItemProps): JSX.Element {
     <li className="py-4">
       <div className="flex items-center space-x-4">
         <div className="flex-shrink-0">
-          <AddressIdenticon address={props.id} height={32} />
+          <AddressIdenticon address={props.id} height={32} width={32} />
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-gray-900 truncate">
-            <EnsResolver address={props.id}/>
+            {EnsResolver ({ address: props.id }) || props.id}
           </p>
         </div>
       </div>

@@ -1,14 +1,71 @@
 import { gql } from "@apollo/client";
 
-export const USER_LOGS_QUERY = gql`
-  query UserLogs($address: String){
-    logs (where: {member: $address}, first: 5){
+export const RECENT_LOGS_QUERY = gql`
+  query RecentLogs{
+    logs (first: 5){
       id
       type
       team
       project
       release
+      member
       sender
+    }
+  }
+`;
+
+export const USER_LOGS_QUERY = gql`
+  query UserLogs($address: String, $count: Int){
+    logs (where: {sender: $address}, first: $count){
+      id
+      type
+      team
+      project
+      release
+      member
+      sender
+    }
+  }
+`;
+
+export const TEAM_LOGS_QUERY = gql`
+  query TeamLogs($team: String, $count: Int){
+    logs (where: {team: $team}, first: $count){
+      id
+      type
+      team
+      project
+      release
+      member
+      sender
+    }
+  }
+`;
+
+export const PROJECT_LOGS_QUERY = gql`
+  query ProjectLogs($team: String, $project: String, $count: Int){
+    logs (where: {team: $team, project: $project}, first: $count){
+      id
+      type
+      team
+      project
+      release
+      member
+      sender
+    }
+  }
+`;
+
+export const USER_TEAMS = gql`
+  query Projects($address: String){
+    users(where: {id: $address}) {
+      id
+      teams {
+        name
+        projects{
+          name
+        }
+      }
     }
   }
 `;

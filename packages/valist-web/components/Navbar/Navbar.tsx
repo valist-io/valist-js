@@ -45,7 +45,7 @@ export default function Navbar() {
 
   useEffect(() => {
     setAddress(accountCtx.address);
-  },[accountCtx.address])
+  },[accountCtx.address]);
 
   return (
     <>

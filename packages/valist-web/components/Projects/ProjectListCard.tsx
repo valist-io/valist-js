@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { parseCID } from '../../utils/Ipfs';
+import Image from 'next/image';
 import { ProjectMeta } from '../../utils/Valist/types';
 import AddressIdenticon from '../Identicons/AddressIdenticon';
 import ValistContext from '../Valist/ValistContext';
+import removeMd from 'remove-markdown';
 
 type ProjectCardProps = {
   teamName: string,
@@ -18,49 +19,50 @@ export default function ProjectListCard({ teamName, projectName, metaURI }: Proj
     description: "Loading....",
   });
 
-  const fetchProjectMeta = async (metaURI: string) => {
-    try {
-      const projectJson = await valistCtx.valist.storage.readReleaseMeta(metaURI);
-      setMeta(projectJson)
-    } catch (err) {
-      // @TODO HANDLE
-      console.log()
-    }
-  };
-
   useEffect(() => {
-    if (metaURI === 'loading') {
-      setMeta({description: metaURI});
-    } else {
-     fetchProjectMeta(metaURI);
-    }
-  }, [metaURI, setMeta, fetchProjectMeta]);
+    const fetchProjectMeta = async (metaURI: string) => {
+      try {
+        const projectJson = await valistCtx.valist.storage.readReleaseMeta(metaURI);
+        setMeta(projectJson);
+      } catch (err) {
+        // @TODO HANDLE
+        console.log();
+      }
+    };
+
+    fetchProjectMeta(metaURI);
+  }, [metaURI, valistCtx.valist.storage]);
 
   return (
-    <div className="bg-white rounded-lg shadow px-8 py-6 mb-2 flex items-center justify-start border-2 hover:border-indigo-500">
-      <div className="mr-7">
-         {meta && meta.image && meta.image !== '' && 
-          <img height={80} width={80} className='mx-auto rounded-full'
-           src={`${valistCtx.ipfsGateway}/ipfs/${parseCID(meta.image)}`} alt="" />           
-         }
-         {meta && meta.image && meta.image === '' && 
-          <AddressIdenticon address={name} height={80} />
-         }
-      </div>
-      <div className="">
-        <h3 className="text-xl">
-          {projectName}
-        </h3>
-        <div>Published by: 
-          <span className="ml-1 cursor-pointer text-gray-900 py-1">
-            <span style={{marginBottom: "-4px"}} className='inline-block'></span>
-              {teamName}
-            </span>
+    <div className="bg-white rounded-lg shadow px-6 py-6 mb-2 border-2 hover:border-indigo-500 cursor-pointer">
+      <div className='flex mb-3'>
+        <div className="flex-shrink-0 mr-5">
+          {meta.image ?
+            <Image height={50} width={50} className='rounded-full'
+            src={meta.image} alt="Profile Pic" />      
+            :
+            <AddressIdenticon address={name} height={50} width={50} />
+          }
         </div>
-        <p>
-          {meta.description}
+
+        <div>
+          <h3 className="text-xl">
+            {projectName}
+          </h3>
+          <div>Published by: 
+            <span className="ml-1 cursor-pointer text-gray-900 py-1">
+              <span style={{ marginBottom: "-4px" }} className='inline-block'></span>
+                {teamName}
+              </span>
+          </div>
+        </div>
+      </div>
+     
+      <div>
+        <p style={{ height: 48, maxHeight: 48, overflow: 'hidden' }}>
+          {removeMd(meta.description || '')}
         </p>
       </div>
     </div>
-  )
+  );
 };

@@ -10,7 +10,7 @@ interface ReleaseListProps {
 }
 
 export default function ReleaseList(props: ReleaseListProps): JSX.Element {
-  const { teamName, projectName, projectReleases} = props;
+  const { teamName, projectName, projectReleases } = props;
   const { publicRuntimeConfig } = getConfig();
   return (
     <div className="flex flex-col">

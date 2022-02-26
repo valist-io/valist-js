@@ -9,6 +9,8 @@ import { TEAM_PROFILE_QUERY } from '../../utils/Apollo/queries';
 import { Project } from '../../utils/Apollo/types';
 import { TeamMeta } from '../../utils/Valist/types';
 import ValistContext from '../../components/Valist/ValistContext';
+import LogCard from '../../components/Logs/LogCard';
+import LogTable from '../../components/Logs/LogTable';
 
 type TeamMember = {
   id: string
@@ -28,41 +30,42 @@ export default function TeamProfilePage() {
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [projects, setaProjects] = useState<Project[]>([]);
 
-  const fetchMeta = async (metaURI: string) => {
-    try {
-      const teamMeta = await valistCtx.valist.storage.readTeamMeta(metaURI);
-      setMeta(teamMeta);
-    } catch(err) { /* TODO HANDLE */ }
-  }
-
   useEffect(() => {
+    const fetchMeta = async (metaURI: string) => {
+      try {
+        const teamMeta = await valistCtx.valist.storage.readTeamMeta(metaURI);
+        setMeta(teamMeta);
+      } catch(err) { /* TODO HANDLE */ }
+    };
+
     if (data && data.teams && data.teams[0] && data.teams[0].metaURI) {
       fetchMeta(data.teams[0].metaURI);
       setaProjects(data.teams[0].projects);
       setMembers(data.teams[0].members);
     }
-  }, [data, loading, error, setMeta]);
+  }, [data, loading, error, setMeta, valistCtx.valist.storage]);
 
   return (
     <Layout title='Valist | Team'>
       <div className="grid grid-cols-1 gap-4 items-start lg:grid-cols-6 lg:gap-8">
         <div className="grid grid-cols-1 gap-4 lg:col-span-4">
-          <TeamProfileCard 
-            view={view} 
-            setView={setView} 
+          <TeamProfileCard
+            view={view}
+            setView={setView}
             teamName={teamName}
-            teamImage={meta.image || '/ipfs/QmfPeC65TKPbA3dxE314Boh82LX5NpkcrPXonCxUuKh6vr' }
-            meta={meta}        
+            teamImage={meta.image ? meta.image : ''}
+            meta={meta}
+            tabs={['Projects', 'Activity']}          
           />
-          <TeamProjectList 
-            projects={projects}         
-          />
+          {view === 'Projects' && <TeamProjectList projects={projects} linksDisbaled={false} />}
+          {view === 'Activity' && <LogTable team={teamName} project={''} address={''} />}
         </div>
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
           <TeamMemberList 
             teamMembers={members} 
             teamName={teamName}          
           />
+          <LogCard team={teamName} />
         </div>
       </div> 
     </Layout>

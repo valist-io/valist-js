@@ -1,5 +1,4 @@
-
-import { providers } from 'ethers';
+import { BigNumber, providers } from 'ethers';
 import { TeamMeta, ProjectMeta, ReleaseMeta, Contract } from './index';
 import { StorageAPI } from './storage';
 import { ContractAPI } from './contract';
@@ -19,6 +18,10 @@ export class Client {
 	async getTeamMeta(teamName: string): Promise<TeamMeta> {
 		const metaURI = await this.contract.getTeamMetaURI(teamName);
 		return await this.storage.readTeamMeta(metaURI);
+	}
+
+	async getProjectNames(teamName: string, page: BigNumber, size: BigNumber): Promise<string[]> {
+		return await this.getProjectNames(teamName, page, size);
 	}
 
 	async getProjectMeta(teamName: string, projectName: string): Promise<ProjectMeta> {
