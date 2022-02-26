@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 
 interface EnsResolverProps {
-  address: any,
+  address: string,
 }
 
 const EnsResolver = (props:EnsResolverProps) => {
@@ -20,12 +20,12 @@ const EnsResolver = (props:EnsResolverProps) => {
         console.log(err);
       }
     })();
-  }, []);
+  }, [props.address]);
 
   return (
-    <div>
+    <Fragment>
       {ensName || props.address}
-    </div>
+    </Fragment>
   );
 };
 

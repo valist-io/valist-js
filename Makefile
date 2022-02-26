@@ -22,6 +22,9 @@ dev-sdk:
 dev-web:
 	npm run dev --prefix ./packages/valist-web
 
+dev-frontend:
+	$(MAKE) -j 2 dev-sdk dev-web
+
 dev:
 	$(MAKE) -j 3 up dev-sdk dev-web
 

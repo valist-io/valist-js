@@ -27,7 +27,7 @@ describe('valist client', async () => {
 		await deploy.deployed();
 
 		const storage = new Storage.IPFS(ipfs);
-		const contract = new Contract.EVM(deploy.address, signer);
+		const contract = new Contract.EVM(deploy.address, provider, false);
 		const valist = new Client(contract, storage);
 
 		const address = await signer.getAddress();
@@ -57,9 +57,15 @@ describe('valist client', async () => {
 		release.artifacts = new Map<string, ArtifactMeta>();
 		release.artifacts.set('package.json', artifact);
 
-		await valist.createTeam('valist', team, members[0], members);
-		await valist.createProject('valist', 'sdk', project, members);
-		await valist.createRelease('valist', 'sdk', 'v0.5.0', release);
+		await valist.waitTx(
+			await valist.createTeam('valist', team, members[0], members)
+		);
+		await valist.waitTx(
+			await valist.createProject('valist', 'sdk', project, members)
+		);
+		await valist.waitTx(
+			await valist.createRelease('valist', 'sdk', 'v0.5.0', release)
+		);
 
 		const otherTeam = await valist.getTeamMeta('valist');
 		expect(otherTeam).to.deep.equal(team);

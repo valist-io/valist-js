@@ -3,15 +3,17 @@ import {
 } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronDownIcon } from '@heroicons/react/solid';
-import { parseCID } from '@valist/sdk/dist/utils';
+import { classNames } from '../../utils/Styles';
+import { parseCID } from '../../utils/Ipfs';
+import getConfig from 'next/config';
 
 interface DownloadBoxProps {
-  releaseCID: string,
+  metaURI: string,
   releaseName: string,
 }
 
 interface ReleaseDownloadsProps {
-  releaseCID: string,
+  metaURI: string,
   releaseArtifacts: string[],
   setChosenArtifact: Dispatch<any>,
 }
@@ -19,10 +21,6 @@ interface ReleaseDownloadsProps {
 interface ReleaseArtifactProps {
   artifact: string,
   setChosenArtifact: Dispatch<any>,
-}
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ');
 }
 
 const ReleaseArtifact = (props: ReleaseArtifactProps) => {
@@ -84,6 +82,7 @@ const ReleaseDownloads = (props: ReleaseDownloadsProps) => (
 );
 
 export default function DownloadBox(props: DownloadBoxProps) {
+  const { publicRuntimeConfig } = getConfig();
   const [selected, setSelected] = useState();
   const [releaseArtifacts, setReleaseArtifacts] = useState<string[]>([]);
   const [releaseMeta, setReleaseMeta] = useState<any>({});
@@ -93,7 +92,7 @@ export default function DownloadBox(props: DownloadBoxProps) {
     try {
       const cid = releaseMeta.artifacts[artifactName].provider;
       const parsedCID = parseCID(cid);
-      const url = `https://gateway.valist.io/ipfs/${parsedCID}?filename=${props.releaseName}`;
+      const url = `${publicRuntimeConfig.IPFS_GATEWAY}/ipfs/${parsedCID}?filename=${props.releaseName}`;
       window.location.assign(url);
     } catch (err) {
       console.log('Failed to fetch artifact by name', err);
@@ -102,13 +101,13 @@ export default function DownloadBox(props: DownloadBoxProps) {
 
   const artifactFromCID = (artifactCID: string) => {
     const cid = parseCID(artifactCID);
-    const url = `https://gateway.valist.io/ipfs/${cid}`;
+    const url = `${publicRuntimeConfig.IPFS_GATEWAY}/ipfs/${cid}`;
     window.open(url, '_blank');
   };
 
   const fetchData = async () => {
-    const parsedCID = parseCID(props.releaseCID);
-    const url = `https://gateway.valist.io/ipfs/${parsedCID}`;
+    const parsedCID = parseCID(props.metaURI);
+    const url = `${publicRuntimeConfig.IPFS_GATEWAY}/ipfs/${parsedCID}`;
     let artifactNames: string[] = [];
     let response: any;
     let json: any;
@@ -133,7 +132,7 @@ export default function DownloadBox(props: DownloadBoxProps) {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   return (
     <Listbox value={selected} onChange={setSelected}>
@@ -142,7 +141,7 @@ export default function DownloadBox(props: DownloadBoxProps) {
           <div className="relative z-0 inline-flex shadow-sm rounded-md divide-x divide-indigo-600">
             <div onClick={() => {
               if (chosenArtifact === 'artifact') {
-                artifactFromCID(props.releaseCID);
+                artifactFromCID(props.metaURI);
               } else if (chosenArtifact !== '' && chosenArtifact !== 'artifact') {
                 artifactFromName(chosenArtifact);
               } else {
@@ -163,7 +162,7 @@ export default function DownloadBox(props: DownloadBoxProps) {
         </div>
         <ReleaseDownloads
           releaseArtifacts={releaseArtifacts}
-          releaseCID={props.releaseCID}
+          metaURI={props.metaURI}
           setChosenArtifact={setChosenArtifact}
         />
       </div>

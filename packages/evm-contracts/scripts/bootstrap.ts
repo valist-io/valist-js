@@ -1,49 +1,71 @@
+import path from "path";
+
+/* eslint-disable no-process-exit */
 const httpapi = require("ipfs-http-client");
+const fs = require("fs");
 
-const PinRepoMeta = async () => {
+async function PinTeamMeta() {
   const ipfs = httpapi.create();
-  const meta = JSON.stringify({
-    name: "test",
-    description: "A test project description.",
-  });
-  const { cid } = await ipfs.add(meta);
-  return cid.toString();
-};
+  const imageFile = fs.readFileSync(
+    path.join(__dirname, "data/valist-test.jpg")
+  );
+  const imagePin = await ipfs.add(imageFile);
 
-async function PinOrgMeta() {
-  const ipfs = httpapi.create();
   const meta = JSON.stringify({
-    name: "test",
-    description: "A test account description.",
+    image: imagePin.cid.toString(),
+    name: "test team",
+    description: "A test team description.",
+    external_url: "https://example.com",
   });
   const { cid } = await ipfs.add(meta);
   return cid.toString();
 }
 
+const PinProjectMeta = async () => {
+  const ipfs = httpapi.create();
+  const imageFile = fs.readFileSync(
+    path.join(__dirname, "data/valist-test.jpg")
+  );
+  const imagePin = await ipfs.add(imageFile);
+
+  const meta = JSON.stringify({
+    image: imagePin.cid.toString(),
+    name: "test project",
+    description: "A test project description.",
+    external_url: "https://git.example.com",
+  });
+  const metaPin = await ipfs.add(meta);
+  return metaPin.cid.toString();
+};
+
 const PinReleaseMeta = async () => {
   const ipfs = httpapi.create();
+  const imageFile = fs.readFileSync(
+    path.join(__dirname, "data/valist-test.jpg")
+  );
+  const imagePin = await ipfs.add(imageFile);
+
   const meta = JSON.stringify({
-    name: "valist/sdk/0.5.2",
-    readme:
-      "# Valist SDK\n\nThis folder contains the Valist SDK/core library that bridges the IPFS and Ethereum networks.\n\n## Documentation\n\nFor the TypeScript API documentation, please see the following link:\n\n* [TypeScript API Docs](https://docs.valist.io/lib/classes/_index_.valist.html)\n\n## Installation\n\n```shell\nnpm install\n```\n\n## Building\n\n```shell\nnpm run build\n```\n\n## Linting\n\n```shell\nnpm run lint\n```\n",
-    version: "0.5.2",
-    license: "MPL-2.0",
-    dependencies: [
-      "encoding",
-      "eth-sig-util",
-      "ipfs-http-client",
-      "node-fetch",
-      "web3",
-      "web3-core",
-    ],
+    image: imagePin.cid.toString(),
+    name: "test/test/0.0.1",
+    description:
+      "# Test Project\n\nThis folder contains the test project library with test code for IPFS and Ethereum.\n\n## Documentation\n\nFor the TypeScript API documentation, please see the following link:\n\n* [API Docs](https://docs.example.com/)\n\n## Installation\n\n```shell\nnpm install\n```\n\n## Building\n\n```shell\nnpm run build\n```\n\n## Linting\n\n```shell\nnpm run lint\n```\n",
+    external_url: "https://app.valist.io/test/test/0.0.1",
     artifacts: {
-      "@valist/sdk-0.5.2.tgz": {
+      "linux/amd64": {
+        architecure: "linux/amd64",
         sha256: "",
         provider: "/ipfs/QmcLspRr6QBoktravDHC6LopEczLUNvRm28T1HbKtgS9eN",
       },
-      "doc.json": {
+      "darwin/amd64": {
+        architecure: "darwin/amd64",
         sha256: "",
         provider: "/ipfs/QmQsWXTuKkvpQtVRhnGvGrnQCzoK4vwo59MGcKWFGW9mrJ",
+      },
+      "windows/amd64": {
+        architecure: "windows/amd64",
+        sha256: "",
+        provider: "/ipfs/QmcLspRr6QBoktravDHC6LopEczLUNvRm28T1HbKtgS9eN",
       },
     },
   });
@@ -53,18 +75,15 @@ const PinReleaseMeta = async () => {
 
 async function bootstrap() {
   const accounts = await hre.ethers.getSigners();
-  const valist = await hre.ethers.getContractAt("Valist", "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab");
-  // const Valist = await hre.ethers.getContractFactory("Valist");
-  // const valist = await Valist.deploy(
-  //   "0x9399BB24DBB5C4b782C70c2969F58716Ebbd6a3b"
-  // );
-  // await valist.deployed();
+  const valist = await hre.ethers.getContractAt(
+    "Valist",
+    "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab"
+  );
 
   const teamNames1 = ["test1", "test2", "test3", "test4"];
-  // const orgNames2 = ["test5", "test6", "test7", "test8"];
   const projectName = "test";
-  const teamMetaCid = await PinOrgMeta();
-  const projectMetaCid = await PinRepoMeta();
+  const teamMetaCid = await PinTeamMeta();
+  const projectMetaCid = await PinProjectMeta();
   const releaseMetaCid = await PinReleaseMeta();
   console.log("Team Meta CID", teamMetaCid);
   console.log("Project Meta CID", projectMetaCid);
@@ -95,14 +114,6 @@ async function bootstrap() {
     );
     await createProjectTx.wait();
 
-    // const project = await valist.getProjectMembers(
-    //   teamNames1[i],
-    //   projectName,
-    //   1,
-    //   10
-    // );
-    // console.log("Project Members", project);
-
     console.log(`Add addr1(${account1}) as projectMember`);
     const addProjectMemberTx = await valist.addProjectMember(
       teamNames1[i],
@@ -123,10 +134,8 @@ async function bootstrap() {
 }
 
 bootstrap()
-  // eslint-disable-next-line no-process-exit
   .then(() => process.exit(0))
   .catch((error) => {
     console.error(error);
-    // eslint-disable-next-line no-process-exit
     process.exit(1);
   });

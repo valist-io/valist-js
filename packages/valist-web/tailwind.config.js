@@ -1,11 +1,10 @@
 const colors = require('tailwindcss/colors');
 
 module.exports = {
-  purge: {
-    mode: 'layers',
-    content: ['./components/**/*.tsx', './pages/**/*.tsx'],
-  },
-
+  content: [
+    "./pages/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
+  ],
   theme: {
     extend: {
       colors: {
@@ -13,16 +12,9 @@ module.exports = {
         teal: colors.teal,
         violet: colors.violet,
         rose: colors.rose,
-        blueGray: colors.blueGray,
+        slate: colors.slate,
       }
     }
   },
-  variants: {
-    display: ['responsive', 'group-hover', 'group-focus'],
-  },
-
-  plugins: [
-    require('@tailwindcss/forms'),
-    require('@tailwindcss/line-clamp'),
-  ],
+  plugins: [],
 };

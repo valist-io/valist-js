@@ -9,3 +9,4 @@ site
 *.test
 *.out
 dist
+.env*

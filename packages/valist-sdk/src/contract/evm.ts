@@ -1,75 +1,81 @@
 import { ContractAPI } from './index';
-import { Contract, Signer } from 'ethers';
-import { Provider } from '@ethersproject/abstract-provider';
+import { Contract, PopulatedTransaction } from 'ethers';
 import { abi } from './artifacts/Valist.sol/Valist.json';
 import { BigNumber } from 'ethers';
+import { JsonRpcProvider, Web3Provider, TransactionReceipt } from '@ethersproject/providers';
+import { sendMetaTx } from './metatx';
 
 export class EVM implements ContractAPI {
 	contract: Contract;
+	provider: Web3Provider | JsonRpcProvider;
+	metaTx: boolean;
 
-	constructor(address: string, signerOrProvider: Signer | Provider) {
-		this.contract = new Contract(address, abi, signerOrProvider);
+	constructor(address: string, web3Provider: Web3Provider | JsonRpcProvider, metaTx: boolean = true) {
+		this.contract = new Contract(address, abi, web3Provider.getSigner());
+		this.provider = web3Provider;
+		this.metaTx = metaTx;
+		console.log("HUHH?", metaTx)
 	}
 
-	async createTeam(teamName: string, metaURI: string, beneficiary: string, members: string[]): Promise<void> {
-		const tx = await this.contract.createTeam(teamName, metaURI, beneficiary, members);
-		await tx.wait();
+	async createTeam(teamName: string, metaURI: string, beneficiary: string, members: string[]): Promise<string> {
+		const tx = await this.contract.populateTransaction.createTeam(teamName, metaURI, beneficiary, members);
+		return this.sendTx('createTeam', tx);
 	}
 
-	async createProject(teamName: string, projectName: string, metaURI: string, members: string[]): Promise<void> {
-		const tx = await this.contract.createProject(teamName, projectName, metaURI, members);
-		await tx.wait();
+	async createProject(teamName: string, projectName: string, metaURI: string, members: string[]): Promise<string> {
+		const tx = await this.contract.populateTransaction.createProject(teamName, projectName, metaURI, members);
+		return this.sendTx('createProject', tx);
 	}
 
-	async createRelease(teamName: string, projectName: string, releaseName: string, metaURI: string): Promise<void> {
-		const tx = await this.contract.createRelease(teamName, projectName, releaseName, metaURI);
-		await tx.wait();
+	async createRelease(teamName: string, projectName: string, releaseName: string, metaURI: string): Promise<string> {
+		const tx = await this.contract.populateTransaction.createRelease(teamName, projectName, releaseName, metaURI);
+		return this.sendTx('createRelease', tx);
 	}
 
-	async addTeamMember(teamName: string, address: string): Promise<void> {
-		const tx = await this.contract.addTeamMember(teamName, address);
-		await tx.wait();
+	async addTeamMember(teamName: string, address: string): Promise<string> {
+		const tx = await this.contract.populateTransaction.addTeamMember(teamName, address);
+		return this.sendTx('addTeamMember', tx);
 	}
 
-	async removeTeamMember(teamName: string, address: string): Promise<void> {
-		const tx = await this.contract.removeTeamMember(teamName, address);
-		await tx.wait();
+	async removeTeamMember(teamName: string, address: string): Promise<string> {
+		const tx = await this.contract.populateTransaction.removeTeamMember(teamName, address);
+		return this.sendTx('removeTeamMember', tx);
 	}
 
-	async addProjectMember(teamName: string, projectName: string, address: string): Promise<void> {
-		const tx = await this.contract.addProjectMember(teamName, projectName, address);
-		await tx.wait();
+	async addProjectMember(teamName: string, projectName: string, address: string): Promise<string> {
+		const tx = await this.contract.populateTransaction.addProjectMember(teamName, projectName, address);
+		return this.sendTx('addProjectMember', tx);
 	}
 
-	async removeProjectMember(teamName: string, projectName: string, address: string): Promise<void> {
-		const tx = await this.contract.removeProjectMember(teamName, projectName, address);
-		await tx.wait();
+	async removeProjectMember(teamName: string, projectName: string, address: string): Promise<string> {
+		const tx = await this.contract.populateTransaction.removeProjectMember(teamName, projectName, address);
+		return this.sendTx('removeProjectMember', tx);
 	}
 
-	async setTeamMetaURI(teamName: string, metaURI: string): Promise<void> {
-		const tx = await this.contract.setTeamMetaURI(teamName, metaURI);
-		await tx.wait();
+	async setTeamMetaURI(teamName: string, metaURI: string): Promise<string> {
+		const tx = await this.contract.populateTransaction.setTeamMetaURI(teamName, metaURI);
+		return this.sendTx('setTeamMetaURI', tx);
 	}
 
-	async setProjectMetaURI(teamName: string, projectName: string, metaURI: string): Promise<void> {
-		const tx = await this.contract.setProjectMetaURI(teamName, projectName, metaURI);
-		await tx.wait();
+	async setProjectMetaURI(teamName: string, projectName: string, metaURI: string): Promise<string> {
+		const tx = await this.contract.populateTransaction.setProjectMetaURI(teamName, projectName, metaURI);
+		return this.sendTx('setProjectMetaURI', tx);
 	}
 
-	async setTeamBeneficiary(teamName: string, beneficiary: string): Promise<void> {
+	async setTeamBeneficiary(teamName: string, beneficiary: string): Promise<string> {
 		const teamID = await this.contract.getTeamID(teamName);
-		const tx = await this.contract.setTeamBeneficiary(teamID, beneficiary);
-		await tx.wait();
+		const tx = await this.contract.populateTransaction.setTeamBeneficiary(teamID, beneficiary);
+		return this.sendTx('setTeamBeneficiary', tx);
 	}
 
-	async approveRelease(teamName: string, projectName: string, releaseName: string): Promise<void> {
-		const tx = await this.contract.approveRelease(teamName, projectName, releaseName);
-		await tx.wait();
+	async approveRelease(teamName: string, projectName: string, releaseName: string): Promise<string> {
+		const tx = await this.contract.populateTransaction.approveRelease(teamName, projectName, releaseName);
+		return this.sendTx('approveRelease', tx);
 	}
 
-	async rejectRelease(teamName: string, projectName: string, releaseName: string): Promise<void> {
-		const tx = await this.contract.rejectRelease(teamName, projectName, releaseName);
-		await tx.wait();
+	async rejectRelease(teamName: string, projectName: string, releaseName: string): Promise<string> {
+		const tx = await this.contract.populateTransaction.rejectRelease(teamName, projectName, releaseName);
+		return this.sendTx('rejectRelease', tx);
 	}
 
 	async getLatestReleaseName(teamName: string, projectName: string): Promise<string> {
@@ -131,6 +137,23 @@ export class EVM implements ContractAPI {
 
 	async getReleaseID(projectID: BigNumber, releaseName: string): Promise<BigNumber> {
 		return await this.contract.getReleaseID(projectID, releaseName);
+	}
+
+	async sendTx(
+		functionName: string,
+		tx: PopulatedTransaction,
+	): Promise<string> {
+		if (`${this.metaTx}` === "true") return sendMetaTx(this.provider, functionName, tx);
+	
+		tx.gasLimit = await this.provider.estimateGas(tx);
+		tx.gasPrice = await this.provider.getGasPrice();
+
+		const txReq = await this.provider.send('eth_sendTransaction', [{...tx, gasLimit: tx.gasLimit.toHexString(), gasPrice: tx.gasPrice.toHexString() }]);
+		return txReq;
+	}
+
+	async waitTx(txHash: string): Promise<TransactionReceipt> {
+		return this.provider.waitForTransaction(txHash);
 	}
 }
 
