@@ -1,9 +1,10 @@
-import { BigNumber, providers } from 'ethers';
-import { TeamMeta, ProjectMeta, ReleaseMeta, Contract } from './index';
-import { StorageAPI } from './storage';
-import { ContractAPI } from './contract';
 
-import { deployedAddresses } from './contract/evm';
+import { providers, BigNumberish } from 'ethers';
+import { TeamMeta, ProjectMeta, ReleaseMeta, LicenseMeta, Contract, } from './index';
+import { StorageAPI } from './storage';
+import { ContractAPI, TransactionAPI } from './contract';
+
+import { valistAddresses, licenseAddresses } from './contract/evm';
 import { createIPFS } from './storage/ipfs';
 
 export class Client {
@@ -20,7 +21,7 @@ export class Client {
 		return await this.storage.readTeamMeta(metaURI);
 	}
 
-	async getProjectNames(teamName: string, page: BigNumber, size: BigNumber): Promise<string[]> {
+	async getProjectNames(teamName: string, page: BigNumberish, size: BigNumberish): Promise<string[]> {
 		return await this.getProjectNames(teamName, page, size);
 	}
 
@@ -39,43 +40,46 @@ export class Client {
 		return await this.getReleaseMeta(teamName, projectName, releaseName);
 	}
 
-	async createTeam(teamName: string, team: TeamMeta, beneficiary: string, members: string[]): Promise<string> {
+	async getLicenseMeta(teamName: string, projectName: string, licenseName: string): Promise<LicenseMeta> {
+		const metaURI = await this.contract.getLicenseMetaURI(teamName, projectName, licenseName);
+		return await this.storage.readLicenseMeta(metaURI);
+	}
+
+	async createTeam(teamName: string, team: TeamMeta, beneficiary: string, members: string[]): Promise<TransactionAPI> {
 		const metaURI = await this.storage.writeTeamMeta(team);
 		return this.contract.createTeam(teamName, metaURI, beneficiary, members);
 	}
 
-	async createProject(teamName: string, projectName: string, project: ProjectMeta, members: string[]): Promise<string> {
+	async createProject(teamName: string, projectName: string, project: ProjectMeta, members: string[]): Promise<TransactionAPI> {
 		const metaURI = await this.storage.writeProjectMeta(project);
 		return this.contract.createProject(teamName, projectName, metaURI, members);
 	}
 
-	async createRelease(teamName: string, projectName: string, releaseName: string, release: ReleaseMeta): Promise<string> {
+	async createRelease(teamName: string, projectName: string, releaseName: string, release: ReleaseMeta): Promise<TransactionAPI> {
 		const metaURI = await this.storage.writeReleaseMeta(release);
 		return this.contract.createRelease(teamName, projectName, releaseName, metaURI);
 	}
 
-	async setTeamBeneficiary(teamName: string, beneficiary: string): Promise<string> {
+	async createLicense(teamName: string, projectName: string, licenseName: string, license: LicenseMeta, mintPrice: BigNumberish): Promise<TransactionAPI> {
+		const metaURI = await this.storage.writeLicenseMeta(license);
+		return this.contract.createLicense(teamName, projectName, licenseName, metaURI, mintPrice);
+	}
+
+	async setTeamBeneficiary(teamName: string, beneficiary: string): Promise<TransactionAPI> {
 		return this.contract.setTeamBeneficiary(teamName, beneficiary);
 	}
 
 	async getTeamBeneficiary(teamName: string): Promise<string> {
 		return this.contract.getTeamBeneficiary(teamName);
 	}
-
-	async waitTx(txHash: string) {
-		return this.contract.waitTx(txHash);
-	}
 }
 
 export const createClient = async ({ web3Provider }: { web3Provider: providers.Web3Provider }): Promise<Client> => {
 	const chainID = await web3Provider.getSigner().getChainId();
-	const deployedAddress = deployedAddresses[chainID] || deployedAddresses[80001];
+	const options = new Contract.EVM_Options(chainID, true);
 
 	const storage = createIPFS();
-	const contract = new Contract.EVM(
-		deployedAddress, 
-		web3Provider,
-	);
+	const contract = new Contract.EVM(options, web3Provider);
 
 	const client = new Client(contract, storage);
 	return client;

@@ -1,4 +1,4 @@
-import { TeamMeta, ProjectMeta, ReleaseMeta } from '../index';
+import { TeamMeta, ProjectMeta, ReleaseMeta, LicenseMeta } from '../index';
 import { IPFS } from './ipfs';
 
 /**
@@ -27,6 +27,13 @@ export interface StorageAPI {
 	readReleaseMeta(metaURI: string): Promise<ReleaseMeta>;
 
 	/**
+	 * Read license metadata from storage.
+	 * 
+	 * @param metaURI Metadata URI.
+	 */
+	readLicenseMeta(metaURI: string): Promise<LicenseMeta>;
+
+	/**
 	 * Write team metadata to storage and return its URI.
 	 * 
 	 * @param team Team metadata.
@@ -46,6 +53,13 @@ export interface StorageAPI {
 	 * @param release Release metadata.
 	 */
 	writeReleaseMeta(release: ReleaseMeta): Promise<string>;
+
+	/**
+	 * Write license metadata to storage and return its URI.
+	 * 
+	 * @param license License metadata.
+	 */
+	writeLicenseMeta(license: LicenseMeta): Promise<string>;
 
 	/**
 	 * Write data to storage and return its URI.

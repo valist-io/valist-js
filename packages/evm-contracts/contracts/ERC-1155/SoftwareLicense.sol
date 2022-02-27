@@ -62,8 +62,8 @@ contract SoftwareLicense is IERC1155MetadataURI, ERC1155, ERC2771Context {
     /// @dev licenseID => metaURI
     mapping(uint256 => string) public metaByID;
 
-    /// @dev projectID => licenseIDs
-    mapping(uint256 => EnumerableSet.UintSet) licensesByProjectID;
+    /// @dev projectID => names
+    mapping(uint256 => string[]) nameByProjectID;
 
     /// @dev emitted when a license is created.
     event LicenseCreated(
@@ -108,13 +108,14 @@ contract SoftwareLicense is IERC1155MetadataURI, ERC1155, ERC2771Context {
         uint256 projectID = valist.getProjectID(teamID, _projectName);
         uint licenseID = getLicenseID(projectID, _licenseName);
 
+        require(bytes(metaByID[licenseID]).length == 0, "err-license-exist");
         require(valist.isTeamMember(teamID, _msgSender()), "err-team-member");
         require(bytes(valist.metaByID(projectID)).length > 0, "err-proj-not-exist");
         require(valist.getTeamBeneficiary(teamID) != address(0), "err-no-beneficiary");
 
         priceByID[licenseID] = _mintPrice;
         metaByID[licenseID] = _metaURI;
-        licensesByProjectID[projectID].add(licenseID);
+        nameByProjectID[projectID].push(_licenseName);
 
         emit LicenseCreated(_teamName, _projectName, _licenseName, _mintPrice, licenseID);
     }
@@ -124,7 +125,7 @@ contract SoftwareLicense is IERC1155MetadataURI, ERC1155, ERC2771Context {
     /// @param _teamName Name of the team.
     /// @param _projectName Name of the project.
     /// @param _licenseName Unique name used to identify the license.
-    /// @param _recipient mint price of the license in wei.
+    /// @param _recipient Address of the license recipient.
     function mintLicense(
         string memory _teamName,
         string memory _projectName,
@@ -165,24 +166,6 @@ contract SoftwareLicense is IERC1155MetadataURI, ERC1155, ERC2771Context {
         return string(abi.encodePacked(gateway, metaByID[id]));
     }
 
-    /// Fetches metaURI of the software the license is linked to.
-    ///
-    /// @param _teamName Name of the team.
-    /// @param _projectName Name of the project.
-    /// @param _releaseName Name of the release.
-    function getReleaseMetaURI(
-        string memory _teamName,
-        string memory _projectName,
-        string memory _releaseName
-    )
-        public
-        view
-        returns (string memory)
-    {
-        string memory gateway = "https://gateway.valist.io";
-        return string(abi.encodePacked(gateway, valist.getReleaseMetaURI(_teamName, _projectName, _releaseName)));
-    }
-
     /// Generates a licenseID given a projectID and licenseName.
     /// Salts the ID with the token symbol to prevent collisions with releaseIDs.
     ///
@@ -198,31 +181,57 @@ contract SoftwareLicense is IERC1155MetadataURI, ERC1155, ERC2771Context {
     {
         return uint(keccak256(abi.encodePacked(_projectID, symbol, keccak256(bytes(_licenseName)))));
     }
-    
-    /// Fetches licenseIDs within a project.
+
+    /// Returns the license metadata URI.
     ///
-    /// @param _projectID Unique ID of the project.
+    /// @param _teamName Name of the team.
+    /// @param _projectName Name of the project.
+    /// @param _licenseName Name of the license.
+    function getLicenseMetaURI(
+        string memory _teamName,
+        string memory _projectName,
+        string memory _licenseName
+    )
+        public
+        view
+        returns (string memory)
+    {
+        uint256 teamID = valist.getTeamID(_teamName);
+        uint256 projectID = valist.getProjectID(teamID, _projectName);
+        uint256 licenseID = getLicenseID(projectID, _licenseName);
+        require(bytes(metaByID[licenseID]).length > 0, "err-license-not-exist");
+        return metaByID[licenseID];
+    }
+    
+    /// Fetches license names within a project.
+    ///
+    /// @param _teamName Name of the team.
+    /// @param _projectName Name of the project.
     /// @param _page Page to return items from.
     /// @param _size Number of items to return.
-    function getLicensesByProjectID(
-        uint256 _projectID,
+    function getNamesByProjectID(
+        string memory _teamName,
+        string memory _projectName,
         uint256 _page,
         uint256 _size
     )
         public
         view
-        returns (uint256[] memory)
+        returns (string[] memory)
     {
+        uint256 teamID = valist.getTeamID(_teamName);
+        uint256 projectID = valist.getProjectID(teamID, _projectName);
+
         uint start = _page * _size;
         uint limit = start + _size;
 
-        if (limit > licensesByProjectID[_projectID].length()) {
-            limit = licensesByProjectID[_projectID].length();
+        if (limit > nameByProjectID[projectID].length) {
+            limit = nameByProjectID[projectID].length;
         }
 
-        uint256[] memory values = new uint256[](limit - start);
+        string[] memory values = new string[](limit - start);
         for (uint i = start; i < limit; ++i) {
-            values[i - start] = licensesByProjectID[_projectID].at(i);
+            values[i - start] = nameByProjectID[projectID][i];
         }
         
         return values;
