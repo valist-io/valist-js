@@ -46,7 +46,7 @@ export class Pinata implements StorageAPI {
 			method: 'POST', 
 			body: data,
 			headers: {
-				'Authorization': `Bearer ${jwt}`
+				'Authorization': `Bearer ${this.jwt}`
 			}
 		}).then(res => res.json());
 
@@ -62,7 +62,7 @@ export class Pinata implements StorageAPI {
 			method: 'POST', 
 			body: form,
 			headers: {
-				'Authorization': `Bearer ${jwt}`
+				'Authorization': `Bearer ${this.jwt}`
 			}
 		}).then(res => res.json());
 
