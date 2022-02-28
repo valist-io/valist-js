@@ -47,8 +47,8 @@ const functionIDMap: Record<string, string> = {
     'setProjectMetaURI': '6ece1fd9-531e-4710-b382-2129bf8f2263',
     'setTeamBeneficiary': 'd0fea8bd-777f-4c9f-94e1-ceb4d5907174',
     'setTeamMetaURI': '8279a681-73bd-4b2b-b02f-99e2fa1c96ab',
-    'createLicense': '56923e9e-39b1-4653-8d5d-3b369a02a3d7',
-    'mintLicense': '9d97bed3-ac35-4f54-bb0d-ea35f94ec612',
+    'createLicense': 'b9457150-a8f2-4865-a7ad-00a2b7051029',
+    'mintLicense': '19df2338-09bf-4f60-a908-d52e5278e7e7',
 };
 
 // pass the networkId to get GSN forwarder contract addresses
