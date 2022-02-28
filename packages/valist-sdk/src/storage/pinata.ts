@@ -1,13 +1,12 @@
 import { TeamMeta, ProjectMeta, ReleaseMeta, replacer, reviver } from '../index';
 import { StorageAPI } from './index';
-import { PinataClient } from '@pinata/sdk';
 
 export class Pinata implements StorageAPI {
-	pinata: PinataClient;
+	jwt: string;
 	gateway: string;
 
-	constructor(pinata: PinataClient, gateway: string) {
-		this.pinata = pinata;
+	constructor(jwt: string, gateway: string) {
+		this.jwt = jwt;
 		this.gateway = gateway;
 	}
 
@@ -42,12 +41,31 @@ export class Pinata implements StorageAPI {
 	}
 
 	async writeJSON(data: string): Promise<string> {
-		const res = await this.pinata.pinJSONToIPFS(data);
+		const url = 'https://api.pinata.cloud/pinning/pinJSONToIPFS';
+		const res = await fetch(url, { 
+			method: 'POST', 
+			body: data,
+			headers: {
+				'Authorization': `Bearer ${jwt}`
+			}
+		}).then(res => res.json());
+
 		return `/ipfs/${res.IpfsHash}`;
 	}
 
 	async writeFile(data: File): Promise<string> {
-		const res = await this.pinata.pinFileToIPFS(data.stream());
+		const form = new FormData();
+		form.append('file', data);
+		
+		const url = 'https://api.pinata.cloud/pinning/pinFileToIPFS';
+		const res = await fetch(url, { 
+			method: 'POST', 
+			body: form,
+			headers: {
+				'Authorization': `Bearer ${jwt}`
+			}
+		}).then(res => res.json());
+
 		return `/ipfs/${res.IpfsHash}`;
 	}
 
@@ -55,14 +73,4 @@ export class Pinata implements StorageAPI {
 		const res = await fetch(this.gateway + uri);
 		return res.text();
 	}
-}
-
-/**
- * Creates the default Pinata storage provider.
- */
-export async function createPinata(apiKey: string, secretApiKey: string, gateway: string): Promise<StorageAPI> {
-	const pinataSDK = require('@pinata/sdk');
-	const pinata = pinataSDK(apiKey, secretApiKey);
-	await pinata.testAuthentication();
-	return new Pinata(pinata, gateway);
 }

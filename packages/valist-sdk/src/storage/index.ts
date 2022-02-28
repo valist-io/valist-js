@@ -1,5 +1,6 @@
 import { TeamMeta, ProjectMeta, ReleaseMeta } from '../index';
 import { IPFS } from './ipfs';
+import { Pinata } from './pinata';
 
 /**
  * Storage abstraction API.
@@ -69,4 +70,4 @@ export interface StorageAPI {
 	read(uri: string): Promise<string>;
 }
 
-export { IPFS };
+export { IPFS, Pinata };
