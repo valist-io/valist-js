@@ -43,7 +43,7 @@ export interface AccountCtxInterface {
   setShowLogin: SetUseState<boolean>,
   setAddress: SetUseState<string>,
   setMagic: SetUseState<Magic | null>,
-  notify: (type: string) => string,
+  notify: (type: string, text?: string) => string,
   dismiss: (type: string) => void,
 }
 

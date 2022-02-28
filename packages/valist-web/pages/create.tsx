@@ -16,7 +16,9 @@ import ValistContext from '../components/Valist/ValistContext';
 import { USER_TEAMS } from '../utils/Apollo/queries';
 import CreateLicenseForm from '../components/Publishing/CreateLicenseForm';
 import LicensePreview from '../components/Publishing/LicensePreview';
-import { ReleaseMeta, ArtifactMeta } from '@valist/sdk';
+import { ReleaseMeta, ArtifactMeta, LicenseMeta } from '@valist/sdk';
+import { TransactionAPI } from '@valist/sdk/dist/contract';
+import { BigNumberish } from 'ethers';
 
 type Member = {
   id: string,
@@ -83,6 +85,7 @@ const CreatePage: NextPage = () => {
   const [licenseProject, setLicenseProject] = useState<string>('');
   const [licenseName, setLicenseName] = useState<string>('');
   const [licenseDescription, setLicenseDescription] = useState<string>('');
+  const [licnesePrice, setLicensePrice] = useState<BigNumberish>(0);
 
   // Set which sections/steps to render
   useEffect(() => {
@@ -206,14 +209,13 @@ const CreatePage: NextPage = () => {
     let toastID = '';
     try { 
       toastID = accountCtx.notify('transaction');
-      await valistCtx.valist.waitTx(
-        await valistCtx.valist.createTeam(
-          teamName,
-          meta,
-          teamBeneficiary,
-          teamMembers,
-        ),
+      const transaction = await valistCtx.valist.createTeam(
+        teamName,
+        meta,
+        teamBeneficiary,
+        teamMembers,
       );
+      await transaction.wait();
 
       setUserTeamNames([...userTeamNames, teamName]);
       accountCtx.dismiss(toastID);
@@ -248,20 +250,21 @@ const CreatePage: NextPage = () => {
      let toastID = '';
      try { 
       toastID = accountCtx.notify('transaction');
-      await valistCtx.valist.waitTx(
-        await valistCtx.valist.createProject(
-          projectTeam,
-          projectName,
-          meta,
-          projectMembers,
-        ),
+      const transaction = await valistCtx.valist.createProject(
+        projectTeam,
+        projectName,
+        meta,
+        projectMembers,
       );
+      await transaction.wait();
+
       accountCtx.dismiss(toastID);
       accountCtx.notify('success');
       router.push('/');
     } catch(err) {
+      console.log('Error', err);
       accountCtx.dismiss(toastID);
-      accountCtx.notify('error');
+      accountCtx.notify('error', String(err));
     }
   };
 
@@ -299,20 +302,21 @@ const CreatePage: NextPage = () => {
     let toastID = '';
     try {
       toastID = accountCtx.notify('transaction');
-      await valistCtx.valist.waitTx(
-        await valistCtx.valist.createRelease(
-          releaseTeam,
-          releaseProject,
-          releaseName,
-          release,
-        ),
+      const transaction = await valistCtx.valist.createRelease(
+        releaseTeam,
+        releaseProject,
+        releaseName,
+        release,
       );
+      transaction.wait();
+      
       accountCtx.dismiss(toastID);
       accountCtx.notify('success');
       router.push('/');
     } catch(err) {
+      console.log('Error', err);
       accountCtx.dismiss(toastID);
-      accountCtx.notify('error');
+      accountCtx.notify('error', String(err));
     }
   };
 
@@ -324,17 +328,37 @@ const CreatePage: NextPage = () => {
       imgURL = `${publicRuntimeConfig.IPFS_GATEWAY}${imgCID}`;
     }
 
-    const meta = {
-      image: imgURL,
-      name: licenseName,
-      description: licenseDescription,
-      external_url: '',
-    };
+    const license = new LicenseMeta();
+		license.image = imgURL,
+		license.name = licenseName,
+		license.description = licenseDescription,
+		license.external_url = '',
 
     console.log("License Team", licenseTeam);
     console.log("License Project", licenseProject);
     console.log("License Name", licenseName);
-    console.log("Meta", meta);
+    console.log("Meta", license);
+
+    let toastID = '';
+    try {
+      toastID = accountCtx.notify('transaction');
+      const transaction = await valistCtx.valist.createLicense(
+        licenseTeam,
+        licenseProject,
+        licenseName,
+        license,
+        licnesePrice,
+      );
+      transaction.wait();
+      
+      accountCtx.dismiss(toastID);
+      accountCtx.notify('success');
+      router.push('/');
+    } catch(err) {
+      console.log('Error', err);
+      accountCtx.dismiss(toastID);
+      accountCtx.notify('error', String(err));
+    }
   };
 
   // Render preview based on view state
@@ -376,7 +400,7 @@ const CreatePage: NextPage = () => {
   };
 
   return (
-    <Layout title="Valist | Create Team">
+    <Layout title={`Valist | Create ${view}`}>
       <div className="grid grid-cols-1 gap-4 items-start gap-y-6 lg:grid-cols-12 lg:gap-8">
         {/* Right Column */}
         <div className="grid grid-cols-1 gap-x-4 gap-y-6 lg:col-span-5">
@@ -457,6 +481,7 @@ const CreatePage: NextPage = () => {
                 setProject={setLicenseProject}
                 setName={setLicenseName}
                 setDescription={setLicenseDescription}
+                setPrice={setLicensePrice}
                 submit={createLicense}
                 setView={setView}
               />

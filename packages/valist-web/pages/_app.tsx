@@ -2,7 +2,8 @@ import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import getConfig from 'next/config';
 import React, { useEffect, useState } from 'react';
-import { Client, Contract, Storage, deployedAddresses } from '@valist/sdk';
+import { Client, Contract, Storage } from '@valist/sdk';
+import { licenseAddresses, valistAddresses } from '@valist/sdk/dist/contract';
 import { ethers } from 'ethers';
 import { ApolloProvider } from '@apollo/client';
 import { Magic } from 'magic-sdk';
@@ -27,9 +28,12 @@ function ValistApp({ Component, pageProps }: AppProps) {
   const [valistClient, setValistClient] = useState<Client>(
     new Client(
       new Contract.EVM(
-        deployedAddresses[publicRuntimeConfig.CHAIN_ID], 
+        { 
+          valistAddress: valistAddresses[publicRuntimeConfig.CHAIN_ID],
+          licenseAddress: licenseAddresses[publicRuntimeConfig.CHAIN_ID],
+          metaTx: (publicRuntimeConfig.METATX_ENABLED as boolean) , 
+        },
         provider,
-        publicRuntimeConfig.METATX_ENABLED,
       ),
       new Storage.IPFS(
         createIPFS(publicRuntimeConfig.IPFS_HOST),
@@ -41,20 +45,19 @@ function ValistApp({ Component, pageProps }: AppProps) {
   const [loginType, setLoginType] = useState<LoginType>('readOnly');
   const [showLogin, setShowLogin] = useState(false);
 
-  const notify = (type: string): string => {
+  const notify = (type: string, text?: string): string => {
     switch (type) {
       case 'transaction':
         return toast.loading('Transaction pending...');
       case 'success':
         return toast.success('Transaction Successfull!');
       case 'error':
-        return toast('An error has occurred.', {
+        return toast(`An error has occurred: ${text}`, {
           style: {
             backgroundColor: '#ff6961',
           },
         });
     }
-
     return '';
   };
 
@@ -94,9 +97,12 @@ function ValistApp({ Component, pageProps }: AppProps) {
     setValistClient(
       new Client(
         new Contract.EVM(
-          deployedAddresses[publicRuntimeConfig.CHAIN_ID], 
+          { 
+            valistAddress: valistAddresses[publicRuntimeConfig.CHAIN_ID],
+            licenseAddress: licenseAddresses[publicRuntimeConfig.CHAIN_ID],
+            metaTx: (publicRuntimeConfig.METATX_ENABLED as boolean) , 
+          },
           provider,
-          publicRuntimeConfig.METATX_ENABLED,
         ),
         new Storage.IPFS(
           createIPFS(publicRuntimeConfig.IPFS_HOST),
