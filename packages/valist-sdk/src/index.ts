@@ -37,6 +37,8 @@ export class ReleaseMeta {
 	public external_url?: string;
 	/** mapping of names to artifacts. */
 	public artifacts?: Map<string, ArtifactMeta>;
+	/** optional list of licenses linked to the project */
+	public licenses?: string[];
 }
 
 export class ArtifactMeta {

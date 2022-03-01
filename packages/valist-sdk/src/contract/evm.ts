@@ -192,6 +192,10 @@ export class EVM implements ContractAPI {
 		return await this.license.getLicenseID(projectID, licenseName);
 	}
 
+	async getPriceByID(licenseID: BigNumberish): Promise<BigNumberish> {
+		return await this.license.priceByID(licenseID);
+	}
+
 	private async sendTx(functionName: string, params: PopulatedTransaction): Promise<TransactionAPI> {
 		let hash = '';
 		if (this.options.metaTx) {
