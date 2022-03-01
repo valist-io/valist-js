@@ -1,10 +1,16 @@
+import { BigNumberish } from 'ethers';
 import React, { useState, useRef, useEffect } from 'react';
 import copyToCB from '../../utils/Clipboard';
+import { ReleaseMeta } from '../../utils/Valist/types';
+import DownloadLink from './DownloadLink';
 
 interface ProjectActionsProps {
   teamName: string,
   projectName: string,
+  releaseMeta: ReleaseMeta,
+  licensePrice: BigNumberish | null,
   showAll: boolean,
+  mintLicense: () => Promise<void>,
 }
 
 const ProjectActions = (props: ProjectActionsProps) => {
@@ -15,14 +21,20 @@ const ProjectActions = (props: ProjectActionsProps) => {
     teamName, projectName,
   } = props;
 
-
   useEffect(() => {
     setLocation(window.location.toString());
   }, []);
 
   return (
-    <div className="pb-4">
-      <div className="pb-4">
+    <div className="rounded-lg bg-white shadow p-6">
+      {props.licensePrice && <div className="flex justify-center py-2 px-4 border border-transparent rounded-md 
+shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none 
+focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" onClick={() => props.mintLicense()}>
+        Purchase License {props.licensePrice.toString()} ETH
+      </div>}
+
+      {props.licensePrice === null && <DownloadLink releaseName={`${teamName}_${projectName}`} releaseMeta={props.releaseMeta} />}
+      {/* {<div className="pb-4">
         <h1 className="text-xl text-gray-900 mb-2">
           Download with cURL
         </h1>
@@ -47,7 +59,7 @@ const ProjectActions = (props: ProjectActionsProps) => {
             </svg>
           </div>
         </div>
-      </div>
+      </div>} */}
     </div>
   );
 };

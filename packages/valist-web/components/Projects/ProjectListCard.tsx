@@ -4,6 +4,7 @@ import { ProjectMeta } from '../../utils/Valist/types';
 import AddressIdenticon from '../Identicons/AddressIdenticon';
 import ValistContext from '../Valist/ValistContext';
 import removeMd from 'remove-markdown';
+import AccountContext from '../Accounts/AccountContext';
 
 type ProjectCardProps = {
   teamName: string,
@@ -14,6 +15,7 @@ type ProjectCardProps = {
 export default function ProjectListCard({ teamName, projectName, metaURI }: ProjectCardProps): JSX.Element {
   const name = `${teamName}/${projectName}`;
   const valistCtx = useContext(ValistContext);
+  const accountCtx = useContext(AccountContext);
   let [ meta, setMeta ] = useState<ProjectMeta>({
     image: '',
     description: "Loading....",
@@ -25,13 +27,13 @@ export default function ProjectListCard({ teamName, projectName, metaURI }: Proj
         const projectJson = await valistCtx.valist.storage.readReleaseMeta(metaURI);
         setMeta(projectJson);
       } catch (err) {
-        // @TODO HANDLE
-        console.log();
+        console.log("Failed to fetch projectID.", err);
+        accountCtx.notify('error', String(err));
       }
     };
 
     fetchProjectMeta(metaURI);
-  }, [metaURI, valistCtx.valist.storage]);
+  }, [accountCtx, metaURI, valistCtx.valist.storage]);
 
   return (
     <div className="bg-white rounded-lg shadow px-6 py-6 mb-2 border-2 hover:border-indigo-500 cursor-pointer">
