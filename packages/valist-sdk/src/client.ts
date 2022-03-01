@@ -1,6 +1,6 @@
 
 import { providers, BigNumberish } from 'ethers';
-import { TeamMeta, ProjectMeta, ReleaseMeta, LicenseMeta, Contract, } from './index';
+import { TeamMeta, ProjectMeta, ReleaseMeta, LicenseMeta, Contract } from './index';
 import { StorageAPI } from './storage';
 import { ContractAPI, TransactionAPI } from './contract';
 

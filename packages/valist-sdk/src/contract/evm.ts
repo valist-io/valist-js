@@ -1,9 +1,9 @@
 import { ContractAPI, TransactionAPI } from './index';
 import { Contract, PopulatedTransaction } from 'ethers';
-import { BigNumberish } from 'ethers';
+import { BigNumber, BigNumberish } from 'ethers';
 import { TransactionResponse, TransactionReceipt } from '@ethersproject/abstract-provider';
 import { JsonRpcProvider, Web3Provider } from '@ethersproject/providers';
-import { sendMetaTx } from './metatx';
+import { sendMetaTx, sendTx } from './metatx';
 
 import * as valist_contract from './artifacts/Valist.sol/Valist.json';
 import * as license_contract from './artifacts/ERC-1155/SoftwareLicense.sol/SoftwareLicense.json';
@@ -32,6 +32,10 @@ export class EVM_Transaction implements TransactionAPI {
 	async wait(): Promise<TransactionReceipt> {
 		return await this.transaction.wait();
 	}
+
+	hash(): string {
+		return this.transaction.hash;
+	}
 }
 
 export class EVM implements ContractAPI {
@@ -50,63 +54,74 @@ export class EVM implements ContractAPI {
 
 	async createTeam(teamName: string, metaURI: string, beneficiary: string, members: string[]): Promise<TransactionAPI> {
 		const tx = await this.valist.populateTransaction.createTeam(teamName, metaURI, beneficiary, members);
-		return await this.sendTx('createTeam', tx);
+		return await this.sendTx('createTeam', tx, this.options.metaTx);
 	}
 
 	async createProject(teamName: string, projectName: string, metaURI: string, members: string[]): Promise<TransactionAPI> {
 		const tx = await this.valist.populateTransaction.createProject(teamName, projectName, metaURI, members);
-		return await this.sendTx('createProject', tx);
+		return await this.sendTx('createProject', tx, this.options.metaTx);
 	}
 
 	async createRelease(teamName: string, projectName: string, releaseName: string, metaURI: string): Promise<TransactionAPI> {
 		const tx = await this.valist.populateTransaction.createRelease(teamName, projectName, releaseName, metaURI);
-		return await this.sendTx('createRelease', tx);
+		return await this.sendTx('createRelease', tx, this.options.metaTx);
 	}
 
 	async addTeamMember(teamName: string, address: string): Promise<TransactionAPI> {
 		const tx = await this.valist.populateTransaction.addTeamMember(teamName, address);
-		return await this.sendTx('addTeamMember', tx);
+		return await this.sendTx('addTeamMember', tx, this.options.metaTx);
 	}
 
 	async removeTeamMember(teamName: string, address: string): Promise<TransactionAPI> {
 		const tx = await this.valist.populateTransaction.removeTeamMember(teamName, address);
-		return await this.sendTx('removeTeamMember', tx);
+		return await this.sendTx('removeTeamMember', tx, this.options.metaTx);
 	}
 
 	async addProjectMember(teamName: string, projectName: string, address: string): Promise<TransactionAPI> {
 		const tx = await this.valist.populateTransaction.addProjectMember(teamName, projectName, address);
-		return await this.sendTx('addProjectMember', tx);
+		return await this.sendTx('addProjectMember', tx, this.options.metaTx);
 	}
 
 	async removeProjectMember(teamName: string, projectName: string, address: string): Promise<TransactionAPI> {
 		const tx = await this.valist.populateTransaction.removeProjectMember(teamName, projectName, address);
-		return await this.sendTx('removeProjectMember', tx);
+		return await this.sendTx('removeProjectMember', tx, this.options.metaTx);
 	}
 
 	async setTeamMetaURI(teamName: string, metaURI: string): Promise<TransactionAPI> {
 		const tx = await this.valist.populateTransaction.setTeamMetaURI(teamName, metaURI);
-		return await this.sendTx('setTeamMetaURI', tx);
+		return await this.sendTx('setTeamMetaURI', tx, this.options.metaTx);
 	}
 
 	async setProjectMetaURI(teamName: string, projectName: string, metaURI: string): Promise<TransactionAPI> {
 		const tx = await this.valist.populateTransaction.setProjectMetaURI(teamName, projectName, metaURI);
-		return await this.sendTx('setProjectMetaURI', tx);
+		return await this.sendTx('setProjectMetaURI', tx, this.options.metaTx);
 	}
 
 	async setTeamBeneficiary(teamName: string, beneficiary: string): Promise<TransactionAPI> {
 		const teamID = await this.valist.getTeamID(teamName);
 		const tx = await this.valist.populateTransaction.setTeamBeneficiary(teamID, beneficiary);
-		return await this.sendTx('setTeamBeneficiary', tx);
+		return await this.sendTx('setTeamBeneficiary', tx, this.options.metaTx);
 	}
 
 	async approveRelease(teamName: string, projectName: string, releaseName: string): Promise<TransactionAPI> {
 		const tx = await this.valist.populateTransaction.approveRelease(teamName, projectName, releaseName);
-		return await this.sendTx('approveRelease', tx);
+		return await this.sendTx('approveRelease', tx, this.options.metaTx);
 	}
 
 	async rejectRelease(teamName: string, projectName: string, releaseName: string): Promise<TransactionAPI> {
 		const tx = await this.valist.populateTransaction.rejectRelease(teamName, projectName, releaseName);
-		return await this.sendTx('rejectRelease', tx);
+		return await this.sendTx('rejectRelease', tx, this.options.metaTx);
+	}
+
+	async createLicense(teamName: string, projectName: string, licenseName: string, metaURI: string, mintPrice: BigNumberish): Promise<TransactionAPI> {
+		const tx = await this.license.populateTransaction.createLicense(teamName, projectName, licenseName, metaURI, mintPrice);
+		return await this.sendTx('createLicense', tx, this.options.metaTx);
+	}
+
+	async mintLicense(teamName: string, projectName: string, licenseName: string, recipient: string): Promise<TransactionAPI> {
+		const tx = await this.license.populateTransaction.mintLicense(teamName, projectName, licenseName, recipient);
+		tx.value = await this.getLicensePrice(teamName, projectName, licenseName);
+		return await this.sendTx('mintLicense', tx, false);
 	}
 
 	async getLatestReleaseName(teamName: string, projectName: string): Promise<string> {
@@ -158,26 +173,23 @@ export class EVM implements ContractAPI {
 		return await this.valist.getReleaseRejectors(teamName, projectName, releaseName, page, size);
 	}
 
-	async getTeamID(teamName: string): Promise<BigNumberish> {
+	async getTeamID(teamName: string): Promise<BigNumber> {
 		return await this.valist.getTeamID(teamName);
 	}
 
-	async getProjectID(teamID: BigNumberish, projectName: string): Promise<BigNumberish> {
+	async getProjectID(teamID: BigNumberish, projectName: string): Promise<BigNumber> {
 		return await this.valist.getProjectID(teamID, projectName);
 	}
 
-	async getReleaseID(projectID: BigNumberish, releaseName: string): Promise<BigNumberish> {
+	async getReleaseID(projectID: BigNumberish, releaseName: string): Promise<BigNumber> {
 		return await this.valist.getReleaseID(projectID, releaseName);
 	}
 
-	async createLicense(teamName: string, projectName: string, licenseName: string, metaURI: string, mintPrice: BigNumberish): Promise<TransactionAPI> {
-		const tx = await this.license.populateTransaction.createLicense(teamName, projectName, licenseName, metaURI, mintPrice);
-		return await this.sendTx('createLicense', tx);
-	}
-
-	async mintLicense(teamName: string, projectName: string, licenseName: string, recipient: string): Promise<TransactionAPI> {
-		const tx = await this.license.populateTransaction.mintLicense(teamName, projectName, licenseName, recipient);
-		return await this.sendTx('mintLicense', tx);
+	async getLicensePrice(teamName: string, projectName: string, licenseName: string): Promise<BigNumber> {
+		const teamID = await this.getTeamID(teamName);
+		const projectID = await this.getProjectID(teamID, projectName);
+		const licenseID = await this.getLicenseID(projectID, licenseName);
+		return await this.license.priceByID(licenseID);
 	}
 
 	async getLicenseMetaURI(teamName: string, projectName: string, licenseName: string): Promise<string> {
@@ -188,7 +200,7 @@ export class EVM implements ContractAPI {
 		return await this.license.getNamesByProjectID(teamName, projectName, page, size);
 	}
 
-	async getLicenseID(projectID: BigNumberish, licenseName: string): Promise<BigNumberish> {
+	async getLicenseID(projectID: BigNumberish, licenseName: string): Promise<BigNumber> {
 		return await this.license.getLicenseID(projectID, licenseName);
 	}
 
@@ -196,19 +208,10 @@ export class EVM implements ContractAPI {
 		return await this.license.priceByID(licenseID);
 	}
 
-	private async sendTx(functionName: string, params: PopulatedTransaction): Promise<TransactionAPI> {
-		let hash = '';
-		if (this.options.metaTx) {
-			hash = await sendMetaTx(this.provider, functionName, params);
-		} else {
-			params.gasLimit = await this.provider.estimateGas(params);
-			params.gasPrice = await this.provider.getGasPrice();
-
-			const gasLimit = params.gasLimit.toHexString();
-			const gasPrice = params.gasPrice.toHexString();
-
-			hash = await this.provider.send('eth_sendTransaction', [{...params, gasLimit, gasPrice}]);	
-		}
+	private async sendTx(functionName: string, params: PopulatedTransaction, metaTx: boolean): Promise<TransactionAPI> {
+		let hash = metaTx
+			? await sendMetaTx(this.provider, functionName, params)
+			: await sendTx(this.provider, functionName, params);
 
 		const tx = await this.provider.getTransaction(hash);
 		return new EVM_Transaction(tx);

@@ -1,5 +1,5 @@
 import { EVM, EVM_Options, valistAddresses, licenseAddresses } from './evm';
-import { BigNumberish, PopulatedTransaction } from 'ethers';
+import { BigNumber, BigNumberish, PopulatedTransaction } from 'ethers';
 import { TransactionReceipt } from '@ethersproject/abstract-provider';
 
 interface TransactionAPI {
@@ -7,6 +7,11 @@ interface TransactionAPI {
 	 * Waits for a transaction to be confirmed.
 	 */
 	wait(): Promise<any>;
+
+	/**
+	 * Returns the transaction hash.
+	 */
+	hash(): string;
 }
 
 /**
@@ -242,7 +247,7 @@ interface ContractAPI {
 	 * @param teamID Unique team ID.
 	 * @param projectName Name of the project.
 	 */
-	getProjectID(teamID: BigNumberish, projectName: string): Promise<BigNumberish>;
+	getProjectID(teamID: BigNumberish, projectName: string): Promise<BigNumber>;
 
 	/**
 	 * Generates releaseID from projectID and releaseName.
@@ -250,63 +255,72 @@ interface ContractAPI {
 	 * @param projectID Unique project ID.
 	 * @param releaseName Name of the release.
 	 */
-	getReleaseID(projectID: BigNumberish, releaseName: string): Promise<BigNumberish>;
+	getReleaseID(projectID: BigNumberish, releaseName: string): Promise<BigNumber>;
 
 	/** 
-	 * Creates a new License and establishes the mint price.
-	 *
-	 * @param teamName Name of the team.
-	 * @param projectName Name of the project.
-	 * @param licenseName Unique name used to identify the license.
-	 * @param metaURI metaURI of the license.
-	 * @param mintPrice mint price of the license in wei.
-	 */
+     * Creates a new License and establishes the mint price.
+     *
+     * @param teamName Name of the team.
+     * @param projectName Name of the project.
+     * @param licenseName Unique name used to identify the license.
+     * @param metaURI metaURI of the license.
+     * @param mintPrice mint price of the license in wei.
+     */
 	createLicense(teamName: string, projectName: string, licenseName: string, metaURI: string, mintPrice: BigNumberish): Promise<TransactionAPI>;
 
 	/**
 	 * Mints a new license to a recipient.
-	 *
-	 * @param teamName Name of the team.
-	 * @param projectName Name of the project.
-	 * @param licenseName Unique name used to identify the license.
-	 * @param recipient mint price of the license in wei.
+     *
+     * @param teamName Name of the team.
+     * @param projectName Name of the project.
+     * @param licenseName Unique name used to identify the license.
+     * @param recipient mint price of the license in wei.
 	 */
 	mintLicense(teamName: string, projectName: string, licenseName: string, recipient: string): Promise<TransactionAPI>;
 
 	/**
 	 * Fetches metaURI of the Software License the software is linked to.
-	 *
-	 * @param teamName Name of the team.
-	 * @param projectName Name of the project.
-	 * @param licenseName Unique name used to identify the license.
-	 */
+     *
+     * @param teamName Name of the team.
+     * @param projectName Name of the project.
+     * @param licenseName Unique name used to identify the license.
+     */
 	getLicenseMetaURI(teamName: string, projectName: string, licenseName: string): Promise<string>;
 
 	/**
 	 * Generates a licenseID given a projectID and licenseName.
-	 * Salts the ID with the token symbol to prevent collisions with releaseIDs.
-	 *
-	 * @param projectID Unique ID of the project.
-	 * @param licenseName Unique name of the license.
-	 */
-	getLicenseID(projectID: BigNumberish, licenseName: string): Promise<BigNumberish>;
-
-	/**
-	 * Fetches license names within a project.
-	 *
-	 * @param teamName Name of the team.
-	 * @param projectName Name of the project.
-	 * @param page Page to return items from.
-	 * @param size Number of items to return.
-	 */
-	getLicenseNames(teamName: string, projectName: string, page: BigNumberish, size: BigNumberish): Promise<string[]>;
+     * Salts the ID with the token symbol to prevent collisions with releaseIDs.
+     *
+     * @param projectID Unique ID of the project.
+     * @param licenseName Unique name of the license.
+     */
+	getLicenseID(projectID: BigNumberish, licenseName: string): Promise<BigNumber>;
 
 	/**
 	 * Fetches license names within a project.
 	 *
 	 * @param licenseID ID of the license.
 	 */
-	 getPriceByID(licenseID: BigNumberish): Promise<BigNumberish>;
+	getPriceByID(licenseID: BigNumberish): Promise<BigNumberish>;
+
+	/**
+	 * Fetches license names within a project.
+     *
+	 * @param teamName Name of the team.
+     * @param projectName Name of the project.
+     * @param page Page to return items from.
+     * @param size Number of items to return.
+     */
+	getLicenseNames(teamName: string, projectName: string, page: BigNumberish, size: BigNumberish): Promise<string[]>;
+
+	/**
+	 * Returns the license mint price.
+	 * 
+ 	 * @param teamName Name of the team.
+     * @param projectName Name of the project.
+     * @param licenseName Name of the license.
+	 */
+	getLicensePrice(teamName: string, projectName: string, licenseName: string): Promise<BigNumber>;
 }
 
 export { ContractAPI, TransactionAPI, EVM, EVM_Options, valistAddresses, licenseAddresses };

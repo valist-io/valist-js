@@ -155,6 +155,21 @@ const getDomainSeperator = (networkId: number) => {
     return domainSeparator;
 };
 
+const sendTx = async (
+    provider: Web3Provider | JsonRpcProvider,
+    functionName: string,
+    tx: PopulatedTransaction,
+): Promise<string> => {
+  tx.gasLimit = await provider.estimateGas(tx);
+  tx.gasPrice = await provider.getGasPrice();
+
+  const gasLimit = tx.gasLimit.toHexString();
+  const gasPrice = tx.gasPrice.toHexString();
+  const value = tx.value ? tx.value.toHexString() : '0x0';
+
+  const txResp = await provider.send('eth_sendTransaction', [{...tx, gasLimit, gasPrice, value}]);
+  return txResp;
+};
 
 const sendMetaTx = async (
     provider: Web3Provider | JsonRpcProvider,
@@ -204,5 +219,6 @@ const sendMetaTx = async (
 };
 
 export {
+    sendTx,
     sendMetaTx,
 };

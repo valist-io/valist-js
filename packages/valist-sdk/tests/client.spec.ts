@@ -101,5 +101,10 @@ describe('valist client', async () => {
 
 		const otherLicense = await valist.getLicenseMeta('valist', 'sdk', 'pro');
 		expect(otherLicense).to.deep.equal(license);
+
+		const licensePrice = await valist.contract.getLicensePrice('valist', 'sdk', 'pro');
+		expect(licensePrice.toString()).to.equal('1000');
+
+		await valist.contract.mintLicense('valist', 'sdk', 'pro', address);
 	});
 });
