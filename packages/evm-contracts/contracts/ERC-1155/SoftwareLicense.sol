@@ -16,7 +16,7 @@ contract SoftwareLicense is IERC1155MetadataURI, ERC1155, ERC2771Context {
     /// @dev version of BaseRelayRecipient this contract implements
     string public versionRecipient = "2.2.0";
 
-    /// Creates a Proof of Contribution NFT Contract.
+    /// Creates a Software License NFT Contract.
     ///
     /// @param _valistRegistry Address for Valist registry contract.
     /// @param _trustedForwarder Address for meta transactions.

@@ -127,6 +127,7 @@ export function handleProjectCreated(event: ProjectCreated): void {
   project.metaURI = event.params._metaURI;
   project.createdTx = event.transaction.hash.toHex();
   project.updatedTx = event.transaction.hash.toHex();
+  project.createdAt = event.block.number.toU32();
   project.save();
 
   const log = new Log(event.transaction.hash.toHex());
@@ -241,6 +242,7 @@ export function handleReleaseCreated(event: ReleaseCreated): void {
   release.metaURI = event.params._metaURI;
   release.createdTx = event.transaction.hash.toHex();
   release.updatedTx = event.transaction.hash.toHex();
+  release.createdAt = event.block.number.toU32();
   release.save();
 
   const log = new Log(event.transaction.hash.toHex());
