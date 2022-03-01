@@ -32,6 +32,10 @@ export class EVM_Transaction implements TransactionAPI {
 	async wait(): Promise<TransactionReceipt> {
 		return await this.transaction.wait();
 	}
+
+	hash(): string {
+		return this.transaction.hash;
+	}
 }
 
 export class EVM implements ContractAPI {

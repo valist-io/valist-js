@@ -7,6 +7,11 @@ interface TransactionAPI {
 	 * Waits for a transaction to be confirmed.
 	 */
 	wait(): Promise<any>;
+
+	/**
+	 * Returns the transaction hash.
+	 */
+	hash(): string;
 }
 
 /**
