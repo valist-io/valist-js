@@ -53,6 +53,7 @@ function ValistApp({ Component, pageProps }: AppProps) {
         return toast.success('Transaction Successfull!');
       case 'error':
         return toast(`An error has occurred: ${text}`, {
+          position: 'top-right',
           style: {
             backgroundColor: '#ff6961',
           },
