@@ -9,12 +9,14 @@ interface PublishReleaseFormProps {
   releaseTeam: string,
   releaseProject: string,
   releaseName: string,
+  rleaseLicenses: string[],
   releaseFiles: any,
   archs: string[],
   setView: SetUseState<string>
   setRenderTeam: SetUseState<boolean>
   setRenderProject: SetUseState<boolean>
   setImage: SetUseState<File | null>,
+  setLicense: SetUseState<string[]>,
   setTeam: SetUseState<string>,
   setProject: SetUseState<string>,
   setName: SetUseState<string>,
@@ -39,6 +41,10 @@ export default function PublishReleaseForm(props: PublishReleaseFormProps) {
 
   const handleProjectChange = (option: string) => {
     props.setProject(option);
+  };
+
+  const handleLicenseList = (text:string) => {
+    props.setLicense([text]);
   };
 
   return (
@@ -94,6 +100,21 @@ export default function PublishReleaseForm(props: PublishReleaseFormProps) {
       </div>
 
       <div>
+        <label htmlFor="projectType" className="block text-sm leading-5 font-medium
+        text-gray-700">
+          License <span className="float-right"><Tooltip text='The associated release license.' /></span>
+        </label>
+        <select onChange={(e) => {handleLicenseList(e.target.value);}}
+        id="license" className="mt-1 form-select block w-full pl-3 pr-10 py-2
+        text-base leading-6 border-gray-300 focus:outline-none focus:shadow-outline-blue
+        focus:border-blue-300 sm:text-sm sm:leading-5">
+          {props.rleaseLicenses.map((licenseName: string) => (
+            <option key={licenseName} value={licenseName}>{licenseName}</option>
+          ))}
+        </select>
+      </div>
+
+      <div>
         <label htmlFor="description" className="block text-sm font-medium text-gray-700">
           Description <span className="float-right"><Tooltip text='Text describing the changes in this release.' /></span>
         </label>
@@ -102,7 +123,7 @@ export default function PublishReleaseForm(props: PublishReleaseFormProps) {
             id="description"
             name="description"
             onChange={(e) => props.setDescription(e.target.value)}
-            rows={4}
+            rows={3}
             className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block 
             w-full sm:text-sm border border-gray-300 rounded-md"
             placeholder="Release description"

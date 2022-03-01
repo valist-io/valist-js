@@ -78,6 +78,8 @@ const CreatePage: NextPage = () => {
   const [releaseWebsite, setReleaseWebsite] = useState<string>('');
   const [releaseFiles, setReleaseFiles] = useState<any>({});
   const [releaseArchs, setReleaseArchs] = useState<string[]>([]);
+  const [releaseLicenses, setReleaseLicenses] = useState<string[]>([]);
+  const [releaseLicense, setReleaseLicense] = useState<string[]>([]);
 
   // License State
   const [licenseImage, setLicenseImage] = useState<File | null>(null);
@@ -185,6 +187,24 @@ const CreatePage: NextPage = () => {
     setprojectMembersParsed(members);
   }, [projectMembers]);
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const licenses = await valistCtx.valist.contract.getLicenseNames(
+          releaseTeam,
+          releaseProject,
+          0,
+          1000,
+        );
+
+        setReleaseLicenses(licenses);
+        setReleaseLicense([licenses[0]]);
+      } catch (err) {
+        console.log('err', err);
+      }
+    })();
+  }, [releaseProject, releaseTeam, valistCtx.valist.contract]);
+
   // Wrap Valist Sdk calls for create (team, project release)
   const createTeam = async () => {
     let imgURL = "";
@@ -281,7 +301,7 @@ const CreatePage: NextPage = () => {
 		release.name = releaseName;
 		release.description = releaseDescription;
 		release.external_url = releaseWebsite;
-
+    release.licenses = releaseLicense;
 		release.artifacts = new Map<string, ArtifactMeta>();
 
     if (releaseFiles) {
@@ -308,7 +328,7 @@ const CreatePage: NextPage = () => {
         releaseName,
         release,
       );
-      transaction.wait();
+      await transaction.wait();
       
       accountCtx.dismiss(toastID);
       accountCtx.notify('success');
@@ -349,7 +369,7 @@ const CreatePage: NextPage = () => {
         license,
         licnesePrice,
       );
-      transaction.wait();
+      await transaction.wait();
       
       accountCtx.dismiss(toastID);
       accountCtx.notify('success');
@@ -452,6 +472,7 @@ const CreatePage: NextPage = () => {
                 releaseProject={releaseProject}
                 releaseName={releaseName}
                 releaseFiles={releaseFiles}
+                rleaseLicenses={releaseLicenses}
                 archs={releaseArchs}
                 setImage={setReleaseImage}
                 setTeam={setReleaseTeam}
@@ -460,6 +481,7 @@ const CreatePage: NextPage = () => {
                 setDescription={setReleaseDescription}
                 setFiles={setReleaseFiles}
                 setArchs={setReleaseArchs}
+                setLicense={setReleaseLicense}
                 setRenderTeam={setRenderTeam}
                 setRenderProject={setRenderProject}
                 submit={() => {createRelease();}}

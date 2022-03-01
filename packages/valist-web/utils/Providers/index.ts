@@ -40,7 +40,7 @@ export const providers = {
     try {
       await window.ethereum.request({ method: 'eth_requestAccounts' });
     } catch(err) {
-        console.log("Could not connect to MetaMask", err);
+      console.log("Could not connect to MetaMask", err);
     }
       
     return window.ethereum;

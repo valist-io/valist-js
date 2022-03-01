@@ -9,7 +9,7 @@ const { publicRuntimeConfig } = getConfig();
 export default React.createContext<ValistCtxInterface>({
   valist: new Client(
     new Contract.EVM(
-      { 
+      {
         valistAddress: valistAddresses[publicRuntimeConfig.CHAIN_ID],
         licenseAddress: licenseAddresses[publicRuntimeConfig.CHAIN_ID],
         metaTx: (publicRuntimeConfig.METATX_ENABLED as boolean) , 

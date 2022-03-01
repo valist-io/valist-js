@@ -136,9 +136,10 @@ export const PROJECT_PROFILE_QUERY = gql`
       team{
         name
       }
-      releases{
+      releases(orderBy: createdAt, orderDirection: "desc",) {
         name
         metaURI
+        createdAt
       }
       members{
         id

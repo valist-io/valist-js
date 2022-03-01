@@ -21,9 +21,7 @@ function FileItem(props:FileItemProps) {
   const updateFileArch = (e: any) => {
     let archs = [...props.archs];
     for (let i = 0; i < Object.keys(props.files).length; i++) {
-      console.log('value', e.target.id);
       if (i.toString() === e.target.id) {
-        console.log('updating', e.target.id);
         archs[i] = e.target.value;
       }
     }
@@ -53,7 +51,6 @@ function FileItem(props:FileItemProps) {
 export default function FileUpload(props: FileUploadProps) {
   const handleImage = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target?.files) {
-      console.log('files', e.target.files);
       props.setFiles(e.target.files);
     };
   };
@@ -80,7 +77,7 @@ export default function FileUpload(props: FileUploadProps) {
   return (
     <section>
       <h4 className='mb-1 block text-sm font-medium text-gray-700'>Atifacts</h4>
-      <label style={{ minHeight: "150px" }} className='flex justify-center py-2 px-4 border border-transparent rounded-md 
+      <label style={{ minHeight: "80px" }} className='flex justify-center py-2 px-4 border border-transparent rounded-md 
         shadow-sm text-sm font-medium focus:outline-none 
         mt-4 mx-auto border-4 border-dashed border-gray-200 p-4'>
         <input type='file' onChange={(e) => handleImage(e)} multiple={true} className="hidden" />
