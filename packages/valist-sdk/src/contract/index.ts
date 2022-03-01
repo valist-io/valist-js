@@ -1,5 +1,5 @@
 import { EVM, EVM_Options, valistAddresses, licenseAddresses } from './evm';
-import { BigNumberish, PopulatedTransaction } from 'ethers';
+import { BigNumber, BigNumberish, PopulatedTransaction } from 'ethers';
 import { TransactionReceipt } from '@ethersproject/abstract-provider';
 
 interface TransactionAPI {
@@ -242,7 +242,7 @@ interface ContractAPI {
 	 * @param teamID Unique team ID.
 	 * @param projectName Name of the project.
 	 */
-	getProjectID(teamID: BigNumberish, projectName: string): Promise<BigNumberish>;
+	getProjectID(teamID: BigNumberish, projectName: string): Promise<BigNumber>;
 
 	/**
 	 * Generates releaseID from projectID and releaseName.
@@ -250,7 +250,7 @@ interface ContractAPI {
 	 * @param projectID Unique project ID.
 	 * @param releaseName Name of the release.
 	 */
-	getReleaseID(projectID: BigNumberish, releaseName: string): Promise<BigNumberish>;
+	getReleaseID(projectID: BigNumberish, releaseName: string): Promise<BigNumber>;
 
 	/** 
      * Creates a new License and establishes the mint price.
@@ -289,7 +289,7 @@ interface ContractAPI {
      * @param projectID Unique ID of the project.
      * @param licenseName Unique name of the license.
      */
-	getLicenseID(projectID: BigNumberish, licenseName: string): Promise<BigNumberish>;
+	getLicenseID(projectID: BigNumberish, licenseName: string): Promise<BigNumber>;
 
 	/**
 	 * Fetches license names within a project.
@@ -300,6 +300,15 @@ interface ContractAPI {
      * @param size Number of items to return.
      */
 	getLicenseNames(teamName: string, projectName: string, page: BigNumberish, size: BigNumberish): Promise<string[]>;
+
+	/**
+	 * Returns the license mint price.
+	 * 
+ 	 * @param teamName Name of the team.
+     * @param projectName Name of the project.
+     * @param licenseName Name of the license.
+	 */
+	getLicensePrice(teamName: string, projectName: string, licenseName: string): Promise<BigNumber>;
 }
 
 export { ContractAPI, TransactionAPI, EVM, EVM_Options, valistAddresses, licenseAddresses };
