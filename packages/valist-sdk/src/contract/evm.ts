@@ -119,9 +119,9 @@ export class EVM implements ContractAPI {
 	}
 
 	async mintLicense(teamName: string, projectName: string, licenseName: string, recipient: string): Promise<TransactionAPI> {
-		const tx = await this.license.populateTransaction.mintLicense(teamName, projectName, licenseName, recipient);
-		tx.value = await this.getLicensePrice(teamName, projectName, licenseName);
-		return await this.sendTx('mintLicense', tx, false);
+		return await this.license.mintLicense(teamName, projectName, licenseName, recipient, {
+			value: await this.getLicensePrice(teamName, projectName, licenseName),
+		});
 	}
 
 	async getLatestReleaseName(teamName: string, projectName: string): Promise<string> {

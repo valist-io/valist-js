@@ -65,6 +65,10 @@ export class Client {
 		return this.contract.createLicense(teamName, projectName, licenseName, metaURI, mintPrice);
 	}
 
+	async mintLicense(teamName: string, projectName: string, licenseName: string, recipient: string): Promise<TransactionAPI> {
+		return this.contract.mintLicense(teamName, projectName, licenseName, recipient);
+	}
+
 	async setTeamBeneficiary(teamName: string, beneficiary: string): Promise<TransactionAPI> {
 		return this.contract.setTeamBeneficiary(teamName, beneficiary);
 	}
