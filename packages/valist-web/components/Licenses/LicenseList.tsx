@@ -1,50 +1,5 @@
 import { License } from "../../utils/Valist/types";
 
-// const mockLicenses:License[] = [
-//   {
-//     image: '/images/vCentered.png',
-//     team: 'area51',
-//     project: 'FPSGame',
-//     name: 'SeasonPass',
-//     description: 'An fps game where the goal of the game is to win the game!',
-//   },
-//   {
-//     image: '/images/vCentered.png',
-//     team: 'test1',
-//     project: 'TheGame',
-//     name: 'GoldPass',
-//     description: "If you're reading this then you just lost the game.",
-//   },
-//   {
-//     image: '/images/vCentered.png',
-//     team: 'area51',
-//     project: 'RPGGame',
-//     name: 'SeasonPass',
-//     description: 'An RPG game where you can do RPG stuff!',
-//   },
-//   {
-//     image: '/images/vCentered.png',
-//     team: 'test1',
-//     project: 'TheGame',
-//     name: 'GoldPass',
-//     description: "If you're reading this then you just lost the game.",
-//   },
-//   {
-//     image: '/images/vCentered.png',
-//     team: 'area51',
-//     project: 'RPGGame',
-//     name: 'SeasonPass',
-//     description: 'An RPG game where you can do RPG stuff!',
-//   },
-//   {
-//     image: '/images/vCentered.png',
-//     team: 'area51',
-//     project: 'FPSGame',
-//     name: 'SeasonPass',
-//     description: 'An fps game where the goal of the game is to win the game!',
-//   },
-// ];
-
 interface LicenseListProps {
   licenses: License[];
 }
