@@ -17,7 +17,6 @@ import { USER_TEAMS } from '../utils/Apollo/queries';
 import CreateLicenseForm from '../components/Publishing/CreateLicenseForm';
 import LicensePreview from '../components/Publishing/LicensePreview';
 import { ReleaseMeta, ArtifactMeta, LicenseMeta } from '@valist/sdk';
-import { TransactionAPI } from '@valist/sdk/dist/contract';
 import { BigNumberish } from 'ethers';
 
 type Member = {
@@ -197,8 +196,10 @@ const CreatePage: NextPage = () => {
           1000,
         );
 
-        setReleaseLicenses(licenses);
-        setReleaseLicense([licenses[0]]);
+        if (licenses.length !== 0) {
+          setReleaseLicenses(licenses);
+          setReleaseLicense([licenses[0]]);
+        }
       } catch (err) {
         console.log('err', err);
       }
@@ -228,13 +229,13 @@ const CreatePage: NextPage = () => {
 
     let toastID = '';
     try { 
-      toastID = accountCtx.notify('transaction');
       const transaction = await valistCtx.valist.createTeam(
         teamName,
         meta,
         teamBeneficiary,
         teamMembers,
       );
+      toastID = accountCtx.notify('transaction', transaction.hash());
       await transaction.wait();
 
       setUserTeamNames([...userTeamNames, teamName]);
@@ -269,13 +270,13 @@ const CreatePage: NextPage = () => {
 
      let toastID = '';
      try { 
-      toastID = accountCtx.notify('transaction');
       const transaction = await valistCtx.valist.createProject(
         projectTeam,
         projectName,
         meta,
         projectMembers,
       );
+      toastID = accountCtx.notify('transaction', transaction.hash());
       await transaction.wait();
 
       accountCtx.dismiss(toastID);
@@ -321,22 +322,40 @@ const CreatePage: NextPage = () => {
 
     let toastID = '';
     try {
-      toastID = accountCtx.notify('transaction');
+      toastID = accountCtx.notify('pending');
       const transaction = await valistCtx.valist.createRelease(
         releaseTeam,
         releaseProject,
         releaseName,
         release,
       );
+
+      accountCtx.dismiss(toastID);
+      toastID = accountCtx.notify('transaction', transaction.hash());
       await transaction.wait();
       
       accountCtx.dismiss(toastID);
       accountCtx.notify('success');
       router.push('/');
-    } catch(err) {
-      console.log('Error', err);
+    } catch(err: any) {
+      let errString;
+      let text = '';
+
+      if (err?.data?.message) {
+        errString = err?.data.message;
+      }
+
+      if (err.message) {
+        errString = err.message;
+      }
+
+      if (errString.includes('err: insufficient funds')) {
+        text = 'Insufficient funds for transaction.';
+      } else {
+        text = errString;
+      }
       accountCtx.dismiss(toastID);
-      accountCtx.notify('error', String(err));
+      accountCtx.notify('error', String(text));
     }
   };
 
@@ -361,7 +380,7 @@ const CreatePage: NextPage = () => {
 
     let toastID = '';
     try {
-      toastID = accountCtx.notify('transaction');
+      toastID = accountCtx.notify('pending');
       const transaction = await valistCtx.valist.createLicense(
         licenseTeam,
         licenseProject,
@@ -369,6 +388,9 @@ const CreatePage: NextPage = () => {
         license,
         licnesePrice,
       );
+
+      accountCtx.dismiss(toastID);
+      toastID = accountCtx.notify('transaction', transaction.hash());
       await transaction.wait();
       
       accountCtx.dismiss(toastID);
@@ -472,7 +494,8 @@ const CreatePage: NextPage = () => {
                 releaseProject={releaseProject}
                 releaseName={releaseName}
                 releaseFiles={releaseFiles}
-                rleaseLicenses={releaseLicenses}
+                releaseLicenses={releaseLicenses}
+                releaseLicense={releaseLicense[0]}
                 archs={releaseArchs}
                 setImage={setReleaseImage}
                 setTeam={setReleaseTeam}

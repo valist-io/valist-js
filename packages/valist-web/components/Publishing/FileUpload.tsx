@@ -76,7 +76,7 @@ export default function FileUpload(props: FileUploadProps) {
 
   return (
     <section>
-      <h4 className='mb-1 block text-sm font-medium text-gray-700'>Atifacts</h4>
+      <h4 className='mb-1 block text-sm font-medium text-gray-700'>Artifacts</h4>
       <label style={{ minHeight: "80px" }} className='flex justify-center py-2 px-4 border border-transparent rounded-md 
         shadow-sm text-sm font-medium focus:outline-none 
         mt-4 mx-auto border-4 border-dashed border-gray-200 p-4'>
