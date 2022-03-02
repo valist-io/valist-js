@@ -105,7 +105,7 @@ export default function PublishReleaseForm(props: PublishReleaseFormProps) {
         </div>
       </div>
 
-      <div>
+      {(props.releaseLicenses.length !== 0) && <div>
         <label htmlFor="projectType" className="block text-sm leading-5 font-medium
         text-gray-700">
           License <span className="float-right"><Tooltip text='The associated release license.' /></span>
@@ -119,7 +119,7 @@ export default function PublishReleaseForm(props: PublishReleaseFormProps) {
           ))}
           <option value={''}>None</option>
         </select>
-      </div>
+      </div>}
 
       <div>
         <label htmlFor="description" className="block text-sm font-medium text-gray-700">
