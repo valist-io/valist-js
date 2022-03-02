@@ -186,6 +186,7 @@ const CreatePage: NextPage = () => {
     setprojectMembersParsed(members);
   }, [projectMembers]);
 
+  // Query available project names if team or project change
   useEffect(() => {
     (async () => {
       try {
@@ -199,12 +200,15 @@ const CreatePage: NextPage = () => {
         if (licenses.length !== 0) {
           setReleaseLicenses(licenses);
           setReleaseLicense([licenses[0]]);
+        } else {
+          setReleaseLicense([]);
+          setReleaseLicenses([]);
         }
       } catch (err) {
         console.log('err', err);
       }
     })();
-  }, [releaseProject, releaseTeam, valistCtx.valist.contract]);
+  }, [releaseProject, releaseTeam, valistCtx.valist.contract, projectName, teamName]);
 
   // Wrap Valist Sdk calls for create (team, project release)
   const createTeam = async () => {

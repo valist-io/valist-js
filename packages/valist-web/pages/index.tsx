@@ -60,8 +60,7 @@ const Dashboard: NextPage = () => {
             });
           }
         }
-
-        console.log('licenses', licenses);
+        
         setUserLicences(licenses);
       };
     })();
