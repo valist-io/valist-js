@@ -2,11 +2,12 @@
   "name": "valist-evm-subgraph",
   "license": "MPL-2.0",
   "scripts": {
-    "codegen": "graph codegen",
-    "build": "graph build",
-    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ valist-io/valist-registry",
-    "bootstrap": "graph codegen && graph build && npm run deploy:local",
-    "deploy:local": "npm run create-local && npm run deploy-local",
+    "codegen": "npm run prepare:ganache && graph codegen",
+    "build": "npm run prepare:ganache && graph build",
+    "deploy:ganache": "npm run prepare:ganache && npm run create-local && npm run deploy-local",
+    "deploy:mumbai": "npm run prepare:mumbai && graph deploy --node https://api.thegraph.com/deploy/ valist-io/valist-registry",
+    "prepare:ganache": "mustache config/ganache.json subgraph.template.yaml > subgraph.yaml",
+    "prepare:mumbai": "mustache config/mumbai.json subgraph.template.yaml > subgraph.yaml",
     "create-local": "graph create --node http://localhost:8020/ valist-io/valist",
     "remove-local": "graph remove --node http://localhost:8020/ valist-io/valist",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 --version-label dev valist-io/valist"
@@ -14,5 +15,8 @@
   "dependencies": {
     "@graphprotocol/graph-cli": "0.23.1",
     "@graphprotocol/graph-ts": "0.23.1"
+  },
+  "devDependencies": {
+    "mustache": "^4.2.0"
   }
 }

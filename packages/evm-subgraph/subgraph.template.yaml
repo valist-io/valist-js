@@ -4,11 +4,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: Valist
-    network: mumbai
+    network: {{network}}
     source:
-      address: "0x9569bEb0Eba900495cF58028DB094D824d0AE850"
+      address: "{{address}}"
       abi: Valist
-      startBlock: 24557788
+      startBlock: {{startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5

@@ -21,6 +21,7 @@ Documentation for how to get started with Valist can be found at [https://docs.v
 
 * node >= 14.17
 * npm >= 6.14
+* lerna
 
 #### Setup
 
@@ -29,17 +30,12 @@ git clone https://github.com/valist-io/valist-js
 
 cd valist-js
 
-npm install
+lerna bootstrap
+
+docker-compose up -d
+
+npm run dev
 ```
-
-#### Scripts
-
-- `npm run bootstrap`
-	- link local packages and install dependencies
-- `npm run lint`
-	- lint all packages
-- `npm run dev`
-	- starts the development server
 
 ## Contributing
 

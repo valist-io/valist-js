@@ -22,7 +22,7 @@ async function PinTeamMeta() {
   console.log("Empty meta CID", resp.cid.toString());
 
   const meta = JSON.stringify({
-    image: imagePin.cid.toString(),
+    image: 'https://gateway.valist.io/ipfs/' + imagePin.cid.toString(),
     name: "test team",
     description: "A test team description.",
     external_url: "https://example.com",
@@ -39,7 +39,7 @@ const PinProjectMeta = async () => {
   const imagePin = await ipfs.add(imageFile);
 
   const meta = JSON.stringify({
-    image: imagePin.cid.toString(),
+    image: 'https://gateway.valist.io/ipfs/' + imagePin.cid.toString(),
     name: "test project",
     description: "An example library for demoing valist.",
     external_url: "https://git.example.com",
@@ -56,7 +56,7 @@ const PinReleaseMeta = async () => {
   const imagePin = await ipfs.add(imageFile);
 
   const meta = JSON.stringify({
-    image: imagePin.cid.toString(),
+    image: 'https://gateway.valist.io/ipfs/' + imagePin.cid.toString(),
     name: "test/test/0.0.1",
     description:
       "# Test Project\n\nThis folder contains the test project library with test code for IPFS and Ethereum.\n\n## Documentation\n\nFor the TypeScript API documentation, please see the following link:\n\n* [API Docs](https://docs.example.com/)\n\n## Installation\n\n```shell\nnpm install\n```\n\n## Building\n\n```shell\nnpm run build\n```\n\n## Linting\n\n```shell\nnpm run lint\n```\n",
