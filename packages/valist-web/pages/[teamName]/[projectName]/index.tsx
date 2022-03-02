@@ -175,7 +175,14 @@ export default function ProjectPage():JSX.Element {
   };
 
   const handleClickFavorite = () => {
-    setFavorite(!isFavorite);
+    if (window) {
+      if (!isFavorite && teamName && projectName) {
+        window.localStorage.setItem(`${teamName}/${projectName}`, 'true');
+      } else if (isFavorite) {
+        window.localStorage.removeItem(`${teamName}/${projectName}`);
+      }
+      setFavorite(!isFavorite);
+    }
   };
 
   // console.log('beneficiary', releaseMeta);
