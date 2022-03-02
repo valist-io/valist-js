@@ -112,6 +112,7 @@ export default function ProjectPage():JSX.Element {
         setLicensePrice(ethers.utils.formatEther(price));
 
 
+        // @ts-ignore @TODO expose from SDK interface
         let balance = await valistCtx.valist.contract.license.balanceOf(
           accountCtx.address, licenseID,
         );
