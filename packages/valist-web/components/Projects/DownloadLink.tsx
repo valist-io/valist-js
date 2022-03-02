@@ -98,10 +98,6 @@ export default function DownloadBox(props: DownloadBoxProps) {
     }
   };
 
-  if (props.releaseMeta.artifacts) {
-    console.log('meta', Array.from(props.releaseMeta.artifacts.keys()));
-  }
-
   return (
     <Listbox value={selected} onChange={setSelected}>
       <div className="relative cursor-pointer">

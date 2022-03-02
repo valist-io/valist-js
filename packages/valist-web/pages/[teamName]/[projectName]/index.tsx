@@ -1,6 +1,7 @@
 import { useQuery } from "@apollo/client";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
+import { HeartIcon, MailIcon, StarIcon } from '@heroicons/react/solid';
 import Layout from "../../../components/Layouts/Main";
 import ProjectContent from "../../../components/Projects/ProjectContent";
 import ProjectMetaCard from "../../../components/Projects/ProjectMetaCard";
@@ -12,7 +13,7 @@ import { ProjectMeta, ReleaseMeta } from "../../../utils/Valist/types";
 import LogCard from '../../../components/Logs/LogCard';
 import AccountContext from "../../../components/Accounts/AccountContext";
 import ProjectActions from '../../../components/Projects/ProjectActions';
-import { BigNumberish } from "ethers";
+import { BigNumberish, ethers } from "ethers";
 
 export default function ProjectPage():JSX.Element {
   const router = useRouter();
@@ -41,6 +42,7 @@ export default function ProjectPage():JSX.Element {
     description: '# Readme Not Found',
     external_url: '',
   });
+  const [licenseBalance, setLicenseBalance] = useState<Number>(0);
 
   useEffect(() => {
     const getProjectID = async () => {
@@ -101,29 +103,66 @@ export default function ProjectPage():JSX.Element {
     }
   }, [accountCtx, data, valistCtx.valist.storage]);
 
-  const mintLicense = async () => {
-    if (releaseMeta.licenses && releaseMeta.licenses[0] && accountCtx.address !== '0x0') {
-      await valistCtx.valist.contract.mintLicense(
-        teamName,
-        projectName,
-        releaseMeta.licenses[0],
-        accountCtx.address,
-      );
-    }
-  };
-
   useEffect(() => {
     (async () => {
       if (releaseMeta.licenses && releaseMeta.licenses[0]) {
         const licenseName = releaseMeta.licenses[0];
         const licenseID = await valistCtx.valist.contract.getLicenseID(projectID, licenseName);
         const price = await valistCtx.valist.contract.getPriceByID(licenseID);
-        console.log('licenseID', licenseID);
-        console.log('price', price);
-        setLicensePrice(price);
+        setLicensePrice(ethers.utils.formatEther(price));
+
+
+        let balance = await valistCtx.valist.contract.license.balanceOf(
+          accountCtx.address, licenseID,
+        );
+
+        setLicenseBalance(Number(balance));
       }
     })();
-  }, [projectID, releaseMeta.licenses, valistCtx.valist.contract]);
+  }, [accountCtx.address, projectID, releaseMeta.licenses, valistCtx.valist.contract]);
+
+  const mintLicense = async () => {
+    if (releaseMeta.licenses && releaseMeta.licenses[0] && accountCtx.address !== '0x0') {
+      let toastID = '';
+      try {
+        const transaction = await valistCtx.valist.mintLicense(
+          teamName,
+          projectName,
+          releaseMeta.licenses[0],
+          accountCtx.address,
+        );
+        toastID = accountCtx.notify('transaction', transaction.hash());
+        await transaction.wait();
+        accountCtx.dismiss(toastID);
+        accountCtx.notify('success');
+      } catch (err: any) {
+        let errString;
+        let text = '';
+
+        if (err?.data?.message) {
+          errString = err?.data.message;
+        }
+
+
+        if (err.message) {
+          errString = err.message;
+        }
+
+        if (errString.includes('err: insufficient funds')) {
+          text = 'Insufficient funds for transaction.';
+        } else {
+          text = errString;
+        }
+        accountCtx.notify('error', String(text));
+      }
+    }
+  };
+
+  const handleClickDonate = () => {
+    accountCtx?.setModal(!accountCtx.modal);
+  };
+
+  // console.log('beneficiary', releaseMeta);
 
   return (
     <Layout title="Valist | Project">
@@ -151,11 +190,50 @@ export default function ProjectPage():JSX.Element {
             teamName={teamName}
             projectName={projectName}
             showAll={false}
-            releaseMeta={releaseMeta}          
+            releaseMeta={releaseMeta}
             licensePrice={licensePrice}
             mintLicense={mintLicense} 
+            licenseBalance={licenseBalance}         
           />
-          
+          <div className="bg-white rounded-md p-4">
+            <div className="grid grid-cols-3 gap-3 space-between">
+              <span className="w-full inline-flex rounded-md shadow-sm">
+                <button onClick={async () => handleClickDonate()} type="button"
+                  className="w-full justify-center align-center m-auto items-center py-2 px-4 border
+                  border-gray-300 rounded-md bg-white text-sm leading-5 font-medium
+                  text-gray-500 hover:text-gray-400 focus:outline-none
+                  focus:border-blue-300 focus:shadow-outline-blue transition
+                  duration-150 ease-in-out" aria-label="Donate">
+                    <HeartIcon className="h-10 w-10 block mx-auto" />
+                    <p className="block">Donate</p>
+                </button>
+              </span>
+
+              <span className="w-full inline-flex rounded-md shadow-sm">
+                <button onClick={async () => {}} type="button"
+                  className="w-full justify-center align-center m-auto items-center py-2 px-4 border
+                  border-gray-300 rounded-md bg-white text-sm leading-5 font-medium
+                  text-gray-500 hover:text-gray-400 focus:outline-none
+                  focus:border-blue-300 focus:shadow-outline-blue transition
+                  duration-150 ease-in-out" aria-label="Feedback">
+                    <MailIcon className="h-10 w-10 text-black-500 block mx-auto" />
+                    <p className="block">Contact</p>
+                </button>
+              </span>
+
+              <span className="w-full inline-flex rounded-md shadow-sm">
+                <button onClick={async () => {}} type="button"
+                  className="w-full justify-center align-center m-auto items-center py-2 px-4 border
+                  border-gray-300 rounded-md bg-white text-sm leading-5 font-medium
+                  text-gray-500 hover:text-gray-400 focus:outline-none
+                  focus:border-blue-300 focus:shadow-outline-blue transition
+                  duration-150 ease-in-out" aria-label="Feedback">
+                    <StarIcon className="h-10 w-10 block mx-auto" />
+                    <p className="block">Favorite</p>
+                </button>
+              </span>
+          </div>
+          </div>
           <ProjectMetaCard
             version={version} 
             teamName={teamName}

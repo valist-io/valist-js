@@ -17,6 +17,7 @@ import { login, onAccountChanged } from '../utils/Account/index';
 import LoginForm from '../components/Accounts/LoginForm';
 import { newMagic } from '../utils/Providers';
 import client from "../utils/Apollo/client";
+import Modal from '../components/Modal';
 
 function ValistApp({ Component, pageProps }: AppProps) {
   const { publicRuntimeConfig } = getConfig();
@@ -44,11 +45,16 @@ function ValistApp({ Component, pageProps }: AppProps) {
   const [address, setAddress] = useState<string>('0x0');
   const [loginType, setLoginType] = useState<LoginType>('readOnly');
   const [showLogin, setShowLogin] = useState(false);
+  const [modal, setModal] = useState<boolean>(false);
 
   const notify = (type: string, text?: string): string => {
     switch (type) {
       case 'transaction':
-        return toast.loading('Transaction pending...');
+        return toast.custom((t) => (
+          <div className='bg-white p-4 rounded-md'>
+           Transaction pending: <a href={`https://mumbai.polygonscan.com/tx/${text}`}>view on block explorer </a>
+          </div>
+        ));
       case 'success':
         return toast.success('Transaction Successfull!');
       case 'error':
@@ -56,6 +62,8 @@ function ValistApp({ Component, pageProps }: AppProps) {
           position: 'top-right',
           style: {
             backgroundColor: '#ff6961',
+            wordBreak: 'break-word',
+            overflow: 'hidden',
           },
         });
     }
@@ -70,12 +78,14 @@ function ValistApp({ Component, pageProps }: AppProps) {
     magic,
     address,
     loginType,
+    modal,
     setLoginType,
     setShowLogin,
     setAddress,
     setMagic,
     notify,
     dismiss,
+    setModal,
   };
 
   const valistState = {
@@ -129,6 +139,7 @@ function ValistApp({ Component, pageProps }: AppProps) {
             setAddress={setAddress}
           />}
           <Toaster />
+          {modal && <Modal open={true} />}
         </ValistContext.Provider>
       </AccountContext.Provider>
     </ApolloProvider>

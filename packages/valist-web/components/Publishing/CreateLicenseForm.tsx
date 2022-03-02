@@ -1,4 +1,4 @@
-import { BigNumberish } from "ethers";
+import { BigNumber, BigNumberish, ethers } from "ethers";
 import { SetUseState } from "../../utils/Account/types";
 import ImageUpload from "../Images/ImageUpload";
 import Tooltip from "./Tooltip";
@@ -34,6 +34,20 @@ export default function CreateLicenseForm(props: CreateLicenseFormProps) {
 
   const handleProjectChange = (option: string) => {
     props.setProject(option);
+  };
+
+  const handlePrice = (value: string) => {
+    if (value === undefined || value === '') {
+      value = '0';
+    }
+
+    try {
+      const priceInWei = ethers.utils.parseEther(value);
+      console.log('price', priceInWei);
+      props.setPrice(priceInWei);
+    } catch (err) {
+      console.log('Invalid number for price');
+    }
   };
 
   return (
@@ -97,7 +111,7 @@ export default function CreateLicenseForm(props: CreateLicenseFormProps) {
             id="price"
             name="price"
             type="number"
-            onChange={(e) => props.setPrice(BigInt(e.target.value))}
+            onChange={(e) => handlePrice(e.target.value.toString())}
             required={true}
             className="appearance-none block w-full px-3 py-2 border border-gray-300 
             rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 

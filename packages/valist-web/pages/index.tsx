@@ -42,7 +42,7 @@ const Dashboard: NextPage = () => {
               project.team.name,
               project.name,
               0,
-              1,
+              100,
             );
           } catch (err) {
             console.log(err);
