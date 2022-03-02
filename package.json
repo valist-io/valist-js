@@ -5,8 +5,9 @@
     "lerna": "^4.0.0"
   },
   "scripts": {
-    "bootstrap": "lerna bootstrap",
+    "test": "lerna run test",
     "lint": "lerna run lint",
-    "dev": "lerna run dev --parallel"
+    "build": "lerna run build",
+    "dev": "lerna run deploy:ganache && lerna run bootstrap && lerna run dev --parallel"
   }
 }

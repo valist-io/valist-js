@@ -5,7 +5,7 @@
   "homepage": "https://valist.io",
   "license": "MPL-2.0",
   "scripts": {
-    "build": "asb"
+    "compile": "asb"
   },
   "devDependencies": {
     "asbuild": "^0.2.0",
