@@ -52,7 +52,7 @@ function ValistApp({ Component, pageProps }: AppProps) {
       case 'transaction':
         return toast.custom((t) => (
           <div className='bg-white p-4 rounded-md'>
-           Transaction pending: <a href={`https://mumbai.polygonscan.com/tx/${text}`}>view on block explorer </a>
+           Transaction pending: <a className="text-indigo-500 cursor-pointer" href={`https://mumbai.polygonscan.com/tx/${text}`}>view on block explorer </a>
           </div>
         ));
       case 'success':

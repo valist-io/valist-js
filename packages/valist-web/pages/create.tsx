@@ -228,13 +228,13 @@ const CreatePage: NextPage = () => {
 
     let toastID = '';
     try { 
-      toastID = accountCtx.notify('transaction');
       const transaction = await valistCtx.valist.createTeam(
         teamName,
         meta,
         teamBeneficiary,
         teamMembers,
       );
+      toastID = accountCtx.notify('transaction', transaction.hash());
       await transaction.wait();
 
       setUserTeamNames([...userTeamNames, teamName]);
@@ -269,13 +269,13 @@ const CreatePage: NextPage = () => {
 
      let toastID = '';
      try { 
-      toastID = accountCtx.notify('transaction');
       const transaction = await valistCtx.valist.createProject(
         projectTeam,
         projectName,
         meta,
         projectMembers,
       );
+      toastID = accountCtx.notify('transaction', transaction.hash());
       await transaction.wait();
 
       accountCtx.dismiss(toastID);
@@ -321,13 +321,13 @@ const CreatePage: NextPage = () => {
 
     let toastID = '';
     try {
-      toastID = accountCtx.notify('transaction');
       const transaction = await valistCtx.valist.createRelease(
         releaseTeam,
         releaseProject,
         releaseName,
         release,
       );
+      toastID = accountCtx.notify('transaction', transaction.hash());
       await transaction.wait();
       
       accountCtx.dismiss(toastID);
@@ -361,7 +361,6 @@ const CreatePage: NextPage = () => {
 
     let toastID = '';
     try {
-      toastID = accountCtx.notify('transaction');
       const transaction = await valistCtx.valist.createLicense(
         licenseTeam,
         licenseProject,
@@ -369,6 +368,7 @@ const CreatePage: NextPage = () => {
         license,
         licnesePrice,
       );
+      toastID = accountCtx.notify('transaction', transaction.hash());
       await transaction.wait();
       
       accountCtx.dismiss(toastID);
