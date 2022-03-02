@@ -2,18 +2,19 @@ import { Fragment, useContext, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import AccountContext from '../Accounts/AccountContext';
 import Donateform from '../Donate/DonateForm';
+import { SetUseState } from '../../utils/Account/types';
 
 interface ModalProps {
-  open: boolean,
+  open: boolean;
+  setOpen: SetUseState<boolean>;
 }
 
 export default function Modal(props: ModalProps) {
-  const [open, setOpen] = useState(props.open);
   const accountCtx = useContext(AccountContext);
 
   return (
-    <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="fixed z-50 inset-0 overflow-y-auto" onClose={setOpen}>
+    <Transition.Root show={props.open} as={Fragment}>
+      <Dialog as="div" className="fixed z-50 inset-0 overflow-y-auto" onClose={props.setOpen}>
         <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <Transition.Child
             as={Fragment}
@@ -41,6 +42,7 @@ export default function Modal(props: ModalProps) {
             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
           >
             <div className="relative inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl sm:align-middle transform transition-all sm:p-6">
+              {/* {props.content} */}
               <Donateform address={accountCtx.address} />
             </div>
           </Transition.Child>

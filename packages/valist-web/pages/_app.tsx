@@ -139,7 +139,7 @@ function ValistApp({ Component, pageProps }: AppProps) {
             setAddress={setAddress}
           />}
           <Toaster />
-          {modal && <Modal open={true} />}
+          <Modal setOpen={setModal} open={modal} />
         </ValistContext.Provider>
       </AccountContext.Provider>
     </ApolloProvider>

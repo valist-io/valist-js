@@ -43,6 +43,7 @@ export default function ProjectPage():JSX.Element {
     external_url: '',
   });
   const [licenseBalance, setLicenseBalance] = useState<Number>(0);
+  const [isFavorite, setFavorite] = useState<boolean>(false);
 
   useEffect(() => {
     const getProjectID = async () => {
@@ -121,6 +122,15 @@ export default function ProjectPage():JSX.Element {
     })();
   }, [accountCtx.address, projectID, releaseMeta.licenses, valistCtx.valist.contract]);
 
+  useEffect(() => {
+    if (teamName && projectName) {
+       const favorited = window.localStorage.getItem(`${teamName}/${projectName}`);
+       if (favorited) {
+        setFavorite(true);
+       }
+    }
+  }, [projectName, teamName]);
+
   const mintLicense = async () => {
     if (releaseMeta.licenses && releaseMeta.licenses[0] && accountCtx.address !== '0x0') {
       let toastID = '';
@@ -159,7 +169,12 @@ export default function ProjectPage():JSX.Element {
   };
 
   const handleClickDonate = () => {
+    console.log('modal', accountCtx.modal);
     accountCtx?.setModal(!accountCtx.modal);
+  };
+
+  const handleClickFavorite = () => {
+    setFavorite(!isFavorite);
   };
 
   // console.log('beneficiary', releaseMeta);
@@ -210,7 +225,7 @@ export default function ProjectPage():JSX.Element {
               </span>
 
               <span className="w-full inline-flex rounded-md shadow-sm">
-                <button onClick={async () => {}} type="button"
+                <button onClick={async () => window.location.href='mailto:contact@valist.io'} type="button"
                   className="w-full justify-center align-center m-auto items-center py-2 px-4 border
                   border-gray-300 rounded-md bg-white text-sm leading-5 font-medium
                   text-gray-500 hover:text-gray-400 focus:outline-none
@@ -222,13 +237,13 @@ export default function ProjectPage():JSX.Element {
               </span>
 
               <span className="w-full inline-flex rounded-md shadow-sm">
-                <button onClick={async () => {}} type="button"
+                <button onClick={async () => handleClickFavorite()} type="button"
                   className="w-full justify-center align-center m-auto items-center py-2 px-4 border
                   border-gray-300 rounded-md bg-white text-sm leading-5 font-medium
                   text-gray-500 hover:text-gray-400 focus:outline-none
                   focus:border-blue-300 focus:shadow-outline-blue transition
                   duration-150 ease-in-out" aria-label="Feedback">
-                    <StarIcon className="h-10 w-10 block mx-auto" />
+                    <StarIcon className={`h-10 w-10 block mx-auto${isFavorite ? " text-amber-400" : ""}`} />
                     <p className="block">Favorite</p>
                 </button>
               </span>
