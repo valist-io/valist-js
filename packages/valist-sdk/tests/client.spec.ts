@@ -15,7 +15,8 @@ const signer = provider.getSigner();
 const valist_factory = new ethers.ContractFactory(valist_contract.abi, valist_contract.bytecode, signer);
 const license_factory = new ethers.ContractFactory(license_contract.abi, license_contract.bytecode, signer);
 
-describe('valist client', async () => {
+describe('valist client', async function() {
+	this.timeout(10000);
 	let ipfs: types.IPFS;
 
 	before('setup', async () => {
