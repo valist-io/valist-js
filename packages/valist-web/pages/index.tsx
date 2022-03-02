@@ -51,7 +51,7 @@ const Dashboard: NextPage = () => {
           for (let j = 0; j < licenseNames.length; ++j) {
             const id = await valistCtx.valist.contract.getLicenseID(project.id, licenseNames[j]);
             licenses.push({
-              id: truncate((id as BigNumber).toHexString(), 20),
+              id: truncate((id as BigNumber).toHexString(), 25),
               image: '',
               name: licenseNames[j],
               team: project.team.name,
@@ -73,6 +73,8 @@ const Dashboard: NextPage = () => {
         router.push('/create?action=team');    
     }
   }, [data, loading, error, setUserProjects, accountCtx?.address.length, router]);
+
+  accountCtx.notify('pending');
 
   return (
     <Layout title="Valist | Dashboard">

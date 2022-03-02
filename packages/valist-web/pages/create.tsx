@@ -358,6 +358,8 @@ const CreatePage: NextPage = () => {
       } else {
         text = errString;
       }
+
+      console.log('Error', err);
       accountCtx.dismiss(toastID);
       accountCtx.notify('error', String(text));
     }

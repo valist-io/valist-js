@@ -50,8 +50,8 @@ function ValistApp({ Component, pageProps }: AppProps) {
   const notify = (type: string, text?: string): string => {
     switch (type) {
       case 'transaction':
-        return toast.custom((t) => (
-          <div className='bg-white p-4 rounded-md border-2'>
+        return toast.custom(() => (
+          <div className='toast'>
            Transaction pending: <a className="text-indigo-500 cursor-pointer border-2" target="_blank" rel="noreferrer" href={`https://mumbai.polygonscan.com/tx/${text}`}>view on block explorer </a>
           </div>
         ), {
@@ -59,8 +59,13 @@ function ValistApp({ Component, pageProps }: AppProps) {
           duration: 1000000,
         });
       case 'pending':
-        return toast.loading('Creating transaction...', {
+        return toast.custom(() => (
+          <div className='toast'>
+           Creating transaction..
+          </div>
+        ), {
           position: 'top-right',
+          duration: 1000000,
         });
       case 'success':
         return toast.success('Transaction Successfull!', {
