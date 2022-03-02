@@ -186,8 +186,6 @@ export default function ProjectPage():JSX.Element {
     }
   };
 
-  // console.log('beneficiary', releaseMeta);
-
   return (
     <Layout title="Valist | Project">
       <div className="grid grid-cols-1 gap-4 items-start lg:grid-cols-6 lg:gap-8">

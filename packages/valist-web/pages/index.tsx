@@ -74,8 +74,6 @@ const Dashboard: NextPage = () => {
     }
   }, [data, loading, error, setUserProjects, accountCtx?.address.length, router]);
 
-  accountCtx.notify('pending');
-
   return (
     <Layout title="Valist | Dashboard">
       {<div className="grid grid-cols-1 gap-4 items-start lg:grid-cols-3 lg:gap-8">
