@@ -164,6 +164,7 @@ export default function ProjectPage():JSX.Element {
         } else {
           text = errString;
         }
+        accountCtx.dismiss(toastID);
         accountCtx.notify('error', String(text));
       }
     }

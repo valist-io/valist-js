@@ -51,12 +51,21 @@ function ValistApp({ Component, pageProps }: AppProps) {
     switch (type) {
       case 'transaction':
         return toast.custom((t) => (
-          <div className='bg-white p-4 rounded-md'>
-           Transaction pending: <a className="text-indigo-500 cursor-pointer" href={`https://mumbai.polygonscan.com/tx/${text}`}>view on block explorer </a>
+          <div className='bg-white p-4 rounded-md border-2'>
+           Transaction pending: <a className="text-indigo-500 cursor-pointer border-2" target="_blank" rel="noreferrer" href={`https://mumbai.polygonscan.com/tx/${text}`}>view on block explorer </a>
           </div>
-        ));
+        ), {
+          position: 'top-right',
+          duration: 1000000,
+        });
+      case 'pending':
+        return toast.loading('Creating transaction...', {
+          position: 'top-right',
+        });
       case 'success':
-        return toast.success('Transaction Successfull!');
+        return toast.success('Transaction Successfull!', {
+          position: 'top-right',
+        });
       case 'error':
         return toast(`An error has occurred: ${text}`, {
           position: 'top-right',

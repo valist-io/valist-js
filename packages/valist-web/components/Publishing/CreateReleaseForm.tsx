@@ -4,26 +4,27 @@ import FileUpload from "./FileUpload";
 import Tooltip from "./Tooltip";
 
 interface PublishReleaseFormProps {
-  teamNames: string[],
-  projectNames: string[],
-  releaseTeam: string,
-  releaseProject: string,
-  releaseName: string,
-  rleaseLicenses: string[],
-  releaseFiles: any,
-  archs: string[],
-  setView: SetUseState<string>
-  setRenderTeam: SetUseState<boolean>
-  setRenderProject: SetUseState<boolean>
-  setImage: SetUseState<File | null>,
-  setLicense: SetUseState<string[]>,
-  setTeam: SetUseState<string>,
-  setProject: SetUseState<string>,
-  setName: SetUseState<string>,
-  setDescription: SetUseState<string>,
-  setFiles: SetUseState<FileList>,
-  setArchs: SetUseState<string[]>,
-  submit: () => void
+  teamNames: string[];
+  projectNames: string[];
+  releaseTeam: string;
+  releaseProject: string;
+  releaseName: string;
+  releaseLicense: string;
+  releaseLicenses: string[];
+  releaseFiles: any;
+  archs: string[];
+  setView: SetUseState<string>;
+  setRenderTeam: SetUseState<boolean>;
+  setRenderProject: SetUseState<boolean>;
+  setImage: SetUseState<File | null>;
+  setLicense: SetUseState<string[]>;
+  setTeam: SetUseState<string>;
+  setProject: SetUseState<string>;
+  setName: SetUseState<string>;
+  setDescription: SetUseState<string>;
+  setFiles: SetUseState<FileList>;
+  setArchs: SetUseState<string[]>;
+  submit: () => void;
 }
 
 export default function PublishReleaseForm(props: PublishReleaseFormProps) {
@@ -112,8 +113,8 @@ export default function PublishReleaseForm(props: PublishReleaseFormProps) {
         <select onChange={(e) => {handleLicenseList(e.target.value);}}
         id="license" className="mt-1 form-select block w-full pl-3 pr-10 py-2
         text-base leading-6 border-gray-300 focus:outline-none focus:shadow-outline-blue
-        focus:border-blue-300 sm:text-sm sm:leading-5">
-          {props.rleaseLicenses.map((licenseName: string) => (
+        focus:border-blue-300 sm:text-sm sm:leading-5" value={props.releaseLicense}>
+          {props.releaseLicenses.map((licenseName: string) => (
             <option key={licenseName} value={licenseName}>{licenseName}</option>
           ))}
           <option value={''}>None</option>
