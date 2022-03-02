@@ -44,7 +44,12 @@ export default function PublishReleaseForm(props: PublishReleaseFormProps) {
   };
 
   const handleLicenseList = (text:string) => {
-    props.setLicense([text]);
+    const licenses = [];
+    if (text !== '') {
+      licenses.push(text);
+    }
+
+    props.setLicense(licenses);
   };
 
   return (
@@ -111,6 +116,7 @@ export default function PublishReleaseForm(props: PublishReleaseFormProps) {
           {props.rleaseLicenses.map((licenseName: string) => (
             <option key={licenseName} value={licenseName}>{licenseName}</option>
           ))}
+          <option value={''}>None</option>
         </select>
       </div>
 
