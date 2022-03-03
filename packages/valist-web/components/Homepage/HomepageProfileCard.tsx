@@ -1,6 +1,6 @@
+import { useEffect, useState } from "react";
 import { SetUseState } from "../../utils/Account/types";
 import { truncate } from "../../utils/Formatting/truncate";
-import EnsResolver from "../Ens";
 import AddressIdenticon from "../Identicons/AddressIdenticon";
 import Tabs from "../Tabs";
 
@@ -8,9 +8,21 @@ interface HomepageProfileCardProps {
   address: string,
   view: string,
   setView: SetUseState<string>,
+  resolveEns: (address: string) => Promise<string | null>
 }
 
 export default function HomepageProfileCard(props:HomepageProfileCardProps) {
+  const [ens, setEns] = useState<string | null>();
+  useEffect(() => {
+    (async () => {
+      let value = null;
+      try {
+         value = await props.resolveEns(props.address);
+      } catch (err) {}
+        setEns(value);
+    })();
+  }, [props, props.address]);
+
   return (
     <section aria-labelledby="profile-overview-title">
       <div className="rounded-lg bg-white overflow-hidden shadow">
@@ -25,7 +37,7 @@ export default function HomepageProfileCard(props:HomepageProfileCardProps) {
                 <a target="_blank" rel="noopener noreferrer" 
                   href={`https://polygonscan.com/address/${props.address}`} 
                   className="sm:text-xl lg:text-3xl font-bold text-gray-900 hover:text-indigo-500">
-                  {EnsResolver({ address: props.address }) || truncate(props.address, 8)}
+                  {ens || truncate(props.address, 8)}
                 </a>
                 <p className="lg:text-sm font-medium text-gray-600 hidden md:block">
                   {props.address}
