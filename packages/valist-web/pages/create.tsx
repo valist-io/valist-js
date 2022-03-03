@@ -241,7 +241,7 @@ const CreatePage: NextPage = () => {
         teamBeneficiary,
         teamMembers,
       );
-      
+
       accountCtx.dismiss(toastID);
       toastID = accountCtx.notify('transaction', transaction.hash());
       await transaction.wait();
@@ -464,9 +464,9 @@ const CreatePage: NextPage = () => {
           {renderProject && <Accordion view={view} name={'project'} setView={setView} title={<div><span className='mr-4'></span>Create a New Project</div>}>
             <div className="p-4">
               <CreateProjectForm
-                projectName={''}
-                projectDescription={''}
-                projectWebsite={''}
+                projectName={projectName}
+                projectDescription={projectDescription}
+                projectWebsite={projectWebsite}
                 userTeams={userTeamNames}
                 setView={setView}
                 setRenderTeam={setRenderTeam}
