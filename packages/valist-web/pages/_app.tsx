@@ -65,8 +65,12 @@ function ValistApp({ Component, pageProps }: AppProps) {
            Creating transaction..
           </div>
         ), {
-          position: 'top-right',
+          position: 'bottom-center',
           duration: 1000000,
+        });
+      case 'message':
+        return toast.success(`${text}`, {
+          position: 'top-right',
         });
       case 'success':
         return toast.success('Transaction Successfull!', {
