@@ -18,6 +18,7 @@ import CreateLicenseForm from '../components/Publishing/CreateLicenseForm';
 import LicensePreview from '../components/Publishing/LicensePreview';
 import { ReleaseMeta, ArtifactMeta, LicenseMeta } from '@valist/sdk';
 import { BigNumberish } from 'ethers';
+import parseError from '../utils/Errors';
 
 type Member = {
   id: string,
@@ -289,7 +290,7 @@ const CreatePage: NextPage = () => {
     } catch(err) {
       console.log('Error', err);
       accountCtx.dismiss(toastID);
-      accountCtx.notify('error', String(err));
+      accountCtx.notify('error', parseError(err));
     }
   };
 
@@ -342,26 +343,9 @@ const CreatePage: NextPage = () => {
       accountCtx.notify('success');
       router.push('/');
     } catch(err: any) {
-      let errString;
-      let text = '';
-
-      if (err?.data?.message) {
-        errString = err?.data.message;
-      }
-
-      if (err.message) {
-        errString = err.message;
-      }
-
-      if (errString.includes('err: insufficient funds')) {
-        text = 'Insufficient funds for transaction.';
-      } else {
-        text = errString;
-      }
-
       console.log('Error', err);
       accountCtx.dismiss(toastID);
-      accountCtx.notify('error', String(text));
+      accountCtx.notify('error', parseError(err));
     }
   };
 
@@ -405,7 +389,7 @@ const CreatePage: NextPage = () => {
     } catch(err) {
       console.log('Error', err);
       accountCtx.dismiss(toastID);
-      accountCtx.notify('error', String(err));
+      accountCtx.notify('error', parseError(err));
     }
   };
 

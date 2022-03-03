@@ -72,7 +72,7 @@ function ValistApp({ Component, pageProps }: AppProps) {
           position: 'top-right',
         });
       case 'error':
-        return toast(`An error has occurred: ${text}`, {
+        return toast(`${text}`, {
           position: 'top-right',
           style: {
             backgroundColor: '#ff6961',

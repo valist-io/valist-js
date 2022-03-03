@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
+import { SetUseState } from '../../utils/Account/types';
 import { ProjectMeta, ReleaseMeta } from '../../utils/Valist/types';
 
 interface RepoMetaCardProps {
-  version?: string,
-  teamName: string,
-  projectName: string
-  memberCount: number,
-  projectMeta: ProjectMeta,
-  releaseMeta: ReleaseMeta,
+  version?: string;
+  teamName: string;
+  projectName: string;
+  memberCount: number;
+  projectMeta: ProjectMeta;
+  releaseMeta: ReleaseMeta;
+  donate: SetUseState<boolean>;
 }
 
 const ProjectMetaCard = (props: RepoMetaCardProps) => {
@@ -64,7 +66,6 @@ const ProjectMetaCard = (props: RepoMetaCardProps) => {
             {props.memberCount || 0}
           </div>
         </div>
-
       </div>
     </div>
   );
