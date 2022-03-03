@@ -29,7 +29,6 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
   const [memberStyle, setMemberStyle] = useState<string>(normalStyle);
   
   const handleSubmit = async () => {
-    console.log('name', props.projectName);
     if (props.projectName === '' || props.projectName === ' ') {
       accountCtx.notify('error', 'Please enter a valid project name.');
       setNameStyle(errorStyle);
@@ -47,7 +46,6 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
 
   const handleNameChange = (text: string) => {
     setNameStyle(normalStyle);
-
     props.setName(text);
   };
 
