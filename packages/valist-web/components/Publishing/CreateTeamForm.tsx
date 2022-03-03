@@ -63,6 +63,7 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
 
   const handleMembersList = (text:string) => {
     setMemberText(text);
+    setMemberStyle(normalStyle);
     const membersList = text.split('\n');
     let members: string[] = [];
     for (const member of membersList) {

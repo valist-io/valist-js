@@ -55,6 +55,7 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
 
   const handleMembersList = (text:string) => {
     setMemberText(text);
+    setMemberStyle(normalStyle);
     const membersList = text.split('\n');
     let members: string[] = [];
     for (const member of membersList) {
