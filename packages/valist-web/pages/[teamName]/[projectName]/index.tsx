@@ -1,7 +1,6 @@
 import { useQuery } from "@apollo/client";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
-import { HeartIcon, MailIcon, StarIcon } from '@heroicons/react/solid';
 import Layout from "../../../components/Layouts/Main";
 import ProjectContent from "../../../components/Projects/ProjectContent";
 import ProjectMetaCard from "../../../components/Projects/ProjectMetaCard";
@@ -14,6 +13,7 @@ import LogCard from '../../../components/Logs/LogCard';
 import AccountContext from "../../../components/Accounts/AccountContext";
 import ProjectActions from '../../../components/Projects/ProjectActions';
 import { BigNumberish, ethers } from "ethers";
+import parseError from "../../../utils/Errors";
 
 export default function ProjectPage():JSX.Element {
   const router = useRouter();
@@ -43,7 +43,6 @@ export default function ProjectPage():JSX.Element {
     external_url: '',
   });
   const [licenseBalance, setLicenseBalance] = useState<Number>(0);
-  const [isFavorite, setFavorite] = useState<boolean>(false);
 
   useEffect(() => {
     const getProjectID = async () => {
@@ -112,7 +111,6 @@ export default function ProjectPage():JSX.Element {
         const price = await valistCtx.valist.contract.getPriceByID(licenseID);
         setLicensePrice(ethers.utils.formatEther(price));
 
-
         // @ts-ignore @TODO expose from SDK interface
         let balance = await valistCtx.valist.contract.license.balanceOf(
           accountCtx.address, licenseID,
@@ -122,15 +120,6 @@ export default function ProjectPage():JSX.Element {
       }
     })();
   }, [accountCtx.address, projectID, releaseMeta.licenses, valistCtx.valist.contract]);
-
-  useEffect(() => {
-    if (teamName && projectName) {
-       const favorited = window.localStorage.getItem(`${teamName}/${projectName}`);
-       if (favorited) {
-        setFavorite(true);
-       }
-    }
-  }, [projectName, teamName]);
 
   const mintLicense = async () => {
     if (releaseMeta.licenses && releaseMeta.licenses[0] && accountCtx.address !== '0x0') {
@@ -147,42 +136,9 @@ export default function ProjectPage():JSX.Element {
         accountCtx.dismiss(toastID);
         accountCtx.notify('success');
       } catch (err: any) {
-        let errString;
-        let text = '';
-
-        if (err?.data?.message) {
-          errString = err?.data.message;
-        }
-
-
-        if (err.message) {
-          errString = err.message;
-        }
-
-        if (errString.includes('err: insufficient funds')) {
-          text = 'Insufficient funds for transaction.';
-        } else {
-          text = errString;
-        }
         accountCtx.dismiss(toastID);
-        accountCtx.notify('error', String(text));
+        accountCtx.notify('error', parseError(err));
       }
-    }
-  };
-
-  const handleClickDonate = () => {
-    console.log('modal', accountCtx.modal);
-    accountCtx?.setModal(!accountCtx.modal);
-  };
-
-  const handleClickFavorite = () => {
-    if (window) {
-      if (!isFavorite && teamName && projectName) {
-        window.localStorage.setItem(`${teamName}/${projectName}`, 'true');
-      } else if (isFavorite) {
-        window.localStorage.removeItem(`${teamName}/${projectName}`);
-      }
-      setFavorite(!isFavorite);
     }
   };
 
@@ -217,48 +173,10 @@ export default function ProjectPage():JSX.Element {
             mintLicense={mintLicense} 
             licenseBalance={licenseBalance}         
           />
-          <div className="bg-white rounded-md p-4">
-            <div className="grid grid-cols-3 gap-3 space-between">
-              <span className="w-full inline-flex rounded-md shadow-sm">
-                <button onClick={async () => handleClickDonate()} type="button"
-                  className="w-full justify-center align-center m-auto items-center py-2 px-4 border
-                  border-gray-300 rounded-md bg-white text-sm leading-5 font-medium
-                  text-gray-500 hover:text-gray-400 focus:outline-none
-                  focus:border-blue-300 focus:shadow-outline-blue transition
-                  duration-150 ease-in-out" aria-label="Donate">
-                    <HeartIcon className="h-10 w-10 block mx-auto" />
-                    <p className="block">Donate</p>
-                </button>
-              </span>
-
-              <span className="w-full inline-flex rounded-md shadow-sm">
-                <button onClick={async () => window.location.href='mailto:contact@valist.io'} type="button"
-                  className="w-full justify-center align-center m-auto items-center py-2 px-4 border
-                  border-gray-300 rounded-md bg-white text-sm leading-5 font-medium
-                  text-gray-500 hover:text-gray-400 focus:outline-none
-                  focus:border-blue-300 focus:shadow-outline-blue transition
-                  duration-150 ease-in-out" aria-label="Feedback">
-                    <MailIcon className="h-10 w-10 text-black-500 block mx-auto" />
-                    <p className="block">Contact</p>
-                </button>
-              </span>
-
-              <span className="w-full inline-flex rounded-md shadow-sm">
-                <button onClick={async () => handleClickFavorite()} type="button"
-                  className="w-full justify-center align-center m-auto items-center py-2 px-4 border
-                  border-gray-300 rounded-md bg-white text-sm leading-5 font-medium
-                  text-gray-500 hover:text-gray-400 focus:outline-none
-                  focus:border-blue-300 focus:shadow-outline-blue transition
-                  duration-150 ease-in-out" aria-label="Feedback">
-                    <StarIcon className={`h-10 w-10 block mx-auto${isFavorite ? " text-amber-400" : ""}`} />
-                    <p className="block">Favorite</p>
-                </button>
-              </span>
-          </div>
-          </div>
           <ProjectMetaCard
             version={version} 
             teamName={teamName}
+            donate={accountCtx?.setModal}
             memberCount={members.length}
             projectName={projectName} 
             projectMeta={projectMeta} 
