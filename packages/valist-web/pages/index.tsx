@@ -15,6 +15,7 @@ import ValistContext from '../components/Valist/ValistContext';
 import { License } from '../utils/Valist/types';
 import { truncate } from '../utils/Formatting/truncate';
 import { BigNumber } from 'ethers';
+import CreateButton from '../components/Homepage/CreateButton';
 
 const Dashboard: NextPage = () => {
   const accountCtx = useContext(AccountContext);
@@ -84,7 +85,7 @@ const Dashboard: NextPage = () => {
         </div>
         {/* Right column */}
         <div className="grid grid-cols-1 gap-4">
-          <div className='bg-white rounded-lg bg-white overflow-hidden shadow p-4'>
+          <div className='bg-white rounded-lg bg-white overflow-hidden shadow p-4 overflow-visible'>
             <div className='flex justify-center items-center'>
               <div className="flex content-end sm:mt-0">
                 <Link href="create?action=release">
@@ -95,16 +96,8 @@ const Dashboard: NextPage = () => {
                   </a>
                 </Link>
               </div>
-
-              <div className="ml-2 flex">
-                <Link href="create?action=license">
-                  <a className="flex justify-center py-2 px-4 border border-transparent rounded-md 
-        shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none 
-        focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Create License
-                  </a>
-                </Link>
-              </div>
+              
+             <CreateButton />
             </div>
           </div>
           <HomepageLinks />
