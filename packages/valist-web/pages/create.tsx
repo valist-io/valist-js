@@ -234,12 +234,15 @@ const CreatePage: NextPage = () => {
 
     let toastID = '';
     try { 
+      toastID = accountCtx.notify('pending');
       const transaction = await valistCtx.valist.createTeam(
         teamName,
         meta,
         teamBeneficiary,
         teamMembers,
       );
+      
+      accountCtx.dismiss(toastID);
       toastID = accountCtx.notify('transaction', transaction.hash());
       await transaction.wait();
 
@@ -274,13 +277,16 @@ const CreatePage: NextPage = () => {
      console.log("Meta", meta);
 
      let toastID = '';
-     try { 
+     try {
+      toastID = accountCtx.notify('pending'); 
       const transaction = await valistCtx.valist.createProject(
         projectTeam,
         projectName,
         meta,
         projectMembers,
       );
+
+      accountCtx.dismiss(toastID);
       toastID = accountCtx.notify('transaction', transaction.hash());
       await transaction.wait();
 
