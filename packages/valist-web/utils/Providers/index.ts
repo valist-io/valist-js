@@ -14,7 +14,8 @@ declare global {
 
 export const newMagic = () => {
   const customNodeOptions = {
-    rpcUrl: publicRuntimeConfig.WEB3_PROVIDER,
+    rpcUrl: publicRuntimeConfig.MAGIC_RPC || publicRuntimeConfig.WEB3_PROVIDER,
+    chainId: publicRuntimeConfig.CHAIN_ID
   };
 
   return new Magic(publicRuntimeConfig.MAGIC_PUBKEY, { network: customNodeOptions });
