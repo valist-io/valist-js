@@ -39,12 +39,15 @@ export interface AccountCtxInterface {
   address: string,
   loginType: LoginType,
   magic: Magic | null,
+  modal: boolean,
+  resolveEns: (address: string) => Promise<string | null>
   setLoginType: SetUseState<LoginType>,
   setShowLogin: SetUseState<boolean>,
   setAddress: SetUseState<string>,
   setMagic: SetUseState<Magic | null>,
-  notify: (type: string) => string,
+  notify: (type: string, text?: string) => string,
   dismiss: (type: string) => void,
+  setModal: SetUseState<boolean>,
 }
 
 export interface ValistCtxInterface {

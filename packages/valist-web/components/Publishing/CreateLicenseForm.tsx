@@ -1,3 +1,4 @@
+import { BigNumber, BigNumberish, ethers } from "ethers";
 import { SetUseState } from "../../utils/Account/types";
 import ImageUpload from "../Images/ImageUpload";
 import Tooltip from "./Tooltip";
@@ -13,6 +14,7 @@ interface CreateLicenseFormProps {
   setTeam: SetUseState<string>,
   setProject: SetUseState<string>,
   setName: SetUseState<string>,
+  setPrice: SetUseState<BigNumberish>,
   setDescription: SetUseState<string>,
   submit: () => void
 }
@@ -32,6 +34,20 @@ export default function CreateLicenseForm(props: CreateLicenseFormProps) {
 
   const handleProjectChange = (option: string) => {
     props.setProject(option);
+  };
+
+  const handlePrice = (value: string) => {
+    if (value === undefined || value === '') {
+      value = '0';
+    }
+
+    try {
+      const priceInWei = ethers.utils.parseEther(value);
+      console.log('price', priceInWei);
+      props.setPrice(priceInWei);
+    } catch (err) {
+      console.log('Invalid number for price');
+    }
   };
 
   return (
@@ -82,6 +98,25 @@ export default function CreateLicenseForm(props: CreateLicenseFormProps) {
             rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 
             focus:border-indigo-500 sm:text-sm"
             placeholder="License name"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+          Price <span className="float-right"><Tooltip text='The price to mint/purchase the license.' /></span>
+        </label>
+        <div className="mt-1">
+          <input
+            id="price"
+            name="price"
+            type="number"
+            onChange={(e) => handlePrice(e.target.value.toString())}
+            required={true}
+            className="appearance-none block w-full px-3 py-2 border border-gray-300 
+            rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 
+            focus:border-indigo-500 sm:text-sm"
+            placeholder="0.00"
           />
         </div>
       </div>

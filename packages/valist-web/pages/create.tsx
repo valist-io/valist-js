@@ -16,7 +16,9 @@ import ValistContext from '../components/Valist/ValistContext';
 import { USER_TEAMS } from '../utils/Apollo/queries';
 import CreateLicenseForm from '../components/Publishing/CreateLicenseForm';
 import LicensePreview from '../components/Publishing/LicensePreview';
-import { ReleaseMeta, ArtifactMeta } from '@valist/sdk';
+import { ProjectMeta, ReleaseMeta, ArtifactMeta, LicenseMeta } from '@valist/sdk';
+import { BigNumberish } from 'ethers';
+import parseError from '../utils/Errors';
 
 type Member = {
   id: string,
@@ -51,8 +53,8 @@ const CreatePage: NextPage = () => {
 
   // Team State
   const [teamImage, setTeamImage] = useState<File | null>(null);
-  const [teamName, setTeamName] = useState<string>('teamName');
-  const [teamDescription, setTeamDescription] = useState<string>('An example team description.');
+  const [teamName, setTeamName] = useState<string>('');
+  const [teamDescription, setTeamDescription] = useState<string>('');
   const [teamWebsite, setTeamWebsite] = useState<string>('');
   const [teamBeneficiary, setTeamBeneficiary] = useState<string>('');
   const [teamMembers, setTeamMembers] = useState<string[]>([]);
@@ -61,8 +63,9 @@ const CreatePage: NextPage = () => {
   // Project State
   const [projectTeam, setProjectTeam] = useState<string>('');
   const [projectImage, setProjectImage] = useState<File | null>(null);
-  const [projectName, setProjectName] = useState<string>('projectName');
+  const [projectName, setProjectName] = useState<string>('');
   const [projectDescription, setProjectDescription] = useState<string>('');
+  const [projectShortDescription, setProjectShortDescription] = useState<string>('');
   const [projectWebsite, setProjectWebsite] = useState<string>('');
   const [projectMembers, setProjectMembers] = useState<string[]>([]);
   const [projectMembersParsed, setprojectMembersParsed] = useState<Member[]>([]);
@@ -76,6 +79,8 @@ const CreatePage: NextPage = () => {
   const [releaseWebsite, setReleaseWebsite] = useState<string>('');
   const [releaseFiles, setReleaseFiles] = useState<any>({});
   const [releaseArchs, setReleaseArchs] = useState<string[]>([]);
+  const [releaseLicenses, setReleaseLicenses] = useState<string[]>([]);
+  const [releaseLicense, setReleaseLicense] = useState<string[]>([]);
 
   // License State
   const [licenseImage, setLicenseImage] = useState<File | null>(null);
@@ -83,6 +88,7 @@ const CreatePage: NextPage = () => {
   const [licenseProject, setLicenseProject] = useState<string>('');
   const [licenseName, setLicenseName] = useState<string>('');
   const [licenseDescription, setLicenseDescription] = useState<string>('');
+  const [licnesePrice, setLicensePrice] = useState<BigNumberish>(0);
 
   // Set which sections/steps to render
   useEffect(() => {
@@ -182,12 +188,36 @@ const CreatePage: NextPage = () => {
     setprojectMembersParsed(members);
   }, [projectMembers]);
 
+  // Query available project names if team or project change
+  useEffect(() => {
+    (async () => {
+      try {
+        const licenses = await valistCtx.valist.contract.getLicenseNames(
+          releaseTeam,
+          releaseProject,
+          0,
+          1000,
+        );
+
+        if (licenses.length !== 0) {
+          setReleaseLicenses(licenses);
+          setReleaseLicense([licenses[0]]);
+        } else {
+          setReleaseLicense([]);
+          setReleaseLicenses([]);
+        }
+      } catch (err) {
+        console.log('err', err);
+      }
+    })();
+  }, [releaseProject, releaseTeam, valistCtx.valist.contract, projectName, teamName]);
+
   // Wrap Valist Sdk calls for create (team, project release)
   const createTeam = async () => {
     let imgURL = "";
 
     if (teamImage) {
-      const imgCID = await valistCtx.valist.storage.write(teamImage);
+      const imgCID = await valistCtx.valist.storage.writeFile(teamImage);
       imgURL = `${publicRuntimeConfig.IPFS_GATEWAY}${imgCID}`;
     }
 
@@ -205,15 +235,17 @@ const CreatePage: NextPage = () => {
 
     let toastID = '';
     try { 
-      toastID = accountCtx.notify('transaction');
-      await valistCtx.valist.waitTx(
-        await valistCtx.valist.createTeam(
-          teamName,
-          meta,
-          teamBeneficiary,
-          teamMembers,
-        ),
+      toastID = accountCtx.notify('pending');
+      const transaction = await valistCtx.valist.createTeam(
+        teamName,
+        meta,
+        teamBeneficiary,
+        teamMembers,
       );
+
+      accountCtx.dismiss(toastID);
+      toastID = accountCtx.notify('transaction', transaction.hash());
+      await transaction.wait();
 
       setUserTeamNames([...userTeamNames, teamName]);
       accountCtx.dismiss(toastID);
@@ -229,39 +261,43 @@ const CreatePage: NextPage = () => {
     let imgURL = "";
 
     if (projectImage) {
-      const imgCID = await valistCtx.valist.storage.write(projectImage);
+      const imgCID = await valistCtx.valist.storage.writeFile(projectImage);
       imgURL = `${publicRuntimeConfig.IPFS_GATEWAY}${imgCID}`;
     }
 
-    const meta = {
-      image: imgURL,
-      name: projectName,
-      description: projectDescription,
-      external_url: projectWebsite,
-     };
+    const project = new ProjectMeta;
+    project.image = imgURL;
+    project.name = projectName;
+    project.description = projectDescription;
+    project.short_description = projectShortDescription;
+    project.external_url = projectWebsite,
 
-     console.log("Project Team", projectTeam);
-     console.log("Project Name", projectName);
-     console.log("Project Members", projectMembers);
-     console.log("Meta", meta);
+    console.log("Project Team", projectTeam);
+    console.log("Project Name", projectName);
+    console.log("Project Members", projectMembers);
+    console.log("Meta", project);
 
-     let toastID = '';
-     try { 
-      toastID = accountCtx.notify('transaction');
-      await valistCtx.valist.waitTx(
-        await valistCtx.valist.createProject(
-          projectTeam,
-          projectName,
-          meta,
-          projectMembers,
-        ),
+    let toastID = '';
+    try {
+      toastID = accountCtx.notify('pending'); 
+      const transaction = await valistCtx.valist.createProject(
+        projectTeam,
+        projectName,
+        project,
+        projectMembers,
       );
+
+      accountCtx.dismiss(toastID);
+      toastID = accountCtx.notify('transaction', transaction.hash());
+      await transaction.wait();
+
       accountCtx.dismiss(toastID);
       accountCtx.notify('success');
       router.push('/');
     } catch(err) {
+      console.log('Error', err);
       accountCtx.dismiss(toastID);
-      accountCtx.notify('error');
+      accountCtx.notify('error', parseError(err));
     }
   };
 
@@ -269,7 +305,7 @@ const CreatePage: NextPage = () => {
     let imgURL = "";
 
     if (releaseImage) {
-      const imgCID = await valistCtx.valist.storage.write(releaseImage);
+      const imgCID = await valistCtx.valist.storage.writeFile(releaseImage);
       imgURL = `${publicRuntimeConfig.IPFS_GATEWAY}${imgCID}`;
     }
 
@@ -278,12 +314,12 @@ const CreatePage: NextPage = () => {
 		release.name = releaseName;
 		release.description = releaseDescription;
 		release.external_url = releaseWebsite;
-
+    release.licenses = releaseLicense;
 		release.artifacts = new Map<string, ArtifactMeta>();
 
     if (releaseFiles) {
       for (let i = 0; i < Object.keys(releaseFiles).length; i++) {
-        const artifactCID = await valistCtx.valist.storage.write(releaseFiles[i]);
+        const artifactCID = await valistCtx.valist.storage.writeFile(releaseFiles[i]);
         const artifact = new ArtifactMeta();
         artifact.provider = artifactCID;
 
@@ -298,21 +334,25 @@ const CreatePage: NextPage = () => {
 
     let toastID = '';
     try {
-      toastID = accountCtx.notify('transaction');
-      await valistCtx.valist.waitTx(
-        await valistCtx.valist.createRelease(
-          releaseTeam,
-          releaseProject,
-          releaseName,
-          release,
-        ),
+      toastID = accountCtx.notify('pending');
+      const transaction = await valistCtx.valist.createRelease(
+        releaseTeam,
+        releaseProject,
+        releaseName,
+        release,
       );
+
+      accountCtx.dismiss(toastID);
+      toastID = accountCtx.notify('transaction', transaction.hash());
+      await transaction.wait();
+      
       accountCtx.dismiss(toastID);
       accountCtx.notify('success');
       router.push('/');
-    } catch(err) {
+    } catch(err: any) {
+      console.log('Error', err);
       accountCtx.dismiss(toastID);
-      accountCtx.notify('error');
+      accountCtx.notify('error', parseError(err));
     }
   };
 
@@ -320,21 +360,44 @@ const CreatePage: NextPage = () => {
     let imgURL = "";
 
     if (licenseImage) {
-      const imgCID = await valistCtx.valist.storage.write(licenseImage);
+      const imgCID = await valistCtx.valist.storage.writeFile(licenseImage);
       imgURL = `${publicRuntimeConfig.IPFS_GATEWAY}${imgCID}`;
     }
 
-    const meta = {
-      image: imgURL,
-      name: licenseName,
-      description: licenseDescription,
-      external_url: '',
-    };
+    const license = new LicenseMeta();
+		license.image = imgURL,
+		license.name = licenseName,
+		license.description = licenseDescription,
+		license.external_url = '',
 
     console.log("License Team", licenseTeam);
     console.log("License Project", licenseProject);
     console.log("License Name", licenseName);
-    console.log("Meta", meta);
+    console.log("Meta", license);
+
+    let toastID = '';
+    try {
+      toastID = accountCtx.notify('pending');
+      const transaction = await valistCtx.valist.createLicense(
+        licenseTeam,
+        licenseProject,
+        licenseName,
+        license,
+        licnesePrice,
+      );
+
+      accountCtx.dismiss(toastID);
+      toastID = accountCtx.notify('transaction', transaction.hash());
+      await transaction.wait();
+      
+      accountCtx.dismiss(toastID);
+      accountCtx.notify('success');
+      router.push('/');
+    } catch(err) {
+      console.log('Error', err);
+      accountCtx.dismiss(toastID);
+      accountCtx.notify('error', parseError(err));
+    }
   };
 
   // Render preview based on view state
@@ -376,7 +439,7 @@ const CreatePage: NextPage = () => {
   };
 
   return (
-    <Layout title="Valist | Create Team">
+    <Layout title={`Valist | Create ${view}`}>
       <div className="grid grid-cols-1 gap-4 items-start gap-y-6 lg:grid-cols-12 lg:gap-8">
         {/* Right Column */}
         <div className="grid grid-cols-1 gap-x-4 gap-y-6 lg:col-span-5">
@@ -386,6 +449,7 @@ const CreatePage: NextPage = () => {
                 teamName={teamName} 
                 teamMembers={teamMembers} 
                 teamDescription={teamDescription}
+                teamBeneficiary={teamBeneficiary}
                 teamWebsite={teamWebsite}   
                 setName={setTeamName}
                 setImage={setTeamImage}
@@ -402,15 +466,16 @@ const CreatePage: NextPage = () => {
           {renderProject && <Accordion view={view} name={'project'} setView={setView} title={<div><span className='mr-4'></span>Create a New Project</div>}>
             <div className="p-4">
               <CreateProjectForm
-                projectName={''}
-                projectDescription={''}
-                projectWebsite={''}
+                projectName={projectName}
+                projectDescription={projectDescription}
+                projectWebsite={projectWebsite}
                 userTeams={userTeamNames}
                 setView={setView}
                 setRenderTeam={setRenderTeam}
                 setName={setProjectName}
                 setImage={setProjectImage}
                 setDescription={setProjectDescription}
+                setShortDescription={setProjectShortDescription}
                 setWebsite={setProjectWebsite}
                 setMembers={setProjectMembers}
                 submit={createProject}
@@ -428,6 +493,8 @@ const CreatePage: NextPage = () => {
                 releaseProject={releaseProject}
                 releaseName={releaseName}
                 releaseFiles={releaseFiles}
+                releaseLicenses={releaseLicenses}
+                releaseLicense={releaseLicense[0]}
                 archs={releaseArchs}
                 setImage={setReleaseImage}
                 setTeam={setReleaseTeam}
@@ -436,6 +503,7 @@ const CreatePage: NextPage = () => {
                 setDescription={setReleaseDescription}
                 setFiles={setReleaseFiles}
                 setArchs={setReleaseArchs}
+                setLicense={setReleaseLicense}
                 setRenderTeam={setRenderTeam}
                 setRenderProject={setRenderProject}
                 submit={() => {createRelease();}}
@@ -457,6 +525,7 @@ const CreatePage: NextPage = () => {
                 setProject={setLicenseProject}
                 setName={setLicenseName}
                 setDescription={setLicenseDescription}
+                setPrice={setLicensePrice}
                 submit={createLicense}
                 setView={setView}
               />

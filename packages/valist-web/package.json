@@ -5,7 +5,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "export": "next export"
   },
   "dependencies": {
     "@apollo/client": "^3.5.8",
@@ -17,13 +18,14 @@
     "ethers": "^5.5.3",
     "ipfs-http-client": "^56.0.0",
     "jdenticon": "^3.1.1",
-    "magic-sdk": "^7.0.0",
+    "magic-sdk": "^8.0.1",
     "next": "12.0.8",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-dropzone": "^12.0.2",
     "react-hot-toast": "^2.2.0",
     "react-markdown": "^8.0.0",
+    "react-qr-code": "^2.0.3",
     "remark-gfm": "^3.0.1",
     "remove-markdown": "^0.3.0"
   },

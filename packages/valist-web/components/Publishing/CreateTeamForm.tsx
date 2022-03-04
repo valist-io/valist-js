@@ -1,4 +1,6 @@
+import { useContext, useState } from "react";
 import { SetUseState } from "../../utils/Account/types";
+import AccountContext from "../Accounts/AccountContext";
 import ImageUpload from "../Images/ImageUpload";
 import Tooltip from "./Tooltip";
 
@@ -8,6 +10,7 @@ interface CreateTeamFormProps {
   teamWebsite: string,
   teamMembers: string[],
   teamDescription: string,
+  teamBeneficiary: string,
   setName: SetUseState<string>,
   setImage: SetUseState<File | null>,
   setDescription: SetUseState<string>,
@@ -18,21 +21,49 @@ interface CreateTeamFormProps {
 }
 
 export default function CreateTeamForm(props: CreateTeamFormProps) {
+  const errorStyle = 'border-red-300 placeholder-red-400 focus:ring-red-500 focus:border-red-500';
+  const normalStyle = 'border-gray-300 placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500';
+  const accountCtx = useContext(AccountContext);
+  const [memberText, setMemberText] = useState<string>('');
+  const [nameStyle, setNameStyle] = useState<string>(normalStyle);
+  const [memberStyle, setMemberStyle] = useState<string>(normalStyle);
+  const [beneficiaryStyle, setBeneficiaryStyle] = useState<string>(normalStyle);
+
   const handleSubmit = async () => {
-    if (props.teamName === "" || props.teamName === "teamName") {
-      alert("Please enter a valid team name!");
+    if (props.teamName === '' || props.teamName === ' ') {
+      accountCtx.notify('error', 'Please enter a valid team name.');
+      setNameStyle(errorStyle);
       return;
     }
 
-    if (props.teamDescription === "" || props.teamDescription === "An example team description.") {
-      alert("Please enter a valid team description!");
+    if (props.teamBeneficiary === '' || props.teamBeneficiary === ' ') {
+      accountCtx.notify('error', 'Please add a valid beneficiary address');
+      setBeneficiaryStyle(errorStyle);
       return;
     }
 
-    await props.submit();
+    if (memberText === '' || memberText === ' ') {
+      accountCtx.notify('error', 'Please add atleast 1 valid member address');
+      setMemberStyle(errorStyle);
+      return;
+    }
+
+    props.submit();
+  };
+
+  const handleNameChange = (text: string) => {
+    setNameStyle(normalStyle);
+    props.setName(text);
+  };
+
+  const handleBeneficiaryChange = (text: string) => {
+    setBeneficiaryStyle(normalStyle);
+    props.setBeneficiary(text);
   };
 
   const handleMembersList = (text:string) => {
+    setMemberText(text);
+    setMemberStyle(normalStyle);
     const membersList = text.split('\n');
     let members: string[] = [];
     for (const member of membersList) {
@@ -45,29 +76,29 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
   
   return (
     <form className="grid grid-cols-1 gap-y-6 sm:gap-x-8" action="#" method="POST">
-      <ImageUpload text={'Set Team Image'} setImage={props.setImage} />
+      <ImageUpload text={'Set Image'} setImage={props.setImage} />
       <div>
         <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-          Name <span className="float-right"><Tooltip text='The name of your team.' /></span>
+          Username <span className="float-right"><Tooltip text='The namespace for your team or account.' /></span>
         </label>
         <div className="mt-1">
           <input
             id="name"
             name="name"
             type="text"
-            placeholder={props.teamName}
-            onChange={(e) => props.setName(e.target.value.toLowerCase())}
+            placeholder={'Name'}
+            onChange={(e) => handleNameChange(e.target.value.toLowerCase())}
             required
-            className="appearance-none block w-full px-3 py-2 border border-gray-300 
+            className={`${nameStyle} appearance-none block w-full px-3 py-2 border border-gray-300 
             rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 
-            focus:border-indigo-500 sm:text-sm"
+            focus:border-indigo-500 sm:text-sm`}
           />
         </div>
       </div>
 
       <div>
         <label htmlFor="website" className="block text-sm font-medium text-gray-700">
-          Website <span className="float-right"><Tooltip text="The link to your team's website." /></span>
+          Website <span className="float-right"><Tooltip text="The link to your team or account's website." /></span>
         </label>
         <div className="mt-1">
           <input
@@ -86,7 +117,7 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
 
       <div>
         <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-          Description <span className="float-right"><Tooltip text='A short sentence about your team.' /></span>
+          Description <span className="float-right"><Tooltip text='A short description about the team or account.' /></span>
         </label>
         <div className="mt-1">
           <textarea
@@ -96,7 +127,7 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
             rows={4}
             className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block 
             w-full sm:text-sm border border-gray-300 rounded-md"
-            placeholder={props.teamDescription}
+            placeholder={'An example description'}
             defaultValue={''}
           />
         </div>
@@ -111,19 +142,18 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
             id="beneficiary"
             name="beneficiary"
             type="text"
-            onChange={(e) => props.setBeneficiary(e.target.value)}
+            onChange={(e) => handleBeneficiaryChange(e.target.value)}
             placeholder='Address'
             required
-            className="appearance-none block w-full px-3 py-2 border border-gray-300 
-            rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 
-            focus:border-indigo-500 sm:text-sm"
+            className={`${beneficiaryStyle} appearance-none block w-full px-3 py-2 border 
+            rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 sm:text-sm`}
           />
         </div>
       </div>
 
       <div>
         <label htmlFor="members" className="block text-sm font-medium text-gray-700">
-          Members <span className="float-right"><Tooltip text='A list of team members seperated by new-line.' /></span>
+          Members <span className="float-right"><Tooltip text='A list of members seperated by new-line.' /></span>
         </label>
         <div className="mt-1">
           <textarea
@@ -131,8 +161,8 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
             name="members"
             rows={4}
             onChange={(e) => handleMembersList(e.target.value)}
-            className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block 
-            w-full sm:text-sm border border-gray-300 rounded-md"
+            className={`${memberStyle} shadow-sm mt-1 block 
+            w-full sm:text-sm border rounded-md`}
             placeholder="List of members"
             defaultValue={''}
           />

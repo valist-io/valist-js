@@ -11,6 +11,15 @@ async function main() {
 
   await valist.deployed();
   console.log("Valist deployed to:", valist.address);
+
+  const License = await hre.ethers.getContractFactory("SoftwareLicense");
+  const license = await License.deploy(
+    valist.address,
+    biconomyForwarderAddress,
+  );
+
+  await license.deployed();
+  console.log("SoftwareLicense deployed to:", license.address);
 }
 
 main()

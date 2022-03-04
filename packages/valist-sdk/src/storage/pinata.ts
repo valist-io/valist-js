@@ -1,4 +1,4 @@
-import { TeamMeta, ProjectMeta, ReleaseMeta, replacer, reviver } from '../index';
+import { TeamMeta, ProjectMeta, ReleaseMeta, LicenseMeta, replacer, reviver } from '../index';
 import { StorageAPI } from './index';
 
 export class Pinata implements StorageAPI {
@@ -25,6 +25,11 @@ export class Pinata implements StorageAPI {
 		return JSON.parse(data, reviver);
 	}
 
+	async readLicenseMeta(metaURI: string): Promise<LicenseMeta> {
+		const data = await this.read(metaURI);
+		return JSON.parse(data, reviver);
+	}
+
 	async writeTeamMeta(team: TeamMeta): Promise<string> {
 		const data = JSON.stringify(team, replacer);
 		return await this.writeJSON(data);
@@ -39,14 +44,20 @@ export class Pinata implements StorageAPI {
 		const data = JSON.stringify(release, replacer);
 		return await this.writeJSON(data);
 	}
+	
+	async writeLicenseMeta(license: LicenseMeta): Promise<string> {
+		const data = JSON.stringify(license, replacer);
+		return await this.writeJSON(data);
+	}
 
 	async writeJSON(data: string): Promise<string> {
 		const url = 'https://api.pinata.cloud/pinning/pinJSONToIPFS';
 		const res = await fetch(url, { 
-			method: 'POST', 
+			method: 'POST',
 			body: data,
 			headers: {
-				'Authorization': `Bearer ${this.jwt}`
+				'Authorization': `Bearer ${this.jwt}`,
+				'Content-Type': 'application/json',
 			}
 		}).then(res => res.json());
 
@@ -73,4 +84,11 @@ export class Pinata implements StorageAPI {
 		const res = await fetch(this.gateway + uri);
 		return res.text();
 	}
+}
+
+/**
+ * Creates the default Pinata storage provider.
+ */
+export function createPinata(jwt: string, gateway: string): StorageAPI {
+	return new Pinata(jwt, gateway);
 }

@@ -1,4 +1,6 @@
+import { useContext, useState } from "react";
 import { SetUseState } from "../../utils/Account/types";
+import AccountContext from "../Accounts/AccountContext";
 import ImageUpload from "../Images/ImageUpload";
 import Tooltip from "./Tooltip";
 
@@ -12,6 +14,7 @@ interface CreateProjectFormProps {
   setName: SetUseState<string>,
   setImage: SetUseState<File | null>,
   setDescription: SetUseState<string>,
+  setShortDescription: SetUseState<string>,
   setWebsite: SetUseState<string>,
   setMembers: SetUseState<string[]>,
   setTeam: SetUseState<string>,
@@ -19,8 +22,32 @@ interface CreateProjectFormProps {
 }
 
 export default function CreateProjectForm(props: CreateProjectFormProps) {
+  const errorStyle = 'border-red-300 placeholder-red-400 focus:ring-red-500 focus:border-red-500';
+  const normalStyle = 'border-gray-300 placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500';
+  const accountCtx = useContext(AccountContext);
+  const [memberText, setMemberText] = useState<string>('');
+  const [nameStyle, setNameStyle] = useState<string>(normalStyle);
+  const [memberStyle, setMemberStyle] = useState<string>(normalStyle);
+  
   const handleSubmit = async () => {
+    if (props.projectName === '' || props.projectName === ' ') {
+      accountCtx.notify('error', 'Please enter a valid project name.');
+      setNameStyle(errorStyle);
+      return;
+    }
+
+    if (memberText === '' || memberText === ' ') {
+      accountCtx.notify('error', 'Please add atleast 1 valid member address');
+      setMemberStyle(errorStyle);
+      return;
+    }
+
     props.submit();
+  };
+
+  const handleNameChange = (text: string) => {
+    setNameStyle(normalStyle);
+    props.setName(text);
   };
 
   const handleTeamChange = (option: string) => {
@@ -28,6 +55,8 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
   };
 
   const handleMembersList = (text:string) => {
+    setMemberText(text);
+    setMemberStyle(normalStyle);
     const membersList = text.split('\n');
     let members: string[] = [];
     for (const member of membersList) {
@@ -64,11 +93,10 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
             id="name"
             name="name"
             type="text"
-            onChange={(e) => props.setName(e.target.value)}
+            onChange={(e) => handleNameChange(e.target.value)}
             required
-            className="appearance-none block w-full px-3 py-2 border border-gray-300 
-            rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 
-            focus:border-indigo-500 sm:text-sm"
+            className={`${nameStyle} appearance-none block w-full px-3 py-2 border 
+            rounded-md shadow-sm focus:outline-none sm:text-sm`}
             placeholder="Project name"
           />
         </div>
@@ -94,8 +122,27 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
       </div>
 
       <div>
+        <label htmlFor="website" className="block text-sm font-medium text-gray-700">
+          Short description <span className="float-right"><Tooltip text="A short description shown on searchs and previews of your project." /></span>
+        </label>
+        <div className="mt-1">
+          <input
+            id="shortDescription"
+            name="shortDescription"
+            type="text"
+            onChange={(e) => props.setShortDescription(e.target.value)}
+            placeholder='A short description'
+            required
+            className="appearance-none block w-full px-3 py-2 border border-gray-300 
+            rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 
+            focus:border-indigo-500 sm:text-sm"
+          />
+        </div>
+      </div>
+
+      <div>
         <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-          Description <span className="float-right"><Tooltip text='Plain text or markdown describing your project.' /></span>
+          Description <span className="float-right"><Tooltip text='Plain text or markdown describing your project in detail.' /></span>
         </label>
         <div className="mt-1">
           <textarea
@@ -105,7 +152,7 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
             rows={4}
             className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block 
             w-full sm:text-sm border border-gray-300 rounded-md"
-            placeholder="Description"
+            placeholder="An extended description"
           />
         </div>
       </div>
@@ -120,8 +167,8 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
             name="members"
             onChange={(e) => handleMembersList(e.target.value)}
             rows={4}
-            className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block 
-            w-full sm:text-sm border border-gray-300 rounded-md"
+            className={`${memberStyle} shadow-sm mt-1 block 
+            w-full sm:text-sm border rounded-md`}
             placeholder="List of members"
           />
         </div>

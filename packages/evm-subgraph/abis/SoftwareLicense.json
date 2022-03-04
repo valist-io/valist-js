@@ -315,27 +315,27 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_projectID",
-        "type": "uint256"
+        "internalType": "string",
+        "name": "_teamName",
+        "type": "string"
       },
       {
-        "internalType": "uint256",
-        "name": "_page",
-        "type": "uint256"
+        "internalType": "string",
+        "name": "_projectName",
+        "type": "string"
       },
       {
-        "internalType": "uint256",
-        "name": "_size",
-        "type": "uint256"
+        "internalType": "string",
+        "name": "_licenseName",
+        "type": "string"
       }
     ],
-    "name": "getLicensesByProjectID",
+    "name": "getLicenseMetaURI",
     "outputs": [
       {
-        "internalType": "uint256[]",
+        "internalType": "string",
         "name": "",
-        "type": "uint256[]"
+        "type": "string"
       }
     ],
     "stateMutability": "view",
@@ -354,17 +354,22 @@
         "type": "string"
       },
       {
-        "internalType": "string",
-        "name": "_releaseName",
-        "type": "string"
+        "internalType": "uint256",
+        "name": "_page",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_size",
+        "type": "uint256"
       }
     ],
-    "name": "getReleaseMetaURI",
+    "name": "getNamesByProjectID",
     "outputs": [
       {
-        "internalType": "string",
+        "internalType": "string[]",
         "name": "",
-        "type": "string"
+        "type": "string[]"
       }
     ],
     "stateMutability": "view",

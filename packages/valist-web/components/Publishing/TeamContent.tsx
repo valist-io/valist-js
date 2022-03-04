@@ -13,32 +13,32 @@ export default function TeamContent(props: TeamContentProps): JSX.Element {
   const demoProjects:Project[] = [
     {
       id: "test1",
-      name: "exampleProject1",
-      metaURI: "QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
+      name: "project1",
+      metaURI: "/ipfs/QmULxZrdCRTomii8DQgAtXZ8ySkVwA5tzujcrMu5XrfzzP",
       team: {
         name: props.teamName,
       },
     },
     {
       id: "test2",
-      name: "exampleProject2",
-      metaURI: "QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
+      name: "project2",
+      metaURI: "/ipfs/QmULxZrdCRTomii8DQgAtXZ8ySkVwA5tzujcrMu5XrfzzP",
       team: {
         name: props.teamName,
       },
     },
     {
       id: "test3",
-      name: "exampleProject3",
-      metaURI: "QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
+      name: "project3",
+      metaURI: "/ipfs/QmULxZrdCRTomii8DQgAtXZ8ySkVwA5tzujcrMu5XrfzzP",
       team: {
         name: props.teamName,
       },
     },
     {
       id: "test4",
-      name: "exampleProject4",
-      metaURI: "QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
+      name: "project4",
+      metaURI: "/ipfs/QmULxZrdCRTomii8DQgAtXZ8ySkVwA5tzujcrMu5XrfzzP",
       team: {
         name: props.teamName,
       },

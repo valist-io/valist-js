@@ -9,8 +9,10 @@ const nextConfig = {
     WEB3_PROVIDER: process.env.WEB3_PROVIDER || 'http://localhost:8545',
     IPFS_HOST: process.env.IPFS_HOST || 'http://localhost:5001',
     IPFS_GATEWAY: process.env.IPFS_GATEWAY || 'http://localhost:8080',
+    PINATA_JWT: process.env.PINATA_JWT,
     GRAPH_PROVIDER: process.env.GRAPH_PROVIDER || 'http://localhost:8000/subgraphs/name/valist-io/valist',
-    MAGIC_PUBKEY: 'pk_live_B577A4A7B11805D0',
+    MAGIC_PUBKEY: 'pk_live_631BA2340BB9ACD8',
+    MAGIC_RPC: process.env.MAGIC_RPC,
     METATX_ENABLED: process.env.METATX_ENABLED || true,
   },
   webpack: function (config, options) {

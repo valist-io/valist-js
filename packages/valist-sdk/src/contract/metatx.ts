@@ -46,7 +46,9 @@ const functionIDMap: Record<string, string> = {
     'removeTeamMember': '73b7e37c-826e-469c-b642-7e3657071154',
     'setProjectMetaURI': '6ece1fd9-531e-4710-b382-2129bf8f2263',
     'setTeamBeneficiary': 'd0fea8bd-777f-4c9f-94e1-ceb4d5907174',
-    'setTeamMetaURI': '8279a681-73bd-4b2b-b02f-99e2fa1c96ab'
+    'setTeamMetaURI': '8279a681-73bd-4b2b-b02f-99e2fa1c96ab',
+    'createLicense': 'b9457150-a8f2-4865-a7ad-00a2b7051029',
+    'mintLicense': '19df2338-09bf-4f60-a908-d52e5278e7e7',
 };
 
 // pass the networkId to get GSN forwarder contract addresses
@@ -153,6 +155,21 @@ const getDomainSeperator = (networkId: number) => {
     return domainSeparator;
 };
 
+const sendTx = async (
+    provider: Web3Provider | JsonRpcProvider,
+    functionName: string,
+    tx: PopulatedTransaction,
+): Promise<string> => {
+  tx.gasLimit = await provider.estimateGas(tx);
+  tx.gasPrice = await provider.getGasPrice();
+
+  const gasLimit = tx.gasLimit.toHexString();
+  const gasPrice = tx.gasPrice.toHexString();
+  const value = tx.value ? tx.value.toHexString() : '0x0';
+
+  const txResp = await provider.send('eth_sendTransaction', [{...tx, gasLimit, gasPrice, value}]);
+  return txResp;
+};
 
 const sendMetaTx = async (
     provider: Web3Provider | JsonRpcProvider,
@@ -202,5 +219,6 @@ const sendMetaTx = async (
 };
 
 export {
+    sendTx,
     sendMetaTx,
 };

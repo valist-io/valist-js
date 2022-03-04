@@ -1,8 +1,8 @@
 import { Client, createClient } from './client';
 import * as Storage from './storage';
 import { createIPFS } from './storage/ipfs';
+import { createPinata } from './storage/pinata';
 import * as Contract from './contract/';
-import { deployedAddresses } from './contract/evm';
 import { ValistABIs } from './abis';
 
 export class TeamMeta {
@@ -22,6 +22,8 @@ export class ProjectMeta {
 	/** project friendly name */
 	public name?: string;
 	/** short description of the project. */
+	public short_description?: string;
+	/** extended description of the project. */
 	public description?: string;
 	/** link to the project website. */
 	public external_url?: string;
@@ -38,6 +40,8 @@ export class ReleaseMeta {
 	public external_url?: string;
 	/** mapping of names to artifacts. */
 	public artifacts?: Map<string, ArtifactMeta>;
+	/** optional list of licenses linked to the project */
+	public licenses?: string[];
 }
 
 export class ArtifactMeta {
@@ -47,6 +51,17 @@ export class ArtifactMeta {
 	public sha256?: string;
 	/** path to the artifact file. */
 	public provider?: string;
+}
+
+export class LicenseMeta {
+	/** license image */
+	public image?: string;
+	/** license friendly name */
+	public name?: string;
+	/** short description of the license. */
+	public description?: string;
+	/** link to the license website. */
+	public external_url?: string;
 }
 
 /**
@@ -74,7 +89,7 @@ export {
 	Storage,
 	Contract,
 	ValistABIs,
-	deployedAddresses,
 	createClient,
 	createIPFS,
+	createPinata,
 };

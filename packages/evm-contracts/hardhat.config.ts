@@ -23,7 +23,7 @@ module.exports = {
     },
   },
   networks: {
-    local: {
+    ganache: {
       url: "http://localhost:8545",
     },
     mumbai: {

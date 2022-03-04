@@ -17,6 +17,7 @@ type Project @entity {
   releases: [Release!]! @derivedFrom(field: "project")
   createdTx: String!
   updatedTx: String!
+  createdAt: Int!
 }
 
 type Release @entity {
@@ -28,6 +29,7 @@ type Release @entity {
   rejectors: [User!]!
   createdTx: String!
   updatedTx: String!
+  createdAt: Int!
 }
 
 type User @entity {
@@ -46,4 +48,5 @@ type Log @entity {
   release: String
   member: String
   sender: String
+  createdAt: Int
 }

@@ -66,9 +66,6 @@ describe("Software License", () => {
         const uri = await license.uri(licenseID);
         expect(uri).to.equal(`https://gateway.valist.io${metaURI}`);
 
-        const releaseURI = await license.getReleaseMetaURI("acme", "bin", "0.0.2");
-        expect(releaseURI).to.equal(`https://gateway.valist.io${metaURI}`);
-
         const newBalance = await signers[1].getBalance();
         expect(newBalance.sub(BigNumber.from(ethers.utils.parseEther("100.0")))).to.be.gt(BigNumber.from(0));
       });

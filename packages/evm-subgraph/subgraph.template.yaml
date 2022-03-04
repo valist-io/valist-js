@@ -4,10 +4,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: Valist
-    network: ganache
+    network: {{network}}
     source:
-      address: "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab"
+      address: "{{address}}"
       abi: Valist
+      startBlock: {{startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5

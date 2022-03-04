@@ -1,4 +1,4 @@
-import { TeamMeta, ProjectMeta, ReleaseMeta, replacer, reviver } from '../index';
+import { TeamMeta, ProjectMeta, ReleaseMeta, LicenseMeta, replacer, reviver } from '../index';
 import { StorageAPI } from './index';
 import * as types from 'ipfs-core-types';
 import { create } from 'ipfs-http-client';
@@ -28,6 +28,11 @@ export class IPFS implements StorageAPI {
 		return JSON.parse(data, reviver);
 	}
 
+	async readLicenseMeta(metaURI: string): Promise<LicenseMeta> {
+		const data = await this.read(metaURI);
+		return JSON.parse(data, reviver);
+	}
+
 	async writeTeamMeta(team: TeamMeta): Promise<string> {
 		const data = JSON.stringify(team, replacer);
 		return await this.writeJSON(data);
@@ -40,6 +45,11 @@ export class IPFS implements StorageAPI {
 
 	async writeReleaseMeta(release: ReleaseMeta): Promise<string> {
 		const data = JSON.stringify(release, replacer);
+		return await this.writeJSON(data);
+	}
+
+	async writeLicenseMeta(license: LicenseMeta): Promise<string> {
+		const data = JSON.stringify(license, replacer);
 		return await this.writeJSON(data);
 	}
 
