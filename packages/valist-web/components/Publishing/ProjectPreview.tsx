@@ -14,7 +14,7 @@ interface ProjectPreviewProps {
 
 export default function ProjectPreview(props: ProjectPreviewProps) {
   const [ view, setView ] = useState<string>("Readme");
-  const name = props.projectName || 'projectName';
+  const name = props.projectName || 'name';
 
   let imgUrl = "";
   if (props.projectImage) {

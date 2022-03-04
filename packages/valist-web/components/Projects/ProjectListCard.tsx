@@ -18,13 +18,14 @@ export default function ProjectListCard({ teamName, projectName, metaURI }: Proj
   const accountCtx = useContext(AccountContext);
   let [ meta, setMeta ] = useState<ProjectMeta>({
     image: '',
-    description: "Loading....",
+    short_description: "Loading....",
   });
 
   useEffect(() => {
     const fetchProjectMeta = async (metaURI: string) => {
       try {
-        const projectJson = await valistCtx.valist.storage.readReleaseMeta(metaURI);
+        const projectJson = await valistCtx.valist.storage.readProjectMeta(metaURI);
+        console.log('test', projectJson.short_description);
         setMeta(projectJson);
       } catch (err) {
         console.log("Failed to fetch projectID.", err);
@@ -62,7 +63,7 @@ export default function ProjectListCard({ teamName, projectName, metaURI }: Proj
      
       <div>
         <p style={{ height: 48, maxHeight: 48, overflow: 'hidden' }}>
-          {removeMd(meta.description || '')}
+          {meta.short_description}
         </p>
       </div>
     </div>

@@ -16,7 +16,7 @@ import ValistContext from '../components/Valist/ValistContext';
 import { USER_TEAMS } from '../utils/Apollo/queries';
 import CreateLicenseForm from '../components/Publishing/CreateLicenseForm';
 import LicensePreview from '../components/Publishing/LicensePreview';
-import { ReleaseMeta, ArtifactMeta, LicenseMeta } from '@valist/sdk';
+import { ProjectMeta, ReleaseMeta, ArtifactMeta, LicenseMeta } from '@valist/sdk';
 import { BigNumberish } from 'ethers';
 import parseError from '../utils/Errors';
 
@@ -65,6 +65,7 @@ const CreatePage: NextPage = () => {
   const [projectImage, setProjectImage] = useState<File | null>(null);
   const [projectName, setProjectName] = useState<string>('');
   const [projectDescription, setProjectDescription] = useState<string>('');
+  const [projectShortDescription, setProjectShortDescription] = useState<string>('');
   const [projectWebsite, setProjectWebsite] = useState<string>('');
   const [projectMembers, setProjectMembers] = useState<string[]>([]);
   const [projectMembersParsed, setprojectMembersParsed] = useState<Member[]>([]);
@@ -264,25 +265,25 @@ const CreatePage: NextPage = () => {
       imgURL = `${publicRuntimeConfig.IPFS_GATEWAY}${imgCID}`;
     }
 
-    const meta = {
-      image: imgURL,
-      name: projectName,
-      description: projectDescription,
-      external_url: projectWebsite,
-     };
+    const project = new ProjectMeta;
+    project.image = imgURL;
+    project.name = projectName;
+    project.description = projectDescription;
+    project.short_description = projectShortDescription;
+    project.external_url = projectWebsite,
 
-     console.log("Project Team", projectTeam);
-     console.log("Project Name", projectName);
-     console.log("Project Members", projectMembers);
-     console.log("Meta", meta);
+    console.log("Project Team", projectTeam);
+    console.log("Project Name", projectName);
+    console.log("Project Members", projectMembers);
+    console.log("Meta", project);
 
-     let toastID = '';
-     try {
+    let toastID = '';
+    try {
       toastID = accountCtx.notify('pending'); 
       const transaction = await valistCtx.valist.createProject(
         projectTeam,
         projectName,
-        meta,
+        project,
         projectMembers,
       );
 
@@ -474,6 +475,7 @@ const CreatePage: NextPage = () => {
                 setName={setProjectName}
                 setImage={setProjectImage}
                 setDescription={setProjectDescription}
+                setShortDescription={setProjectShortDescription}
                 setWebsite={setProjectWebsite}
                 setMembers={setProjectMembers}
                 submit={createProject}

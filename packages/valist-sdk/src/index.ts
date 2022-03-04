@@ -21,6 +21,8 @@ export class ProjectMeta {
 	/** project friendly name */
 	public name?: string;
 	/** short description of the project. */
+	public short_description?: string;
+	/** extended description of the project. */
 	public description?: string;
 	/** link to the project website. */
 	public external_url?: string;
