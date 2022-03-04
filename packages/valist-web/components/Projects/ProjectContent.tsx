@@ -23,7 +23,7 @@ export default function RepoContent(props: ReleaseListProps): JSX.Element {
       currentView = 'releaseSteps';
     }
 
-    console.log(props.projectMeta)
+    console.log(props.projectMeta);
 
     switch (currentView) {
       case 'Readme':
