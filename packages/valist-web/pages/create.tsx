@@ -53,8 +53,8 @@ const CreatePage: NextPage = () => {
 
   // Team State
   const [teamImage, setTeamImage] = useState<File | null>(null);
-  const [teamName, setTeamName] = useState<string>('teamName');
-  const [teamDescription, setTeamDescription] = useState<string>('An example team description.');
+  const [teamName, setTeamName] = useState<string>('');
+  const [teamDescription, setTeamDescription] = useState<string>('');
   const [teamWebsite, setTeamWebsite] = useState<string>('');
   const [teamBeneficiary, setTeamBeneficiary] = useState<string>('');
   const [teamMembers, setTeamMembers] = useState<string[]>([]);
@@ -63,7 +63,7 @@ const CreatePage: NextPage = () => {
   // Project State
   const [projectTeam, setProjectTeam] = useState<string>('');
   const [projectImage, setProjectImage] = useState<File | null>(null);
-  const [projectName, setProjectName] = useState<string>('projectName');
+  const [projectName, setProjectName] = useState<string>('');
   const [projectDescription, setProjectDescription] = useState<string>('');
   const [projectWebsite, setProjectWebsite] = useState<string>('');
   const [projectMembers, setProjectMembers] = useState<string[]>([]);
@@ -241,7 +241,7 @@ const CreatePage: NextPage = () => {
         teamBeneficiary,
         teamMembers,
       );
-      
+
       accountCtx.dismiss(toastID);
       toastID = accountCtx.notify('transaction', transaction.hash());
       await transaction.wait();
@@ -448,6 +448,7 @@ const CreatePage: NextPage = () => {
                 teamName={teamName} 
                 teamMembers={teamMembers} 
                 teamDescription={teamDescription}
+                teamBeneficiary={teamBeneficiary}
                 teamWebsite={teamWebsite}   
                 setName={setTeamName}
                 setImage={setTeamImage}
@@ -464,9 +465,9 @@ const CreatePage: NextPage = () => {
           {renderProject && <Accordion view={view} name={'project'} setView={setView} title={<div><span className='mr-4'></span>Create a New Project</div>}>
             <div className="p-4">
               <CreateProjectForm
-                projectName={''}
-                projectDescription={''}
-                projectWebsite={''}
+                projectName={projectName}
+                projectDescription={projectDescription}
+                projectWebsite={projectWebsite}
                 userTeams={userTeamNames}
                 setView={setView}
                 setRenderTeam={setRenderTeam}

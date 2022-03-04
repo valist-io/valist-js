@@ -14,6 +14,7 @@ interface ProjectPreviewProps {
 
 export default function ProjectPreview(props: ProjectPreviewProps) {
   const [ view, setView ] = useState<string>("Readme");
+  const name = props.projectName || 'projectName';
 
   let imgUrl = "";
   if (props.projectImage) {
@@ -29,7 +30,7 @@ export default function ProjectPreview(props: ProjectPreviewProps) {
     <div>
       <ProjectProfileCard 
         teamName={props.teamName} 
-        projectName={props.projectName} 
+        projectName={name} 
         projectImg={imgUrl}
         tabs={['Readme', 'Members']}
         view={view}

@@ -13,8 +13,6 @@ import HomepageContent from '../components/Homepage/HomepageContent';
 import Link from 'next/link';
 import ValistContext from '../components/Valist/ValistContext';
 import { License } from '../utils/Valist/types';
-import { truncate } from '../utils/Formatting/truncate';
-import { BigNumber } from 'ethers';
 import CreateButton from '../components/Homepage/CreateButton';
 
 const Dashboard: NextPage = () => {
@@ -52,7 +50,7 @@ const Dashboard: NextPage = () => {
           for (let j = 0; j < licenseNames.length; ++j) {
             const id = await valistCtx.valist.contract.getLicenseID(project.id, licenseNames[j]);
             licenses.push({
-              id: truncate((id as BigNumber).toHexString(), 25),
+              id: id.toString(),
               image: '',
               name: licenseNames[j],
               team: project.team.name,
@@ -80,7 +78,7 @@ const Dashboard: NextPage = () => {
       {<div className="grid grid-cols-1 gap-4 items-start lg:grid-cols-3 lg:gap-8">
         {/* Left column */}
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
-          <HomepageProfileCard address={accountCtx.address} view={view} setView={setView} />
+          <HomepageProfileCard resolveEns={accountCtx?.resolveEns} address={accountCtx.address} view={view} setView={setView} />
           <HomepageContent userProjects={userProjects} userLicenses={userlicenses} view={view} address={accountCtx.address} />
         </div>
         {/* Right column */}

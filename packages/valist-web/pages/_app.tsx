@@ -46,6 +46,7 @@ function ValistApp({ Component, pageProps }: AppProps) {
   const [loginType, setLoginType] = useState<LoginType>('readOnly');
   const [showLogin, setShowLogin] = useState(false);
   const [modal, setModal] = useState<boolean>(false);
+  const [mainnet, setMainnet] = useState<ethers.providers.JsonRpcProvider>(new ethers.providers.JsonRpcProvider('https://rpc.valist.io/mainnet'));
 
   const notify = (type: string, text?: string): string => {
     switch (type) {
@@ -64,8 +65,12 @@ function ValistApp({ Component, pageProps }: AppProps) {
            Creating transaction..
           </div>
         ), {
-          position: 'top-right',
+          position: 'bottom-center',
           duration: 1000000,
+        });
+      case 'message':
+        return toast.success(`${text}`, {
+          position: 'top-right',
         });
       case 'success':
         return toast.success('Transaction Successfull!', {
@@ -88,11 +93,26 @@ function ValistApp({ Component, pageProps }: AppProps) {
     toast.dismiss(id);
   };
 
+  const resolveEns = async (address:string) => {
+    if (address?.length > 10) {
+      try {
+        const name = await mainnet.lookupAddress(address);
+        if (name !== null) {
+          return name;
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    return null;
+  };
+  
   const accountState = {
     magic,
     address,
     loginType,
     modal,
+    resolveEns,
     setLoginType,
     setShowLogin,
     setAddress,

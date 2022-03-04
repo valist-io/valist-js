@@ -40,6 +40,7 @@ export interface AccountCtxInterface {
   loginType: LoginType,
   magic: Magic | null,
   modal: boolean,
+  resolveEns: (address: string) => Promise<string | null>
   setLoginType: SetUseState<LoginType>,
   setShowLogin: SetUseState<boolean>,
   setAddress: SetUseState<string>,

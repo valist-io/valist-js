@@ -1,10 +1,21 @@
+import { ClipboardIcon } from "@heroicons/react/outline";
+import { useContext } from "react";
+import { truncate } from "../../utils/Formatting/truncate";
 import { License } from "../../utils/Valist/types";
+import AccountContext from "../Accounts/AccountContext";
 
 interface LicenseListProps {
   licenses: License[];
 }
 
 export default function LicenseList(props: LicenseListProps) {
+  const accountCtx = useContext(AccountContext);
+
+  const handleIDClick = async (id: string) => {
+    await navigator.clipboard.writeText(id);
+    accountCtx.notify('message', 'Token ID copied to clipboard!');
+  };
+  
   return (
     <div className="flex flex-col">
     <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -58,7 +69,11 @@ export default function LicenseList(props: LicenseListProps) {
                   </td>
 
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {license.id}
+                    {truncate(license.id, 10)}
+                    <ClipboardIcon
+                      className="h-5 w-5 inline-block -mt-1 cursor-pointer ml-1" 
+                      onClick={() => handleIDClick(license.id)}
+                    />
                   </td>
                 </tr>
               ))}

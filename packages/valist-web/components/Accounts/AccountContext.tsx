@@ -1,3 +1,4 @@
+import { ethers } from 'ethers';
 import React from 'react';
 import { AccountCtxInterface } from '../../utils/Account/types';
 
@@ -6,6 +7,7 @@ export default React.createContext<AccountCtxInterface>({
   address: '0x0',
   loginType: 'readOnly',
   modal: false,
+  resolveEns:() => { return new Promise(() => ''); },
   setShowLogin: () => {},
   setLoginType: () => {},
   setAddress: () => {},
