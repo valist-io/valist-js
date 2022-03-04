@@ -79,7 +79,7 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
       <ImageUpload text={'Set Image'} setImage={props.setImage} />
       <div>
         <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-          Username <span className="float-right"><Tooltip text='The namespace for your team.' /></span>
+          Username <span className="float-right"><Tooltip text='The namespace for your team or account.' /></span>
         </label>
         <div className="mt-1">
           <input
@@ -98,7 +98,7 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
 
       <div>
         <label htmlFor="website" className="block text-sm font-medium text-gray-700">
-          Website <span className="float-right"><Tooltip text="The link to your team's website." /></span>
+          Website <span className="float-right"><Tooltip text="The link to your team or account's website." /></span>
         </label>
         <div className="mt-1">
           <input
@@ -117,7 +117,7 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
 
       <div>
         <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-          Description <span className="float-right"><Tooltip text='A short sentence about your team.' /></span>
+          Description <span className="float-right"><Tooltip text='A short description about the team or account.' /></span>
         </label>
         <div className="mt-1">
           <textarea
@@ -153,7 +153,7 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
 
       <div>
         <label htmlFor="members" className="block text-sm font-medium text-gray-700">
-          Members <span className="float-right"><Tooltip text='A list of team members seperated by new-line.' /></span>
+          Members <span className="float-right"><Tooltip text='A list of members seperated by new-line.' /></span>
         </label>
         <div className="mt-1">
           <textarea
