@@ -1,4 +1,4 @@
-import { EVM, EVM_Options, valistAddresses, licenseAddresses } from './evm';
+import { EVM, EVM_Options, EVM_Provider, valistAddresses, licenseAddresses } from './evm';
 import { BigNumber, BigNumberish, PopulatedTransaction } from 'ethers';
 import { TransactionReceipt } from '@ethersproject/abstract-provider';
 
@@ -324,4 +324,4 @@ interface ContractAPI {
 	getLicensePrice(teamName: string, projectName: string, licenseName: string): Promise<BigNumber>;
 }
 
-export { ContractAPI, TransactionAPI, EVM, EVM_Options, valistAddresses, licenseAddresses };
+export { ContractAPI, TransactionAPI, EVM, EVM_Options, EVM_Provider, valistAddresses, licenseAddresses };

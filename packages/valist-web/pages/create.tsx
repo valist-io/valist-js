@@ -16,7 +16,7 @@ import ValistContext from '../components/Valist/ValistContext';
 import { USER_TEAMS } from '../utils/Apollo/queries';
 import CreateLicenseForm from '../components/Publishing/CreateLicenseForm';
 import LicensePreview from '../components/Publishing/LicensePreview';
-import { ReleaseMeta, LicenseMeta } from '@valist/sdk';
+import { ReleaseMeta, LicenseMeta, ProjectMeta } from '@valist/sdk';
 import { BigNumberish } from 'ethers';
 import parseError from '../utils/Errors';
 
@@ -261,7 +261,7 @@ const CreatePage: NextPage = () => {
       imgURL = await valistCtx.storage.writeFile(projectImage);
     }
 
-    const project = new ProjectMeta;
+    const project = new ProjectMeta();
     project.image = imgURL;
     project.name = projectName;
     project.description = projectDescription;

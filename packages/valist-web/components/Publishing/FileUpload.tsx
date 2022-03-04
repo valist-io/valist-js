@@ -8,11 +8,11 @@ interface FileUploadProps {
 }
 
 export default function FileUpload(props: FileUploadProps) {
-  const {acceptedFiles, getRootProps, getInputProps} = useDropzone();
+  const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
   
   useEffect(() => {
-    props.setFiles(acceptedFiles)
-  }, [acceptedFiles, props.setFiles]);
+    props.setFiles(acceptedFiles);
+  }, [acceptedFiles, props]);
   
   return (
     <div>
@@ -30,8 +30,8 @@ export default function FileUpload(props: FileUploadProps) {
         </div>
         <ul>
           { props.files && props.files.map((file) => (
-            <li key={file.path}>
-              {file.path}
+            <li key={file.name}>
+              {file.webkitRelativePath ? file.webkitRelativePath : file.name}
             </li>
           ))}
         </ul>

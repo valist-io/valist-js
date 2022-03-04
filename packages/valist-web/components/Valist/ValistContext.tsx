@@ -8,7 +8,7 @@ const { publicRuntimeConfig } = getConfig();
 
 export const defaultProvider = new ethers.providers.JsonRpcProvider(publicRuntimeConfig.WEB3_PROVIDER);
 
-export function createValistClient(provider) {
+export function createValistClient(provider: Contract.EVM_Provider) {
   const chainID = publicRuntimeConfig.CHAIN_ID;
   const metaTx = publicRuntimeConfig.METATX_ENABLED;
   const ipfsHost = publicRuntimeConfig.IPFS_HOST;
@@ -22,5 +22,5 @@ export function createValistClient(provider) {
 }
 
 export default React.createContext<Client>(
-  createValistClient(defaultProvider)
+  createValistClient(defaultProvider),
 );
