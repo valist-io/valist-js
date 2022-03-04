@@ -35,7 +35,7 @@ function ValistApp({ Component, pageProps }: AppProps) {
         },
         provider,
       ),
-      new Storage.Pinata(publicRuntimeConfig.PINATA_JWT, publicRuntimeConfig.PINATA_GATEWAY),
+      new Storage.Pinata(publicRuntimeConfig.PINATA_JWT, publicRuntimeConfig.IPFS_GATEWAY),
     ),
   );
   const [magic, setMagic] = useState<Magic | null>(null);
@@ -146,7 +146,7 @@ function ValistApp({ Component, pageProps }: AppProps) {
           },
           provider,
         ),
-        new Storage.Pinata(publicRuntimeConfig.PINATA_JWT, publicRuntimeConfig.PINATA_GATEWAY),
+        new Storage.Pinata(publicRuntimeConfig.PINATA_JWT, publicRuntimeConfig.IPFS_GATEWAY),
       ),
     );
   }, [provider, publicRuntimeConfig.CHAIN_ID, publicRuntimeConfig.IPFS_HOST, publicRuntimeConfig.METATX_ENABLED]);
