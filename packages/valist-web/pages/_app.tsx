@@ -62,7 +62,7 @@ function ValistApp({ Component, pageProps }: AppProps) {
            Creating transaction..
           </div>
         ), {
-          position: 'bottom-center',
+          position: 'top-right',
           duration: 1000000,
         });
       case 'message':
