@@ -48,8 +48,8 @@ export default function ProjectPage():JSX.Element {
     const getProjectID = async () => {
       if (teamName !== 'undefined') {
         try {
-          const teamID = await valistCtx.valist.contract.getTeamID(teamName);
-          const _projectID = await valistCtx.valist.contract.getProjectID(teamID, projectName);
+          const teamID = await valistCtx.contract.getTeamID(teamName);
+          const _projectID = await valistCtx.contract.getProjectID(teamID, projectName);
           setProjectID(_projectID._hex);
         } catch(err) {
           // accountCtx.notify('error', String(err));
@@ -65,14 +65,7 @@ export default function ProjectPage():JSX.Element {
     const fetchReleaseMeta = async (release: Release) => {
       try { 
         if (release?.metaURI && release?.metaURI !== '') {
-          const metaJson = await valistCtx.valist.storage.readReleaseMeta(release.metaURI);
-          if (metaJson?.artifacts?.size === 0) {
-            metaJson.artifacts.set('Unknown', {
-                architecture: "Unknown",
-                sha256: '',
-                provider: release.metaURI,
-            });
-          }
+          const metaJson = await fetch(release.metaURI).then(res => res.json());
           setReleaseMeta(metaJson);
         }
       } catch(err) {
@@ -83,7 +76,7 @@ export default function ProjectPage():JSX.Element {
   
     const fetchProjectMeta = async (metaURI: string) => {
       try {
-        const projectJson = await valistCtx.valist.storage.readProjectMeta(metaURI);
+        const projectJson = await fetch(metaURI).then(res => res.json());
         setProjectMeta(projectJson);
       } catch(err) {
         accountCtx.notify('error', String(err));
@@ -101,31 +94,31 @@ export default function ProjectPage():JSX.Element {
         fetchProjectMeta(data?.projects[0]?.metaURI);
       }
     }
-  }, [accountCtx, data, valistCtx.valist.storage]);
+  }, [accountCtx, data]);
 
   useEffect(() => {
     (async () => {
       if (releaseMeta.licenses && releaseMeta.licenses[0]) {
         const licenseName = releaseMeta.licenses[0];
-        const licenseID = await valistCtx.valist.contract.getLicenseID(projectID, licenseName);
-        const price = await valistCtx.valist.contract.getPriceByID(licenseID);
+        const licenseID = await valistCtx.contract.getLicenseID(projectID, licenseName);
+        const price = await valistCtx.contract.getPriceByID(licenseID);
         setLicensePrice(ethers.utils.formatEther(price));
 
         // @ts-ignore @TODO expose from SDK interface
-        let balance = await valistCtx.valist.contract.license.balanceOf(
+        let balance = await valistCtx.contract.license.balanceOf(
           accountCtx.address, licenseID,
         );
 
         setLicenseBalance(Number(balance));
       }
     })();
-  }, [accountCtx.address, projectID, releaseMeta.licenses, valistCtx.valist.contract]);
+  }, [accountCtx.address, projectID, releaseMeta.licenses, valistCtx.contract]);
 
   const mintLicense = async () => {
     if (releaseMeta.licenses && releaseMeta.licenses[0] && accountCtx.address !== '0x0') {
       let toastID = '';
       try {
-        const transaction = await valistCtx.valist.mintLicense(
+        const transaction = await valistCtx.mintLicense(
           teamName,
           projectName,
           releaseMeta.licenses[0],

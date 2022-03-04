@@ -1,7 +1,5 @@
 import getConfig from 'next/config';
 import { Release } from '../../utils/Apollo/types';
-import { parseCID } from '../../utils/Ipfs';
-import DownloadBox from './DownloadBox';
 
 interface ReleaseListProps {
   projectReleases: Release[],
@@ -31,15 +29,7 @@ export default function ReleaseList(props: ReleaseListProps): JSX.Element {
                     className="hidden lg:block px-4 py-3 text-left text-xs
                     font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    IPFS Hash (CID)
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                  </th>
-                  <th scope="col" className="relative px-6 py-3">
-                    <span className="sr-only">Edit</span>
+                    URL
                   </th>
                 </tr>
               </thead>
@@ -51,16 +41,9 @@ export default function ReleaseList(props: ReleaseListProps): JSX.Element {
                     </td>
                     <td className="hidden lg:block px-4 py-6 whitespace-nowrap text-left
                     text-sm text-gray-500 hover:text-indigo-500">
-                      <a className="cursor-pointer"
-                        href={`${publicRuntimeConfig.IPFS_GATEWAY}/ipfs/${parseCID(release.metaURI)}`}>
-                        {parseCID(release.metaURI)}
+                      <a className="cursor-pointer" href={release.metaURI}>
+                        {release.metaURI}
                       </a>
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <DownloadBox
-                        metaURI={release.metaURI}
-                        releaseName={`${teamName}_${projectName}@${release.name}`}
-                      />
                     </td>
                   </tr>
                 ))}

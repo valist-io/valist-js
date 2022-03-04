@@ -14,7 +14,7 @@ export default function TeamContent(props: TeamContentProps): JSX.Element {
     {
       id: "test1",
       name: "exampleProject1",
-      metaURI: "QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
+      metaURI: "https://gateway.valist.io/ipfs/QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
       team: {
         name: props.teamName,
       },
@@ -22,7 +22,7 @@ export default function TeamContent(props: TeamContentProps): JSX.Element {
     {
       id: "test2",
       name: "exampleProject2",
-      metaURI: "QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
+      metaURI: "https://gateway.valist.io/ipfs/QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
       team: {
         name: props.teamName,
       },
@@ -30,7 +30,7 @@ export default function TeamContent(props: TeamContentProps): JSX.Element {
     {
       id: "test3",
       name: "exampleProject3",
-      metaURI: "QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
+      metaURI: "https://gateway.valist.io/ipfs/QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
       team: {
         name: props.teamName,
       },
@@ -38,7 +38,7 @@ export default function TeamContent(props: TeamContentProps): JSX.Element {
     {
       id: "test4",
       name: "exampleProject4",
-      metaURI: "QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
+      metaURI: "https://gateway.valist.io/ipfs/QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
       team: {
         name: props.teamName,
       },
