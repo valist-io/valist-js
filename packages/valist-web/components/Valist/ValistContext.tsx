@@ -24,3 +24,5 @@ export default React.createContext<Client>(
     defaultProvider
   )
 );
+
+// new Storage.Pinata(publicRuntimeConfig.PINATA_JWT, publicRuntimeConfig.IPFS_GATEWAY)

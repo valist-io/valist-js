@@ -68,8 +68,10 @@ const Dashboard: NextPage = () => {
   useEffect(() => {
     if (data?.users[0] && data?.users[0]?.projects) {
       setUserProjects(data.users[0].projects);
-    } else if (data && (accountCtx?.address.length > 3 )) {
-        router.push('/create?action=team');    
+    } else if (!loading && accountCtx?.address.length < 5) {
+      router.push('/create?action=team');   
+    } else if(!loading) {
+      router.push('/create?action=team');
     }
   }, [data, loading, error, setUserProjects, accountCtx?.address.length, router]);
 

@@ -1,6 +1,7 @@
 import { Client, createClient } from './client';
 import * as Storage from './storage';
 import { createIPFS } from './storage/ipfs';
+import { createPinata } from './storage/pinata';
 import * as Contract from './contract/';
 import { ValistABIs } from './abis';
 
@@ -21,6 +22,8 @@ export class ProjectMeta {
 	/** project friendly name */
 	public name?: string;
 	/** short description of the project. */
+	public short_description?: string;
+	/** extended description of the project. */
 	public description?: string;
 	/** link to the project website. */
 	public external_url?: string;
@@ -57,4 +60,5 @@ export {
 	ValistABIs,
 	createClient,
 	createIPFS,
+	createPinata,
 };

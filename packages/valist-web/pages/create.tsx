@@ -65,6 +65,7 @@ const CreatePage: NextPage = () => {
   const [projectImage, setProjectImage] = useState<File | null>(null);
   const [projectName, setProjectName] = useState<string>('');
   const [projectDescription, setProjectDescription] = useState<string>('');
+  const [projectShortDescription, setProjectShortDescription] = useState<string>('');
   const [projectWebsite, setProjectWebsite] = useState<string>('');
   const [projectMembers, setProjectMembers] = useState<string[]>([]);
   const [projectMembersParsed, setprojectMembersParsed] = useState<Member[]>([]);
@@ -214,7 +215,7 @@ const CreatePage: NextPage = () => {
     let imgURL = "";
 
     if (teamImage) {
-      const imgURL = await valistCtx.storage.writeFile(teamImage);
+      imgURL = await valistCtx.storage.writeFile(teamImage);
     }
 
     const meta = {
@@ -257,28 +258,28 @@ const CreatePage: NextPage = () => {
     let imgURL = "";
 
     if (projectImage) {
-      const imgURL = await valistCtx.storage.writeFile(projectImage);
+      imgURL = await valistCtx.storage.writeFile(projectImage);
     }
 
-    const meta = {
-      image: imgURL,
-      name: projectName,
-      description: projectDescription,
-      external_url: projectWebsite,
-     };
+    const project = new ProjectMeta;
+    project.image = imgURL;
+    project.name = projectName;
+    project.description = projectDescription;
+    project.short_description = projectShortDescription;
+    project.external_url = projectWebsite,
 
-     console.log("Project Team", projectTeam);
-     console.log("Project Name", projectName);
-     console.log("Project Members", projectMembers);
-     console.log("Meta", meta);
+    console.log("Project Team", projectTeam);
+    console.log("Project Name", projectName);
+    console.log("Project Members", projectMembers);
+    console.log("Meta", project);
 
-     let toastID = '';
-     try {
+    let toastID = '';
+    try {
       toastID = accountCtx.notify('pending'); 
       const transaction = await valistCtx.createProject(
         projectTeam,
         projectName,
-        meta,
+        project,
         projectMembers,
       );
 
@@ -300,7 +301,7 @@ const CreatePage: NextPage = () => {
     let imgURL = "";
 
     if (releaseImage) {
-      const imgURL = await valistCtx.storage.writeFile(releaseImage);
+      imgURL = await valistCtx.storage.writeFile(releaseImage);
     }
 
     const release = new ReleaseMeta();
@@ -343,7 +344,7 @@ const CreatePage: NextPage = () => {
     let imgURL = "";
 
     if (licenseImage) {
-      const imgURL = await valistCtx.storage.writeFile(licenseImage);
+      imgURL = await valistCtx.storage.writeFile(licenseImage);
     }
 
     const license = new LicenseMeta();
@@ -457,6 +458,7 @@ const CreatePage: NextPage = () => {
                 setName={setProjectName}
                 setImage={setProjectImage}
                 setDescription={setProjectDescription}
+                setShortDescription={setProjectShortDescription}
                 setWebsite={setProjectWebsite}
                 setMembers={setProjectMembers}
                 submit={createProject}

@@ -17,7 +17,7 @@ export default function ProjectListCard({ teamName, projectName, metaURI }: Proj
   const accountCtx = useContext(AccountContext);
   let [ meta, setMeta ] = useState<ProjectMeta>({
     image: '',
-    description: "Loading....",
+    short_description: "Loading....",
   });
 
   useEffect(() => {
@@ -62,7 +62,7 @@ export default function ProjectListCard({ teamName, projectName, metaURI }: Proj
      
       <div>
         <p style={{ height: 48, maxHeight: 48, overflow: 'hidden' }}>
-          {removeMd(meta.description || '')}
+          {meta.short_description}
         </p>
       </div>
     </div>

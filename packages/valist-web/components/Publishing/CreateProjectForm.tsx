@@ -14,6 +14,7 @@ interface CreateProjectFormProps {
   setName: SetUseState<string>,
   setImage: SetUseState<File | null>,
   setDescription: SetUseState<string>,
+  setShortDescription: SetUseState<string>,
   setWebsite: SetUseState<string>,
   setMembers: SetUseState<string[]>,
   setTeam: SetUseState<string>,
@@ -121,8 +122,27 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
       </div>
 
       <div>
+        <label htmlFor="website" className="block text-sm font-medium text-gray-700">
+          Short description <span className="float-right"><Tooltip text="A short description shown on searchs and previews of your project." /></span>
+        </label>
+        <div className="mt-1">
+          <input
+            id="shortDescription"
+            name="shortDescription"
+            type="text"
+            onChange={(e) => props.setShortDescription(e.target.value)}
+            placeholder='A short description'
+            required
+            className="appearance-none block w-full px-3 py-2 border border-gray-300 
+            rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 
+            focus:border-indigo-500 sm:text-sm"
+          />
+        </div>
+      </div>
+
+      <div>
         <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-          Description <span className="float-right"><Tooltip text='Plain text or markdown describing your project.' /></span>
+          Description <span className="float-right"><Tooltip text='Plain text or markdown describing your project in detail.' /></span>
         </label>
         <div className="mt-1">
           <textarea
@@ -132,7 +152,7 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
             rows={4}
             className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block 
             w-full sm:text-sm border border-gray-300 rounded-md"
-            placeholder="Description"
+            placeholder="An extended description"
           />
         </div>
       </div>

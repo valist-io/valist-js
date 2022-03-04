@@ -17,6 +17,7 @@ export declare type ProjectMeta = {
   name?: string,
   description?: string,
   external_url?: string,
+  short_description?: string,
 };
 
 export type ReleaseMeta = {

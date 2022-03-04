@@ -13,9 +13,14 @@ export class Pinata implements StorageAPI {
 
 	async writeJSON(data: string): Promise<string> {
 		const url = 'https://api.pinata.cloud/pinning/pinJSONToIPFS';
-		const res = await axios.post(url, data, { 
-			headers: {'Authorization': `Bearer ${this.jwt}`}
-		});
+		const res = await fetch(url, { 
+			method: 'POST',
+			body: data,
+			headers: {
+				'Authorization': `Bearer ${this.jwt}`,
+				'Content-Type': 'application/json',
+			}
+		}).then(res => res.json());
 
 		return `${this.gateway}/ipfs/${res.data.IpfsHash}`;
 	}
@@ -45,4 +50,11 @@ export class Pinata implements StorageAPI {
 
 		return `${this.gateway}/ipfs/${res.data.IpfsHash}`;
 	}
+}
+
+/**
+ * Creates the default Pinata storage provider.
+ */
+export function createPinata(jwt: string, gateway: string): StorageAPI {
+	return new Pinata(jwt, gateway);
 }

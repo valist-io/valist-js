@@ -76,17 +76,17 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
   
   return (
     <form className="grid grid-cols-1 gap-y-6 sm:gap-x-8" action="#" method="POST">
-      <ImageUpload text={'Set Team Image'} setImage={props.setImage} />
+      <ImageUpload text={'Set Image'} setImage={props.setImage} />
       <div>
         <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-          Name <span className="float-right"><Tooltip text='The name of your team.' /></span>
+          Username <span className="float-right"><Tooltip text='The namespace for your team or account.' /></span>
         </label>
         <div className="mt-1">
           <input
             id="name"
             name="name"
             type="text"
-            placeholder={'Team Name'}
+            placeholder={'Name'}
             onChange={(e) => handleNameChange(e.target.value.toLowerCase())}
             required
             className={`${nameStyle} appearance-none block w-full px-3 py-2 border border-gray-300 
@@ -98,7 +98,7 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
 
       <div>
         <label htmlFor="website" className="block text-sm font-medium text-gray-700">
-          Website <span className="float-right"><Tooltip text="The link to your team's website." /></span>
+          Website <span className="float-right"><Tooltip text="The link to your team or account's website." /></span>
         </label>
         <div className="mt-1">
           <input
@@ -117,7 +117,7 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
 
       <div>
         <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-          Description <span className="float-right"><Tooltip text='A short sentence about your team.' /></span>
+          Description <span className="float-right"><Tooltip text='A short description about the team or account.' /></span>
         </label>
         <div className="mt-1">
           <textarea
@@ -127,7 +127,7 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
             rows={4}
             className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block 
             w-full sm:text-sm border border-gray-300 rounded-md"
-            placeholder={'An example team description'}
+            placeholder={'An example description'}
             defaultValue={''}
           />
         </div>
@@ -153,7 +153,7 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
 
       <div>
         <label htmlFor="members" className="block text-sm font-medium text-gray-700">
-          Members <span className="float-right"><Tooltip text='A list of team members seperated by new-line.' /></span>
+          Members <span className="float-right"><Tooltip text='A list of members seperated by new-line.' /></span>
         </label>
         <div className="mt-1">
           <textarea
