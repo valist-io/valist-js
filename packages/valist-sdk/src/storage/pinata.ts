@@ -35,7 +35,7 @@ export class Pinata implements StorageAPI {
 
 	async writeFolder(data: File[]): Promise<string> {
 		const form = new FormData();
-		data.forEach(file => form.append('file', file));
+		data.forEach(file => form.append('file', file, (file as any).path || file.webkitRelativePath));
 
 		const url = 'https://api.pinata.cloud/pinning/pinFileToIPFS';
 		const res = await axios.post(url, form, { 
