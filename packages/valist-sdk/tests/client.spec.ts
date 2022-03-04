@@ -1,6 +1,7 @@
 import { Client, Contract, Storage, TeamMeta, ProjectMeta, ReleaseMeta, LicenseMeta } from '../src/index';
 import * as IPFS from 'ipfs-core';
 import * as types from 'ipfs-core-types';
+import { HttpGateway } from 'ipfs-http-gateway';
 import { ethers } from 'ethers';
 import { expect } from 'chai';
 import { describe, beforeEach, it } from 'mocha';
@@ -18,12 +19,16 @@ const license_factory = new ethers.ContractFactory(license_contract.abi, license
 describe('valist client', async function() {
 	this.timeout(10000);
 	let ipfs: types.IPFS;
+	let gateway: HttpGateway;
 
 	before('setup', async () => {
 		ipfs = await IPFS.create();
+		gateway = new HttpGateway(ipfs);
+		await gateway.start();
 	});
 
 	after('tear down', async () => {
+		await gateway.stop();
 		await ipfs.stop();
 	});
 
@@ -40,7 +45,7 @@ describe('valist client', async function() {
       metaTx: false,
     };
 
-		const storage = new Storage.IPFS(ipfs);
+		const storage = new Storage.IPFS(ipfs, 'http://localhost:9090');
 		const contract = new Contract.EVM(options, provider);
 		const valist = new Client(contract, storage);
 
