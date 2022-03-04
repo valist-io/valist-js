@@ -70,8 +70,6 @@ const Dashboard: NextPage = () => {
       setUserProjects(data.users[0].projects);
     } else if (!loading && accountCtx?.address.length < 5) {
       router.push('/create?action=team');   
-    } else if(!loading) {
-      router.push('/create?action=team');
     }
   }, [data, loading, error, setUserProjects, accountCtx?.address.length, router]);
 

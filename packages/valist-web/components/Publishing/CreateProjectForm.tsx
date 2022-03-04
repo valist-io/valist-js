@@ -1,5 +1,6 @@
 import { useContext, useState } from "react";
 import { SetUseState } from "../../utils/Account/types";
+import { shortnameFilterRegex } from "../../utils/Validation";
 import AccountContext from "../Accounts/AccountContext";
 import ImageUpload from "../Images/ImageUpload";
 import Tooltip from "./Tooltip";
@@ -47,7 +48,7 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
 
   const handleNameChange = (text: string) => {
     setNameStyle(normalStyle);
-    props.setName(text);
+    props.setName(text.toLowerCase().replace(shortnameFilterRegex, ''));
   };
 
   const handleTeamChange = (option: string) => {
@@ -94,6 +95,7 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
             name="name"
             type="text"
             onChange={(e) => handleNameChange(e.target.value)}
+            value={props.projectName}
             required
             className={`${nameStyle} appearance-none block w-full px-3 py-2 border 
             rounded-md shadow-sm focus:outline-none sm:text-sm`}

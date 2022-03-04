@@ -1,0 +1,1 @@
+export const shortnameFilterRegex = /[^A-z0-9-]/g;
