@@ -13,7 +13,7 @@ export class Pinata implements StorageAPI {
 
 	async writeJSON(data: string): Promise<string> {
 		const url = 'https://api.pinata.cloud/pinning/pinJSONToIPFS';
-		const res = await axios.post(url, data, { 
+		const res = await axios.post(url, JSON.parse(data), { 
 			headers: {'Authorization': `Bearer ${this.jwt}`}
 		});
 

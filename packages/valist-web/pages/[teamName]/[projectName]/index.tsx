@@ -53,7 +53,7 @@ export default function ProjectPage():JSX.Element {
           setProjectID(_projectID._hex);
         } catch(err) {
           // accountCtx.notify('error', String(err));
-          // console.log("Failed to fetch projectID.", err);
+          console.log("Failed to fetch projectID.", err);
         }
       }
     };
@@ -66,6 +66,7 @@ export default function ProjectPage():JSX.Element {
       try { 
         if (release?.metaURI && release?.metaURI !== '') {
           const metaJson = await fetch(release.metaURI).then(res => res.json());
+
           setReleaseMeta(metaJson);
         }
       } catch(err) {
