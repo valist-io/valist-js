@@ -15,8 +15,8 @@ interface TeamPreviewProps {
 
 export default function TeamPreview(props: TeamPreviewProps) {
   const [view, setView] = useState<string>("Projects");
-  const name = props.teamName || 'teamName';
-  const descripton = props.teamDescription || 'An example team description';
+  const name = props.teamName || 'name';
+  const descripton = props.teamDescription || 'An example description';
   
   let imgUrl = "";
   if (props.teamImage) {

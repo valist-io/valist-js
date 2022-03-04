@@ -76,17 +76,17 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
   
   return (
     <form className="grid grid-cols-1 gap-y-6 sm:gap-x-8" action="#" method="POST">
-      <ImageUpload text={'Set Team Image'} setImage={props.setImage} />
+      <ImageUpload text={'Set Image'} setImage={props.setImage} />
       <div>
         <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-          Name <span className="float-right"><Tooltip text='The name of your team.' /></span>
+          Username <span className="float-right"><Tooltip text='The namespace for your team.' /></span>
         </label>
         <div className="mt-1">
           <input
             id="name"
             name="name"
             type="text"
-            placeholder={'Team Name'}
+            placeholder={'Name'}
             onChange={(e) => handleNameChange(e.target.value.toLowerCase())}
             required
             className={`${nameStyle} appearance-none block w-full px-3 py-2 border border-gray-300 
