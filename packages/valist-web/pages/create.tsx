@@ -217,7 +217,7 @@ const CreatePage: NextPage = () => {
     let imgURL = "";
 
     if (teamImage) {
-      const imgCID = await valistCtx.valist.storage.write(teamImage);
+      const imgCID = await valistCtx.valist.storage.writeFile(teamImage);
       imgURL = `${publicRuntimeConfig.IPFS_GATEWAY}${imgCID}`;
     }
 
@@ -261,7 +261,7 @@ const CreatePage: NextPage = () => {
     let imgURL = "";
 
     if (projectImage) {
-      const imgCID = await valistCtx.valist.storage.write(projectImage);
+      const imgCID = await valistCtx.valist.storage.writeFile(projectImage);
       imgURL = `${publicRuntimeConfig.IPFS_GATEWAY}${imgCID}`;
     }
 
@@ -305,7 +305,7 @@ const CreatePage: NextPage = () => {
     let imgURL = "";
 
     if (releaseImage) {
-      const imgCID = await valistCtx.valist.storage.write(releaseImage);
+      const imgCID = await valistCtx.valist.storage.writeFile(releaseImage);
       imgURL = `${publicRuntimeConfig.IPFS_GATEWAY}${imgCID}`;
     }
 
@@ -319,7 +319,7 @@ const CreatePage: NextPage = () => {
 
     if (releaseFiles) {
       for (let i = 0; i < Object.keys(releaseFiles).length; i++) {
-        const artifactCID = await valistCtx.valist.storage.write(releaseFiles[i]);
+        const artifactCID = await valistCtx.valist.storage.writeFile(releaseFiles[i]);
         const artifact = new ArtifactMeta();
         artifact.provider = artifactCID;
 
@@ -360,7 +360,7 @@ const CreatePage: NextPage = () => {
     let imgURL = "";
 
     if (licenseImage) {
-      const imgCID = await valistCtx.valist.storage.write(licenseImage);
+      const imgCID = await valistCtx.valist.storage.writeFile(licenseImage);
       imgURL = `${publicRuntimeConfig.IPFS_GATEWAY}${imgCID}`;
     }
 

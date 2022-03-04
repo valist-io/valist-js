@@ -1,16 +1,13 @@
 import { TeamMeta, ProjectMeta, ReleaseMeta, LicenseMeta, replacer, reviver } from '../index';
 import { StorageAPI } from './index';
-import * as types from 'ipfs-core-types';
-import { create } from 'ipfs-http-client';
-import { toString } from 'uint8arrays/to-string';
-import { concat } from 'uint8arrays/concat';
-import all from 'it-all';
 
-export class IPFS implements StorageAPI {
-	ipfs: types.IPFS;
+export class Pinata implements StorageAPI {
+	jwt: string;
+	gateway: string;
 
-	constructor(ipfs: types.IPFS) {
-		this.ipfs = ipfs;
+	constructor(jwt: string, gateway: string) {
+		this.jwt = jwt;
+		this.gateway = gateway;
 	}
 
 	async readTeamMeta(metaURI: string): Promise<TeamMeta> {
@@ -47,32 +44,51 @@ export class IPFS implements StorageAPI {
 		const data = JSON.stringify(release, replacer);
 		return await this.writeJSON(data);
 	}
-
+	
 	async writeLicenseMeta(license: LicenseMeta): Promise<string> {
 		const data = JSON.stringify(license, replacer);
 		return await this.writeJSON(data);
 	}
 
 	async writeJSON(data: string): Promise<string> {
-		const { cid } = await this.ipfs.add(data);
-		return `/ipfs/${cid.toString()}`;
+		const url = 'https://api.pinata.cloud/pinning/pinJSONToIPFS';
+		const res = await fetch(url, { 
+			method: 'POST',
+			body: data,
+			headers: {
+				'Authorization': `Bearer ${this.jwt}`,
+				'Content-Type': 'application/json',
+			}
+		}).then(res => res.json());
+
+		return `/ipfs/${res.IpfsHash}`;
 	}
 
 	async writeFile(data: File): Promise<string> {
-		const { cid } = await this.ipfs.add(data);
-		return `/ipfs/${cid.toString()}`;
+		const form = new FormData();
+		form.append('file', data);
+		
+		const url = 'https://api.pinata.cloud/pinning/pinFileToIPFS';
+		const res = await fetch(url, { 
+			method: 'POST', 
+			body: form,
+			headers: {
+				'Authorization': `Bearer ${this.jwt}`
+			}
+		}).then(res => res.json());
+
+		return `/ipfs/${res.IpfsHash}`;
 	}
 
 	async read(uri: string): Promise<string> {
-		const data = await all(this.ipfs.cat(uri));
-		return toString(concat(data));
+		const res = await fetch(this.gateway + uri);
+		return res.text();
 	}
 }
 
 /**
- * Creates the default IPFS storage provider.
+ * Creates the default Pinata storage provider.
  */
-export function createIPFS(): StorageAPI {
-	const ipfs = create({ host: 'pin.valist.io', port: 443, protocol: 'https' });
-	return new IPFS(ipfs);
+export function createPinata(jwt: string, gateway: string): StorageAPI {
+	return new Pinata(jwt, gateway);
 }

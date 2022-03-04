@@ -14,7 +14,7 @@ export default function TeamContent(props: TeamContentProps): JSX.Element {
     {
       id: "test1",
       name: "project1",
-      metaURI: "QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
+      metaURI: "/ipfs/QmULxZrdCRTomii8DQgAtXZ8ySkVwA5tzujcrMu5XrfzzP",
       team: {
         name: props.teamName,
       },
@@ -22,7 +22,7 @@ export default function TeamContent(props: TeamContentProps): JSX.Element {
     {
       id: "test2",
       name: "project2",
-      metaURI: "QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
+      metaURI: "/ipfs/QmULxZrdCRTomii8DQgAtXZ8ySkVwA5tzujcrMu5XrfzzP",
       team: {
         name: props.teamName,
       },
@@ -30,7 +30,7 @@ export default function TeamContent(props: TeamContentProps): JSX.Element {
     {
       id: "test3",
       name: "project3",
-      metaURI: "QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
+      metaURI: "/ipfs/QmULxZrdCRTomii8DQgAtXZ8ySkVwA5tzujcrMu5XrfzzP",
       team: {
         name: props.teamName,
       },
@@ -38,7 +38,7 @@ export default function TeamContent(props: TeamContentProps): JSX.Element {
     {
       id: "test4",
       name: "project4",
-      metaURI: "QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
+      metaURI: "/ipfs/QmULxZrdCRTomii8DQgAtXZ8ySkVwA5tzujcrMu5XrfzzP",
       team: {
         name: props.teamName,
       },

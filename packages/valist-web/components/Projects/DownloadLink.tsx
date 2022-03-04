@@ -1,6 +1,7 @@
 import {
   Fragment, useState, Dispatch, useContext,
 } from 'react';
+import getConfig from 'next/config';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronDownIcon } from '@heroicons/react/solid';
 import { classNames } from '../../utils/Styles';
@@ -81,6 +82,8 @@ const ReleaseDownloads = (props: ReleaseDownloadsProps) => (
 );
 
 export default function DownloadBox(props: DownloadBoxProps) {
+  const { publicRuntimeConfig } = getConfig();
+  
   const [selected, setSelected] = useState();
   const [chosenArtifact, setChosenArtifact] = useState<any>('');
   const accountCtx = useContext(AccountContext);
@@ -90,7 +93,7 @@ export default function DownloadBox(props: DownloadBoxProps) {
       const cid = props.releaseMeta?.artifacts?.get(artifactName)?.provider;
       if (!cid) return;
       const parsedCID = parseCID(cid);
-      const url = `https://gateway.valist.io/ipfs/${parsedCID}?filename=${props.releaseName}`;
+      const url = `${publicRuntimeConfig.IPFS_GATEWAY}/ipfs/${parsedCID}?filename=${props.releaseName}`;
       window.location.assign(url);
     } catch (err) {
       console.log('Failed to fetch artifact by name', err);
