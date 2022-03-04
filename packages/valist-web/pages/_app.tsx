@@ -56,6 +56,15 @@ function ValistApp({ Component, pageProps }: AppProps) {
         return toast.success('Transaction Successfull!', {
           position: 'top-right',
         });
+      case 'text':
+        return toast.custom(() => (
+          <div className='toast'>
+            {text}
+          </div>
+        ), {
+          position: 'top-right',
+          duration: 1000000,
+        });
       case 'error':
         return toast(`${text}`, {
           position: 'top-right',
