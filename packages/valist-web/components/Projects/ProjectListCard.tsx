@@ -27,7 +27,7 @@ export default function ProjectListCard({ teamName, projectName, metaURI }: Proj
         const projectJson = await valistCtx.valist.storage.readReleaseMeta(metaURI);
         setMeta(projectJson);
       } catch (err) {
-        console.log("Failed to fetch projectID.", err);
+        console.log("Failed to fetch project JSON.", err);
         accountCtx.notify('error', String(err));
       }
     };
