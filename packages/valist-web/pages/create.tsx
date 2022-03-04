@@ -309,8 +309,10 @@ const CreatePage: NextPage = () => {
 		release.name = releaseName;
 		release.description = releaseDescription;
     release.licenses = releaseLicense;
+    const uploadToast = accountCtx.notify('text', 'Uploading files...');
     release.external_url = await valistCtx.storage.writeFolder(releaseFiles);
-
+    accountCtx.dismiss(uploadToast);
+  
     console.log("Release Team", releaseTeam);
     console.log("Release Project", releaseProject);
     console.log("Release Name", releaseName);
