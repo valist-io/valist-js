@@ -1,7 +1,6 @@
 import React from 'react';
 import { ethers } from 'ethers';
 import { Magic } from 'magic-sdk';
-import { Client } from '@valist/sdk';
 
 export type SetUseState<T> = React.Dispatch<React.SetStateAction<T>>;
 
@@ -48,9 +47,4 @@ export interface AccountCtxInterface {
   notify: (type: string, text?: string) => string,
   dismiss: (type: string) => void,
   setModal: SetUseState<boolean>,
-}
-
-export interface ValistCtxInterface {
-  valist: Client,
-  ipfsGateway: string,
 }

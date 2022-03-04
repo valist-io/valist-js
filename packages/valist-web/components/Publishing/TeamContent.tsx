@@ -13,32 +13,32 @@ export default function TeamContent(props: TeamContentProps): JSX.Element {
   const demoProjects:Project[] = [
     {
       id: "test1",
-      name: "project1",
-      metaURI: "/ipfs/QmULxZrdCRTomii8DQgAtXZ8ySkVwA5tzujcrMu5XrfzzP",
+      name: "exampleProject1",
+      metaURI: "https://gateway.valist.io/ipfs/QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
       team: {
         name: props.teamName,
       },
     },
     {
       id: "test2",
-      name: "project2",
-      metaURI: "/ipfs/QmULxZrdCRTomii8DQgAtXZ8ySkVwA5tzujcrMu5XrfzzP",
+      name: "exampleProject2",
+      metaURI: "https://gateway.valist.io/ipfs/QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
       team: {
         name: props.teamName,
       },
     },
     {
       id: "test3",
-      name: "project3",
-      metaURI: "/ipfs/QmULxZrdCRTomii8DQgAtXZ8ySkVwA5tzujcrMu5XrfzzP",
+      name: "exampleProject3",
+      metaURI: "https://gateway.valist.io/ipfs/QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
       team: {
         name: props.teamName,
       },
     },
     {
       id: "test4",
-      name: "project4",
-      metaURI: "/ipfs/QmULxZrdCRTomii8DQgAtXZ8ySkVwA5tzujcrMu5XrfzzP",
+      name: "exampleProject4",
+      metaURI: "https://gateway.valist.io/ipfs/QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
       team: {
         name: props.teamName,
       },

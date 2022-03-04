@@ -202,7 +202,7 @@ const sendMetaTx = async (
       method: 'POST',
       headers: {
         // public biconomy key
-        'x-api-key': 'w93agzbb5.62441f94-359a-43fd-b49e-fb960b62687f',
+        'x-api-key': '9Jk9qeZLi.56894f4d-0437-47c1-b9da-16b269c7bab7',
         'Content-Type': 'application/json;charset=utf-8',
       },
       body: JSON.stringify({
@@ -215,7 +215,8 @@ const sendMetaTx = async (
     });
   
     const txResp = await resp.json();
-    return txResp.txHash;
+    console.log('Biconomy response', txResp);
+    return txResp['txHash'];
 };
 
 export {

@@ -37,7 +37,7 @@ const Dashboard: NextPage = () => {
           let licenseNames: string[] = [];
 
           try {
-            licenseNames = await valistCtx.valist.contract.getLicenseNames(
+            licenseNames = await valistCtx.contract.getLicenseNames(
               project.team.name,
               project.name,
               0,
@@ -48,7 +48,7 @@ const Dashboard: NextPage = () => {
           }
 
           for (let j = 0; j < licenseNames.length; ++j) {
-            const id = await valistCtx.valist.contract.getLicenseID(project.id, licenseNames[j]);
+            const id = await valistCtx.contract.getLicenseID(project.id, licenseNames[j]);
             licenses.push({
               id: id.toString(),
               image: '',
@@ -63,7 +63,7 @@ const Dashboard: NextPage = () => {
         setUserLicences(licenses);
       };
     })();
-  }, [userProjects, userProjects.length, valistCtx.valist.contract]);
+  }, [userProjects, userProjects.length, valistCtx.contract]);
 
   useEffect(() => {
     if (data?.users[0] && data?.users[0]?.projects) {

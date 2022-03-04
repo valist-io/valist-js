@@ -41,10 +41,10 @@ export class EVM_Transaction implements TransactionAPI {
 export class EVM implements ContractAPI {
 	valist: Contract;
 	license: Contract;
-	provider: Web3Provider | JsonRpcProvider;
+	provider: EVM_Provider;
 	options: EVM_Options;
 
-	constructor(options: EVM_Options, web3Provider: Web3Provider | JsonRpcProvider) {
+	constructor(options: EVM_Options, web3Provider: EVM_Provider) {
 		const signer = web3Provider.getSigner();
 		this.valist = new Contract(options.valistAddress, valist_contract.abi, signer);
 		this.license = new Contract(options.licenseAddress, license_contract.abi, signer);
@@ -214,7 +214,11 @@ export class EVM implements ContractAPI {
 			? await sendMetaTx(this.provider, functionName, params)
 			: await sendTx(this.provider, functionName, params);
 
-		const tx = await this.provider.getTransaction(hash);
+		let tx: TransactionResponse;
+		do {
+			tx = await this.provider.getTransaction(hash);
+		} while (tx == null);
+
 		return new EVM_Transaction(tx);
 	}
 }

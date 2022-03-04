@@ -19,7 +19,6 @@ type TeamMember = {
 export default function TeamProfilePage() {
   const router = useRouter();
   const teamName = `${router.query.teamName}`;
-  const valistCtx = useContext(ValistContext);
   const { data, loading, error } = useQuery(TEAM_PROFILE_QUERY, {
     variables: { team: teamName },
   });
@@ -33,7 +32,7 @@ export default function TeamProfilePage() {
   useEffect(() => {
     const fetchMeta = async (metaURI: string) => {
       try {
-        const teamMeta = await valistCtx.valist.storage.readTeamMeta(metaURI);
+        const teamMeta = await fetch(metaURI).then(res => res.json());
         setMeta(teamMeta);
       } catch(err) { /* TODO HANDLE */ }
     };
@@ -43,7 +42,7 @@ export default function TeamProfilePage() {
       setaProjects(data.teams[0].projects);
       setMembers(data.teams[0].members);
     }
-  }, [data, loading, error, setMeta, valistCtx.valist.storage]);
+  }, [data, loading, error, setMeta]);
 
   return (
     <Layout title='Valist | Team'>
