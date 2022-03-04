@@ -214,7 +214,11 @@ export class EVM implements ContractAPI {
 			? await sendMetaTx(this.provider, functionName, params)
 			: await sendTx(this.provider, functionName, params);
 
-		const tx = await this.provider.getTransaction(hash);
+		let tx: TransactionResponse;
+		do {
+			tx = await this.provider.getTransaction(hash);
+		} while (tx == null);
+
 		return new EVM_Transaction(tx);
 	}
 }

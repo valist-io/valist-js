@@ -215,7 +215,8 @@ const sendMetaTx = async (
     });
   
     const txResp = await resp.json();
-    return txResp.txHash;
+    console.log('Biconomy response', txResp);
+    return txResp['txHash'];
 };
 
 export {

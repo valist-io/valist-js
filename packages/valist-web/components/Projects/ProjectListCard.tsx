@@ -1,9 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
-import Image from 'next/image';
 import { ProjectMeta } from '../../utils/Valist/types';
 import AddressIdenticon from '../Identicons/AddressIdenticon';
-import ValistContext from '../Valist/ValistContext';
-import removeMd from 'remove-markdown';
 import AccountContext from '../Accounts/AccountContext';
 
 type ProjectCardProps = {
@@ -40,8 +37,9 @@ export default function ProjectListCard({ teamName, projectName, metaURI }: Proj
       <div className='flex mb-3'>
         <div className="flex-shrink-0 mr-5">
           {meta.image ?
-            <Image height={50} width={50} className='rounded-full'
-            src={meta.image} alt="Profile Pic" />      
+              <div className="flex-shrink-0 mx-auto rounded-full overflow-hidden" style={{ height: 50, width: 50 }} >
+                <img className='rounded-full' src={meta.image} alt="Profile Pic" /> 
+              </div>      
             :
             <AddressIdenticon address={name} height={50} width={50} />
           }
