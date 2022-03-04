@@ -16,7 +16,7 @@ import ValistContext from '../components/Valist/ValistContext';
 import { USER_TEAMS } from '../utils/Apollo/queries';
 import CreateLicenseForm from '../components/Publishing/CreateLicenseForm';
 import LicensePreview from '../components/Publishing/LicensePreview';
-import { ProjectMeta, ReleaseMeta, ArtifactMeta, LicenseMeta } from '@valist/sdk';
+import { ReleaseMeta, LicenseMeta, ProjectMeta } from '@valist/sdk';
 import { BigNumberish } from 'ethers';
 import parseError from '../utils/Errors';
 
@@ -76,9 +76,7 @@ const CreatePage: NextPage = () => {
   const [releaseProject, setReleaseProject] = useState<string>('');
   const [releaseName, setReleaseName] = useState<string>('0.0.1');
   const [releaseDescription, setReleaseDescription] = useState<string>('');
-  const [releaseWebsite, setReleaseWebsite] = useState<string>('');
-  const [releaseFiles, setReleaseFiles] = useState<any>({});
-  const [releaseArchs, setReleaseArchs] = useState<string[]>([]);
+  const [releaseFiles, setReleaseFiles] = useState<File[]>([]);
   const [releaseLicenses, setReleaseLicenses] = useState<string[]>([]);
   const [releaseLicense, setReleaseLicense] = useState<string[]>([]);
 
@@ -192,7 +190,7 @@ const CreatePage: NextPage = () => {
   useEffect(() => {
     (async () => {
       try {
-        const licenses = await valistCtx.valist.contract.getLicenseNames(
+        const licenses = await valistCtx.contract.getLicenseNames(
           releaseTeam,
           releaseProject,
           0,
@@ -210,15 +208,14 @@ const CreatePage: NextPage = () => {
         console.log('err', err);
       }
     })();
-  }, [releaseProject, releaseTeam, valistCtx.valist.contract, projectName, teamName]);
+  }, [releaseProject, releaseTeam, valistCtx.contract, projectName, teamName]);
 
   // Wrap Valist Sdk calls for create (team, project release)
   const createTeam = async () => {
     let imgURL = "";
 
     if (teamImage) {
-      const imgCID = await valistCtx.valist.storage.writeFile(teamImage);
-      imgURL = `${publicRuntimeConfig.IPFS_GATEWAY}${imgCID}`;
+      imgURL = await valistCtx.storage.writeFile(teamImage);
     }
 
     const meta = {
@@ -236,7 +233,7 @@ const CreatePage: NextPage = () => {
     let toastID = '';
     try { 
       toastID = accountCtx.notify('pending');
-      const transaction = await valistCtx.valist.createTeam(
+      const transaction = await valistCtx.createTeam(
         teamName,
         meta,
         teamBeneficiary,
@@ -261,11 +258,10 @@ const CreatePage: NextPage = () => {
     let imgURL = "";
 
     if (projectImage) {
-      const imgCID = await valistCtx.valist.storage.writeFile(projectImage);
-      imgURL = `${publicRuntimeConfig.IPFS_GATEWAY}${imgCID}`;
+      imgURL = await valistCtx.storage.writeFile(projectImage);
     }
 
-    const project = new ProjectMeta;
+    const project = new ProjectMeta();
     project.image = imgURL;
     project.name = projectName;
     project.description = projectDescription;
@@ -280,7 +276,7 @@ const CreatePage: NextPage = () => {
     let toastID = '';
     try {
       toastID = accountCtx.notify('pending'); 
-      const transaction = await valistCtx.valist.createProject(
+      const transaction = await valistCtx.createProject(
         projectTeam,
         projectName,
         project,
@@ -305,27 +301,15 @@ const CreatePage: NextPage = () => {
     let imgURL = "";
 
     if (releaseImage) {
-      const imgCID = await valistCtx.valist.storage.writeFile(releaseImage);
-      imgURL = `${publicRuntimeConfig.IPFS_GATEWAY}${imgCID}`;
+      imgURL = await valistCtx.storage.writeFile(releaseImage);
     }
 
     const release = new ReleaseMeta();
 		release.image = imgURL;
 		release.name = releaseName;
 		release.description = releaseDescription;
-		release.external_url = releaseWebsite;
     release.licenses = releaseLicense;
-		release.artifacts = new Map<string, ArtifactMeta>();
-
-    if (releaseFiles) {
-      for (let i = 0; i < Object.keys(releaseFiles).length; i++) {
-        const artifactCID = await valistCtx.valist.storage.writeFile(releaseFiles[i]);
-        const artifact = new ArtifactMeta();
-        artifact.provider = artifactCID;
-
-        release.artifacts.set(releaseArchs[i], artifact);
-      }
-    }
+    release.external_url = await valistCtx.storage.writeFolder(releaseFiles);
 
     console.log("Release Team", releaseTeam);
     console.log("Release Project", releaseProject);
@@ -335,7 +319,7 @@ const CreatePage: NextPage = () => {
     let toastID = '';
     try {
       toastID = accountCtx.notify('pending');
-      const transaction = await valistCtx.valist.createRelease(
+      const transaction = await valistCtx.createRelease(
         releaseTeam,
         releaseProject,
         releaseName,
@@ -360,8 +344,7 @@ const CreatePage: NextPage = () => {
     let imgURL = "";
 
     if (licenseImage) {
-      const imgCID = await valistCtx.valist.storage.writeFile(licenseImage);
-      imgURL = `${publicRuntimeConfig.IPFS_GATEWAY}${imgCID}`;
+      imgURL = await valistCtx.storage.writeFile(licenseImage);
     }
 
     const license = new LicenseMeta();
@@ -378,7 +361,7 @@ const CreatePage: NextPage = () => {
     let toastID = '';
     try {
       toastID = accountCtx.notify('pending');
-      const transaction = await valistCtx.valist.createLicense(
+      const transaction = await valistCtx.createLicense(
         licenseTeam,
         licenseProject,
         licenseName,
@@ -495,14 +478,12 @@ const CreatePage: NextPage = () => {
                 releaseFiles={releaseFiles}
                 releaseLicenses={releaseLicenses}
                 releaseLicense={releaseLicense[0]}
-                archs={releaseArchs}
                 setImage={setReleaseImage}
                 setTeam={setReleaseTeam}
                 setProject={setReleaseProject}
                 setName={setReleaseName}
                 setDescription={setReleaseDescription}
                 setFiles={setReleaseFiles}
-                setArchs={setReleaseArchs}
                 setLicense={setReleaseLicense}
                 setRenderTeam={setRenderTeam}
                 setRenderProject={setRenderProject}

@@ -22,13 +22,13 @@ async function PinTeamMeta() {
   console.log("Empty meta CID", resp.cid.toString());
 
   const meta = JSON.stringify({
-    image: 'https://gateway.valist.io/ipfs/' + imagePin.cid.toString(),
+    image: 'http://localhost:8080/ipfs/' + imagePin.cid.toString(),
     name: "test team",
     description: "A test team description.",
     external_url: "https://example.com",
   });
   const { cid } = await ipfs.add(meta);
-  return cid.toString();
+  return 'http://localhost:8080/ipfs/' + cid.toString();
 }
 
 const PinProjectMeta = async () => {
@@ -39,13 +39,13 @@ const PinProjectMeta = async () => {
   const imagePin = await ipfs.add(imageFile);
 
   const meta = JSON.stringify({
-    image: 'https://gateway.valist.io/ipfs/' + imagePin.cid.toString(),
+    image: 'http://localhost:8080/ipfs/' + imagePin.cid.toString(),
     name: "test project",
     description: "An example library for demoing valist.",
     external_url: "https://git.example.com",
   });
   const metaPin = await ipfs.add(meta);
-  return metaPin.cid.toString();
+  return 'http://localhost:8080/ipfs/' + metaPin.cid.toString();
 };
 
 const PinReleaseMeta = async () => {
@@ -56,31 +56,13 @@ const PinReleaseMeta = async () => {
   const imagePin = await ipfs.add(imageFile);
 
   const meta = JSON.stringify({
-    image: 'https://gateway.valist.io/ipfs/' + imagePin.cid.toString(),
+    image: 'http://localhost:8080/ipfs/' + imagePin.cid.toString(),
     name: "test/test/0.0.1",
-    description:
-      "# Test Project\n\nThis folder contains the test project library with test code for IPFS and Ethereum.\n\n## Documentation\n\nFor the TypeScript API documentation, please see the following link:\n\n* [API Docs](https://docs.example.com/)\n\n## Installation\n\n```shell\nnpm install\n```\n\n## Building\n\n```shell\nnpm run build\n```\n\n## Linting\n\n```shell\nnpm run lint\n```\n",
-    external_url: "https://app.valist.io/test/test/0.0.1",
-    artifacts: {
-      "linux/amd64": {
-        architecure: "linux/amd64",
-        sha256: "",
-        provider: "/ipfs/QmcLspRr6QBoktravDHC6LopEczLUNvRm28T1HbKtgS9eN",
-      },
-      "darwin/amd64": {
-        architecure: "darwin/amd64",
-        sha256: "",
-        provider: "/ipfs/QmQsWXTuKkvpQtVRhnGvGrnQCzoK4vwo59MGcKWFGW9mrJ",
-      },
-      "windows/amd64": {
-        architecure: "windows/amd64",
-        sha256: "",
-        provider: "/ipfs/QmcLspRr6QBoktravDHC6LopEczLUNvRm28T1HbKtgS9eN",
-      },
-    },
+    description: "# Test Project\n\nThis folder contains the test project library with test code for IPFS and Ethereum.\n\n## Documentation\n\nFor the TypeScript API documentation, please see the following link:\n\n* [API Docs](https://docs.example.com/)\n\n## Installation\n\n```shell\nnpm install\n```\n\n## Building\n\n```shell\nnpm run build\n```\n\n## Linting\n\n```shell\nnpm run lint\n```\n",
+    external_url: "http://localhost:8080/ipfs/QmcLspRr6QBoktravDHC6LopEczLUNvRm28T1HbKtgS9eN"
   });
   const { cid } = await ipfs.add(meta);
-  return cid.toString();
+  return 'http://localhost:8080/ipfs/' + cid.toString();
 };
 
 async function bootstrap() {

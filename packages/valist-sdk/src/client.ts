@@ -1,9 +1,8 @@
-
+import axios from 'axios';
 import { providers, BigNumberish } from 'ethers';
 import { TeamMeta, ProjectMeta, ReleaseMeta, LicenseMeta, Contract } from './index';
 import { StorageAPI } from './storage';
 import { ContractAPI, TransactionAPI } from './contract';
-
 import { valistAddresses, licenseAddresses } from './contract/evm';
 import { createIPFS } from './storage/ipfs';
 
@@ -18,7 +17,8 @@ export class Client {
 
 	async getTeamMeta(teamName: string): Promise<TeamMeta> {
 		const metaURI = await this.contract.getTeamMetaURI(teamName);
-		return await this.storage.readTeamMeta(metaURI);
+		const { data } = await axios.get(metaURI);
+		return data;
 	}
 
 	async getProjectNames(teamName: string, page: BigNumberish, size: BigNumberish): Promise<string[]> {
@@ -27,12 +27,14 @@ export class Client {
 
 	async getProjectMeta(teamName: string, projectName: string): Promise<ProjectMeta> {
 		const metaURI = await this.contract.getProjectMetaURI(teamName, projectName);
-		return await this.storage.readProjectMeta(metaURI);
+		const { data } = await axios.get(metaURI);
+		return data;
 	}
 
 	async getReleaseMeta(teamName: string, projectName: string, releaseName: string): Promise<ReleaseMeta> {
 		const metaURI = await this.contract.getReleaseMetaURI(teamName, projectName, releaseName);
-		return await this.storage.readReleaseMeta(metaURI);
+		const { data } = await axios.get(metaURI);
+		return data;
 	}
 
 	async getLatestReleaseMeta(teamName: string, projectName: string): Promise<ReleaseMeta> {
@@ -42,26 +44,27 @@ export class Client {
 
 	async getLicenseMeta(teamName: string, projectName: string, licenseName: string): Promise<LicenseMeta> {
 		const metaURI = await this.contract.getLicenseMetaURI(teamName, projectName, licenseName);
-		return await this.storage.readLicenseMeta(metaURI);
+		const { data } = await axios.get(metaURI);
+		return data;
 	}
 
 	async createTeam(teamName: string, team: TeamMeta, beneficiary: string, members: string[]): Promise<TransactionAPI> {
-		const metaURI = await this.storage.writeTeamMeta(team);
+		const metaURI = await this.storage.writeJSON(JSON.stringify(team));
 		return this.contract.createTeam(teamName, metaURI, beneficiary, members);
 	}
 
 	async createProject(teamName: string, projectName: string, project: ProjectMeta, members: string[]): Promise<TransactionAPI> {
-		const metaURI = await this.storage.writeProjectMeta(project);
+		const metaURI = await this.storage.writeJSON(JSON.stringify(project));
 		return this.contract.createProject(teamName, projectName, metaURI, members);
 	}
 
 	async createRelease(teamName: string, projectName: string, releaseName: string, release: ReleaseMeta): Promise<TransactionAPI> {
-		const metaURI = await this.storage.writeReleaseMeta(release);
+		const metaURI = await this.storage.writeJSON(JSON.stringify(release));
 		return this.contract.createRelease(teamName, projectName, releaseName, metaURI);
 	}
 
 	async createLicense(teamName: string, projectName: string, licenseName: string, license: LicenseMeta, mintPrice: BigNumberish): Promise<TransactionAPI> {
-		const metaURI = await this.storage.writeLicenseMeta(license);
+		const metaURI = await this.storage.writeJSON(JSON.stringify(license));
 		return this.contract.createLicense(teamName, projectName, licenseName, metaURI, mintPrice);
 	}
 

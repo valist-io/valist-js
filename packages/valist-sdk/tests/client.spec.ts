@@ -1,6 +1,7 @@
-import { Client, Contract, Storage, TeamMeta, ProjectMeta, ReleaseMeta, ArtifactMeta, LicenseMeta } from '../src/index';
+import { Client, Contract, Storage, TeamMeta, ProjectMeta, ReleaseMeta, LicenseMeta } from '../src/index';
 import * as IPFS from 'ipfs-core';
 import * as types from 'ipfs-core-types';
+import { HttpGateway } from 'ipfs-http-gateway';
 import { ethers } from 'ethers';
 import { expect } from 'chai';
 import { describe, beforeEach, it } from 'mocha';
@@ -18,12 +19,16 @@ const license_factory = new ethers.ContractFactory(license_contract.abi, license
 describe('valist client', async function() {
 	this.timeout(10000);
 	let ipfs: types.IPFS;
+	let gateway: HttpGateway;
 
 	before('setup', async () => {
 		ipfs = await IPFS.create();
+		gateway = new HttpGateway(ipfs);
+		await gateway.start();
 	});
 
 	after('tear down', async () => {
+		await gateway.stop();
 		await ipfs.stop();
 	});
 
@@ -40,7 +45,7 @@ describe('valist client', async function() {
       metaTx: false,
     };
 
-		const storage = new Storage.IPFS(ipfs);
+		const storage = new Storage.IPFS(ipfs, 'http://localhost:9090');
 		const contract = new Contract.EVM(options, provider);
 		const valist = new Client(contract, storage);
 
@@ -63,13 +68,7 @@ describe('valist client', async function() {
 		release.image = 'https://gateway.valist.io/ipfs/Qm456';
 		release.name = 'sdk@v0.5.0';
 		release.description = 'Release v0.5.0';
-		release.external_url = 'https://github.com/valist-io/valist/releases/tag/v0.6.3';
-
-		const artifact = new ArtifactMeta();
-		artifact.provider = '/ipfs/Qm123';
-
-		release.artifacts = new Map<string, ArtifactMeta>();
-		release.artifacts.set('package.json', artifact);
+		release.external_url = 'https://gateway.valist.io/ipfs/Qm123';
 
 		const license = new LicenseMeta();
 		license.image = 'https://gateway.valist.io/ipfs/Qm789';
@@ -77,10 +76,17 @@ describe('valist client', async function() {
 		license.description = 'Access pro tier features on Valist';
 		license.external_url = 'https://valist.io/pro';
 
-		await valist.createTeam('valist', team, members[0], members);
-		await valist.createProject('valist', 'sdk', project, members);
-		await valist.createRelease('valist', 'sdk', 'v0.5.0', release);
-		await valist.createLicense('valist', 'sdk', 'pro', license, 1000);
+		const createTeamTx = await valist.createTeam('valist', team, members[0], members);
+		expect(createTeamTx).to.not.be.null;
+
+		const createProjectTx = await valist.createProject('valist', 'sdk', project, members);
+		expect(createProjectTx).to.not.be.null;
+
+		const createReleaseTx = await valist.createRelease('valist', 'sdk', 'v0.5.0', release);
+		expect(createReleaseTx).to.not.be.null;
+
+		const createLicenseTx = await valist.createLicense('valist', 'sdk', 'pro', license, 1000);
+		expect(createLicenseTx).to.not.be.null;
 
 		const otherTeam = await valist.getTeamMeta('valist');
 		expect(otherTeam).to.deep.equal(team);
@@ -94,11 +100,11 @@ describe('valist client', async function() {
 		const beneficiary = await valist.getTeamBeneficiary('valist');
 		expect(beneficiary).to.equal(members[0]);
 
-		const newBeneficiary = '0x9399BB24DBB5C4b782C70c2969F58716Ebbd6a3b';
-		await valist.setTeamBeneficiary('valist', newBeneficiary);
+		const setTeamBeneficiaryTx = await valist.setTeamBeneficiary('valist', '0x9399BB24DBB5C4b782C70c2969F58716Ebbd6a3b');
+		expect(setTeamBeneficiaryTx).to.not.be.null;
 
 		const otherBeneficiary = await valist.getTeamBeneficiary('valist');
-		expect(otherBeneficiary).to.equal(newBeneficiary);
+		expect(otherBeneficiary).to.equal('0x9399BB24DBB5C4b782C70c2969F58716Ebbd6a3b');
 
 		const otherLicense = await valist.getLicenseMeta('valist', 'sdk', 'pro');
 		expect(otherLicense).to.deep.equal(license);
@@ -106,6 +112,7 @@ describe('valist client', async function() {
 		const licensePrice = await valist.contract.getLicensePrice('valist', 'sdk', 'pro');
 		expect(licensePrice.toString()).to.equal('1000');
 
-		await valist.contract.mintLicense('valist', 'sdk', 'pro', address);
+		const mintLicenseTx = await valist.contract.mintLicense('valist', 'sdk', 'pro', address);
+		expect(mintLicenseTx).to.not.be.null;
 	});
 });

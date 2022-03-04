@@ -1,4 +1,4 @@
-import { EVM, EVM_Options, valistAddresses, licenseAddresses } from './evm';
+import { EVM, EVM_Options, EVM_Provider, valistAddresses, licenseAddresses } from './evm';
 import { BigNumber, BigNumberish, PopulatedTransaction } from 'ethers';
 import { TransactionReceipt } from '@ethersproject/abstract-provider';
 
@@ -290,11 +290,11 @@ interface ContractAPI {
 
 	/**
 	 * Generates a licenseID given a projectID and licenseName.
-   * Salts the ID with the token symbol to prevent collisions with releaseIDs.
-   *
-   * @param projectID Unique ID of the project.
-   * @param licenseName Unique name of the license.
-   */
+	 * Salts the ID with the token symbol to prevent collisions with releaseIDs.
+	 *
+	 * @param projectID Unique ID of the project.
+	 * @param licenseName Unique name of the license.
+	 */
 	getLicenseID(projectID: BigNumberish, licenseName: string): Promise<BigNumber>;
 
 	/**
@@ -306,22 +306,22 @@ interface ContractAPI {
 
 	/**
 	 * Fetches license names within a project.
-   *
+	 *
 	 * @param teamName Name of the team.
-   * @param projectName Name of the project.
-   * @param page Page to return items from.
-   * @param size Number of items to return.
-   */
+	 * @param projectName Name of the project.
+	 * @param page Page to return items from.
+	 * @param size Number of items to return.
+	 */
 	getLicenseNames(teamName: string, projectName: string, page: BigNumberish, size: BigNumberish): Promise<string[]>;
 
 	/**
 	 * Returns the license mint price.
 	 * 
  	 * @param teamName Name of the team.
-   * @param projectName Name of the project.
-   * @param licenseName Name of the license.
+	 * @param projectName Name of the project.
+	 * @param licenseName Name of the license.
 	 */
 	getLicensePrice(teamName: string, projectName: string, licenseName: string): Promise<BigNumber>;
 }
 
-export { ContractAPI, TransactionAPI, EVM, EVM_Options, valistAddresses, licenseAddresses };
+export { ContractAPI, TransactionAPI, EVM, EVM_Options, EVM_Provider, valistAddresses, licenseAddresses };

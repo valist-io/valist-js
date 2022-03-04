@@ -41,10 +41,10 @@ export class EVM_Transaction implements TransactionAPI {
 export class EVM implements ContractAPI {
 	valist: Contract;
 	license: Contract;
-	provider: Web3Provider | JsonRpcProvider;
+	provider: EVM_Provider;
 	options: EVM_Options;
 
-	constructor(options: EVM_Options, web3Provider: Web3Provider | JsonRpcProvider) {
+	constructor(options: EVM_Options, web3Provider: EVM_Provider) {
 		const signer = web3Provider.getSigner();
 		this.valist = new Contract(options.valistAddress, valist_contract.abi, signer);
 		this.license = new Contract(options.licenseAddress, license_contract.abi, signer);
@@ -214,7 +214,11 @@ export class EVM implements ContractAPI {
 			? await sendMetaTx(this.provider, functionName, params)
 			: await sendTx(this.provider, functionName, params);
 
-		const tx = await this.provider.getTransaction(hash);
+		let tx: TransactionResponse;
+		do {
+			tx = await this.provider.getTransaction(hash);
+		} while (tx == null);
+
 		return new EVM_Transaction(tx);
 	}
 }
@@ -225,7 +229,7 @@ export const valistAddresses: {[chainID: number]: string} = {
 	// Mumbai testnet
 	80001: '0x9569bEb0Eba900495cF58028DB094D824d0AE850',
 	// Polygon mainnet
-	// 137: '',
+	137: '0xc70A069eC7F887a7497a4bdC7bE666C1e18c8DC3',
 };
 
 export const licenseAddresses: {[chainID: number]: string} = {
@@ -234,5 +238,5 @@ export const licenseAddresses: {[chainID: number]: string} = {
 	// Mumbai testnet
 	80001: '0x597bfcE7F9363b6eBc229f2023F9EcD716C88120',
 	// Polygon mainnet
-	// 137: '',
+	137: '0xb85ed41d49Eba25aE6186921Ea63b6055903e810',
 }

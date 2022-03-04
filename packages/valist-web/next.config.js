@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['gateway.valist.io', 'https://gateway.valist.io'],
+    domains: ['valist.mypinata.cloud', 'gateway.valist.io', 'https://gateway.valist.io', 'localhost'],
   },
   publicRuntimeConfig: {
     CHAIN_ID: process.env.CHAIN_ID || 1337,
@@ -13,7 +13,7 @@ const nextConfig = {
     GRAPH_PROVIDER: process.env.GRAPH_PROVIDER || 'http://localhost:8000/subgraphs/name/valist-io/valist',
     MAGIC_PUBKEY: 'pk_live_631BA2340BB9ACD8',
     MAGIC_RPC: process.env.MAGIC_RPC,
-    METATX_ENABLED: process.env.METATX_ENABLED || true,
+    METATX_ENABLED: process.env.METATX_ENABLED || false,
   },
   webpack: function (config, options) {
     if (!options.isServer) {

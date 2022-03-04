@@ -35,20 +35,20 @@ for (let i = 1; i < table.rows.length; ++i) {
 }
 */
 const functionIDMap: Record<string, string> = {
-    'addProjectMember': 'ec2b018a-ac80-46a7-92b1-dddf412058bd',
-    'addTeamMember': 'cbe6ac58-1754-4e82-8b35-a248080d8713',
-    'approveRelease': '61436ccb-edf9-4d0b-8fff-87f5cd0a76ee',
-    'createProject': '8177d886-4c59-48b5-ac61-0d1de064527d',
-    'createRelease': '7b635cc4-3311-4820-a8ee-3ccbb90c0d3d',
-    'createTeam': '93f59965-7076-4be4-a7c4-d2eb290002cc',
-    'rejectRelease': 'fc70e038-f435-45fc-9351-083fafade4dc',
-    'removeProjectMember': '9a0bfb38-f2cf-4e6c-93c7-4c06009e6fca',
-    'removeTeamMember': '73b7e37c-826e-469c-b642-7e3657071154',
-    'setProjectMetaURI': '6ece1fd9-531e-4710-b382-2129bf8f2263',
-    'setTeamBeneficiary': 'd0fea8bd-777f-4c9f-94e1-ceb4d5907174',
-    'setTeamMetaURI': '8279a681-73bd-4b2b-b02f-99e2fa1c96ab',
-    'createLicense': 'b9457150-a8f2-4865-a7ad-00a2b7051029',
-    'mintLicense': '19df2338-09bf-4f60-a908-d52e5278e7e7',
+  'addProjectMember': '0f0b5bc4-406f-4935-839b-10b4874d2467',
+  'addTeamMember': '11bbda4c-ad7b-4bca-a117-b87b2a1a7a85',
+  'approveRelease': '9557bd7e-088c-44fc-a9a4-26d0a90a6958',
+  'createProject': '6e1c96cb-8df6-4a1e-b1b4-a9333891cd97',
+  'createRelease': 'becea6b7-0d29-438a-ab4d-908ddc2d6de5',
+  'createTeam': 'f671e0a9-6177-44f6-bff1-608858a8d845',
+  'rejectRelease': '5369c7e3-2b01-43d9-88a9-96e94631014e',
+  'removeProjectMember': 'e876f70d-a1a8-4a96-b0db-aa8ab8a6462f',
+  'removeTeamMember': 'd1fbe756-7f61-47d0-a24d-15a13319f974',
+  'setProjectMetaURI': 'eeab2716-4d6f-4e36-95f1-0114d39f5ab8',
+  'setTeamBeneficiary': '3c000312-09e1-4329-a664-cff59b868c0b',
+  'setTeamMetaURI': 'e3bac177-e3f2-4e29-901e-a5614830f5f3',
+  'createLicense': '9fd3f38c-5d54-40e3-861a-7c6134f1d174',
+  'mintLicense': 'e40098f1-0e12-4a04-af14-00550f26bded'
 };
 
 // pass the networkId to get GSN forwarder contract addresses
@@ -202,7 +202,7 @@ const sendMetaTx = async (
       method: 'POST',
       headers: {
         // public biconomy key
-        'x-api-key': 'w93agzbb5.62441f94-359a-43fd-b49e-fb960b62687f',
+        'x-api-key': '9Jk9qeZLi.56894f4d-0437-47c1-b9da-16b269c7bab7',
         'Content-Type': 'application/json;charset=utf-8',
       },
       body: JSON.stringify({
@@ -215,7 +215,8 @@ const sendMetaTx = async (
     });
   
     const txResp = await resp.json();
-    return txResp.txHash;
+    console.log('Biconomy response', txResp);
+    return txResp['txHash'];
 };
 
 export {

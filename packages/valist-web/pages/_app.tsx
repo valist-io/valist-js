@@ -2,15 +2,14 @@ import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import getConfig from 'next/config';
 import React, { useEffect, useState } from 'react';
-import { Client, Contract, Storage } from '@valist/sdk';
-import { licenseAddresses, valistAddresses } from '@valist/sdk/dist/contract';
+import { Client } from '@valist/sdk';
 import { ethers } from 'ethers';
 import { ApolloProvider } from '@apollo/client';
 import { Magic } from 'magic-sdk';
 import toast, { Toaster } from "react-hot-toast";
 
 import AccountContext from '../components/Accounts/AccountContext';
-import ValistContext from '../components/Valist/ValistContext';
+import ValistContext, { createValistClient, defaultProvider  } from '../components/Valist/ValistContext';
 import { LoginType, ValistProvider } from '../utils/Account/types';
 import { login, onAccountChanged } from '../utils/Account/index';
 import LoginForm from '../components/Accounts/LoginForm';
@@ -20,24 +19,8 @@ import Modal from '../components/Modal';
 
 function ValistApp({ Component, pageProps }: AppProps) {
   const { publicRuntimeConfig } = getConfig();
-  const [provider, setProvider] = useState<ValistProvider>(
-    new ethers.providers.JsonRpcProvider(
-      publicRuntimeConfig.WEB3_PROVIDER,
-    ),
-  );
-  const [valistClient, setValistClient] = useState<Client>(
-    new Client(
-      new Contract.EVM(
-        { 
-          valistAddress: valistAddresses[publicRuntimeConfig.CHAIN_ID],
-          licenseAddress: licenseAddresses[publicRuntimeConfig.CHAIN_ID],
-          metaTx: (publicRuntimeConfig.METATX_ENABLED as boolean) , 
-        },
-        provider,
-      ),
-      new Storage.Pinata(publicRuntimeConfig.PINATA_JWT, publicRuntimeConfig.IPFS_GATEWAY),
-    ),
-  );
+  const [provider, setProvider] = useState<ValistProvider>(defaultProvider);
+  const [valistClient, setValistClient] = useState<Client>(createValistClient(provider));
   const [magic, setMagic] = useState<Magic | null>(null);
   const [address, setAddress] = useState<string>('0x0');
   const [loginType, setLoginType] = useState<LoginType>('readOnly');
@@ -50,7 +33,7 @@ function ValistApp({ Component, pageProps }: AppProps) {
       case 'transaction':
         return toast.custom(() => (
           <div className='toast'>
-           Transaction pending: <a className="text-indigo-500 cursor-pointer" target="_blank" rel="noreferrer" href={`https://mumbai.polygonscan.com/tx/${text}`}>view on block explorer </a>
+           Transaction pending: <a className="text-indigo-500 cursor-pointer" target="_blank" rel="noreferrer" href={`https://polygonscan.com/tx/${text}`}>view on block explorer </a>
           </div>
         ), {
           position: 'top-right',
@@ -119,11 +102,6 @@ function ValistApp({ Component, pageProps }: AppProps) {
     setModal,
   };
 
-  const valistState = {
-    valist: valistClient,
-    ipfsGateway: publicRuntimeConfig.IPFS_GATEWAY,
-  };
-
   useEffect(() => {
     setMagic(newMagic());
   }, [setMagic]);
@@ -136,28 +114,8 @@ function ValistApp({ Component, pageProps }: AppProps) {
   }, []);
 
   useEffect(() => {
-    setValistClient(
-      new Client(
-        new Contract.EVM(
-          { 
-            valistAddress: valistAddresses[publicRuntimeConfig.CHAIN_ID],
-            licenseAddress: licenseAddresses[publicRuntimeConfig.CHAIN_ID],
-            metaTx: (publicRuntimeConfig.METATX_ENABLED as boolean) , 
-          },
-          provider,
-        ),
-        new Storage.Pinata(publicRuntimeConfig.PINATA_JWT, publicRuntimeConfig.IPFS_GATEWAY),
-      ),
-    );
-  },
-    [
-      provider,
-      publicRuntimeConfig.CHAIN_ID,
-      publicRuntimeConfig.PINATA_JWT,
-      publicRuntimeConfig.IPFS_GATEWAY,
-      publicRuntimeConfig.METATX_ENABLED,
-    ],
-  );
+    setValistClient(createValistClient(provider));
+  }, [provider, publicRuntimeConfig]);
 
   useEffect(() => {
     // @ts-ignore
@@ -169,7 +127,7 @@ function ValistApp({ Component, pageProps }: AppProps) {
   return (
     <ApolloProvider client={client}>
       <AccountContext.Provider value={accountState}>
-        <ValistContext.Provider value={valistState}>
+        <ValistContext.Provider value={valistClient}>
           <Component {...pageProps} />
           {showLogin && <LoginForm 
             setProvider={setProvider}

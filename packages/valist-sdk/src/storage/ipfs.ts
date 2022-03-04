@@ -1,4 +1,4 @@
-import { TeamMeta, ProjectMeta, ReleaseMeta, LicenseMeta, replacer, reviver } from '../index';
+import { TeamMeta, ProjectMeta, ReleaseMeta, LicenseMeta } from '../index';
 import { StorageAPI } from './index';
 import * as types from 'ipfs-core-types';
 import { create } from 'ipfs-http-client';
@@ -8,64 +8,30 @@ import all from 'it-all';
 
 export class IPFS implements StorageAPI {
 	ipfs: types.IPFS;
+	gateway: string;
 
-	constructor(ipfs: types.IPFS) {
+	constructor(ipfs: types.IPFS, gateway: string = 'https://gateway.valist.io') {
 		this.ipfs = ipfs;
-	}
-
-	async readTeamMeta(metaURI: string): Promise<TeamMeta> {
-		const data = await this.read(metaURI);
-		return JSON.parse(data, reviver);
-	}
-
-	async readProjectMeta(metaURI: string): Promise<ProjectMeta> {
-		const data = await this.read(metaURI);
-		return JSON.parse(data, reviver);
-	}
-
-	async readReleaseMeta(metaURI: string): Promise<ReleaseMeta> {
-		const data = await this.read(metaURI);
-		return JSON.parse(data, reviver);
-	}
-
-	async readLicenseMeta(metaURI: string): Promise<LicenseMeta> {
-		const data = await this.read(metaURI);
-		return JSON.parse(data, reviver);
-	}
-
-	async writeTeamMeta(team: TeamMeta): Promise<string> {
-		const data = JSON.stringify(team, replacer);
-		return await this.writeJSON(data);
-	}
-
-	async writeProjectMeta(project: ProjectMeta): Promise<string> {
-		const data = JSON.stringify(project, replacer);
-		return await this.writeJSON(data);
-	}
-
-	async writeReleaseMeta(release: ReleaseMeta): Promise<string> {
-		const data = JSON.stringify(release, replacer);
-		return await this.writeJSON(data);
-	}
-
-	async writeLicenseMeta(license: LicenseMeta): Promise<string> {
-		const data = JSON.stringify(license, replacer);
-		return await this.writeJSON(data);
+		this.gateway = gateway;
 	}
 
 	async writeJSON(data: string): Promise<string> {
 		const { cid } = await this.ipfs.add(data);
-		return `/ipfs/${cid.toString()}`;
+		return `${this.gateway}/ipfs/${cid.toString()}`;
 	}
 
 	async writeFile(data: File): Promise<string> {
 		const { cid } = await this.ipfs.add(data);
-		return `/ipfs/${cid.toString()}`;
+		return `${this.gateway}/ipfs/${cid.toString()}`;
 	}
 
-	async read(uri: string): Promise<string> {
-		const data = await all(this.ipfs.cat(uri));
-		return toString(concat(data));
+	async writeFolder(data: File[]): Promise<string> {
+		const opts = { wrapWithDirectory: true };
+		const cids: string[] = [];
+		for await (const res of this.ipfs.addAll(data, opts)) {
+			cids.push(res.cid.toString());
+		}
+		return `${this.gateway}/ipfs/${cids[cids.length - 1]}`;
 	}
 }
 
