@@ -20,13 +20,7 @@ import Modal from '../components/Modal';
 function ValistApp({ Component, pageProps }: AppProps) {
   const { publicRuntimeConfig } = getConfig();
   const [provider, setProvider] = useState<ValistProvider>(defaultProvider);
-  const [valistClient, setValistClient] = useState<Client>(createValistClient(
-    publicRuntimeConfig.CHAIN_ID,
-    publicRuntimeConfig.METATX_ENABLED,
-    publicRuntimeConfig.IPFS_HOST,
-    publicRuntimeConfig.IPFS_GATEWAY,
-    provider
-  ));
+  const [valistClient, setValistClient] = useState<Client>(createValistClient(provider));
   const [magic, setMagic] = useState<Magic | null>(null);
   const [address, setAddress] = useState<string>('0x0');
   const [loginType, setLoginType] = useState<LoginType>('readOnly');
@@ -120,14 +114,8 @@ function ValistApp({ Component, pageProps }: AppProps) {
   }, []);
 
   useEffect(() => {
-    setValistClient(createValistClient(
-      publicRuntimeConfig.CHAIN_ID,
-      publicRuntimeConfig.METATX_ENABLED,
-      publicRuntimeConfig.IPFS_HOST,
-      publicRuntimeConfig.IPFS_GATEWAY,
-      provider
-    ));
-  }, [provider, publicRuntimeConfig.CHAIN_ID, publicRuntimeConfig.IPFS_HOST, publicRuntimeConfig.METATX_ENABLED]);
+    setValistClient(createValistClient(provider));
+  }, [provider, publicRuntimeConfig]);
 
   useEffect(() => {
     // @ts-ignore
