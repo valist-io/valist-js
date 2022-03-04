@@ -35,25 +35,30 @@ export class IPFS implements StorageAPI {
 
 	async writeTeamMeta(team: TeamMeta): Promise<string> {
 		const data = JSON.stringify(team, replacer);
-		return await this.write(data);
+		return await this.writeJSON(data);
 	}
 
 	async writeProjectMeta(project: ProjectMeta): Promise<string> {
 		const data = JSON.stringify(project, replacer);
-		return await this.write(data);
+		return await this.writeJSON(data);
 	}
 
 	async writeReleaseMeta(release: ReleaseMeta): Promise<string> {
 		const data = JSON.stringify(release, replacer);
-		return await this.write(data);
+		return await this.writeJSON(data);
 	}
 
 	async writeLicenseMeta(license: LicenseMeta): Promise<string> {
 		const data = JSON.stringify(license, replacer);
-		return await this.write(data);
+		return await this.writeJSON(data);
 	}
 
-	async write(data: string | File): Promise<string> {
+	async writeJSON(data: string): Promise<string> {
+		const { cid } = await this.ipfs.add(data);
+		return `/ipfs/${cid.toString()}`;
+	}
+
+	async writeFile(data: File): Promise<string> {
 		const { cid } = await this.ipfs.add(data);
 		return `/ipfs/${cid.toString()}`;
 	}
