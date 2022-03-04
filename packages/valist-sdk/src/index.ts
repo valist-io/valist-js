@@ -1,6 +1,7 @@
 import { Client, createClient } from './client';
 import * as Storage from './storage';
 import { createIPFS } from './storage/ipfs';
+import { createPinata } from './storage/pinata';
 import * as Contract from './contract/';
 import { ValistABIs } from './abis';
 
@@ -88,4 +89,5 @@ export {
 	ValistABIs,
 	createClient,
 	createIPFS,
+	createPinata,
 };

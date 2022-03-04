@@ -7,7 +7,6 @@ import { licenseAddresses, valistAddresses } from '@valist/sdk/dist/contract';
 import { ethers } from 'ethers';
 import { ApolloProvider } from '@apollo/client';
 import { Magic } from 'magic-sdk';
-import { create as createIPFS } from "ipfs-http-client";
 import toast, { Toaster } from "react-hot-toast";
 
 import AccountContext from '../components/Accounts/AccountContext';
@@ -36,9 +35,7 @@ function ValistApp({ Component, pageProps }: AppProps) {
         },
         provider,
       ),
-      new Storage.IPFS(
-        createIPFS(publicRuntimeConfig.IPFS_HOST),
-      ),
+      new Storage.Pinata(publicRuntimeConfig.PINATA_JWT, publicRuntimeConfig.PINATA_GATEWAY),
     ),
   );
   const [magic, setMagic] = useState<Magic | null>(null);
@@ -149,9 +146,7 @@ function ValistApp({ Component, pageProps }: AppProps) {
           },
           provider,
         ),
-        new Storage.IPFS(
-          createIPFS(publicRuntimeConfig.IPFS_HOST),
-        ),
+        new Storage.Pinata(publicRuntimeConfig.PINATA_JWT, publicRuntimeConfig.PINATA_GATEWAY),
       ),
     );
   }, [provider, publicRuntimeConfig.CHAIN_ID, publicRuntimeConfig.IPFS_HOST, publicRuntimeConfig.METATX_ENABLED]);
