@@ -149,7 +149,15 @@ function ValistApp({ Component, pageProps }: AppProps) {
         new Storage.Pinata(publicRuntimeConfig.PINATA_JWT, publicRuntimeConfig.IPFS_GATEWAY),
       ),
     );
-  }, [provider, publicRuntimeConfig.CHAIN_ID, publicRuntimeConfig.IPFS_HOST, publicRuntimeConfig.METATX_ENABLED]);
+  },
+    [
+      provider,
+      publicRuntimeConfig.CHAIN_ID,
+      publicRuntimeConfig.PINATA_JWT,
+      publicRuntimeConfig.IPFS_GATEWAY,
+      publicRuntimeConfig.METATX_ENABLED,
+    ],
+  );
 
   useEffect(() => {
     // @ts-ignore
