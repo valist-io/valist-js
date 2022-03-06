@@ -182,7 +182,7 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
 
       <div>
         <label htmlFor="beneficiary" className="block text-sm font-medium text-gray-700">
-          Beneficiary <span className="float-right"><Tooltip text='The ETH address where license or donation funds will be received.' /></span>
+          Beneficiary Address<span className="float-right"><Tooltip text='The ETH address where license or donation funds will be received.' /></span>
         </label>
         <div className="mt-1">
           <input

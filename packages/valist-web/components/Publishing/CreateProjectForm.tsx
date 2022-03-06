@@ -1,7 +1,8 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { SetUseState } from "../../utils/Account/types";
 import { shortnameFilterRegex } from "../../utils/Validation";
 import AccountContext from "../Accounts/AccountContext";
+import ValistContext from "../Valist/ValistContext";
 import ImageUpload from "../Images/ImageUpload";
 import Tooltip from "./Tooltip";
 
@@ -26,9 +27,43 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
   const errorStyle = 'border-red-300 placeholder-red-400 focus:ring-red-500 focus:border-red-500';
   const normalStyle = 'border-gray-300 placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500';
   const accountCtx = useContext(AccountContext);
+  const valistCtx = useContext(ValistContext);
+
   const [memberText, setMemberText] = useState<string>('');
   const [nameStyle, setNameStyle] = useState<string>(normalStyle);
   const [memberStyle, setMemberStyle] = useState<string>(normalStyle);
+  const [teamName, setTeamName] = useState<string>(props.userTeams[0]);
+  const [projectName, setProjectName] = useState<string>('');
+
+  useEffect(() => {
+
+    console.log(teamName, projectName)
+    props.setTeam(teamName);
+
+    const cleanedName = projectName.toLowerCase().replace(shortnameFilterRegex, '');
+    props.setName(cleanedName);
+
+    (async () => {
+      if (cleanedName?.length > 0 && !(await checkProjectName(cleanedName))) {
+        setNameStyle(normalStyle);
+      } else {
+        setNameStyle(errorStyle);
+      }
+    })();
+
+  }, [teamName, projectName]);
+
+  const checkProjectName = async (projectName: string) => {
+    console.log(teamName, projectName)
+    try {
+      await valistCtx.contract.getProjectMetaURI(teamName, projectName);
+    } catch (err: any) {
+      if (err?.data?.message.includes("execution reverted: err-proj-not-exist")) {
+        return false;
+      }
+    }
+    return true;
+  };
   
   const handleSubmit = async () => {
     if (props.projectName === '' || props.projectName === ' ') {
@@ -44,15 +79,6 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
     }
 
     props.submit();
-  };
-
-  const handleNameChange = (text: string) => {
-    setNameStyle(normalStyle);
-    props.setName(text.toLowerCase().replace(shortnameFilterRegex, ''));
-  };
-
-  const handleTeamChange = (option: string) => {
-    props.setTeam(option);
   };
 
   const handleMembersList = (text:string) => {
@@ -75,10 +101,10 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
           <label htmlFor="projectType" className="block text-sm leading-5 font-medium text-gray-700">
             Account or Team <span className="float-right"><Tooltip text='The team where this project will be published.' /></span>
           </label>
-          <select onChange={(e) => {handleTeamChange(e.target.value);}}
-          id="projectType" className="mt-1 form-select block w-full pl-3 pr-10 py-2
-          text-base leading-6 border-gray-300 focus:outline-none focus:shadow-outline-blue
-          focus:border-blue-300 sm:text-sm sm:leading-5">
+          <select onChange={(e) => {setTeamName(e.target.value);}}
+            id="projectType" className="mt-1 form-select block w-full pl-3 pr-10 py-2
+            text-base leading-6 border-gray-300 focus:outline-none focus:shadow-outline-blue
+            focus:border-blue-300 sm:text-sm sm:leading-5">
             {props.userTeams?.map((teamName) => (
                <option key={teamName} value={teamName}>{teamName}</option>
             ))}
@@ -94,7 +120,7 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
             id="name"
             name="name"
             type="text"
-            onChange={(e) => handleNameChange(e.target.value)}
+            onChange={(e) => setProjectName(e.target.value)}
             value={props.projectName}
             required
             className={`${nameStyle} appearance-none block w-full px-3 py-2 border 
@@ -161,7 +187,7 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
 
       <div>
         <label htmlFor="members" className="block text-sm font-medium text-gray-700">
-          Members <span className="float-right"><Tooltip text='A list of project members seperated by new-line.' /></span>
+          Member Addresses <span className="float-right"><Tooltip text='A list of project members seperated by new-line.' /></span>
         </label>
         <div className="mt-1">
           <textarea
