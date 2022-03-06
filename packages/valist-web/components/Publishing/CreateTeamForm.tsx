@@ -1,7 +1,10 @@
-import { useContext, useState } from "react";
+import { ethers } from "ethers";
+import { useContext, useEffect, useState } from "react";
 import { SetUseState } from "../../utils/Account/types";
+import { shortnameFilterRegex } from "../../utils/Validation";
 import AccountContext from "../Accounts/AccountContext";
 import ImageUpload from "../Images/ImageUpload";
+import ValistContext from "../Valist/ValistContext";
 import Tooltip from "./Tooltip";
 
 interface CreateTeamFormProps {
@@ -24,40 +27,83 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
   const errorStyle = 'border-red-300 placeholder-red-400 focus:ring-red-500 focus:border-red-500';
   const normalStyle = 'border-gray-300 placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500';
   const accountCtx = useContext(AccountContext);
+  const valistCtx = useContext(ValistContext);
+
   const [memberText, setMemberText] = useState<string>('');
   const [nameStyle, setNameStyle] = useState<string>(normalStyle);
   const [memberStyle, setMemberStyle] = useState<string>(normalStyle);
   const [beneficiaryStyle, setBeneficiaryStyle] = useState<string>(normalStyle);
+  const [name, setName] = useState<string>('');
+
+  useEffect(() => {
+    const cleanedName = name.toLowerCase().replace(shortnameFilterRegex, '');
+    props.setName(cleanedName);
+
+    (async () => {
+      if (cleanedName?.length > 0 && !(await checkTeamName(cleanedName))) {
+        setNameStyle(normalStyle);
+      } else {
+        setNameStyle(errorStyle);
+      }
+    })();
+
+  }, [name]);
+
+
+  const debounce = <F extends ((...args: any) => any)>(func: F, waitFor: number) => {
+    let timeout: number = 0;
+
+    const debounced = (...args: any) => {
+        clearTimeout(timeout);
+        setTimeout(() => func(...args), waitFor);
+    };
+    
+    return debounced as (...args: Parameters<F>) => ReturnType<F>;
+  };
+  
+  const checkTeamName = async (teamName: string) => {
+    try {
+      await valistCtx.contract.getTeamMetaURI(teamName);
+    } catch (err: any) {
+      if (err?.data?.message.includes("execution reverted: err-team-not-exist")) {
+        return false;
+      }
+    }
+    return true;
+  };
 
   const handleSubmit = async () => {
+    let err = false;
     if (props.teamName === '' || props.teamName === ' ') {
+      err = true;
       accountCtx.notify('error', 'Please enter a valid team name.');
       setNameStyle(errorStyle);
-      return;
     }
 
-    if (props.teamBeneficiary === '' || props.teamBeneficiary === ' ') {
-      accountCtx.notify('error', 'Please add a valid beneficiary address');
+    if (!ethers.utils.isAddress(props.teamBeneficiary)) {
+      err = true;
+      accountCtx.notify('error', 'Invalid address format');
       setBeneficiaryStyle(errorStyle);
-      return;
     }
 
     if (memberText === '' || memberText === ' ') {
+      err = true;
       accountCtx.notify('error', 'Please add atleast 1 valid member address');
       setMemberStyle(errorStyle);
       return;
     }
 
+    if (err == true) return;
     props.submit();
   };
 
-  const handleNameChange = (text: string) => {
-    setNameStyle(normalStyle);
-    props.setName(text);
-  };
-
   const handleBeneficiaryChange = (text: string) => {
-    setBeneficiaryStyle(normalStyle);
+    if (ethers.utils.isAddress(text)) {
+      setBeneficiaryStyle(normalStyle);
+    } else {
+      setBeneficiaryStyle(errorStyle);
+    }
+
     props.setBeneficiary(text);
   };
 
@@ -87,7 +133,8 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
             name="name"
             type="text"
             placeholder={'Name'}
-            onChange={(e) => handleNameChange(e.target.value.toLowerCase())}
+            onChange={(e) => setName(e.target.value)}
+            value={props.teamName}
             required
             className={`${nameStyle} appearance-none block w-full px-3 py-2 border border-gray-300 
             rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 
@@ -153,7 +200,7 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
 
       <div>
         <label htmlFor="members" className="block text-sm font-medium text-gray-700">
-          Members <span className="float-right"><Tooltip text='A list of members seperated by new-line.' /></span>
+          Member Addresses <span className="float-right"><Tooltip text='A list of members seperated by new-line.' /></span>
         </label>
         <div className="mt-1">
           <textarea
