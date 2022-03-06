@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { SetUseState } from "../../utils/Account/types";
 import { shortnameFilterRegex } from "../../utils/Validation";
 import AccountContext from "../Accounts/AccountContext";
@@ -28,10 +28,26 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
   const normalStyle = 'border-gray-300 placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500';
   const accountCtx = useContext(AccountContext);
   const valistCtx = useContext(ValistContext);
+
   const [memberText, setMemberText] = useState<string>('');
   const [nameStyle, setNameStyle] = useState<string>(normalStyle);
   const [memberStyle, setMemberStyle] = useState<string>(normalStyle);
   const [beneficiaryStyle, setBeneficiaryStyle] = useState<string>(normalStyle);
+  const [name, setName] = useState<string>('');
+
+  useEffect(() => {
+    const cleanedName = name.toLowerCase().replace(shortnameFilterRegex, '');
+    props.setName(cleanedName);
+
+    (async () => {
+      if (cleanedName?.length > 0 && !(await checkTeamName(cleanedName))) {
+        setNameStyle(normalStyle);
+      } else {
+        setNameStyle(errorStyle);
+      }
+    })();
+
+  }, [name]);
 
 
   const debounce = <F extends ((...args: any) => any)>(func: F, waitFor: number) => {
@@ -47,9 +63,9 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
   
   const checkTeamName = async (teamName: string) => {
     try {
-      await valistCtx.valist.contract.getTeamMetaURI(teamName);
+      await valistCtx.contract.getTeamMetaURI(teamName);
     } catch (err: any) {
-      if (err.data.message.includes("execution reverted: err-team-not-exist")) {
+      if (err?.data?.message.includes("execution reverted: err-team-not-exist")) {
         return false;
       }
     }
@@ -79,16 +95,6 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
 
     if (err == true) return;
     props.submit();
-  };
-
-  const handleNameChange = async (text: string) => {
-    if (!(await checkTeamName(text))) {
-      setNameStyle(normalStyle);
-    } else {
-      setNameStyle(errorStyle);
-    }
-
-    props.setName(text.toLowerCase().replace(shortnameFilterRegex, ''));
   };
 
   const handleBeneficiaryChange = (text: string) => {
@@ -127,7 +133,7 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
             name="name"
             type="text"
             placeholder={'Name'}
-            onChange={(e) => handleNameChange(e.target.value.toLowerCase())}
+            onChange={(e) => setName(e.target.value)}
             value={props.teamName}
             required
             className={`${nameStyle} appearance-none block w-full px-3 py-2 border border-gray-300 
@@ -194,7 +200,7 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
 
       <div>
         <label htmlFor="members" className="block text-sm font-medium text-gray-700">
-          Members <span className="float-right"><Tooltip text='A list of members seperated by new-line.' /></span>
+          Member Addresses <span className="float-right"><Tooltip text='A list of members seperated by new-line.' /></span>
         </label>
         <div className="mt-1">
           <textarea
