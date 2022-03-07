@@ -63,7 +63,7 @@ export default function ProjectPage():JSX.Element {
 
   useEffect(() => {
     const fetchReleaseMeta = async (release: Release) => {
-      try { 
+      try {
         if (release?.metaURI && release?.metaURI !== '') {
           const metaJson = await fetch(release.metaURI).then(res => res.json());
 
@@ -158,10 +158,11 @@ export default function ProjectPage():JSX.Element {
             members={members} />
         </div>
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
-          <ProjectActions 
+          <ProjectActions
             teamName={teamName}
             projectName={projectName}
             showAll={false}
+            releases={releases}
             releaseMeta={releaseMeta}
             licensePrice={licensePrice}
             mintLicense={mintLicense} 

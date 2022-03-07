@@ -20,6 +20,7 @@ const Dashboard: NextPage = () => {
   const valistCtx = useContext(ValistContext);
   const [view, setView] = useState<string>("Projects");
   const [userProjects, setUserProjects] = useState<Project[]>([]);
+  const [userTeams, setUserTeams] = useState<Project[]>([]);
   const { data, loading, error } = useQuery(USER_PROJECTS, {
     variables: { address: accountCtx.address.toLowerCase() },
   });
@@ -71,15 +72,26 @@ const Dashboard: NextPage = () => {
     } else if (!loading && accountCtx?.address.length < 5) {
       router.push('/create?action=team');   
     }
+
+    if (data?.users[0] && data?.users[0]?.teams) {
+      setUserTeams(data.users[0].teams);
+    }
   }, [data, loading, error, setUserProjects, accountCtx?.address.length, router]);
+
+  console.log('userData', userTeams);
 
   return (
     <Layout title="Valist | Dashboard">
       {<div className="grid grid-cols-1 gap-4 items-start lg:grid-cols-3 lg:gap-8">
         {/* Left column */}
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
-          <HomepageProfileCard resolveEns={accountCtx?.resolveEns} address={accountCtx.address} view={view} setView={setView} />
-          <HomepageContent userProjects={userProjects} userLicenses={userlicenses} view={view} address={accountCtx.address} />
+          <HomepageProfileCard reverseEns={accountCtx?.reverseEns} address={accountCtx.address} view={view} setView={setView} />
+          <HomepageContent 
+            userProjects={userProjects}
+            userTeams={userTeams} 
+            userLicenses={userlicenses} 
+            view={view} 
+            address={accountCtx.address} />
         </div>
         {/* Right column */}
         <div className="grid grid-cols-1 gap-4">

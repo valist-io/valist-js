@@ -1,11 +1,12 @@
 import { BigNumberish } from 'ethers';
-import React, { useState, useRef, useEffect } from 'react';
-import copyToCB from '../../utils/Clipboard';
+import { Fragment } from 'react';
+import { Release } from "../../utils/Apollo/types";
 import { ReleaseMeta } from '../../utils/Valist/types';
 
 interface ProjectActionsProps {
   teamName: string,
   projectName: string,
+  releases: Release[],
   releaseMeta: ReleaseMeta,
   licensePrice: BigNumberish | null,
   licenseBalance: Number,
@@ -41,9 +42,13 @@ const ProjectActions = (props: ProjectActionsProps) => {
   };
 
   return (
-    <div className="rounded-lg bg-white shadow p-6">
-      {renderButton()}
-    </div>
+    <Fragment>
+       {(props?.releases.length !== 0 ) &&
+          <div className="rounded-lg bg-white shadow p-6">
+            {renderButton()}
+          </div>
+        }
+    </Fragment>
   );
 };
 

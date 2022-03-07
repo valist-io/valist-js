@@ -8,7 +8,7 @@ interface HomepageProfileCardProps {
   address: string,
   view: string,
   setView: SetUseState<string>,
-  resolveEns: (address: string) => Promise<string | null>
+  reverseEns: (address: string) => Promise<string | null>
 }
 
 export default function HomepageProfileCard(props:HomepageProfileCardProps) {
@@ -16,12 +16,16 @@ export default function HomepageProfileCard(props:HomepageProfileCardProps) {
   useEffect(() => {
     (async () => {
       let value = null;
-      try {
-         value = await props.resolveEns(props.address);
-      } catch (err) {}
-        setEns(value);
+
+      if (props.address !== '0x0') {
+        try {
+          value = await props.reverseEns(props.address);
+        } catch (err) {}
+      }
+
+      setEns(value);
     })();
-  }, [props, props.address]);
+  }, [props]);
 
   return (
     <section aria-labelledby="profile-overview-title">

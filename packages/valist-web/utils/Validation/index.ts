@@ -1,1 +1,1 @@
-export const shortnameFilterRegex = /[^A-z0-9-]/g;
+export const shortnameFilterRegex = /[^\w-]/g;
