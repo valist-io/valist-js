@@ -2,7 +2,7 @@ import React from 'react';
 import getConfig from 'next/config';
 import { ethers } from 'ethers';
 import { Client, Contract, Storage } from '@valist/sdk';
-import { create as createIPFS } from "ipfs-http-client";
+import { create } from 'ipfs-http-client';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -17,7 +17,9 @@ export function createValistClient(provider: Contract.EVM_Provider) {
 
   const options = new Contract.EVM_Options(chainID, metaTx);
   const contract = new Contract.EVM(options, provider);
-  const storage = new Storage.Pinata(pinataJWT, ipfsGateway);
+  const storage = pinataJWT
+    ? new Storage.Pinata(pinataJWT, ipfsGateway)
+    : new Storage.IPFS(create(ipfsHost), ipfsGateway);
   return new Client(contract, storage);
 }
 

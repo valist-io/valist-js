@@ -165,9 +165,8 @@ const sendTx = async (
 
   const gasLimit = tx.gasLimit.toHexString();
   const gasPrice = tx.gasPrice.toHexString();
-  const value = tx.value ? tx.value.toHexString() : '0x0';
 
-  const txResp = await provider.send('eth_sendTransaction', [{...tx, gasLimit, gasPrice, value}]);
+  const txResp = await provider.send('eth_sendTransaction', [{...tx, gasLimit, gasPrice}]);
   return txResp;
 };
 
