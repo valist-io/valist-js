@@ -59,7 +59,7 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
       setValidName(!isNameTaken);
       props.setName(name);
     })();
-  }, [name, props, valistCtx.contract]);
+  }, [name, props.setName, valistCtx.contract]);
 
   useEffect(() => {
     (async () => {
@@ -82,7 +82,7 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
 
       setLoading(false);
     })();
-  }, [memberText, props, accountCtx]);
+  }, [memberText, props.setMembers, accountCtx.resolveAddress]);
 
   useEffect(() => {
     (async () => {
@@ -96,7 +96,7 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
 
       props.setBeneficiary(beneficary);
     })();
-  }, [beneficiary, props, accountCtx]);
+  }, [beneficiary, props.setBeneficiary, accountCtx.resolveAddress]);
 
   useEffect(() => {
     console.log('name', name, 'valid', validName, 'beneficary', validBeneficiary, 'valid members', validMemberList);
