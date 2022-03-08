@@ -47,8 +47,9 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
       alert(`
 Confirmation: You are about to create "${props.projectName}" with the following details:
 
+Team name: ${props.teamName}
 Project name: ${props.projectName}
-Members (admins):
+Members (publishers):
 ${props.projectMembers.join('\n')}
 `);
       props.submit();
