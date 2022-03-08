@@ -24,6 +24,7 @@ function ValistApp({ Component, pageProps }: AppProps) {
   const [magic, setMagic] = useState<Magic | null>(null);
   const [address, setAddress] = useState<string>('0x0');
   const [loginType, setLoginType] = useState<LoginType>('readOnly');
+  const [loginSuccessful, setLoginSuccessful] = useState<Boolean>(false);
   const [showLogin, setShowLogin] = useState(false);
   const [modal, setModal] = useState<boolean>(false);
   const [mainnet, setMainnet] = useState<ethers.providers.JsonRpcProvider>(new ethers.providers.JsonRpcProvider('https://rpc.valist.io/mainnet'));
@@ -123,6 +124,7 @@ function ValistApp({ Component, pageProps }: AppProps) {
     magic,
     address,
     loginType,
+    loginSuccessful,
     modal,
     reverseEns,
     resolveEns,
@@ -164,6 +166,13 @@ function ValistApp({ Component, pageProps }: AppProps) {
       }
     })();
   }, [provider]);
+
+  // Check if login is successful
+  useEffect(() => {
+    if( loginType !== 'readOnly') {
+      setLoginSuccessful(true);
+    }
+  }, [loginType]);
 
   useEffect(() => console.log("Address:", address), [address]);
 

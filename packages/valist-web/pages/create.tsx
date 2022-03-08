@@ -99,7 +99,7 @@ const CreatePage: NextPage = () => {
 
   useEffect(() => {
     (async () => {
-      if (accountCtx.loginType === 'readOnly') {
+      if (accountCtx.loginType === 'readOnly' && !accountCtx.loginSuccessful) {
         accountCtx.setShowLogin(true);
       }
       await getData({

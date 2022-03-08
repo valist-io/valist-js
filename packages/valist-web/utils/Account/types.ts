@@ -37,6 +37,7 @@ export type AccountCtxType = {
 export interface AccountCtxInterface {
   address: string,
   loginType: LoginType,
+  loginSuccessful: Boolean,
   magic: Magic | null,
   modal: boolean,
   resolveEns: (address: string) => Promise<string | null>

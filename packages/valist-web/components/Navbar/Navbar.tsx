@@ -31,10 +31,9 @@ export default function Navbar() {
   }]);
 
   const navItems = [
-    { name: 'Discover', href: '/search' },
+    { name: 'Discover', href: '/' },
     { name: 'Docs', href: 'https://docs.valist.io/' },
     { name: 'Discord', href: 'https://valist.io/discord' },
-    { name: 'Support', href: 'mailto:support@valist.io' },
   ];
 
   useEffect(() => {
