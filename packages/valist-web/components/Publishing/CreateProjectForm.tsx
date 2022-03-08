@@ -1,14 +1,17 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { SetUseState } from "../../utils/Account/types";
 import { shortnameFilterRegex } from "../../utils/Validation";
 import AccountContext from "../Accounts/AccountContext";
 import ImageUpload from "../Images/ImageUpload";
+import ValistContext from "../Valist/ValistContext";
 import Tooltip from "./Tooltip";
 
 interface CreateProjectFormProps {
+  teamName: string,
   projectName: string,
   projectDescription: string,
   projectWebsite: string,
+  projectMembers: string[],
   userTeams: string[],
   setView: SetUseState<string>,
   setRenderTeam: SetUseState<boolean>,
@@ -25,48 +28,85 @@ interface CreateProjectFormProps {
 export default function CreateProjectForm(props: CreateProjectFormProps) {
   const errorStyle = 'border-red-300 placeholder-red-400 focus:ring-red-500 focus:border-red-500';
   const normalStyle = 'border-gray-300 placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500';
+
   const accountCtx = useContext(AccountContext);
+  const valistCtx = useContext(ValistContext);
+
   const [memberText, setMemberText] = useState<string>('');
-  const [nameStyle, setNameStyle] = useState<string>(normalStyle);
-  const [memberStyle, setMemberStyle] = useState<string>(normalStyle);
+  const [name, setName] = useState<string>('');
+  const [cleanName, setCleanName] = useState<string>('');
+
+  const [validName, setValidName] = useState<boolean>(false);
+  const [validMemberList, setValidMemberList] = useState(false);
+  const [formValid, setFormValid] = useState(false);
+  const [loading, setLoading] = useState(false);
   
-  const handleSubmit = async () => {
-    if (props.projectName === '' || props.projectName === ' ') {
-      accountCtx.notify('error', 'Please enter a valid project name.');
-      setNameStyle(errorStyle);
-      return;
+  // Handle submit/confirm
+  const handleSubmit = () => {
+    if (formValid && !loading) {
+      alert(`
+Confirmation: You are about to create "${props.projectName}" with the following details:
+
+Project name: ${props.projectName}
+Members (admins):
+${props.projectMembers.join('\n')}
+`);
+      props.submit();
     }
-
-    if (memberText === '' || memberText === ' ') {
-      accountCtx.notify('error', 'Please add atleast 1 valid member address');
-      setMemberStyle(errorStyle);
-      return;
-    }
-
-    props.submit();
   };
 
-  const handleNameChange = (text: string) => {
-    setNameStyle(normalStyle);
-    props.setName(text.toLowerCase().replace(shortnameFilterRegex, ''));
-  };
-
-  const handleTeamChange = (option: string) => {
-    props.setTeam(option);
-  };
-
-  const handleMembersList = (text:string) => {
-    setMemberText(text);
-    setMemberStyle(normalStyle);
-    const membersList = text.split('\n');
-    let members: string[] = [];
-    for (const member of membersList) {
-      if (member !== '') {
-         members.push(member);
+  // Handle project name change check onBlur
+  useEffect(() => {
+    const checkTeamName = async (projectName: string) => {
+      try {
+        await valistCtx.contract.getProjectMetaURI(props.teamName, projectName);
+      } catch (err: any) {
+        if (err?.data?.message.includes("execution reverted: err-proj-not-exist")) {
+          return false;
+        }
       }
+      return true;
+    };
+
+    (async () => {
+      let isNameTaken = name?.length > 0 && await checkTeamName(name);
+      setValidName(!isNameTaken);
+      props.setName(name);
+    })();
+  }, [name, props.setName, valistCtx.contract]);
+
+  // Handle member list change
+  useEffect(() => {
+    (async () => {
+      const membersList = memberText.split('\n');
+      let members: string[] = [];
+
+      for (const member of membersList) {
+        let address = await accountCtx.resolveAddress(member);
+        if (address) members.push(address);
+      }
+
+      console.log('resolved addresses', members);
+      
+      if (members.length > 0) {
+        setValidMemberList(true);
+        props.setMembers(members);
+      } else {
+        setValidMemberList(false);
+      }
+
+      setLoading(false);
+    })();
+  }, [memberText, props.setMembers, accountCtx.resolveAddress]);
+
+  // Handle form valid check
+  useEffect(() => {
+    if (name && validName && validMemberList) {
+      setFormValid(true);
+    } else {
+      setFormValid(false);
     }
-    props.setMembers(members);
-  };
+  }, [name, validName, validMemberList]);
   
   return (
     <form className="grid grid-cols-1 gap-y-6 sm:gap-x-8" action="#" method="POST">
@@ -75,7 +115,7 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
           <label htmlFor="projectType" className="block text-sm leading-5 font-medium text-gray-700">
             Account or Team <span className="float-right"><Tooltip text='The team where this project will be published.' /></span>
           </label>
-          <select onChange={(e) => {handleTeamChange(e.target.value);}}
+          <select onChange={(e) => props.setTeam(e.target.value)}
           id="projectType" className="mt-1 form-select block w-full pl-3 pr-10 py-2
           text-base leading-6 border-gray-300 focus:outline-none focus:shadow-outline-blue
           focus:border-blue-300 sm:text-sm sm:leading-5">
@@ -94,11 +134,14 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
             id="name"
             name="name"
             type="text"
-            onChange={(e) => handleNameChange(e.target.value)}
-            value={props.projectName}
+            onChange={(e) => setCleanName(e.target.value.toLowerCase().replace(shortnameFilterRegex, ''))}
+            onBlur={(e) => setName(e.target.value.toLowerCase().replace(shortnameFilterRegex, ''))}
+            value={cleanName}
             required
-            className={`${nameStyle} appearance-none block w-full px-3 py-2 border 
-            rounded-md shadow-sm focus:outline-none sm:text-sm`}
+            className={`${validName ? normalStyle : !cleanName ? normalStyle : errorStyle}
+            appearance-none block w-full px-3 py-2 border border-gray-300 
+            rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 
+            focus:border-indigo-500 sm:text-sm`}
             placeholder="Project name"
           />
         </div>
@@ -167,9 +210,10 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
           <textarea
             id="members"
             name="members"
-            onChange={(e) => handleMembersList(e.target.value)}
             rows={4}
-            className={`${memberStyle} shadow-sm mt-1 block 
+            onChange={() => { setLoading(true); setMemberText(''); }}
+            onBlur={(e) => setMemberText(e.target.value)}
+            className={`${validMemberList ? normalStyle : !memberText ? normalStyle : errorStyle} shadow-sm mt-1 block 
             w-full sm:text-sm border rounded-md`}
             placeholder="List of members"
           />
@@ -177,11 +221,13 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
       </div>
 
       <span className="w-full inline-flex rounded-md shadow-sm">
-        <button onClick={handleSubmit} value="Submit" type="button" className="w-full inline-flex items-center
-        justify-center px-6 py-3 border border-transparent text-base leading-6 font-medium
-        rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none
-        focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition
-        ease-in-out duration-150">
+        <button onClick={handleSubmit} value="Submit" type="button"         
+          className={`w-full inline-flex items-center justify-center px-6 py-3 border border-transparent
+          text-base leading-6 font-medium rounded-md text-white transition ease-in-out duration-150
+          ${formValid && !loading ?
+            'bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700' :
+            'bg-indigo-200 hover:bg-indigo-200 focus:outline-none focus:shadow-outline-grey cursor-not-allowed'
+          }`}>
             Create Project
         </button>
       </span>

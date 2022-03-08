@@ -455,9 +455,11 @@ const CreatePage: NextPage = () => {
           {renderProject && <Accordion view={view} name={'project'} setView={setView} title={<div><span className='mr-4'></span>Create a New Project</div>}>
             <div className="p-4">
               <CreateProjectForm
+                teamName={projectTeam}
                 projectName={projectName}
                 projectDescription={projectDescription}
                 projectWebsite={projectWebsite}
+                projectMembers={projectMembers}
                 userTeams={userTeamNames}
                 setView={setView}
                 setRenderTeam={setRenderTeam}
