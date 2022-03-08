@@ -55,7 +55,7 @@ export default function LicenseList(props: LicenseListProps) {
             </thead>
             <tbody>
               {props.licenses?.map((license: License, index) => (
-                <tr key={license.name + license.team} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                <tr key={license.name + license.team + index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                    {license.name}
                   </td>

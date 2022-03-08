@@ -99,7 +99,10 @@ const CreatePage: NextPage = () => {
 
   useEffect(() => {
     (async () => {
-      await getData( {
+      if (accountCtx.loginType === 'readOnly' && !accountCtx.loginSuccessful) {
+        accountCtx.setShowLogin(true);
+      }
+      await getData({
         variables: { address: accountCtx.address.toLowerCase() },
       });
     })();
@@ -189,8 +192,9 @@ const CreatePage: NextPage = () => {
   // Query available project names if team or project change
   useEffect(() => {
     (async () => {
+      let licenses = [];
       try {
-        const licenses = await valistCtx.contract.getLicenseNames(
+        licenses = await valistCtx.contract.getLicenseNames(
           releaseTeam,
           releaseProject,
           0,
@@ -250,7 +254,7 @@ const CreatePage: NextPage = () => {
       router.push('/create?action=project');
     } catch(err) {
       accountCtx.dismiss(toastID);
-      accountCtx.notify('error');
+      accountCtx.notify('error', parseError(err));
     }
   };
 

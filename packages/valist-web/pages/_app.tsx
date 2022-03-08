@@ -24,6 +24,7 @@ function ValistApp({ Component, pageProps }: AppProps) {
   const [magic, setMagic] = useState<Magic | null>(null);
   const [address, setAddress] = useState<string>('0x0');
   const [loginType, setLoginType] = useState<LoginType>('readOnly');
+  const [loginSuccessful, setLoginSuccessful] = useState<Boolean>(false);
   const [showLogin, setShowLogin] = useState(false);
   const [modal, setModal] = useState<boolean>(false);
   const [mainnet, setMainnet] = useState<ethers.providers.JsonRpcProvider>(new ethers.providers.JsonRpcProvider('https://rpc.valist.io/mainnet'));
@@ -82,17 +83,40 @@ function ValistApp({ Component, pageProps }: AppProps) {
     toast.dismiss(id);
   };
 
-  const resolveEns = async (address:string) => {
-    if (address?.length > 10) {
-      try {
-        const name = await mainnet.lookupAddress(address);
-        if (name !== null) {
-          return name;
-        }
-      } catch (err) {
-        console.log(err);
+  const reverseEns = async (address: string) => {
+    try {
+      const name = await mainnet.lookupAddress(address);
+      if (name !== null) {
+        return name;
       }
+    } catch (err) {
+      console.log(err);
     }
+    return null;
+  };
+
+  const resolveEns = async (ens: string) => {
+    try {
+      const name = await mainnet.resolveName(ens);
+      if (name !== null) {
+        return name;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+    return null;
+  };
+
+  const resolveAddress = async (addressOrENS: string) => {
+    let address: string | null = addressOrENS;
+    if (address.endsWith('.eth')) {
+      address = await resolveEns(address);
+      console.log('resolved ens', address);
+    }
+    const isAddress = address && ethers.utils.isAddress(address);
+
+    if (isAddress) return address;
+
     return null;
   };
   
@@ -100,8 +124,11 @@ function ValistApp({ Component, pageProps }: AppProps) {
     magic,
     address,
     loginType,
+    loginSuccessful,
     modal,
+    reverseEns,
     resolveEns,
+    resolveAddress,
     setLoginType,
     setShowLogin,
     setAddress,
@@ -130,6 +157,22 @@ function ValistApp({ Component, pageProps }: AppProps) {
     // @ts-ignore
     window.valist = valistClient;
   }, [valistClient]);
+
+  useEffect(() => {
+    (async () => {
+      const { chainId } = await provider.getNetwork();
+      if (chainId !== 137) {
+        notify('error', 'Incorrect network. Please switch to Polygon Mainnet https://polygon-rpc.com');
+      }
+    })();
+  }, [provider]);
+
+  // Check if login is successful
+  useEffect(() => {
+    if( loginType !== 'readOnly') {
+      setLoginSuccessful(true);
+    }
+  }, [loginType]);
 
   useEffect(() => console.log("Address:", address), [address]);
 

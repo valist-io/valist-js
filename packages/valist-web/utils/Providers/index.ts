@@ -3,6 +3,7 @@ import { MetaMaskInpageProvider } from "@metamask/providers";
 import { Magic } from 'magic-sdk';
 import getConfig from 'next/config';
 import { SetUseState } from '../Account/types';
+import { ValistProvider } from '../Account/types';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -63,4 +64,37 @@ export const providers = {
   readOnly: async ({}) => {
     return publicRuntimeConfig.WEB3_PROVIDER;
   },
+};
+
+const networks: Record<string, any> = {
+  polygon: {
+    chainId: "137",
+    chainName: "Polygon",
+    nativeCurrency: {
+        name: 'Polygon',
+        symbol: 'MATIC',
+        decimals: 18,
+    },
+    rpcUrls: ["https://polygon-rpc.com"],
+    blockExplorerUrls: ["https://polygonscan.com"],
+  },
+  mumbai: {
+    chainId: "80001",
+    chainName: "Mumbai",
+    nativeCurrency: {
+        name: 'Mumbai',
+        symbol: 'MATIC',
+        decimals: 18,
+    },
+    rpcUrls: ["https://rpc-mumbai.maticvigil.com/v1"],
+    blockExplorerUrls: ["https://mumbai.polygonscan.com"],
+  },
+}
+
+const addNetwork = async (provider: ValistProvider, network: string) => {
+  try {
+    await provider.send("wallet_addEthereumChain", [networks[network]]);
+  } catch (err) {
+    console.log(err);
+  }
 };

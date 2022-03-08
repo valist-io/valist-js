@@ -13,39 +13,52 @@ import { truncate } from '../../utils/Formatting/truncate';
 
 export default function Navbar() {
   const accountCtx = useContext(AccountContext);
-  const [address, setAddress] = useState<string>('0x0');
+  const [address, setAddress] = useState<string>('');
+  const [dropdownItems, setDropdownItems] = useState([
+  { 
+    name: 'Switch wallet',
+    href: '',
+    isLoggedIn: false,
+    isMobile: true,
+    action: () => accountCtx.setShowLogin(true),
+  },
+  { 
+    name: 'Logout',
+    href: '',
+    isLoggedIn: true,
+    isMobile: true,   
+    action: () => logout(accountCtx.setLoginType, accountCtx.setAddress, accountCtx.magic), 
+  }]);
 
   const navItems = [
-    { name: 'Discover', href: '/search' },
+    { name: 'Discover', href: '/' },
     { name: 'Docs', href: 'https://docs.valist.io/' },
     { name: 'Discord', href: 'https://valist.io/discord' },
-    { name: 'Support', href: 'mailto:support@valist.io' },
-  ];
-
-  const dropdownItems = [
-    { name: truncate(address, 5), 
-      href: `/addr/${address}`,
-      isLoggedIn: false,
-      isMobile: false, 
-      action: () => {},
-    },
-    { name: 'Switch wallet',
-      href: '',
-      isLoggedIn: false,
-      isMobile: true,   
-      action: () => accountCtx.setShowLogin(true),
-    },
-    { name: 'Logout',
-      href: '',
-      isLoggedIn: true,
-      isMobile: true,   
-      action: () => logout(accountCtx.setLoginType, accountCtx.setAddress, accountCtx.magic), 
-    },
   ];
 
   useEffect(() => {
-    setAddress(accountCtx.address);
-  },[accountCtx.address]);
+    const items = [...dropdownItems];
+
+    if (accountCtx.address !== '0x0' && accountCtx.address !== '') {
+      if (dropdownItems[0].name !== truncate(accountCtx.address, 5)) {
+        items.unshift({
+          name: truncate(accountCtx.address, 5), 
+          href: `/addr/${accountCtx.address}`,
+          isLoggedIn: false,
+          isMobile: false,
+          action: () => {},
+        });
+        setDropdownItems(items);
+        setAddress(accountCtx.address);
+      }
+    }
+
+    if (accountCtx.address === '0x0' && dropdownItems.length >= 3) {
+      items.shift();
+      setDropdownItems(items);
+    }
+
+  }, [accountCtx.address, dropdownItems]);
 
   return (
     <>
@@ -98,11 +111,11 @@ export default function Navbar() {
                       </a>
                     </Link>
                   ))}
-                  <NavDropdown loginType={accountCtx.loginType} address={address} actions={dropdownItems} />
+                  <NavDropdown loginType={accountCtx.loginType} address={accountCtx.address} actions={dropdownItems} />
                 </div>
               </div>
             </div>
-            <MobileMenu loginType={accountCtx.loginType} actions={dropdownItems} navigation={navItems} address={address} />
+            <MobileMenu loginType={accountCtx.loginType} actions={dropdownItems} navigation={navItems} address={accountCtx.address} />
           </>
         )}
       </Popover>
