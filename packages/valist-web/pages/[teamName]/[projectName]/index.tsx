@@ -50,7 +50,7 @@ export default function ProjectPage():JSX.Element {
         try {
           const teamID = await valistCtx.contract.getTeamID(teamName);
           const _projectID = await valistCtx.contract.getProjectID(teamID, projectName);
-          setProjectID(_projectID._hex);
+          setProjectID(_projectID.toHexString());
         } catch(err) {
           // accountCtx.notify('error', String(err));
           console.log("Failed to fetch projectID.", err);

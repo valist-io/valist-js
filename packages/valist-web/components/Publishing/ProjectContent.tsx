@@ -15,7 +15,7 @@ export default function RepoContent(props: RepoContentProps): JSX.Element {
       case 'Readme':
         return <RepoReadme repoReadme={props.description} />;
       case 'Members':
-        return (<ProjectMemberList members={props.members} />);
+        return <ProjectMemberList members={props.members} />;
       default:
         return <RepoReadme repoReadme={props.description} />;
     }
