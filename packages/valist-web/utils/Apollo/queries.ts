@@ -92,6 +92,29 @@ export const USER_PROJECTS = gql`
   }
 `;
 
+export const USER_HOMEPAGE = gql`
+  query Homepage($address: String){
+    users(where: {id: $address}) {
+      id
+      teams {
+        name
+        projects{
+          name
+        }
+        metaURI
+      }
+      projects {
+        id
+        name
+        metaURI
+        team {
+          name
+        }
+      }
+    }
+  }
+`;
+
 export const TEAM_PROFILE_QUERY = gql`
   query Team($team: String) {
     teams(where: { name: $team} ){
