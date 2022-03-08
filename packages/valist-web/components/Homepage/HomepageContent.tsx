@@ -3,6 +3,7 @@ import { License } from '../../utils/Valist/types';
 import LicenseList from '../Licenses/LicenseList';
 import LogTable from '../Logs/LogTable';
 import ProjectList from '../Projects/ProjectList';
+import TeamList from '../Teams/TeamList';
 
 interface ReleaseListProps {
   userProjects: Project[]
@@ -17,6 +18,8 @@ export default function HomepageContent(props: ReleaseListProps): JSX.Element {
     switch (view) {
       case 'Projects':
         return <ProjectList linksDisabled={false} projects={props.userProjects}/>;
+      case 'Accounts/Teams':
+          return <TeamList teams={props.userTeams} linksDisabled={false} />;
       case 'Activity':
         return <LogTable  address={props.address} />;
       case 'Licenses':

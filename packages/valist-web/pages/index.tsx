@@ -7,7 +7,7 @@ import LogCard from '../components/Logs/LogCard';
 import HomepageLinks from '../components/Homepage/HomepageLinks';
 import HomepageProfileCard from '../components/Homepage/HomepageProfileCard';
 import Layout from '../components/Layouts/Main';
-import { USER_PROJECTS } from '../utils/Apollo/queries';
+import { USER_HOMEPAGE } from '../utils/Apollo/queries';
 import { Project } from '../utils/Apollo/types';
 import HomepageContent from '../components/Homepage/HomepageContent';
 import Link from 'next/link';
@@ -21,7 +21,7 @@ const Dashboard: NextPage = () => {
   const [view, setView] = useState<string>("Projects");
   const [userProjects, setUserProjects] = useState<Project[]>([]);
   const [userTeams, setUserTeams] = useState<Project[]>([]);
-  const { data, loading, error } = useQuery(USER_PROJECTS, {
+  const { data, loading, error } = useQuery(USER_HOMEPAGE, {
     variables: { address: accountCtx.address.toLowerCase() },
   });
   const router = useRouter();
@@ -77,8 +77,6 @@ const Dashboard: NextPage = () => {
       setUserTeams(data.users[0].teams);
     }
   }, [data, loading, error, setUserProjects, accountCtx?.address.length, router]);
-
-  console.log('userData', userTeams);
 
   return (
     <Layout title="Valist | Dashboard">
