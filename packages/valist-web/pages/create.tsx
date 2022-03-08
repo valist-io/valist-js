@@ -99,7 +99,10 @@ const CreatePage: NextPage = () => {
 
   useEffect(() => {
     (async () => {
-      await getData( {
+      if (accountCtx.loginType === 'readOnly') {
+        accountCtx.setShowLogin(true);
+      }
+      await getData({
         variables: { address: accountCtx.address.toLowerCase() },
       });
     })();

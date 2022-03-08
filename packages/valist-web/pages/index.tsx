@@ -25,7 +25,7 @@ const Dashboard: NextPage = () => {
     variables: { address: accountCtx.address.toLowerCase() },
   });
   const router = useRouter();
-  const [userlicenses, setUserLicences] = useState<License[]>([]);
+  const [userlicenses, setUserLicenses] = useState<License[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -61,7 +61,7 @@ const Dashboard: NextPage = () => {
           }
         }
         
-        setUserLicences(licenses);
+        setUserLicenses(licenses);
       };
     })();
   }, [userProjects, userProjects.length, valistCtx.contract]);
