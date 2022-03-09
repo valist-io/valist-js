@@ -27,37 +27,6 @@ dev-frontend:
 dev:
 	$(MAKE) -j 3 up dev-sdk dev-web
 
-up:
-	docker-compose up
-
-down:
-	docker-compose down
-
-bootstrap:
-	npm run deploy:local --prefix ./packages/evm-contracts
-	npx lerna run bootstrap
-
-evm-build-subgraph:
-	npm run codegen --prefix ./packages/evm-subgraph
-	npm run build --prefix ./packages/evm-subgraph
-
-evm-deploy-subgraph: evm-build-subgraph
-	npm run deploy:local --prefix ./packages/evm-subgraph
-
-evm-build-contracts:
-	npm run export-abi --prefix ./packages/evm-contracts
-	rm -Rf ./packages/valist-sdk/src/contract/abis
-	rm -Rf ./packages/evm-subgraph/abis
-	cp -R ./packages/evm-contracts/abis ./packages/valist-sdk/src/contract/abis
-	cp -R ./packages/evm-contracts/artifacts/contracts ./packages/valist-sdk/src/contract/artifacts
-	cp -R ./packages/evm-contracts/abis ./packages/evm-subgraph/abis
-
-evm-deploy-contracts:
-	npm run deploy:local --prefix ./packages/evm-contracts
-
-evm-bootstrap:
-	npm run bootstrap --prefix ./packages/evm-contracts
-
 lint-sdk:
 	npm run lint --prefix ./packages/valist-sdk
 
