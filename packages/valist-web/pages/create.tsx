@@ -99,14 +99,14 @@ const CreatePage: NextPage = () => {
 
   useEffect(() => {
     (async () => {
-      if (accountCtx.loginType === 'readOnly' && !accountCtx.loginSuccessful) {
+      if (accountCtx.loginType === 'readOnly' && accountCtx?.loginTried) {
         accountCtx.setShowLogin(true);
       }
       await getData({
         variables: { address: accountCtx.address.toLowerCase() },
       });
     })();
-  }, [accountCtx.address, getData, teamsCreated]);
+  }, [accountCtx?.loginType, accountCtx?.loginTried, getData, teamsCreated]);
 
   // Set page state for user's teams and projects
   useEffect(() => {

@@ -1,4 +1,3 @@
-import { ethers } from "ethers";
 import { useContext, useEffect, useState } from "react";
 import { SetUseState } from "../../utils/Account/types";
 import { shortnameFilterRegex } from "../../utils/Validation";
@@ -99,7 +98,6 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
   }, [beneficiary, props.setBeneficiary, accountCtx.resolveAddress]);
 
   useEffect(() => {
-    console.log('name', name, 'valid', validName, 'beneficary', validBeneficiary, 'valid members', validMemberList);
     if (name && validName && validBeneficiary && validMemberList) {
       setFormValid(true);
     } else {

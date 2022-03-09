@@ -8,7 +8,6 @@ import TeamProjectList from '../../components/Teams/TeamProjectList';
 import { TEAM_PROFILE_QUERY } from '../../utils/Apollo/queries';
 import { Project } from '../../utils/Apollo/types';
 import { TeamMeta } from '../../utils/Valist/types';
-import ValistContext from '../../components/Valist/ValistContext';
 import LogCard from '../../components/Logs/LogCard';
 import LogTable from '../../components/Logs/LogTable';
 
@@ -28,6 +27,16 @@ export default function TeamProfilePage() {
   });
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [projects, setaProjects] = useState<Project[]>([]);
+  const tabs = [
+    {
+      text: 'Projects',
+      disabled: false,
+    },
+    {
+      text: 'Activity',
+      disabled: false,
+    },
+  ];
 
   useEffect(() => {
     const fetchMeta = async (metaURI: string) => {
@@ -54,7 +63,7 @@ export default function TeamProfilePage() {
             teamName={teamName}
             teamImage={meta.image ? meta.image : ''}
             meta={meta}
-            tabs={['Projects', 'Activity']}          
+            tabs={tabs}          
           />
           {view === 'Projects' && <TeamProjectList projects={projects} linksDisbaled={false} />}
           {view === 'Activity' && <LogTable team={teamName} project={''} address={''} />}

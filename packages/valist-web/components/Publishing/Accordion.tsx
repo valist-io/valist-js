@@ -34,13 +34,11 @@ export default function Accordion(props:AccordionProps) {
 
   return (
     <div className="flex flex-col bg-white">
-      <button
-        className="py-6 px-6 border appearance-none cursor-pointer focus:outline-none flex items-center justify-between"
-        onClick={() => toggle()}
+      <div
+        className="py-6 px-6 border appearance-none focus:outline-none flex items-center justify-between"
       >
         <div className={'inline-block text-footnote'}>{props.title}</div>
-        <ChevronUpIcon  className={`${rotate} h-5 w-5 text-black inline-block`}/>
-      </button>
+      </div>
       <div
         ref={content}
         style={{ maxHeight: `${height}` }}

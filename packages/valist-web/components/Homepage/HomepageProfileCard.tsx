@@ -1,10 +1,14 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { SetUseState } from "../../utils/Account/types";
 import { truncate } from "../../utils/Formatting/truncate";
+import AccountContext from "../Accounts/AccountContext";
 import AddressIdenticon from "../Identicons/AddressIdenticon";
 import Tabs from "../Tabs";
 
 interface HomepageProfileCardProps {
+  isProjects: boolean,
+  isTeams: boolean,
+  isLicenses: boolean,
   address: string,
   view: string,
   setView: SetUseState<string>,
@@ -12,20 +16,54 @@ interface HomepageProfileCardProps {
 }
 
 export default function HomepageProfileCard(props:HomepageProfileCardProps) {
+  const { address, reverseEns } = props;
   const [ens, setEns] = useState<string | null>();
+  const accountCtx = useContext(AccountContext);
+  const tabs = [
+    {
+      text: 'Projects',
+      disabled: true,
+    },
+    {
+      text: 'Accounts/Teams',
+      disabled: true,
+    },
+    {
+      text: 'Licenses',
+      disabled: true,
+    },
+    {
+      text: 'Activity',
+      disabled: true,
+    },
+  ];
+
+  if (props.isTeams) {
+    tabs[1].disabled = false;
+    tabs[3].disabled = false;
+  }
+
+  if (props.isProjects) {
+    tabs[0].disabled = false;
+  }
+
+  if (props.isLicenses) {
+    tabs[2].disabled = false;
+  }
+
   useEffect(() => {
     (async () => {
       let value = null;
 
-      if (props.address !== '0x0') {
+      if (accountCtx.address !== '0x0') {
         try {
-          value = await props.reverseEns(props.address);
+          value = await reverseEns(accountCtx.address);
         } catch (err) {}
       }
 
       setEns(value);
     })();
-  }, [props]);
+  }, [accountCtx.address, reverseEns]);
 
   return (
     <section aria-labelledby="profile-overview-title">
@@ -53,7 +91,7 @@ export default function HomepageProfileCard(props:HomepageProfileCardProps) {
         <Tabs 
           setView={props.setView}
           view={props.view}
-          tabs={['Projects', 'Accounts/Teams', 'Licenses', 'Activity']}
+          tabs={tabs}
         />
       </div>
     </section>
