@@ -43,7 +43,6 @@ export default function CreateLicenseForm(props: CreateLicenseFormProps) {
 
     try {
       const priceInWei = ethers.utils.parseEther(value);
-      console.log('price', priceInWei);
       props.setPrice(priceInWei);
     } catch (err) {
       console.log('Invalid number for price');
