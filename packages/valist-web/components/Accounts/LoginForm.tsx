@@ -32,6 +32,7 @@ export default function LoginForm(props: LoginFormProps) {
         accountCtx.setLoginType, 
         props.setProvider,  
         props.setAddress,
+        accountCtx.setLoginTried,
         accountCtx.setMagic,
         email,
     );

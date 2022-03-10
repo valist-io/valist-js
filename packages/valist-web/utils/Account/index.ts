@@ -45,12 +45,12 @@ export const login = async (
         providerURL,
       );
       account = await addressFromProvider(provider);
+      window.localStorage.setItem('loginType', loginType);
       setProvider(provider);
+      setAddress(account);
+      setLoginType(loginType);
     }
 
-    window.localStorage.setItem('loginType', loginType);
-    setAddress(account);
-    setLoginType(loginType);
     setLoginTried(true);
   } catch (err) {}
 };
