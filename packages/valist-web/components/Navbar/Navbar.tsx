@@ -37,7 +37,7 @@ export default function Navbar() {
   }];
 
   const navItems = [
-    // { name: 'Discover', href: '/' },
+    { name: 'Discover', href: '/discover' },
     { name: 'Docs', href: 'https://docs.valist.io/' },
     { name: 'Discord', href: 'https://valist.io/discord' },
   ];
