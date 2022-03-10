@@ -179,8 +179,6 @@ function ValistApp({ Component, pageProps }: AppProps) {
 
   useEffect(() => console.log("Address:", address), [address]);
 
-  console.log('Login Tried', loginTried);
-
   return (
     <ApolloProvider client={client}>
       <AccountContext.Provider value={accountState}>

@@ -37,7 +37,6 @@ export default function LogCard(props: LogCardProps) {
   const isInitialLogs = (data && data?.logs.length === 0 && props.initialLogs?.length !== 0);
 
   useEffect(() => {
-    console.log('logs', data);
     if (data && data.logs) {
       setLogs(data.logs);
     }

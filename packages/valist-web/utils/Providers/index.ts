@@ -62,7 +62,6 @@ export const providers = {
     return magic.rpcProvider;
   },
   readOnly: async ({}) => {
-    console.log('hello', publicRuntimeConfig.WEB3_PROVIDER);
     return publicRuntimeConfig.WEB3_PROVIDER;
   },
 };
