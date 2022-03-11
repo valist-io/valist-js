@@ -16,9 +16,9 @@ export default function MagicLogin(props: MagicLoginProps) {
   const [magicChecked, setMagicChecked] = useState<boolean>(false);
 
   const handleLogout = async () => {
-    logout(accountCtx.setLoginType, accountCtx.setAddress, accountCtx.magic);
+    logout(accountCtx.setLoginType, accountCtx.setAddress, accountCtx.setProvider, accountCtx.magic);
 
-    if (accountCtx.magic) {
+    if (accountCtx?.magic?.user) {
       await accountCtx.magic.user.logout();
       setMagicAddress('');
     }
@@ -29,7 +29,7 @@ export default function MagicLogin(props: MagicLoginProps) {
 
     if (magicRequest) {
       const handleMagic = async () => {
-        if (accountCtx.magic) {
+        if (accountCtx?.magic?.user) {
           if (await accountCtx.magic.user.isLoggedIn()){
             // @ts-ignore
             const provider = new ethers.providers.Web3Provider(accountCtx.magic.rpcProvider);

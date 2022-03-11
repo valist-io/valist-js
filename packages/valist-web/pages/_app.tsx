@@ -12,22 +12,22 @@ import AccountContext from '../components/Accounts/AccountContext';
 import ValistContext, { createValistClient, defaultProvider  } from '../components/Valist/ValistContext';
 import { LoginType, ValistProvider } from '../utils/Account/types';
 import { login, onAccountChanged } from '../utils/Account/index';
-import LoginForm from '../components/Accounts/LoginForm';
+import LoginModal from '../components/Accounts/LoginModal';
 import { newMagic } from '../utils/Providers';
 import client from "../utils/Apollo/client";
-import Modal from '../components/Modal';
 
 function ValistApp({ Component, pageProps }: AppProps) {
   const { publicRuntimeConfig } = getConfig();
   const [provider, setProvider] = useState<ValistProvider>(defaultProvider);
-  const [valistClient, setValistClient] = useState<Client>(createValistClient(provider));
+  const [valistClient, setValistClient] = useState<Client>(createValistClient(defaultProvider));
   const [magic, setMagic] = useState<Magic | null>(null);
   const [address, setAddress] = useState<string>('0x0');
   const [loginType, setLoginType] = useState<LoginType>('readOnly');
+  const [loginTried, setLoginTried] = useState<boolean>(false);
   const [loginSuccessful, setLoginSuccessful] = useState<Boolean>(false);
   const [showLogin, setShowLogin] = useState(false);
   const [modal, setModal] = useState<boolean>(false);
-  const [mainnet, setMainnet] = useState<ethers.providers.JsonRpcProvider>(new ethers.providers.JsonRpcProvider('https://rpc.valist.io/mainnet'));
+  const [mainnet, setMainnet] = useState<ethers.providers.JsonRpcProvider>(new ethers.providers.JsonRpcProvider('https://cloudflare-eth.com'));
 
   const notify = (type: string, text?: string): string => {
     switch (type) {
@@ -111,7 +111,6 @@ function ValistApp({ Component, pageProps }: AppProps) {
     let address: string | null = addressOrENS;
     if (address.endsWith('.eth')) {
       address = await resolveEns(address);
-      console.log('resolved ens', address);
     }
     const isAddress = address && ethers.utils.isAddress(address);
 
@@ -122,8 +121,10 @@ function ValistApp({ Component, pageProps }: AppProps) {
   
   const accountState = {
     magic,
+    provider,
     address,
     loginType,
+    loginTried,
     loginSuccessful,
     modal,
     reverseEns,
@@ -131,6 +132,8 @@ function ValistApp({ Component, pageProps }: AppProps) {
     resolveAddress,
     setLoginType,
     setShowLogin,
+    setLoginTried,
+    setProvider,
     setAddress,
     setMagic,
     notify,
@@ -145,8 +148,8 @@ function ValistApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
     const _loginType = (localStorage.getItem('loginType') as LoginType) || 'readOnly';
   
-    login(_loginType, setLoginType, setProvider, setAddress, setMagic, '');
-    onAccountChanged(setLoginType, setProvider, setAddress, '');
+    login(_loginType, setLoginType, setProvider, setAddress, setLoginTried, setMagic, '');
+    onAccountChanged(setLoginType, setProvider, setAddress, setLoginTried, '');
   }, []);
 
   useEffect(() => {
@@ -181,12 +184,8 @@ function ValistApp({ Component, pageProps }: AppProps) {
       <AccountContext.Provider value={accountState}>
         <ValistContext.Provider value={valistClient}>
           <Component {...pageProps} />
-          {showLogin && <LoginForm 
-            setProvider={setProvider}
-            setAddress={setAddress}
-          />}
+          {showLogin && <LoginModal />}
           <Toaster />
-          <Modal setOpen={setModal} open={modal} />
         </ValistContext.Provider>
       </AccountContext.Provider>
     </ApolloProvider>

@@ -1,15 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from 'next/link';
-import Image from 'next/image';
 import { SetUseState } from '../../utils/Account/types';
 import AddressIdenticon from '../Identicons/AddressIdenticon';
-import Tabs from '../Tabs';
+import Tabs, { Tab } from '../Tabs';
 
 interface ProjectProfileCardProps {
   teamName: string,
   projectName: string,
   projectImg: string,
-  tabs: string[],
+  tabs: Tab[],
   view: string,
   setView: SetUseState<string>
 }

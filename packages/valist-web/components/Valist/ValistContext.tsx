@@ -2,7 +2,6 @@ import React from 'react';
 import getConfig from 'next/config';
 import { ethers } from 'ethers';
 import { Client, Contract, Storage } from '@valist/sdk';
-import { create as createIPFS } from "ipfs-http-client";
 
 const { publicRuntimeConfig } = getConfig();
 

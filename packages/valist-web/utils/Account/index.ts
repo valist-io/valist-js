@@ -7,10 +7,11 @@ import { SetUseState, LoginType, ValistProvider } from './types';
 export const logout = async (
   setLoginType: SetUseState<LoginType>,
   setAddress: SetUseState<string>,
+  setProvider: SetUseState<ValistProvider>,
   magic: Magic | null,
 ) => {
   window.localStorage.setItem('loginType', 'readOnly');
-  if (magic) {
+  if (magic && magic?.user) {
     await magic.user.logout();
   }
   setAddress('0x0');
@@ -22,6 +23,7 @@ export const login = async (
   setLoginType: SetUseState<LoginType>, 
   setProvider: SetUseState<ValistProvider>,
   setAddress: SetUseState<string>,
+  setLoginTried: SetUseState<boolean>,
   setMagic: SetUseState<Magic | null>,
   email: string,
 ) => {
@@ -37,19 +39,19 @@ export const login = async (
     }
 
     const providerURL = await providers[loginType](params);
-    const provider = new ethers.providers.Web3Provider(
-      providerURL
-    );
 
     if (loginType != 'readOnly') {
+      const provider = new ethers.providers.Web3Provider(
+        providerURL,
+      );
       account = await addressFromProvider(provider);
+      window.localStorage.setItem('loginType', loginType);
+      setProvider(provider);
+      setAddress(account);
+      setLoginType(loginType);
     }
 
-    setProvider(provider);
-
-    window.localStorage.setItem('loginType', loginType);
-    setAddress(account);
-    setLoginType(loginType);
+    setLoginTried(true);
   } catch (err) {}
 };
 
@@ -57,13 +59,14 @@ export const onAccountChanged = (
   setLoginType: SetUseState<LoginType>,
   setProvider: SetUseState<ValistProvider>,
   setAddress: SetUseState<string>,
+  setLoginTried: SetUseState<boolean>,
   email: string,
 ) => {
   if (window && window.ethereum) {
     window.ethereum.on('accountsChanged', () => {
       const loginType = (localStorage.getItem('loginType') as LoginType);
       if (loginType === 'metaMask') {
-        login(loginType, setLoginType, setProvider, setAddress, ()=>{}, email);
+        login(loginType, setLoginType, setProvider, setAddress, setLoginTried, ()=>{}, email);
       }
     });
   };

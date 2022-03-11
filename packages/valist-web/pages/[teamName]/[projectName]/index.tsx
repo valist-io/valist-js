@@ -43,6 +43,24 @@ export default function ProjectPage():JSX.Element {
     external_url: '',
   });
   const [licenseBalance, setLicenseBalance] = useState<Number>(0);
+  const tabs = [
+    {
+      text: 'Readme',
+      disabled: false,
+    },
+    {
+      text: 'Versions',
+      disabled: false,
+    },
+    {
+      text: 'Activity',
+      disabled: false,
+    },
+    {
+      text: 'Members',
+      disabled: false,
+    },
+  ];
 
   useEffect(() => {
     const getProjectID = async () => {
@@ -143,7 +161,7 @@ export default function ProjectPage():JSX.Element {
           <ProjectProfileCard
             view={view}
             setView={setView}
-            tabs={['Readme', 'Versions', 'Activity', 'Members']}
+            tabs={tabs}
             teamName={teamName}
             projectName={projectName} 
             projectImg={projectMeta.image ? projectMeta.image : '' }

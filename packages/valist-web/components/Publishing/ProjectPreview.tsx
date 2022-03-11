@@ -32,7 +32,7 @@ export default function ProjectPreview(props: ProjectPreviewProps) {
         teamName={props.teamName} 
         projectName={name} 
         projectImg={imgUrl}
-        tabs={['Readme', 'Members']}
+        tabs={[{ text: 'Readme', disabled: false }, { text: 'Members', disabled: false }]}
         view={view}
         setView={setView} />
       <div className="mt-4">
