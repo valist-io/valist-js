@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { Popover } from '@headlessui/react';
 import { MenuIcon, XIcon } from '@heroicons/react/outline';
 import Link from 'next/link';
@@ -13,52 +13,34 @@ import { truncate } from '../../utils/Formatting/truncate';
 
 export default function Navbar() {
   const accountCtx = useContext(AccountContext);
-  const [address, setAddress] = useState<string>('');
-  const [dropdownItems, setDropdownItems] = useState([
-  { 
-    name: 'Switch wallet',
-    href: '',
-    isLoggedIn: false,
-    isMobile: true,
-    action: () => accountCtx.setShowLogin(true),
-  },
-  { 
-    name: 'Logout',
-    href: '',
-    isLoggedIn: true,
-    isMobile: true,   
-    action: () => logout(accountCtx.setLoginType, accountCtx.setAddress, accountCtx.magic), 
-  }]);
+  const dropdownItems = [
+    {
+      name: truncate(accountCtx.address, 5), 
+      href: `/addr/${accountCtx.address}`,
+      isLoggedIn: true,
+      isMobile: false,
+      action: () => {},
+    },
+    {
+      name: 'Switch wallet',
+      href: '',
+      isLoggedIn: false,
+      isMobile: true,
+      action: () => accountCtx.setShowLogin(true),
+    },
+    { 
+      name: 'Logout',
+      href: '',
+      isLoggedIn: true,
+      isMobile: true,   
+      action: () => logout(accountCtx.setLoginType, accountCtx.setAddress, accountCtx.setProvider, accountCtx.magic), 
+  }];
 
   const navItems = [
-    { name: 'Discover', href: '/' },
+    { name: 'Discover', href: '/discover' },
     { name: 'Docs', href: 'https://docs.valist.io/' },
     { name: 'Discord', href: 'https://valist.io/discord' },
   ];
-
-  useEffect(() => {
-    const items = [...dropdownItems];
-
-    if (accountCtx.address !== '0x0' && accountCtx.address !== '') {
-      if (dropdownItems[0].name !== truncate(accountCtx.address, 5)) {
-        items.unshift({
-          name: truncate(accountCtx.address, 5), 
-          href: `/addr/${accountCtx.address}`,
-          isLoggedIn: false,
-          isMobile: false,
-          action: () => {},
-        });
-        setDropdownItems(items);
-        setAddress(accountCtx.address);
-      }
-    }
-
-    if (accountCtx.address === '0x0' && dropdownItems.length >= 3) {
-      items.shift();
-      setDropdownItems(items);
-    }
-
-  }, [accountCtx.address, dropdownItems]);
 
   return (
     <>

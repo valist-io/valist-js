@@ -39,7 +39,7 @@ export default function AddressProfileCard(props: AddressProfileCardProps) {
         <Tabs 
           setView={props.setView}
           view={props.view}
-          tabs={['Projects']}
+          tabs={[{ text: 'Projects', disabled:false }]}
         />
       </div>
     </section>

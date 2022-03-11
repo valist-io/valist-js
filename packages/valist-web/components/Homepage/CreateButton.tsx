@@ -4,9 +4,11 @@ import { ChevronDownIcon } from '@heroicons/react/solid';
 import { classNames } from '../../utils/Styles';
 import Link from 'next/link';
 
-const transactions = ['Team', 'Project', 'License'];
+interface CreateButtonProps {
+  transactions: string[]
+}
 
-export default function CreateButton() {
+export default function CreateButton(props: CreateButtonProps) {
   return (
     <Menu as="div" className="relative inline-block text-left ml-2">
       <div>
@@ -27,7 +29,7 @@ export default function CreateButton() {
       >
         <Menu.Items className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
           <div className="py-1">
-            {transactions.map((transaction) => (
+            {props.transactions.map((transaction) => (
               <Menu.Item key={transaction}>
                 {({ active }) => (
                   <Link href={`/create?action=${transaction.toLowerCase()}`}>

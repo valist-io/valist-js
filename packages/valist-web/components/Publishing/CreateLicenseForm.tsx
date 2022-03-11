@@ -54,7 +54,6 @@ License name: ${props.licenseName}
   useEffect(() => {
     try {
       const priceInWei = ethers.utils.parseEther(price || '0');
-      console.log('price', priceInWei);
       props.setPrice(priceInWei);
     } catch (err) {
       console.log('Invalid number for price');

@@ -1,12 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
-import Image from 'next/image';
 import { TeamMeta } from '../../utils/Valist/types';
 import AddressIdenticon from '../Identicons/AddressIdenticon';
-import Tabs from '../Tabs';
+import Tabs, { Tab } from '../Tabs';
 
 interface TeamProfileCardProps {
   view: string,
-  tabs: string[],
+  tabs: Tab[],
   setView: Function,
   teamName: string,
   teamImage: string,

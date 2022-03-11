@@ -36,15 +36,18 @@ export type AccountCtxType = {
 
 export interface AccountCtxInterface {
   address: string,
+  provider: ValistProvider
   loginType: LoginType,
-  loginSuccessful: Boolean,
+  loginTried: Boolean,
   magic: Magic | null,
   modal: boolean,
   resolveEns: (address: string) => Promise<string | null>
   reverseEns: (address: string) => Promise<string | null>
   resolveAddress: (addressOrENS: string) => Promise<string | null>
   setLoginType: SetUseState<LoginType>,
+  setLoginTried: SetUseState<boolean>,
   setShowLogin: SetUseState<boolean>,
+  setProvider: SetUseState<ValistProvider>,
   setAddress: SetUseState<string>,
   setMagic: SetUseState<Magic | null>,
   notify: (type: string, text?: string) => string,
