@@ -24,7 +24,7 @@ export default function HomepageContent(props: ReleaseListProps): JSX.Element {
         return <EmptyProjectList />;
       case 'Projects':
         return <ProjectList linksDisabled={false} projects={props.userProjects} />;
-      case 'Accounts/Teams':
+      case 'Accounts':
         return <TeamList teams={props.userTeams} linksDisabled={false} />;
       case 'Activity':
         return <LogTable  address={props.address} />;

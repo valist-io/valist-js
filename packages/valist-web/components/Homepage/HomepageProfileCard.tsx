@@ -25,7 +25,7 @@ export default function HomepageProfileCard(props:HomepageProfileCardProps) {
       disabled: true,
     },
     {
-      text: 'Accounts/Teams',
+      text: 'Accounts',
       disabled: true,
     },
     {
@@ -75,7 +75,7 @@ export default function HomepageProfileCard(props:HomepageProfileCardProps) {
                 <AddressIdenticon address={props.address} height={85} width={85} />
               </div>
               <div className="mt-4 text-center sm:mt-0 sm:pt-1 sm:text-left">
-                <p className="text-sm font-medium text-gray-600">Authenticated as,</p>
+                <p className="text-sm font-medium text-gray-600">Connected with,</p>
                 <a target="_blank" rel="noopener noreferrer" 
                   href={`https://polygonscan.com/address/${props.address}`} 
                   className="sm:text-xl lg:text-3xl font-bold text-gray-900 hover:text-indigo-500">
