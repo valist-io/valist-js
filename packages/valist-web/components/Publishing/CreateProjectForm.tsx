@@ -62,7 +62,7 @@ ${props.projectMembers.join('\n')}
       try {
         await valistCtx.contract.getProjectMetaURI(props.teamName, projectName);
       } catch (err: any) {
-        if (err?.data?.message.includes("execution reverted: err-proj-not-exist")) {
+        if (JSON.stringify(err).includes("err-proj-not-exist")) {
           return false;
         }
       }
@@ -89,12 +89,8 @@ ${props.projectMembers.join('\n')}
 
       console.log('resolved addresses', members);
       
-      if (members.length > 0) {
-        setValidMemberList(true);
-        props.setMembers(members);
-      } else {
-        setValidMemberList(false);
-      }
+      setValidMemberList(true);
+      props.setMembers(members);
 
       setLoading(false);
     })();
@@ -121,7 +117,7 @@ ${props.projectMembers.join('\n')}
           text-base leading-6 border-gray-300 focus:outline-none focus:shadow-outline-blue
           focus:border-blue-300 sm:text-sm sm:leading-5">
             {props.userTeams?.map((teamName) => (
-               <option key={teamName} value={teamName}>{teamName}</option>
+               <option key={teamName} value={teamName} selected={teamName == props.teamName}>{teamName}</option>
             ))}
           </select>
       </div>

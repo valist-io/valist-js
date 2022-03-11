@@ -32,6 +32,7 @@ export const providers = {
   walletConnect: async ({}) => {
     const wc = new WalletConnectProvider({
       rpc: {
+        137: publicRuntimeConfig.WEB3_PROVIDER,
         80001: publicRuntimeConfig.WEB3_PROVIDER,
       },
     });

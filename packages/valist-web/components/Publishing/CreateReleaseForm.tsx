@@ -68,7 +68,7 @@ ${props.releaseLicense && `Release license: ${props.releaseLicense}` || ''}
       try {
         await valistCtx.contract.getReleaseMetaURI(props.releaseTeam, props.releaseProject, releaseName);
       } catch (err: any) {
-        if (err?.data?.message.includes("execution reverted: err-release-not-exist")) {
+        if (JSON.stringify(err).includes("err-release-not-exist")) {
           return false;
         }
       }

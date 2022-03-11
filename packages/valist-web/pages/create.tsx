@@ -249,6 +249,7 @@ const CreatePage: NextPage = () => {
       await transaction.wait();
 
       setUserTeamNames([...userTeamNames, teamName]);
+      setProjectTeam(teamName);
       accountCtx.dismiss(toastID);
       accountCtx.notify('success');
       router.push('/create?action=project');
