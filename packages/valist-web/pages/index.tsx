@@ -36,7 +36,7 @@ const Dashboard: NextPage = () => {
   ];
   const transactionActions = ['Team'];
   if (isTeams) transactionActions.push('Project');
-  if (isProjects) transactionActions.push('Licenses');
+  if (isProjects) transactionActions.push('License');
 
   useEffect(() => {
     (async () => {
