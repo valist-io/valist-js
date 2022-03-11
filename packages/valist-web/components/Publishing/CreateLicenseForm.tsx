@@ -65,7 +65,7 @@ License name: ${props.licenseName}
       try {
         await valistCtx.contract.getLicenseMetaURI(props.licenseTeam, props.licenseProject, licenseName);
       } catch (err: any) {
-        if (err?.data?.message.includes("execution reverted: err-license-not-exist")) {
+        if (JSON.stringify(err).includes("err-license-not-exist")) {
           return false;
         }
       }
