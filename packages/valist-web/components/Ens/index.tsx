@@ -11,7 +11,7 @@ const EnsResolver = (props:EnsResolverProps) => {
   useEffect(() => {
     (async () => {
       if (props?.address?.length > 4) {
-        const provider = new ethers.providers.JsonRpcProvider('https://cloudflare-eth.com');
+        const provider = new ethers.providers.JsonRpcProvider('https://rpc.valist.io/ens');
         try {
           const name = await provider.lookupAddress(props.address);
           if (name !== null) {
