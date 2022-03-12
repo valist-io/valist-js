@@ -46,7 +46,7 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
       try {
         await valistCtx.contract.getTeamMetaURI(teamName);
       } catch (err: any) {
-        if (err?.data?.message.includes("execution reverted: err-team-not-exist")) {
+        if (JSON.stringify(err).includes("err-team-not-exist")) {
           return false;
         }
       }
