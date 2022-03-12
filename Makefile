@@ -34,7 +34,7 @@ down:
 	docker-compose down
 
 bootstrap:
-	npm run deploy:local --prefix ./packages/evm-contracts
+	npm run deploy:ganache --prefix ./packages/evm-contracts
 	npx lerna run bootstrap
 
 evm-build-subgraph:
@@ -42,7 +42,7 @@ evm-build-subgraph:
 	npm run build --prefix ./packages/evm-subgraph
 
 evm-deploy-subgraph: evm-build-subgraph
-	npm run deploy:local --prefix ./packages/evm-subgraph
+	npm run deploy:ganache --prefix ./packages/evm-subgraph
 
 evm-build-contracts:
 	npm run export-abi --prefix ./packages/evm-contracts
