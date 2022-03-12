@@ -10,7 +10,7 @@ import { Project } from '../utils/Apollo/types';
 import HomepageContent from '../components/Homepage/HomepageContent';
 import Link from 'next/link';
 import ValistContext from '../components/Valist/ValistContext';
-import { License, Team } from '../utils/Valist/types';
+import { License } from '../utils/Valist/types';
 import CreateButton from '../components/Homepage/CreateButton';
 import LoginForm from '../components/Accounts/LoginForm';
 import { truncate } from '../utils/Formatting/truncate';
@@ -50,7 +50,7 @@ const Dashboard: NextPage = () => {
         for (let i = 0; i < currentProjects.length; ++i) {
           const project = currentProjects[i];
           let licenseNames: string[] = [];
-          
+
           try {
             licenseNames = await valistCtx.contract.getLicenseNames(
               project.team.name,
@@ -84,7 +84,7 @@ const Dashboard: NextPage = () => {
 
   // Set User's teams and the projects under them
   useEffect(() => {
-    if (data?.users[0] && data?.users[0]?.teams) {
+    if (data?.users[0]) {
       const { teamNames, teams } = normalizeUserProjects(
         data.users[0].teams,
         data.users[0].projects,

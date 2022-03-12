@@ -6,13 +6,16 @@ export function normalizeUserProjects(teamList: Team[], projectList:Project[]) {
   const teamNames = [];
   let teams: Record<string, Project[]> = {};
 
-  for (let i = 0; i < rawTeams.length; i++) {
-    teams[rawTeams[i].name] = rawTeams[i].projects;
-    teamNames.push(rawTeams[i].name);
+  if (teamList) {
+    for (let i = 0; i < rawTeams.length; i++) {
+      teams[rawTeams[i].name] = rawTeams[i].projects;
+      teamNames.push(rawTeams[i].name);
+    }
   }
 
   if (projectList) {
     const rawProjects: Project[] = projectList;
+
     for (let i = 0; i < rawProjects.length; i++) {
       let projectTeamName = rawProjects[i].team.name;
       if (!Object.keys(teams).includes(projectTeamName)) {

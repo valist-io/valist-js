@@ -12,13 +12,14 @@ import PublishReleaseForm from '../components/Publishing/CreateReleaseForm';
 import ReleasePreview from '../components/Publishing/ReleasePreview';
 import TeamPreview from '../components/Publishing/TeamPreview';
 import ValistContext from '../components/Valist/ValistContext';
-import { USER_TEAMS } from '../utils/Apollo/queries';
+import { USER_HOMEPAGE } from '../utils/Apollo/queries';
 import CreateLicenseForm from '../components/Publishing/CreateLicenseForm';
 import LicensePreview from '../components/Publishing/LicensePreview';
 import { ReleaseMeta, LicenseMeta, ProjectMeta } from '@valist/sdk';
 import { BigNumberish } from 'ethers';
 import parseError from '../utils/Errors';
 import { getProjectNames, normalizeUserProjects } from '../utils/Apollo/normalization';
+import { Project } from '../utils/Apollo/types';
 
 type Member = {
   id: string,
@@ -44,8 +45,8 @@ const CreatePage: NextPage = () => {
   const [renderProject, setRenderProject] = useState<boolean>(false);
   const [renderRelease, setRenderRelease] = useState<boolean>(false);
   const [renderLicense, setRenderLicense] = useState<boolean>(false);
-  const [ getData, { data, loading, error }] = useLazyQuery(USER_TEAMS);
-  const [userTeams, setUserTeams] = useState<any>({});
+  const [ getData, { data, loading, error }] = useLazyQuery(USER_HOMEPAGE);
+  const [userTeams, setUserTeams] = useState<Record<string, Project[]>>({});
   const [userTeamNames, setUserTeamNames] = useState<any>([]);
   const [teamProjectNames, setTeamProjectNames] = useState<any>([]);
   const [teamsCreated, setTeamsCreated] = useState<number>(0);
@@ -110,7 +111,7 @@ const CreatePage: NextPage = () => {
 
   // Set page state for user's teams and projects
   useEffect(() => {
-    if (data && data?.users && data?.users[0] && data?.users[0].teams) {
+    if (data && data?.users && data?.users[0]) {
       const { teamNames, teams } = normalizeUserProjects(
         data.users[0].teams,
         data.users[0].projects,
@@ -125,7 +126,6 @@ const CreatePage: NextPage = () => {
         setLicenseTeam(teamNames[0]);
 
         const projectNames = getProjectNames(teams, teamNames[0]);
-
         setTeamProjectNames(projectNames);
         setReleaseProject(projectNames[0]);
         setLicenseProject(projectNames[0]);
