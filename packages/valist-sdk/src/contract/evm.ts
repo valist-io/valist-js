@@ -46,8 +46,9 @@ export class EVM implements ContractAPI {
 
 	constructor(options: EVM_Options, web3Provider: EVM_Provider) {
 		const signer = web3Provider.getSigner();
-		this.valist = new Contract(options.valistAddress, valist_contract.abi, signer);
-		this.license = new Contract(options.licenseAddress, license_contract.abi, signer);
+		const provider = !signer.provider.connection.url.match(/meta|eip/) ? web3Provider : signer;
+		this.valist = new Contract(options.valistAddress, valist_contract.abi, provider);
+		this.license = new Contract(options.licenseAddress, license_contract.abi, provider);
 		this.provider = web3Provider;
 		this.options = options;
 	}
