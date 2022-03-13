@@ -62,7 +62,7 @@ async function fetchJSONfromIPFS(ipfsHash: string): Promise<any> {
 }
 
 async function fetchArtifact(cid: string) {  
-  const url = `https://gateway.valist.io/${cid}`;
+  const url = `https://gateway.valist.io/ipfs/${parseCID(cid)}`;
   const filePath = path.resolve(path.dirname(__dirname), 'bin', 'valist');
   const writer = fs.createWriteStream(filePath);
 
