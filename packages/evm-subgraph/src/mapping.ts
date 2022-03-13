@@ -15,11 +15,17 @@ import {
   ReleaseRejected
 } from "../generated/Valist/Valist";
 
+import { BigInt } from "@graphprotocol/graph-ts";
+
+function toPaddedHex(input: BigInt): string {
+    return "0x" + input.toHex().substr(2).padStart(64, '0');
+}
+
 export function handleTeamCreated(event: TeamCreated): void {
   const valist = Valist.bind(event.address);
   const teamID = valist.getTeamID(event.params._teamName);
 
-  const team = new Team(teamID.toHex());
+  const team = new Team(toPaddedHex(teamID));
   team.name = event.params._teamName;
   team.metaURI = event.params._metaURI;
   team.createdTx = event.transaction.hash.toHex();
@@ -37,8 +43,8 @@ export function handleTeamUpdated(event: TeamUpdated): void {
   const valist = Valist.bind(event.address);
   const teamID = valist.getTeamID(event.params._teamName);
 
-  let team = Team.load(teamID.toHex());
-  if (team == null) team = new Team(teamID.toHex());
+  let team = Team.load(toPaddedHex(teamID));
+  if (team == null) team = new Team(toPaddedHex(teamID));
 
   team.name = event.params._teamName;
   team.metaURI = event.params._metaURI;
@@ -56,14 +62,14 @@ export function handleTeamMemberAdded(event: TeamMemberAdded): void {
   const valist = Valist.bind(event.address);
   const teamID = valist.getTeamID(event.params._teamName);
 
-  let team = Team.load(teamID.toHex());
-  if (team == null) team = new Team(teamID.toHex());
+  let team = Team.load(toPaddedHex(teamID));
+  if (team == null) team = new Team(toPaddedHex(teamID));
 
   let user = User.load(event.params._member.toHex());
   if (user == null) user = new User(event.params._member.toHex());
 
   const teams = _arrayToSet(user.teams);
-  teams.add(teamID.toHex());
+  teams.add(toPaddedHex(teamID));
 
   const members = _arrayToSet(team.members);
   members.add(event.params._member.toHex());
@@ -88,14 +94,14 @@ export function handleTeamMemberRemoved(event: TeamMemberRemoved): void {
   const valist = Valist.bind(event.address);
   const teamID = valist.getTeamID(event.params._teamName);
 
-  let team = Team.load(teamID.toHex());
-  if (team == null) team = new Team(teamID.toHex());
+  let team = Team.load(toPaddedHex(teamID));
+  if (team == null) team = new Team(toPaddedHex(teamID));
 
   let user = User.load(event.params._member.toHex());
   if (user == null) user = new User(event.params._member.toHex());
 
   const teams = _arrayToSet(user.projects);
-  teams.delete(teamID.toHex());
+  teams.delete(toPaddedHex(teamID));
 
   const members = _arrayToSet(team.members);
   members.delete(event.params._member.toHex());
@@ -121,9 +127,9 @@ export function handleProjectCreated(event: ProjectCreated): void {
   const teamID = valist.getTeamID(event.params._teamName);
   const projectID = valist.getProjectID(teamID, event.params._projectName);
 
-  const project = new Project(projectID.toHex());
+  const project = new Project(toPaddedHex(projectID));
   project.name = event.params._projectName;
-  project.team = teamID.toHex();
+  project.team = toPaddedHex(teamID);
   project.metaURI = event.params._metaURI;
   project.createdTx = event.transaction.hash.toHex();
   project.updatedTx = event.transaction.hash.toHex();
@@ -143,11 +149,11 @@ export function handleProjectUpdated(event: ProjectUpdated): void {
   const teamID = valist.getTeamID(event.params._teamName);
   const projectID = valist.getProjectID(teamID, event.params._projectName);
 
-  let project = Project.load(projectID.toHex())
-  if (project == null) project = new Project(projectID.toHex());
+  let project = Project.load(toPaddedHex(projectID))
+  if (project == null) project = new Project(toPaddedHex(projectID));
 
   project.name = event.params._projectName;
-  project.team = teamID.toHex();
+  project.team = toPaddedHex(teamID);
   project.metaURI = event.params._metaURI;
   project.updatedTx = event.transaction.hash.toHex();
   project.save();
@@ -165,14 +171,14 @@ export function handleProjectMemberAdded(event: ProjectMemberAdded): void {
   const teamID = valist.getTeamID(event.params._teamName);
   const projectID = valist.getProjectID(teamID, event.params._projectName);
 
-  let project = Project.load(projectID.toHex())
-  if (project == null) project = new Project(projectID.toHex());
+  let project = Project.load(toPaddedHex(projectID))
+  if (project == null) project = new Project(toPaddedHex(projectID));
 
   let user = User.load(event.params._member.toHex());
   if (user == null) user = new User(event.params._member.toHex());
 
   const projects = _arrayToSet(user.projects);
-  projects.add(projectID.toHex());
+  projects.add(toPaddedHex(projectID));
 
   const members = _arrayToSet(project.members);
   members.add(event.params._member.toHex());
@@ -181,7 +187,7 @@ export function handleProjectMemberAdded(event: ProjectMemberAdded): void {
   user.save();
 
   project.name = event.params._projectName;
-  project.team = teamID.toHex();
+  project.team = toPaddedHex(teamID);
   project.members = members.values();
   project.updatedTx = event.transaction.hash.toHex();
   project.save();
@@ -200,14 +206,14 @@ export function handleProjectMemberRemoved(event: ProjectMemberRemoved): void {
   const teamID = valist.getTeamID(event.params._teamName);
   const projectID = valist.getProjectID(teamID, event.params._projectName);
 
-  let project = Project.load(projectID.toHex())
-  if (project == null) project = new Project(projectID.toHex());
+  let project = Project.load(toPaddedHex(projectID))
+  if (project == null) project = new Project(toPaddedHex(projectID));
 
   let user = User.load(event.params._member.toHex());
   if (user == null) user = new User(event.params._member.toHex());
 
   const projects = _arrayToSet(user.projects);
-  projects.delete(projectID.toHex());
+  projects.delete(toPaddedHex(projectID));
 
   const members = _arrayToSet(project.members);
   members.delete(event.params._member.toHex());
@@ -216,7 +222,7 @@ export function handleProjectMemberRemoved(event: ProjectMemberRemoved): void {
   user.save();
 
   project.name = event.params._projectName;
-  project.team = teamID.toHex();
+  project.team = toPaddedHex(teamID);
   project.members = members.values();
   project.updatedTx = event.transaction.hash.toHex();
   project.save();
@@ -236,9 +242,9 @@ export function handleReleaseCreated(event: ReleaseCreated): void {
   const projectID = valist.getProjectID(teamID, event.params._projectName);
   const releaseID = valist.getReleaseID(projectID, event.params._releaseName);
 
-  const release = new Release(releaseID.toHex());
+  const release = new Release(toPaddedHex(releaseID));
   release.name = event.params._releaseName;
-  release.project = projectID.toHex();
+  release.project = toPaddedHex(projectID);
   release.metaURI = event.params._metaURI;
   release.createdTx = event.transaction.hash.toHex();
   release.updatedTx = event.transaction.hash.toHex();
@@ -260,8 +266,8 @@ export function handleReleaseApproved(event: ReleaseApproved): void {
   const projectID = valist.getProjectID(teamID, event.params._projectName);
   const releaseID = valist.getReleaseID(projectID, event.params._releaseName);
 
-  let release = Release.load(releaseID.toHex());
-  if (release == null) release = new Release(releaseID.toHex());
+  let release = Release.load(toPaddedHex(releaseID));
+  if (release == null) release = new Release(toPaddedHex(releaseID));
 
   let user = User.load(event.params._sender.toHex());
   if (user == null) user = new User(event.params._sender.toHex());
@@ -273,17 +279,17 @@ export function handleReleaseApproved(event: ReleaseApproved): void {
   rejectors.delete(event.params._sender.toHex());
 
   const approved = _arrayToSet(user.approved);
-  approved.add(releaseID.toHex());
+  approved.add(toPaddedHex(releaseID));
 
   const rejected = _arrayToSet(user.rejected);
-  rejected.delete(releaseID.toHex());
+  rejected.delete(toPaddedHex(releaseID));
 
   user.rejected = rejected.values();
   user.approved = approved.values();
   user.save();
 
   release.name = event.params._releaseName;
-  release.project = projectID.toHex();
+  release.project = toPaddedHex(projectID);
   release.approvers = approvers.values();
   release.rejectors = rejectors.values();
   release.save();
@@ -303,8 +309,8 @@ export function handleReleaseRejected(event: ReleaseRejected): void {
   const projectID = valist.getProjectID(teamID, event.params._projectName);
   const releaseID = valist.getReleaseID(projectID, event.params._releaseName);
 
-  let release = Release.load(releaseID.toHex());
-  if (release == null) release = new Release(releaseID.toHex());
+  let release = Release.load(toPaddedHex(releaseID));
+  if (release == null) release = new Release(toPaddedHex(releaseID));
 
   let user = User.load(event.params._sender.toHex());
   if (user == null) user = new User(event.params._sender.toHex());
@@ -316,17 +322,17 @@ export function handleReleaseRejected(event: ReleaseRejected): void {
   rejectors.add(event.params._sender.toHex());
 
   const approved = _arrayToSet(user.approved);
-  approved.delete(releaseID.toHex());
+  approved.delete(toPaddedHex(releaseID));
 
   const rejected = _arrayToSet(user.rejected);
-  rejected.add(releaseID.toHex());
+  rejected.add(toPaddedHex(releaseID));
 
   user.rejected = rejected.values();
   user.approved = approved.values();
   user.save();
 
   release.name = event.params._releaseName;
-  release.project = projectID.toHex();
+  release.project = toPaddedHex(projectID);
   release.rejectors = rejectors.values();
   release.approvers = approvers.values();
   release.save();
