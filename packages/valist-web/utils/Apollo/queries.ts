@@ -99,7 +99,12 @@ export const USER_HOMEPAGE = gql`
       teams {
         name
         projects{
+          id
           name
+          metaURI
+          team {
+            name
+          }
         }
         metaURI
       }

@@ -63,11 +63,13 @@ export const onAccountChanged = (
   email: string,
 ) => {
   if (window && window.ethereum) {
-    window.ethereum.on('accountsChanged', () => {
-      const loginType = (localStorage.getItem('loginType') as LoginType);
-      if (loginType === 'metaMask') {
-        login(loginType, setLoginType, setProvider, setAddress, setLoginTried, ()=>{}, email);
-      }
+    ['accountsChanged', 'chainChanged'].forEach((event) => {
+      window.ethereum.on(event, () => {
+        const loginType = (localStorage.getItem('loginType') as LoginType);
+        if (loginType === 'metaMask') {
+          login(loginType, setLoginType, setProvider, setAddress, setLoginTried, ()=>{}, email);
+        }
+      });
     });
   };
 };

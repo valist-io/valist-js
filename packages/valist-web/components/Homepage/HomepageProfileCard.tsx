@@ -2,17 +2,21 @@ import { useContext, useEffect, useState } from "react";
 import { SetUseState } from "../../utils/Account/types";
 import { truncate } from "../../utils/Formatting/truncate";
 import AccountContext from "../Accounts/AccountContext";
+import AccountPicker from "../Accounts/AccountPicker";
 import AddressIdenticon from "../Identicons/AddressIdenticon";
 import Tabs from "../Tabs";
 
 interface HomepageProfileCardProps {
-  isProjects: boolean,
-  isTeams: boolean,
-  isLicenses: boolean,
-  address: string,
-  view: string,
-  setView: SetUseState<string>,
-  reverseEns: (address: string) => Promise<string | null>
+  isProjects: boolean;
+  isTeams: boolean;
+  isLicenses: boolean;
+  address: string;
+  view: string;
+  accountNames: string[];
+  userAccount: string;
+  setUserAccount: SetUseState<string>;
+  setView: SetUseState<string>;
+  reverseEns: (address: string) => Promise<string | null>;
 }
 
 export default function HomepageProfileCard(props:HomepageProfileCardProps) {
@@ -22,10 +26,6 @@ export default function HomepageProfileCard(props:HomepageProfileCardProps) {
   const tabs = [
     {
       text: 'Projects',
-      disabled: true,
-    },
-    {
-      text: 'Accounts',
       disabled: true,
     },
     {
@@ -39,8 +39,7 @@ export default function HomepageProfileCard(props:HomepageProfileCardProps) {
   ];
 
   if (props.isTeams) {
-    tabs[1].disabled = false;
-    tabs[3].disabled = false;
+    tabs[2].disabled = false;
   }
 
   if (props.isProjects) {
@@ -48,7 +47,7 @@ export default function HomepageProfileCard(props:HomepageProfileCardProps) {
   }
 
   if (props.isLicenses) {
-    tabs[2].disabled = false;
+    tabs[1].disabled = false;
   }
 
   useEffect(() => {
@@ -67,9 +66,9 @@ export default function HomepageProfileCard(props:HomepageProfileCardProps) {
 
   return (
     <section aria-labelledby="profile-overview-title">
-      <div className="rounded-lg bg-white overflow-hidden shadow">
+      <div className="rounded-lg bg-white shadow">
         <div className="bg-white pt-6 px-6">
-          <div className="sm:flex sm:items-center">
+          <div className="sm:flex sm:items-center sm:justify-between">
             <div className="sm:flex sm:space-x-5 mr-10">
               <div className="flex-shrink-0">
                 <AddressIdenticon address={props.address} height={85} width={85} />
@@ -85,6 +84,13 @@ export default function HomepageProfileCard(props:HomepageProfileCardProps) {
                   {props.address}
                 </p>
               </div>
+            </div>
+            <div className="mt-5 flex justify-center sm:mt-0">
+              <AccountPicker 
+                accountNames={props.accountNames} 
+                userAccount={props.userAccount} 
+                setUserAccount={props.setUserAccount} 
+              />
             </div>
           </div>
         </div>

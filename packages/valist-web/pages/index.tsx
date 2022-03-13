@@ -14,19 +14,23 @@ import { License } from '../utils/Valist/types';
 import CreateButton from '../components/Homepage/CreateButton';
 import LoginForm from '../components/Accounts/LoginForm';
 import { truncate } from '../utils/Formatting/truncate';
+import { normalizeUserProjects } from '../utils/Apollo/normalization';
 
 const Dashboard: NextPage = () => {
   const accountCtx = useContext(AccountContext);
   const valistCtx = useContext(ValistContext);
   const [view, setView] = useState<string>('');
-  const [userTeams, setUserTeams] = useState<Project[]>([]);
-  const [userProjects, setUserProjects] = useState<Project[]>([]);
+  const [userAccount, setUserAccount] = useState<string>('');
+  const [userTeams, setUserTeams] = useState<Record<string, Project>>({});
+  const [userTeamNames, setUserTeamNames] = useState<string[]>([]);
+  const [currentProjects, setCurrentProjects] = useState<Project[]>([]);
+  const [accountProjects, setAccountProjects] = useState<Record<string, Project[]>>({});
   const [userLicenses, setUserLicenses] = useState<License[]>([]);
   const { data, loading, error } = useQuery(USER_HOMEPAGE, {
     variables: { address: accountCtx.address.toLowerCase() },
   });
-  const isTeams = (userTeams.length !== 0);
-  const isProjects = (userProjects.length !== 0);
+  const isTeams = (userTeamNames.length !== 0);
+  const isProjects = (currentProjects.length !== 0);
   const isLicenses = (userLicenses.length !== 0);
   const initialActivity = [
     {
@@ -40,11 +44,11 @@ const Dashboard: NextPage = () => {
 
   useEffect(() => {
     (async () => {
-      if (userProjects.length > 0) {
+      if (currentProjects.length > 0) {
         let licenses:License[] = [];
 
-        for (let i = 0; i < userProjects.length; ++i) {
-          const project = userProjects[i];
+        for (let i = 0; i < currentProjects.length; ++i) {
+          const project = currentProjects[i];
           let licenseNames: string[] = [];
 
           try {
@@ -72,36 +76,46 @@ const Dashboard: NextPage = () => {
         }
         
         setUserLicenses(licenses);
+      } else {
+        setUserLicenses([]);
       };
     })();
-  }, [userProjects, userProjects.length, valistCtx.contract]);
+  }, [currentProjects, currentProjects.length, valistCtx.contract]);
 
+  // Set User's teams and the projects under them
   useEffect(() => {
-    if (data?.users[0] && data?.users[0]?.projects) {
-      setUserProjects(data.users[0].projects);
-    } else {
-      setUserProjects([]);
-    }
+    if (data?.users[0]) {
+      const { teamNames, teams } = normalizeUserProjects(
+        data.users[0].teams,
+        data.users[0].projects,
+      );
 
-    if (data?.users[0] && data?.users[0]?.teams) {
-      setUserTeams(data.users[0].teams);
+      setUserAccount(teamNames[0]);
+      setAccountProjects(teams);
+      setUserTeamNames(teamNames);
     } else {
-      setUserTeams([]);
+      setUserTeamNames([]);
     }
-  }, [data, loading, setUserProjects, accountCtx?.address]);
+  }, [data, loading, accountCtx?.address]);
+
+
+  // If userAccount changes set projects under current account
+  useEffect(() => {
+    setCurrentProjects(accountProjects[userAccount] || []);
+  }, [accountProjects, userAccount]);
 
   // Set homepageView
   useEffect(() => {
-    if (userTeams.length === 0) {
+    if (!isTeams) {
       setView('EmptyTeams');
-    } else if (userProjects.length === 0) {
+    } else if (currentProjects.length === 0) {
       setView('EmptyProjects');
     } else {
       setView('Projects');
     }
-  },[data, userProjects, userTeams, accountCtx.address]);
+  },[data, currentProjects, userTeams, accountCtx.address, isTeams]);
 
-  if (accountCtx?.address === '0x0') {
+  if (accountCtx?.address === '0x0' && accountCtx.loginTried) {
     return (
       <Layout title="Valist | Login">
         <div className="flex justify-center items-center">
@@ -122,17 +136,19 @@ const Dashboard: NextPage = () => {
         {/* Left column */}
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
           <HomepageProfileCard 
-            reverseEns={accountCtx?.reverseEns} 
-            address={accountCtx?.address} 
-            view={view} 
-            setView={setView} 
-            isProjects={isProjects} 
-            isTeams={isTeams} 
+            reverseEns={accountCtx?.reverseEns}
+            address={accountCtx?.address}
+            view={view}
+            setView={setView}
+            isProjects={isProjects}
+            isTeams={isTeams}
             isLicenses={isLicenses} 
+            accountNames={userTeamNames} 
+            userAccount={userAccount}
+            setUserAccount={setUserAccount}          
           />
           <HomepageContent 
-            userProjects={userProjects}
-            userTeams={userTeams} 
+            userProjects={currentProjects}
             userLicenses={userLicenses} 
             view={view} 
             address={accountCtx.address} />

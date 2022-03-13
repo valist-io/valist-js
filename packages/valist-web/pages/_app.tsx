@@ -13,7 +13,7 @@ import ValistContext, { createValistClient, defaultProvider  } from '../componen
 import { LoginType, ValistProvider } from '../utils/Account/types';
 import { login, onAccountChanged } from '../utils/Account/index';
 import LoginModal from '../components/Accounts/LoginModal';
-import { newMagic } from '../utils/Providers';
+import { addNetwork, newMagic } from '../utils/Providers';
 import client from "../utils/Apollo/client";
 
 function ValistApp({ Component, pageProps }: AppProps) {
@@ -164,11 +164,12 @@ function ValistApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
     (async () => {
       const { chainId } = await provider.getNetwork();
-      if (chainId !== 137) {
+      if (chainId != publicRuntimeConfig.CHAIN_ID) {
         notify('error', 'Incorrect network. Please switch to Polygon Mainnet https://polygon-rpc.com');
+        await addNetwork(provider, 'polygon');
       }
     })();
-  }, [provider]);
+  }, [provider, publicRuntimeConfig.CHAIN_ID]);
 
   // Check if login is successful
   useEffect(() => {

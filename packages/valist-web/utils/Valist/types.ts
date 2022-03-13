@@ -1,23 +1,30 @@
+import { Project } from "../Apollo/types";
+
+export declare type Team = {
+  metaURI: string;
+  name: string;
+  projects: Project[];
+}
 
 export declare type ReleaseArtifact = {
-  architecure?: string,
-  sha256?: string,
-  provider?: string,
+  architecure?: string;
+  sha256?: string;
+  provider?: string;
 };
 
 export declare type TeamMeta = {
-  image?: string,
-  name?: string,
-  description?: string,
-  external_url?: string,
+  image?: string;
+  name?: string;
+  description?: string;
+  external_url?: string;
 };
 
 export declare type ProjectMeta = {
-  image?: string,
-  name?: string,
-  description?: string,
-  external_url?: string,
-  short_description?: string,
+  image?: string;
+  name?: string;
+  description?: string;
+  external_url?: string;
+  short_description?: string;
 };
 
 export type ReleaseMeta = {
