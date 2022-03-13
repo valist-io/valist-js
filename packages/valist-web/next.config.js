@@ -12,7 +12,6 @@ const nextConfig = {
     PINATA_JWT: process.env.PINATA_JWT,
     GRAPH_PROVIDER: process.env.GRAPH_PROVIDER || 'http://localhost:8000/subgraphs/name/valist-io/valist',
     MAGIC_PUBKEY: 'pk_live_631BA2340BB9ACD8',
-    MAGIC_RPC: process.env.MAGIC_RPC,
     METATX_ENABLED: process.env.METATX_ENABLED || false,
   },
   webpack: function (config, options) {
@@ -22,7 +21,9 @@ const nextConfig = {
     }
     config.plugins.push(new options.webpack.IgnorePlugin({ resourceRegExp: /^electron$/ }));
     return config;
-  }
+  },
+  // trailingSlash: true,
+  // assetPrefix: './',
 };
 
 module.exports = nextConfig;

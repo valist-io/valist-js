@@ -27,7 +27,7 @@ function ValistApp({ Component, pageProps }: AppProps) {
   const [loginSuccessful, setLoginSuccessful] = useState<Boolean>(false);
   const [showLogin, setShowLogin] = useState(false);
   const [modal, setModal] = useState<boolean>(false);
-  const [mainnet, setMainnet] = useState<ethers.providers.JsonRpcProvider>(new ethers.providers.JsonRpcProvider('https://cloudflare-eth.com'));
+  const [mainnet, setMainnet] = useState<ethers.providers.JsonRpcProvider>(new ethers.providers.JsonRpcProvider('https://rpc.valist.io/ens'));
 
   const notify = (type: string, text?: string): string => {
     switch (type) {
