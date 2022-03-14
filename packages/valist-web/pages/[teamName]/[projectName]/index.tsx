@@ -25,6 +25,7 @@ export default function ProjectPage():JSX.Element {
   const [version, setVersion] = useState<string>('');
   const { data, loading, error } = useQuery(PROJECT_PROFILE_QUERY, {
     variables: { project: projectID },
+    pollInterval: 5000,
   });
   const [view, setView] = useState<string>('Readme');
   const [licensePrice, setLicensePrice] = useState<BigNumberish | null>(null);

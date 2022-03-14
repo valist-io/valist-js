@@ -20,13 +20,14 @@ export default function TeamProfilePage() {
   const teamName = `${router.query.teamName}`;
   const { data, loading, error } = useQuery(TEAM_PROFILE_QUERY, {
     variables: { team: teamName },
+    pollInterval: 5000,
   });
   const [view, setView] = useState<string>('Projects');
   const [meta, setMeta] = useState<TeamMeta>({
     image: '',
   });
   const [members, setMembers] = useState<TeamMember[]>([]);
-  const [projects, setaProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const tabs = [
     {
       text: 'Projects',
@@ -48,7 +49,7 @@ export default function TeamProfilePage() {
 
     if (data && data.teams && data.teams[0] && data.teams[0].metaURI) {
       fetchMeta(data.teams[0].metaURI);
-      setaProjects(data.teams[0].projects);
+      setProjects(data.teams[0].projects);
       setMembers(data.teams[0].members);
     }
   }, [data, loading, error, setMeta]);

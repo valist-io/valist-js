@@ -28,6 +28,7 @@ const Dashboard: NextPage = () => {
   const [userLicenses, setUserLicenses] = useState<License[]>([]);
   const { data, loading, error } = useQuery(USER_HOMEPAGE, {
     variables: { address: accountCtx.address.toLowerCase() },
+    pollInterval: 5000,
   });
   const isTeams = (userTeamNames.length !== 0);
   const isProjects = (currentProjects.length !== 0);
