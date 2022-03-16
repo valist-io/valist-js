@@ -1,9 +1,4 @@
-import { Client, createClient } from './client';
-import * as Storage from './storage';
-import { createIPFS } from './storage/ipfs';
-import { createPinata } from './storage/pinata';
-import * as Contract from './contract/';
-import { ValistABIs } from './abis';
+import { Client, Options, createClient } from './client';
 
 export class TeamMeta {
 	/** team image */
@@ -53,12 +48,4 @@ export class LicenseMeta {
 	public external_url?: string;
 }
 
-export {
-	Client,
-	Storage,
-	Contract,
-	ValistABIs,
-	createClient,
-	createIPFS,
-	createPinata,
-};
+export { Client, Options, createClient };
