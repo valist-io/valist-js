@@ -120,13 +120,13 @@ export default function ProjectPage():JSX.Element {
       if (releaseMeta.licenses && releaseMeta.licenses[0]) {
         const licenseName = releaseMeta.licenses[0];
         const licenseID = await valistCtx.getLicenseID(projectID, licenseName);
-        const price = await valistCtx.getPriceByID(licenseID);
+        const price = await valistCtx.getLicensePrice(teamName, projectName, licenseName);
         setLicensePrice(ethers.utils.formatEther(price));
         const balance = await valistCtx.getLicenseBalance(accountCtx.address, licenseID);
-        setLicenseBalance(balance);
+        setLicenseBalance(balance.toNumber());
       }
     })();
-  }, [accountCtx.address, projectID, releaseMeta.licenses, valistCtx]);
+  }, [accountCtx.address, projectName, teamName, projectID, releaseMeta.licenses, valistCtx]);
 
   const mintLicense = async () => {
     if (releaseMeta.licenses && releaseMeta.licenses[0] && accountCtx.address !== '0x0') {
@@ -138,7 +138,7 @@ export default function ProjectPage():JSX.Element {
           releaseMeta.licenses[0],
           accountCtx.address,
         );
-        toastID = accountCtx.notify('transaction', transaction.hash());
+        toastID = accountCtx.notify('transaction', transaction.hash);
         await transaction.wait();
         accountCtx.dismiss(toastID);
         accountCtx.notify('success');

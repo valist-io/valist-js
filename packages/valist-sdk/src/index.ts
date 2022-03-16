@@ -1,4 +1,4 @@
-import { Client, Options, createClient } from './client';
+import { Client, Options, createClient, Provider } from './client';
 
 export class TeamMeta {
 	/** team image */
@@ -48,4 +48,4 @@ export class LicenseMeta {
 	public external_url?: string;
 }
 
-export { Client, Options, createClient };
+export { Client, Options, createClient, Provider };

@@ -233,7 +233,7 @@ const CreatePage: NextPage = () => {
       );
 
       accountCtx.dismiss(toastID);
-      toastID = accountCtx.notify('transaction', transaction.hash());
+      toastID = accountCtx.notify('transaction', transaction.hash);
       await transaction.wait();
 
       setUserTeamNames([...userTeamNames, teamName]);
@@ -277,7 +277,7 @@ const CreatePage: NextPage = () => {
       );
 
       accountCtx.dismiss(toastID);
-      toastID = accountCtx.notify('transaction', transaction.hash());
+      toastID = accountCtx.notify('transaction', transaction.hash);
       await transaction.wait();
 
       accountCtx.dismiss(toastID);
@@ -322,7 +322,7 @@ const CreatePage: NextPage = () => {
       );
 
       accountCtx.dismiss(toastID);
-      toastID = accountCtx.notify('transaction', transaction.hash());
+      toastID = accountCtx.notify('transaction', transaction.hash);
       await transaction.wait();
       
       accountCtx.dismiss(toastID);
@@ -365,7 +365,7 @@ const CreatePage: NextPage = () => {
       );
 
       accountCtx.dismiss(toastID);
-      toastID = accountCtx.notify('transaction', transaction.hash());
+      toastID = accountCtx.notify('transaction', transaction.hash);
       await transaction.wait();
       
       accountCtx.dismiss(toastID);
