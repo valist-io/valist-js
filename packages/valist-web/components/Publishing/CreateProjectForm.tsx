@@ -60,7 +60,7 @@ ${props.projectMembers.join('\n')}
   useEffect(() => {
     const checkTeamName = async (projectName: string) => {
       try {
-        await valistCtx.contract.getProjectMetaURI(props.teamName, projectName);
+        await valistCtx.getProjectMetaURI(props.teamName, projectName);
       } catch (err: any) {
         if (JSON.stringify(err).includes("err-proj-not-exist")) {
           return false;
@@ -74,7 +74,7 @@ ${props.projectMembers.join('\n')}
       setValidName(!isNameTaken);
       props.setName(name);
     })();
-  }, [name, props.setName, valistCtx.contract]);
+  }, [name, props.setName, valistCtx]);
 
   // Handle member list change
   useEffect(() => {

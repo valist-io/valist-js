@@ -182,7 +182,7 @@ const CreatePage: NextPage = () => {
     (async () => {
       let licenses = [];
       try {
-        licenses = await valistCtx.contract.getLicenseNames(
+        licenses = await valistCtx.getLicenseNames(
           releaseTeam,
           releaseProject,
           0,
@@ -200,14 +200,14 @@ const CreatePage: NextPage = () => {
         console.log('err', err);
       }
     })();
-  }, [releaseProject, releaseTeam, valistCtx.contract, projectName, teamName]);
+  }, [releaseProject, releaseTeam, valistCtx, projectName, teamName]);
 
   // Wrap Valist Sdk calls for create (team, project release)
   const createTeam = async () => {
     let imgURL = "";
 
     if (teamImage) {
-      imgURL = await valistCtx.storage.writeFile(teamImage);
+      imgURL = await valistCtx.writeFile(teamImage);
     }
 
     const meta = {
@@ -251,7 +251,7 @@ const CreatePage: NextPage = () => {
     let imgURL = "";
 
     if (projectImage) {
-      imgURL = await valistCtx.storage.writeFile(projectImage);
+      imgURL = await valistCtx.writeFile(projectImage);
     }
 
     const project = new ProjectMeta();
@@ -294,7 +294,7 @@ const CreatePage: NextPage = () => {
     let imgURL = "";
 
     if (releaseImage) {
-      imgURL = await valistCtx.storage.writeFile(releaseImage);
+      imgURL = await valistCtx.writeFile(releaseImage);
     }
 
     const release = new ReleaseMeta();
@@ -303,7 +303,7 @@ const CreatePage: NextPage = () => {
 		release.description = releaseDescription;
     release.licenses = releaseLicense;
     const uploadToast = accountCtx.notify('text', 'Uploading files...');
-    release.external_url = await valistCtx.storage.writeFolder(releaseFiles);
+    release.external_url = await valistCtx.writeFolder(releaseFiles);
     accountCtx.dismiss(uploadToast);
   
     console.log("Release Team", releaseTeam);
@@ -339,7 +339,7 @@ const CreatePage: NextPage = () => {
     let imgURL = "";
 
     if (licenseImage) {
-      imgURL = await valistCtx.storage.writeFile(licenseImage);
+      imgURL = await valistCtx.writeFile(licenseImage);
     }
 
     const license = new LicenseMeta();

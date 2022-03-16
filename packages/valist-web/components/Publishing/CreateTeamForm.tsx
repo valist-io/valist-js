@@ -44,7 +44,7 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
   useEffect(() => {
     const checkTeamName = async (teamName: string) => {
       try {
-        await valistCtx.contract.getTeamMetaURI(teamName);
+        await valistCtx.getTeamMetaURI(teamName);
       } catch (err: any) {
         if (JSON.stringify(err).includes("err-team-not-exist")) {
           return false;
@@ -58,7 +58,7 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
       setValidName(!isNameTaken);
       props.setName(name);
     })();
-  }, [name, props.setName, valistCtx.contract]);
+  }, [name, props.setName, valistCtx]);
 
   useEffect(() => {
     (async () => {

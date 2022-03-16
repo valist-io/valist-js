@@ -188,6 +188,10 @@ export class Client {
 		return await this.valist.getReleaseID(projectID, releaseName);
 	}
 
+	async getLicenseBalance(address: string, licenseID: BigNumberish): Promise<BigNumber> {
+		return await this.license.balanceOf(address, licenseID);
+	}
+
 	async getLicensePrice(teamName: string, projectName: string, licenseName: string): Promise<BigNumber> {
 		const teamID = await this.getTeamID(teamName);
 		const projectID = await this.getProjectID(teamID, projectName);
@@ -257,28 +261,29 @@ export const licenseAddresses: {[chainID: number]: string} = {
 }
 
 export class Options {
+	public chainID: number = 137;
 	public metaTx = true;
-	public ipfsUrl = 'https://gateway.valist.io';
+	public ipfsHost = 'https://gateway.valist.io';
+	public ipfsGateway = 'https://gateway.valist.io';
 }
 
-export async function createClient(web3Provider: Provider, options: Options = new Options()): Promise<Client> {
+export function createClient(web3Provider: Provider, options: Options = new Options()): Client {
 	const signer = web3Provider.getSigner();
 	const provider = !signer.provider.connection.url.match(/meta|eip/) ? web3Provider : signer;
 
-	const chainID = await web3Provider.getSigner().getChainId();
-	const valistAddress = valistAddresses[chainID];
-	const licenseAddress = licenseAddresses[chainID];
+	const valistAddress = valistAddresses[options.chainID];
+	const licenseAddress = licenseAddresses[options.chainID];
 
 	const valist = new Contract(valistAddress, valist_contract.abi, provider);
 	const license = new Contract(licenseAddress, license_contract.abi, provider);
-	const ipfs = create({url: options.ipfsUrl});
+	const ipfs = create({url: options.ipfsHost});
 
 	return new Client(
 		valist,
 		license,
 		web3Provider,
 		ipfs,
-		options.ipfsUrl,
+		options.ipfsGateway,
 		options.metaTx
 	);
 }
