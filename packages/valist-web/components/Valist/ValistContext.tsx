@@ -16,7 +16,7 @@ export function createValistClient(provider: Provider) {
   };
 
   // read-only if the provider is not capable of signing
-  const signer = provider.connection.url.match(/meta|eip/) ? provider.getSigner() : null;
+  const signer = provider.connection.url.match(/meta|eip/) ? provider.getSigner() : undefined;
 
   return createClient(provider, signer, options);
 }
