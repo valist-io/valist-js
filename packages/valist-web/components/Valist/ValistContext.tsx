@@ -15,7 +15,10 @@ export function createValistClient(provider: Provider) {
     ipfsGateway: publicRuntimeConfig.IPFS_GATEWAY,
   };
 
-  return createClient(provider, options);
+  // read-only if the provider is not capable of signing
+  const signer = provider.connection.url.match(/meta|eip/) ? provider.getSigner() : null;
+
+  return createClient(provider, signer, options);
 }
 
 export default React.createContext<Client>(

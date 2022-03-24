@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { BigNumberish, BigNumber, Contract, PopulatedTransaction } from 'ethers';
+import { BigNumberish, BigNumber, Contract, PopulatedTransaction, Signer } from 'ethers';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { JsonRpcProvider, Web3Provider } from '@ethersproject/providers';
 import { IPFS } from 'ipfs-core-types';
@@ -9,8 +9,8 @@ import { create } from 'ipfs-http-client';
 import { TeamMeta, ProjectMeta, ReleaseMeta, LicenseMeta } from './index';
 import { sendMetaTx, sendTx } from './metatx';
 
-import * as valist_contract from './contract/Valist.json';
-import * as license_contract from './contract/License.json';
+import * as valistContract from './contract/Valist.json';
+import * as licenseContract from './contract/License.json';
 
 export type Provider = Web3Provider | JsonRpcProvider;
 
@@ -259,7 +259,7 @@ export const licenseAddresses: {[chainID: number]: string} = {
 	80001: '0x597bfcE7F9363b6eBc229f2023F9EcD716C88120',
 	// Polygon mainnet
 	137: '0xb85ed41d49Eba25aE6186921Ea63b6055903e810',
-}
+};
 
 export class Options {
 	public chainID = 137;
@@ -268,21 +268,18 @@ export class Options {
 	public ipfsGateway = 'https://gateway.valist.io';
 }
 
-export function createClient(web3Provider: Provider, options: Options = new Options()): Client {
-	const signer = web3Provider.getSigner();
-	const provider = !signer.provider.connection.url.match(/meta|eip/) ? web3Provider : signer;
-
+export function createClient(provider: Provider, signer?: Signer, options: Options = new Options()): Client {
 	const valistAddress = valistAddresses[options.chainID];
 	const licenseAddress = licenseAddresses[options.chainID];
 
-	const valist = new Contract(valistAddress, valist_contract.abi, provider);
-	const license = new Contract(licenseAddress, license_contract.abi, provider);
+	const valist = new Contract(valistAddress, valistContract.abi, signer || provider);
+	const license = new Contract(licenseAddress, licenseContract.abi, signer || provider);
 	const ipfs = create({url: options.ipfsHost});
 
 	return new Client(
 		valist,
 		license,
-		web3Provider,
+		provider,
 		ipfs,
 		options.ipfsGateway,
 		options.metaTx
