@@ -36,17 +36,17 @@ describe('valist client', async function() {
 		const valist_deploy = await valist_factory.deploy(ethers.constants.AddressZero);
 		await valist_deploy.deployed();
 
-    const license_deploy = await license_factory.deploy(valist_deploy.address, ethers.constants.AddressZero);
-    await license_deploy.deployed();
+		const license_deploy = await license_factory.deploy(valist_deploy.address, ethers.constants.AddressZero);
+		await license_deploy.deployed();
 
-    const valist = new Client(
-    	valist_deploy,
-    	license_deploy,
-    	provider,
-    	ipfs,
-    	'http://localhost:9090',
-    	false
-    );
+		const valist = new Client(
+			valist_deploy,
+			license_deploy,
+			provider,
+			ipfs,
+			'http://localhost:9090',
+			false
+		);
 
 		const address = await signer.getAddress();
 		const members = [address];

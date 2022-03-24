@@ -2,7 +2,8 @@ import axios from 'axios';
 import { BigNumberish, BigNumber, Contract, PopulatedTransaction } from 'ethers';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { JsonRpcProvider, Web3Provider } from '@ethersproject/providers';
-import * as types from 'ipfs-core-types';
+import { IPFS } from 'ipfs-core-types';
+import { ImportCandidate, ImportCandidateStream } from 'ipfs-core-types/src/utils';
 import { create } from 'ipfs-http-client';
 
 import { TeamMeta, ProjectMeta, ReleaseMeta, LicenseMeta } from './index';
@@ -18,7 +19,7 @@ export class Client {
 		private valist: Contract,
 		private license: Contract,
 		private provider: Provider,
-		private ipfs: types.IPFS,
+		private ipfs: IPFS,
 		private gateway: string,
 		private metaTx: boolean
 	) {}
@@ -216,12 +217,12 @@ export class Client {
 		return `${this.gateway}/ipfs/${cid.toString()}`;
 	}
 
-	async writeFile(data: File): Promise<string> {
+	async writeFile(data: ImportCandidate): Promise<string> {
 		const { cid } = await this.ipfs.add(data);
 		return `${this.gateway}/ipfs/${cid.toString()}`;
 	}
 
-	async writeFolder(data: File[]): Promise<string> {
+	async writeFolder(data: ImportCandidateStream): Promise<string> {
 		const opts = { wrapWithDirectory: true };
 		const cids: string[] = [];
 		for await (const res of this.ipfs.addAll(data, opts)) {
@@ -261,7 +262,7 @@ export const licenseAddresses: {[chainID: number]: string} = {
 }
 
 export class Options {
-	public chainID: number = 137;
+	public chainID = 137;
 	public metaTx = true;
 	public ipfsHost = 'https://gateway.valist.io';
 	public ipfsGateway = 'https://gateway.valist.io';
