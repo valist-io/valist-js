@@ -1,15 +1,19 @@
 import React from 'react';
 import { AccountCtxInterface } from '../../utils/Account/types';
+import { defaultProvider } from '../Valist/ValistContext';
 
 export default React.createContext<AccountCtxInterface>({
   magic: null,
   address: '0x0',
+  provider: defaultProvider,
   loginType: 'readOnly',
-  loginSuccessful: false,
+  loginTried: false,
   modal: false,
   resolveEns:() => { return new Promise(() => ''); },
   reverseEns:() => { return new Promise(() => ''); },
   resolveAddress:() => { return new Promise(() => ''); },
+  setLoginTried: () => {},
+  setProvider: () => {},
   setShowLogin: () => {},
   setLoginType: () => {},
   setAddress: () => {},

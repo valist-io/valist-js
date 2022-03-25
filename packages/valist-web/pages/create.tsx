@@ -1,6 +1,5 @@
 import { useLazyQuery } from '@apollo/client';
 import type { NextPage } from 'next';
-import getConfig from 'next/config';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import AccountContext from '../components/Accounts/AccountContext';
@@ -13,12 +12,14 @@ import PublishReleaseForm from '../components/Publishing/CreateReleaseForm';
 import ReleasePreview from '../components/Publishing/ReleasePreview';
 import TeamPreview from '../components/Publishing/TeamPreview';
 import ValistContext from '../components/Valist/ValistContext';
-import { USER_TEAMS } from '../utils/Apollo/queries';
+import { USER_HOMEPAGE } from '../utils/Apollo/queries';
 import CreateLicenseForm from '../components/Publishing/CreateLicenseForm';
 import LicensePreview from '../components/Publishing/LicensePreview';
 import { ReleaseMeta, LicenseMeta, ProjectMeta } from '@valist/sdk';
 import { BigNumberish } from 'ethers';
 import parseError from '../utils/Errors';
+import { getProjectNames, normalizeUserProjects } from '../utils/Apollo/normalization';
+import { Project } from '../utils/Apollo/types';
 
 type Member = {
   id: string,
@@ -28,7 +29,6 @@ const CreatePage: NextPage = () => {
   const accountCtx = useContext(AccountContext);
   const valistCtx = useContext(ValistContext);
   const router = useRouter();
-  const { publicRuntimeConfig } = getConfig();
 
   // Get sepcific action/task from query params
   let { action } = router.query;
@@ -45,8 +45,8 @@ const CreatePage: NextPage = () => {
   const [renderProject, setRenderProject] = useState<boolean>(false);
   const [renderRelease, setRenderRelease] = useState<boolean>(false);
   const [renderLicense, setRenderLicense] = useState<boolean>(false);
-  const [ getData, { data, loading, error }] = useLazyQuery(USER_TEAMS);
-  const [userTeams, setUserTeams] = useState<any>({});
+  const [ getData, { data, loading, error }] = useLazyQuery(USER_HOMEPAGE);
+  const [userTeams, setUserTeams] = useState<Record<string, Project[]>>({});
   const [userTeamNames, setUserTeamNames] = useState<any>([]);
   const [teamProjectNames, setTeamProjectNames] = useState<any>([]);
   const [teamsCreated, setTeamsCreated] = useState<number>(0);
@@ -68,7 +68,7 @@ const CreatePage: NextPage = () => {
   const [projectShortDescription, setProjectShortDescription] = useState<string>('');
   const [projectWebsite, setProjectWebsite] = useState<string>('');
   const [projectMembers, setProjectMembers] = useState<string[]>([]);
-  const [projectMembersParsed, setprojectMembersParsed] = useState<Member[]>([]);
+  const [projectMembersParsed, setProjectMembersParsed] = useState<Member[]>([]);
 
   // Release State
   const [releaseImage, setReleaseImage] = useState<File | null>(null);
@@ -97,44 +97,38 @@ const CreatePage: NextPage = () => {
     setView(action as string);
   }, [action]);
 
+  // Check if user is authenticated, prompt them to login if not logged in
   useEffect(() => {
     (async () => {
-      if (accountCtx.loginType === 'readOnly' && !accountCtx.loginSuccessful) {
+      if (accountCtx.loginType === 'readOnly' && accountCtx?.loginTried) {
         accountCtx.setShowLogin(true);
       }
       await getData({
         variables: { address: accountCtx.address.toLowerCase() },
       });
     })();
-  }, [accountCtx.address, getData, teamsCreated]);
+  }, [accountCtx.loginType, accountCtx?.loginTried, getData, teamsCreated, accountCtx]);
 
   // Set page state for user's teams and projects
   useEffect(() => {
-    if (data && data?.users && data?.users[0] && data?.users[0].teams) {
-      const rawTeams = data.users[0].teams;
-      const teamNames = [];
-      let teams:any = {};
+    if (data && data?.users && data?.users[0]) {
+      const { teamNames, teams } = normalizeUserProjects(
+        data.users[0].teams,
+        data.users[0].projects,
+      );
 
-      for (let i = 0; i < rawTeams.length; i++) {
-        teams[rawTeams[i].name] = rawTeams[i];
-        teamNames.push(rawTeams[i].name);
-      }
-      setUserTeams(teams);
       setUserTeamNames(teamNames);
+      setUserTeams(teams);
 
       if (teamNames.length > 0) {
         setProjectTeam(teamNames[0]);
         setReleaseTeam(teamNames[0]);
         setLicenseTeam(teamNames[0]);
-        if (data.users[0].teams[0].projects) {
-          const projectNames = [];
-          for (const name of data.users[0].teams[0].projects) {
-            projectNames.push(name.name);
-          }
-          setTeamProjectNames(projectNames);
-          setReleaseProject(projectNames[0]);
-          setLicenseProject(projectNames[0]);
-        }
+
+        const projectNames = getProjectNames(teams, teamNames[0]);
+        setTeamProjectNames(projectNames);
+        setReleaseProject(projectNames[0]);
+        setLicenseProject(projectNames[0]);
       }
     }
   }, [data]);
@@ -143,29 +137,23 @@ const CreatePage: NextPage = () => {
   useEffect(() => {
     (async () => {
       if (releaseTeam) {
-        const projectNames = [];
-        for (const name of userTeams[releaseTeam].projects) {
-          projectNames.push(name.name);
-        }
+        const projectNames = getProjectNames(userTeams, releaseTeam);
         setTeamProjectNames(projectNames);
         setReleaseProject(projectNames[0] || '');
       }
     })();
   }, [releaseTeam, userTeams]);
 
-    // If the selected licenseTeam changes set the projectNames under that team
-    useEffect(() => {
-      (async () => {
-        if (licenseTeam) {
-          const projectNames = [];
-          for (const name of userTeams[licenseTeam].projects) {
-            projectNames.push(name.name);
-          }
-          setTeamProjectNames(projectNames);
-          setLicenseProject(projectNames[0] || '');
-        }
-      })();
-    }, [licenseTeam, userTeams]);
+  // If the selected licenseTeam changes set the projectNames under that team
+  useEffect(() => {
+    (async () => {
+      if (licenseTeam) {
+        const projectNames = getProjectNames(userTeams, licenseTeam);
+        setTeamProjectNames(projectNames);
+        setLicenseProject(projectNames[0] || '');
+      }
+    })();
+  }, [licenseTeam, userTeams]);
 
   // Normalize teamMember data for TeamPreview component
   useEffect(() => {
@@ -186,10 +174,10 @@ const CreatePage: NextPage = () => {
         id: projectMember,
       });
     }
-    setprojectMembersParsed(members);
+    setProjectMembersParsed(members);
   }, [projectMembers]);
 
-  // Query available project names if team or project change
+  // Query available license names if team or project change
   useEffect(() => {
     (async () => {
       let licenses = [];
@@ -249,6 +237,7 @@ const CreatePage: NextPage = () => {
       await transaction.wait();
 
       setUserTeamNames([...userTeamNames, teamName]);
+      setProjectTeam(teamName);
       accountCtx.dismiss(toastID);
       accountCtx.notify('success');
       router.push('/create?action=project');

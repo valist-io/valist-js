@@ -27,7 +27,7 @@ export default function TeamPreview(props: TeamPreviewProps) {
     <div>
       <TeamProfileCard 
         view={view}
-        tabs={['Projects', 'Members']} 
+        tabs={[{ text: 'Projects', disabled: false }, { text: 'Members', disabled: false }]} 
         setView={setView}
         teamName={name} 
         teamImage={imgUrl}

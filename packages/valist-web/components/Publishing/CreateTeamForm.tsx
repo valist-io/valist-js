@@ -1,4 +1,3 @@
-import { ethers } from "ethers";
 import { useContext, useEffect, useState } from "react";
 import { SetUseState } from "../../utils/Account/types";
 import { shortnameFilterRegex } from "../../utils/Validation";
@@ -47,7 +46,7 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
       try {
         await valistCtx.contract.getTeamMetaURI(teamName);
       } catch (err: any) {
-        if (err?.data?.message.includes("execution reverted: err-team-not-exist")) {
+        if (JSON.stringify(err).includes("err-team-not-exist")) {
           return false;
         }
       }
@@ -99,7 +98,6 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
   }, [beneficiary, props.setBeneficiary, accountCtx.resolveAddress]);
 
   useEffect(() => {
-    console.log('name', name, 'valid', validName, 'beneficary', validBeneficiary, 'valid members', validMemberList);
     if (name && validName && validBeneficiary && validMemberList) {
       setFormValid(true);
     } else {

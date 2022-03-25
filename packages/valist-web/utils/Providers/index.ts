@@ -15,8 +15,8 @@ declare global {
 
 export const newMagic = () => {
   const customNodeOptions = {
-    rpcUrl: publicRuntimeConfig.MAGIC_RPC || publicRuntimeConfig.WEB3_PROVIDER,
-    chainId: publicRuntimeConfig.CHAIN_ID
+    rpcUrl: publicRuntimeConfig.WEB3_PROVIDER,
+    chainId: publicRuntimeConfig.CHAIN_ID,
   };
 
   return new Magic(publicRuntimeConfig.MAGIC_PUBKEY, { network: customNodeOptions });
@@ -32,6 +32,7 @@ export const providers = {
   walletConnect: async ({}) => {
     const wc = new WalletConnectProvider({
       rpc: {
+        137: publicRuntimeConfig.WEB3_PROVIDER,
         80001: publicRuntimeConfig.WEB3_PROVIDER,
       },
     });
@@ -68,7 +69,7 @@ export const providers = {
 
 const networks: Record<string, any> = {
   polygon: {
-    chainId: "137",
+    chainId: "0x89",
     chainName: "Polygon",
     nativeCurrency: {
         name: 'Polygon',
@@ -89,9 +90,9 @@ const networks: Record<string, any> = {
     rpcUrls: ["https://rpc-mumbai.maticvigil.com/v1"],
     blockExplorerUrls: ["https://mumbai.polygonscan.com"],
   },
-}
+};
 
-const addNetwork = async (provider: ValistProvider, network: string) => {
+export const addNetwork = async (provider: ValistProvider, network: string) => {
   try {
     await provider.send("wallet_addEthereumChain", [networks[network]]);
   } catch (err) {

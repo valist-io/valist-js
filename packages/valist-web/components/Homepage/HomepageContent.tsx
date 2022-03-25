@@ -3,11 +3,11 @@ import { License } from '../../utils/Valist/types';
 import LicenseList from '../Licenses/LicenseList';
 import LogTable from '../Logs/LogTable';
 import ProjectList from '../Projects/ProjectList';
-import TeamList from '../Teams/TeamList';
+import EmptyProjectList from '../Projects/EmptyProjects';
+import EmptyTeams from '../Teams/EmptyTeams';
 
 interface ReleaseListProps {
   userProjects: Project[]
-  userTeams: Project[]
   userLicenses: License[],
   address: string,
   view: string,
@@ -16,16 +16,18 @@ interface ReleaseListProps {
 export default function HomepageContent(props: ReleaseListProps): JSX.Element {
   const getHomepageView = (view: string) => {
     switch (view) {
+      case "EmptyTeams": 
+        return <EmptyTeams />;
+      case 'EmptyProjects':
+        return <EmptyProjectList />;
       case 'Projects':
-        return <ProjectList linksDisabled={false} projects={props.userProjects}/>;
-      case 'Accounts/Teams':
-          return <TeamList teams={props.userTeams} linksDisabled={false} />;
+        return <ProjectList linksDisabled={false} projects={props.userProjects} />;
       case 'Activity':
         return <LogTable  address={props.address} />;
       case 'Licenses':
         return <LicenseList licenses={props.userLicenses} />;
       default:
-        return <ProjectList linksDisabled={false} projects={props.userProjects}/>;
+        return <EmptyTeams />;
     }
   };
 

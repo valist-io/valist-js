@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useQuery } from "@apollo/client";
 import { Log } from '../../utils/Apollo/types';
 import LogText from "./LogText";
@@ -13,6 +13,7 @@ interface LogCardProps {
   team?: string,
   project?: string,
   address?: string,
+  initialLogs?: {id: string, sender?: string}[]
 }
 
 export default function LogCard(props: LogCardProps) {
@@ -33,6 +34,7 @@ export default function LogCard(props: LogCardProps) {
 
   const { data, loading, error } = useQuery(query, { variables });
   const [ logs, setLogs ] = useState<Log[]>([]);
+  const isInitialLogs = (data && data?.logs.length === 0 && props.initialLogs?.length !== 0);
 
   useEffect(() => {
     if (data && data.logs) {
@@ -49,18 +51,33 @@ export default function LogCard(props: LogCardProps) {
           </h2>
           <div className="flow-root">
             <ul role="list" className="divide-y divide-gray-200">
-              {logs.map((log) => (
-                <li key={log.id} className="py-4">
-                  <div className="flex-1 space-y-1">
-                    <p className="text-sm">
-                      <LogText log={log} />
-                    </p>
-                    <a href={`https://polygonscan.com//tx/${log.id}`} className="text-sm text-gray-500">
-                      view transaction
-                    </a>
-                  </div>
-                </li>
-              ))}
+              {(props.initialLogs) && isInitialLogs ? 
+               <Fragment >
+                {props.initialLogs.map((log) => (
+                  <li key={log.id} className="py-4">
+                    <div className="flex-1 space-y-1">
+                      <p className="text-sm font-medium">
+                        Connected with {log.sender}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </Fragment>
+              :
+              <Fragment >
+                {logs.map((log) => (
+                  <li key={log.id} className="py-4">
+                    <div className="flex-1 space-y-1">
+                      <p className="text-sm">
+                        <LogText log={log} />
+                      </p>
+                      <a href={`https://polygonscan.com//tx/${log.id}`} className="text-sm text-gray-500">
+                        view transaction
+                      </a>
+                    </div>
+                  </li>
+                ))}
+              </Fragment>}
             </ul>
           </div>
         </div>
