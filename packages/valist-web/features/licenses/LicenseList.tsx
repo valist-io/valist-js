@@ -1,19 +1,17 @@
 import { ClipboardIcon } from "@heroicons/react/outline";
 import { useContext } from "react";
 import { truncate } from "../../utils/Formatting/truncate";
+import { notify } from "../../utils/Notifications";
 import { License } from "../../utils/Valist/types";
-import AccountContext from "../Accounts/AccountContext";
 
 interface LicenseListProps {
   licenses: License[];
 }
 
 export default function LicenseList(props: LicenseListProps) {
-  const accountCtx = useContext(AccountContext);
-
   const handleIDClick = async (id: string) => {
     await navigator.clipboard.writeText(id);
-    accountCtx.notify('message', 'Token ID copied to clipboard!');
+    notify('message', 'Token ID copied to clipboard!');
   };
   
   return (
