@@ -1,8 +1,7 @@
-import config from "next/config";
 import { useState } from "react";
 import { Member } from "../../utils/Apollo/types";
-import ProjectProfileCard from "../Projects/ProjectProfileCard";
 import ProjectContent from "./ProjectContent";
+import ProjectProfileCard from "./ProjectProfileCard";
 
 interface ProjectPreviewProps {
   teamName: string,
@@ -37,10 +36,18 @@ export default function ProjectPreview(props: ProjectPreviewProps) {
         setView={setView} />
       <div className="mt-4">
        <ProjectContent 
-        view={view} 
-        teamName={props.teamName} 
-        description={projectDescription}
-        members={props.projectMembers} />
+          view={view}
+          teamName={props.teamName}
+          projectMeta={
+            {
+              name: props.projectName,
+              description: props.projectDescription,
+            }
+          }
+          members={props.projectMembers} 
+          projectName={props.projectName} 
+          projectReleases={[]} 
+          releaseMeta={{}} />
       </div>
     </div>
   );

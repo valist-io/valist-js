@@ -1,39 +1,34 @@
 import { useContext, useEffect, useState } from "react";
+import { useAppDispatch } from "../../app/hooks";
+import ImageUpload from "../../components/Images/ImageUpload";
+import Tooltip from "../../components/Tooltip";
 import { SetUseState } from "../../utils/Account/types";
 import { shortnameFilterRegex } from "../../utils/Validation";
-import AccountContext from "../Accounts/AccountContext";
-import ImageUpload from "../Images/ImageUpload";
-import ValistContext from "../Valist/ValistContext";
-import Tooltip from "./Tooltip";
+import ValistContext from "../valist/ValistContext";
+import Web3Context from "../valist/Web3Context";
+import { setDescription, setMembers, setName, setShortDescription, setTeam, setWebsite } from "./projectSlice";
 
 interface CreateProjectFormProps {
-  teamName: string,
-  projectName: string,
-  projectDescription: string,
-  projectWebsite: string,
-  projectMembers: string[],
-  userTeams: string[],
-  setView: SetUseState<string>,
-  setRenderTeam: SetUseState<boolean>,
-  setName: SetUseState<string>,
-  setImage: SetUseState<File | null>,
-  setDescription: SetUseState<string>,
-  setShortDescription: SetUseState<string>,
-  setWebsite: SetUseState<string>,
-  setMembers: SetUseState<string[]>,
-  setTeam: SetUseState<string>,
-  submit: () => void
+  teamName: string;
+  projectName: string;
+  projectDescription: string;
+  projectWebsite: string;
+  projectMembers: string[];
+  userTeams: string[];
+  setImage: SetUseState<File | null>;
+  submit: () => void;
 }
 
 export default function CreateProjectForm(props: CreateProjectFormProps) {
   const errorStyle = 'border-red-300 placeholder-red-400 focus:ring-red-500 focus:border-red-500';
   const normalStyle = 'border-gray-300 placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500';
 
-  const accountCtx = useContext(AccountContext);
+  const web3Ctx = useContext(Web3Context);
   const valistCtx = useContext(ValistContext);
+  const dispatch = useAppDispatch();
 
   const [memberText, setMemberText] = useState<string>('');
-  const [name, setName] = useState<string>('');
+  const [_name, _setName] = useState<string>('');
   const [cleanName, setCleanName] = useState<string>('');
 
   const [validName, setValidName] = useState<boolean>(false);
@@ -58,7 +53,7 @@ ${props.projectMembers.join('\n')}
 
   // Handle project name change check onBlur
   useEffect(() => {
-    const checkTeamName = async (projectName: string) => {
+    const checkProjectName = async (projectName: string) => {
       try {
         await valistCtx.contract.getProjectMetaURI(props.teamName, projectName);
       } catch (err: any) {
@@ -70,11 +65,11 @@ ${props.projectMembers.join('\n')}
     };
 
     (async () => {
-      let isNameTaken = name?.length > 0 && await checkTeamName(name);
+      let isNameTaken = _name?.length > 0 && await checkProjectName(_name);
       setValidName(!isNameTaken);
-      props.setName(name);
+      dispatch(setName(_name));
     })();
-  }, [name, props.setName, valistCtx.contract]);
+  }, [_name, dispatch, props.teamName, valistCtx.contract]);
 
   // Handle member list change
   useEffect(() => {
@@ -83,27 +78,28 @@ ${props.projectMembers.join('\n')}
       let members: string[] = [];
 
       for (const member of membersList) {
-        let address = await accountCtx.resolveAddress(member);
+        console.log('member', member);
+        let address = await web3Ctx.isValidAddress(member);
         if (address) members.push(address);
       }
 
       console.log('resolved addresses', members);
       
       setValidMemberList(true);
-      props.setMembers(members);
+      dispatch(setMembers(members));
 
       setLoading(false);
     })();
-  }, [memberText, props.setMembers, accountCtx.resolveAddress]);
+  }, [dispatch, memberText, web3Ctx.isValidAddress]);
 
   // Handle form valid check
   useEffect(() => {
-    if (name && validName && validMemberList) {
+    if (_name && validName && validMemberList) {
       setFormValid(true);
     } else {
       setFormValid(false);
     }
-  }, [name, validName, validMemberList]);
+  }, [_name, validName, validMemberList]);
   
   return (
     <form className="grid grid-cols-1 gap-y-6 sm:gap-x-8" action="#" method="POST">
@@ -112,7 +108,7 @@ ${props.projectMembers.join('\n')}
           <label htmlFor="projectType" className="block text-sm leading-5 font-medium text-gray-700">
             Account or Team <span className="float-right"><Tooltip text='The team where this project will be published.' /></span>
           </label>
-          <select onChange={(e) => props.setTeam(e.target.value)}
+          <select onChange={(e) => dispatch(setTeam(e.target.value))}
           id="projectType" className="mt-1 form-select block w-full pl-3 pr-10 py-2
           text-base leading-6 border-gray-300 focus:outline-none focus:shadow-outline-blue
           focus:border-blue-300 sm:text-sm sm:leading-5">
@@ -132,7 +128,7 @@ ${props.projectMembers.join('\n')}
             name="name"
             type="text"
             onChange={(e) => setCleanName(e.target.value.toLowerCase().replace(shortnameFilterRegex, ''))}
-            onBlur={(e) => setName(e.target.value.toLowerCase().replace(shortnameFilterRegex, ''))}
+            onBlur={(e) => _setName(e.target.value.toLowerCase().replace(shortnameFilterRegex, ''))}
             value={cleanName}
             required
             className={`${validName ? normalStyle : !cleanName ? normalStyle : errorStyle}
@@ -153,7 +149,7 @@ ${props.projectMembers.join('\n')}
             id="website"
             name="website"
             type="text"
-            onChange={(e) => props.setWebsite(e.target.value)}
+            onChange={(e) => dispatch(setWebsite(e.target.value))}
             placeholder='Website URL'
             required
             className="appearance-none block w-full px-3 py-2 border border-gray-300 
@@ -172,7 +168,7 @@ ${props.projectMembers.join('\n')}
             id="shortDescription"
             name="shortDescription"
             type="text"
-            onChange={(e) => props.setShortDescription(e.target.value)}
+            onChange={(e) => dispatch(setShortDescription(e.target.value))}
             placeholder='A short description'
             required
             className="appearance-none block w-full px-3 py-2 border border-gray-300 
@@ -190,7 +186,7 @@ ${props.projectMembers.join('\n')}
           <textarea
             id="description"
             name="description"
-            onChange={(e) => props.setDescription(e.target.value)}
+            onChange={(e) => dispatch(setDescription(e.target.value))}
             rows={4}
             className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block 
             w-full sm:text-sm border border-gray-300 rounded-md"

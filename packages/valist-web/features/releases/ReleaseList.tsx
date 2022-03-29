@@ -1,4 +1,3 @@
-import getConfig from 'next/config';
 import { Release } from '../../utils/Apollo/types';
 
 interface ReleaseListProps {
@@ -8,8 +7,6 @@ interface ReleaseListProps {
 }
 
 export default function ReleaseList(props: ReleaseListProps): JSX.Element {
-  const { teamName, projectName, projectReleases } = props;
-  const { publicRuntimeConfig } = getConfig();
   return (
     <div className="flex flex-col">
       <div className="-my-2 sm:-mx-6 lg:-mx-8">
@@ -34,7 +31,7 @@ export default function ReleaseList(props: ReleaseListProps): JSX.Element {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {projectReleases.map((release: Release) => (
+                {props.projectReleases.map((release: Release) => (
                   <tr key={release.metaURI}>
                     <td className="px-4 py-4 whitespace-nowrap text-left text-sm font-medium text-gray-900">
                       {release.name}
