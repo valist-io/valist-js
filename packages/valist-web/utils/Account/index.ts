@@ -1,78 +1,5 @@
-import { ethers } from 'ethers';
-import { Magic } from 'magic-sdk';
-import { addressFromProvider, providers } from '../Providers';
-import { ProviderParams } from '../Providers/types';
-import { SetUseState, LoginType, ValistProvider } from './types';
-
-export const logout = async (
-  setLoginType: SetUseState<LoginType>,
-  setAddress: SetUseState<string>,
-  setProvider: SetUseState<ValistProvider>,
-  magic: Magic | null,
-) => {
-  window.localStorage.setItem('loginType', 'readOnly');
-  if (magic && magic?.user) {
-    await magic.user.logout();
-  }
-  setAddress('0x0');
-  setLoginType('readOnly');
-};
-
-export const login = async (
-  loginType: LoginType,
-  setLoginType: SetUseState<LoginType>, 
-  setProvider: SetUseState<ValistProvider>,
-  setAddress: SetUseState<string>,
-  setLoginTried: SetUseState<boolean>,
-  setMagic: SetUseState<Magic | null>,
-  email: string,
-) => {
-  try {
-    let account = '0x0';
-    let params: ProviderParams = { email: '', setMagic: () => {} };
-
-    if (loginType === 'magic') {
-      params = { 
-        email,
-        setMagic, 
-      };
-    }
-
-    const providerURL = await providers[loginType](params);
-
-    if (loginType != 'readOnly') {
-      const provider = new ethers.providers.Web3Provider(
-        providerURL,
-      );
-      account = await addressFromProvider(provider);
-      window.localStorage.setItem('loginType', loginType);
-      setProvider(provider);
-      setAddress(account);
-      setLoginType(loginType);
-    }
-
-    setLoginTried(true);
-  } catch (err) {}
-};
-
-export const onAccountChanged = (
-  setLoginType: SetUseState<LoginType>,
-  setProvider: SetUseState<ValistProvider>,
-  setAddress: SetUseState<string>,
-  setLoginTried: SetUseState<boolean>,
-  email: string,
-) => {
-  if (window && window.ethereum) {
-    ['accountsChanged', 'chainChanged'].forEach((event) => {
-      window.ethereum.on(event, () => {
-        const loginType = (localStorage.getItem('loginType') as LoginType);
-        if (loginType === 'metaMask') {
-          login(loginType, setLoginType, setProvider, setAddress, setLoginTried, ()=>{}, email);
-        }
-      });
-    });
-  };
-};
+import { LoginType } from './types';
+import { Client, Contract, Storage } from '@valist/sdk';
 
 export const checkLoggedIn = (required:boolean, loginType:LoginType) => {
   if (required) {
@@ -80,3 +7,15 @@ export const checkLoggedIn = (required:boolean, loginType:LoginType) => {
   }
   return true;
 };
+
+export function createValistClient(provider: Contract.EVM_Provider) {
+  const chainID = 137;
+  const metaTx = true;
+  const ipfsGateway = 'https://gateway.valist.io';
+  const pinataJWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiIwZWQ5M2NjNy1mMjI3LTRjNTAtOTZjMS1jYThiOTYxODViOTEiLCJlbWFpbCI6ImFsZWNAdmFsaXN0LmlvIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsInBpbl9wb2xpY3kiOnsicmVnaW9ucyI6W3siaWQiOiJOWUMxIiwiZGVzaXJlZFJlcGxpY2F0aW9uQ291bnQiOjF9XSwidmVyc2lvbiI6MX0sIm1mYV9lbmFibGVkIjpmYWxzZX0sImF1dGhlbnRpY2F0aW9uVHlwZSI6InNjb3BlZEtleSIsInNjb3BlZEtleUtleSI6IjM3MGVjNWE2M2Y5ZmRiNjIwNzBlIiwic2NvcGVkS2V5U2VjcmV0IjoiZGNlMTE1Y2I2NWMwNWJiNmUzZmU4NGVkMWY0N2IxYjczYzEwYTBhNWJhZDk3YTYxOWYzZDk2MWFmNGEyY2E4NCIsImlhdCI6MTY0NjM3MTMyOX0.rEsRZzy2choMl4GXqt1H9pXl4Lp0rAZJJCBNenu-PcM"
+
+  const options = new Contract.EVM_Options(chainID, metaTx);
+  const contract = new Contract.EVM(options, provider);
+  const storage = new Storage.Pinata(pinataJWT, ipfsGateway);
+  return new Client(contract, storage);
+}

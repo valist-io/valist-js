@@ -1,19 +1,16 @@
 /* eslint-disable @next/next/no-img-element */
-import MagicLogin from "./MagicLogin";
-import { LoginType, SetUseState, ValistProvider } from '../../utils/Account/types';
+import { LoginType } from '../../utils/Account/types';
 import { useContext, useState } from "react";
-import { login } from "../../utils/Account";
-import AccountCtx from './AccountContext';
+import { useAppDispatch } from "../../app/hooks";
+import { login } from "./accountsSlice";
+import { close } from "../modal/modalSlice"
+import MagicLogin from './MagicLogin';
+import Web3Context from '../valist/Web3Context';
 
 type LoginButton = {
-  loginType: LoginType,
-  img: string,
-  spacer: boolean
-}
-
-interface LoginFormProps {
-  setProvider: SetUseState<ValistProvider>;
-  setAddress: SetUseState<string>;
+  loginType: LoginType;
+  img: string;
+  spacer: boolean;
 }
 
 const loginButtons:LoginButton[] = [
@@ -22,21 +19,22 @@ const loginButtons:LoginButton[] = [
   { loginType: 'walletConnect', img: '/images/walletConnect.jpeg', spacer: false },
 ];
 
-export default function LoginForm(props: LoginFormProps) {
-  const accountCtx = useContext(AccountCtx);
+export default function LoginForm() {
+  const dispatch = useAppDispatch();
   const [email, setEmail] = useState<string>('');
+  const web3Ctx = useContext(Web3Context);
   
   const handleLogin = async (loginType: LoginType) => {
-    login( 
+    dispatch(
+      login({
         loginType,
-        accountCtx.setLoginType, 
-        props.setProvider,  
-        props.setAddress,
-        accountCtx.setLoginTried,
-        accountCtx.setMagic,
         email,
+        setProvider:  web3Ctx.setValist,
+        setMagic: web3Ctx.setMagic,
+      }),
     );
-    accountCtx.setShowLogin(false);
+    
+    dispatch(close());
   };
 
   return (
@@ -64,12 +62,12 @@ export default function LoginForm(props: LoginFormProps) {
                                     <span className="w-full inline-flex rounded-md shadow-sm">
                                     {!loginButton.spacer && 
                                         <button onClick={async () => handleLogin(loginButton.loginType)} type="button"
-                                            className="w-full flex justify-center align-center m-auto items-center py-2 px-4 border
-                                            border-gray-300 rounded-md bg-white text-sm leading-5 font-medium
-                                            text-gray-500 hover:text-gray-400 focus:outline-none
-                                            focus:border-blue-300 focus:shadow-outline-blue transition
-                                            duration-150 ease-in-out" aria-label="Sign in with GitHub">
-                                            <img alt="Login" width="85px" src={loginButton.img}/>
+                                          className="w-full flex justify-center align-center m-auto items-center py-2 px-4 border
+                                          border-gray-300 rounded-md bg-white text-sm leading-5 font-medium
+                                          text-gray-500 hover:text-gray-400 focus:outline-none
+                                          focus:border-blue-300 focus:shadow-outline-blue transition
+                                          duration-150 ease-in-out" aria-label="Sign in with GitHub">
+                                          <img alt="Login" width="85px" src={loginButton.img}/>
                                         </button>
                                     }
                                     {loginButton.spacer && 

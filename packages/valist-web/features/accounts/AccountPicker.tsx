@@ -3,7 +3,8 @@ import { Menu, Transition } from '@headlessui/react';
 import {
   ChevronDownIcon,
 } from '@heroicons/react/solid';
-import { SetUseState } from '../../utils/Account/types';
+import { useAppDispatch } from '../../app/hooks';
+import { setCurrentAccount } from './accountsSlice';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
@@ -12,10 +13,11 @@ function classNames(...classes: string[]) {
 interface AccountPickerProps {
   accountNames: string[];
   userAccount: string;
-  setUserAccount: SetUseState<string>;
 }
 
 export default function AccountPicker(props: AccountPickerProps) {
+  const dispatch = useAppDispatch();
+
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
@@ -44,7 +46,7 @@ export default function AccountPicker(props: AccountPickerProps) {
                       active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
                       'group flex items-center px-4 py-2 text-sm',
                     )}
-                    onClick={() => props.setUserAccount(name)}
+                    onClick={() => dispatch(setCurrentAccount(name))}
                   >
                     {name}
                   </div>
