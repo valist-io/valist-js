@@ -1,8 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from 'next/link';
+import Tabs, { Tab } from '../../components/Tabs';
 import { SetUseState } from '../../utils/Account/types';
-import AddressIdenticon from '../Identicons/AddressIdenticon';
-import Tabs, { Tab } from '../Tabs';
+import AddressIdenticon from '../../components/Identicons/AddressIdenticon';
 
 interface ProjectProfileCardProps {
   teamName: string,

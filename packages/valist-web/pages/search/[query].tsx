@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import Layout from '../../components/Layouts/Main';
-import ProjectListCard from '../../components/Projects/ProjectListCard';
+import ProjectListCard from '../../features/projects/ProjectListCard';
 import { PROJECT_SEARCH_QUERY } from '../../utils/Apollo/queries';
 import { Project } from '../../utils/Apollo/types';
 

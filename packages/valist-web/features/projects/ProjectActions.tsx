@@ -15,10 +15,6 @@ interface ProjectActionsProps {
 }
 
 const ProjectActions = (props: ProjectActionsProps) => {
-  const {
-    teamName, projectName,
-  } = props;
-
   const renderButton =  () => {
     if (props.licensePrice  === null || props.licenseBalance > 0) {
       return (
