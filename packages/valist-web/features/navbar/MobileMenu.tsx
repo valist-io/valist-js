@@ -1,7 +1,7 @@
 import { Popover } from "@headlessui/react";
 import { truncate } from "../../utils/Formatting/truncate";
 import { ActionItem, NavItem } from "./types";
-import AddressIdenticon from "../Identicons/AddressIdenticon";
+import AddressIdenticon from "../../components/Identicons/AddressIdenticon";
 import { Fragment } from "react";
 import { LoginType } from "../../utils/Account/types";
 import { checkLoggedIn } from "../../utils/Account";
