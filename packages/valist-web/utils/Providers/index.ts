@@ -1,45 +1,47 @@
 import WalletConnectProvider from '@walletconnect/web3-provider';
+import { Web3Provider } from "@ethersproject/providers";
 import { MetaMaskInpageProvider } from "@metamask/providers";
-import { Magic } from 'magic-sdk';
-import getConfig from 'next/config';
-import { SetUseState } from '../Account/types';
-import { ValistProvider } from '../Account/types';
-
-const { publicRuntimeConfig } = getConfig();
+import { ethers } from "ethers";
+import { Magic } from "magic-sdk";
+import { SetUseState, ValistProvider } from '../Account/types';
+import { Client } from '@valist/sdk';
 
 declare global {
   interface Window {
     ethereum: MetaMaskInpageProvider;
+    valist?: Client;
   }
 }
 
 export const newMagic = () => {
   const customNodeOptions = {
-    rpcUrl: publicRuntimeConfig.WEB3_PROVIDER,
-    chainId: publicRuntimeConfig.CHAIN_ID,
+    rpcUrl: 'https://polygon-rpc.com',
+    chainId: 137,
   };
 
-  return new Magic(publicRuntimeConfig.MAGIC_PUBKEY, { network: customNodeOptions });
+  return new Magic('pk_live_631BA2340BB9ACD8', { network: customNodeOptions });
 };
 
-export const addressFromProvider = async (provider: any) => {
+export const defaultProvider = new ethers.providers.JsonRpcProvider("https://rpc.valist.io/polygon");
+
+export const addressFromProvider = async (provider: Web3Provider) => {
   const signer = provider.getSigner();
   const account = await signer.getAddress();
   return account;
 };
 
-export const providers = {
-  walletConnect: async ({}) => {
+export const providers:Record<any, any> = {
+  walletConnect: async () => {
     const wc = new WalletConnectProvider({
       rpc: {
-        137: publicRuntimeConfig.WEB3_PROVIDER,
-        80001: publicRuntimeConfig.WEB3_PROVIDER,
+        137: 'https://rpc.valist.io/polygon',
+        80001: 'https://rpc.valist.io/polygon',
       },
     });
     await wc.enable();    //  Enable session (triggers QR Code modal)
     return wc;
   },
-  metaMask: async ({}) => {
+  metaMask: async () => {
     try {
       await window.ethereum.request({ method: 'eth_requestAccounts' });
     } catch(err) {
@@ -48,22 +50,24 @@ export const providers = {
       
     return window.ethereum;
   },
-  magic: async (params: {email: string | null, setMagic: SetUseState<Magic | null>}) => {
+  magic: async (params: {email: string, setMagic: SetUseState<Magic | null>}) => {
     const { email } = params;
     const magic = newMagic();
 
     try {
       const magicLoggedIn = await magic.user.isLoggedIn();
-      if (!magicLoggedIn && email) {
+      if (!magicLoggedIn) {
         await magic.auth.loginWithMagicLink({ email });
       }
-    }catch(err){}
+    } catch(err){
+      console.log(err)
+    }
 
     params.setMagic(magic);
     return magic.rpcProvider;
   },
-  readOnly: async ({}) => {
-    return publicRuntimeConfig.WEB3_PROVIDER;
+  readOnly: async () => {
+    return "https://rpc.valist.io/polygon"
   },
 };
 
