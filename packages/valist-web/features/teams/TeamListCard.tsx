@@ -1,8 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 import React, { useContext, useEffect, useState } from 'react';
+import { notify } from '../../utils/Notifications';
 import { TeamMeta } from '../../utils/Valist/types';
-import AddressIdenticon from '../Identicons/AddressIdenticon';
-import AccountContext from '../Accounts/AccountContext';
+import AddressIdenticon from '../../components/Identicons/AddressIdenticon';
 
 type TeamListCardProps = {
   teamName: string,
@@ -10,7 +10,6 @@ type TeamListCardProps = {
 };
 
 export default function TeamListCard({ teamName, metaURI }: TeamListCardProps): JSX.Element {
-  const accountCtx = useContext(AccountContext);
   let [ meta, setMeta ] = useState<TeamMeta>({
     image: '',
   });
@@ -24,12 +23,12 @@ export default function TeamListCard({ teamName, metaURI }: TeamListCardProps): 
         } catch (err) {
           console.log("Failed to fetch team metadata.", err);
           console.log(metaURI);
-          accountCtx.notify('error', String(err));
+          notify('error', String(err));
         }
       }
     };
     fetchTeamMeta(metaURI);
-  }, [accountCtx, metaURI]);
+  }, [metaURI]);
 
   return (
     <div style={{ height: '116px' }} className="bg-white rounded-lg shadow px-6 py-6 mb-2 border-2 hover:border-indigo-500 cursor-pointer">
@@ -38,7 +37,7 @@ export default function TeamListCard({ teamName, metaURI }: TeamListCardProps): 
           {meta.image ?
             <div className="flex-shrink-0 mx-auto rounded-full overflow-hidden" style={{ height: 50, width: 50 }} >
               <img className='rounded-full' src={meta.image} alt="Profile Pic" /> 
-            </div>      
+            </div>
             :
             <AddressIdenticon address={teamName} height={50} width={50} />
           }

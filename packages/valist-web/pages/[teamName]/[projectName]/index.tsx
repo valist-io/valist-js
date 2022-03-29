@@ -1,31 +1,36 @@
 import { useQuery } from "@apollo/client";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import Layout from "../../../components/Layouts/Main";
-import ProjectContent from "../../../components/Projects/ProjectContent";
-import ProjectMetaCard from "../../../components/Projects/ProjectMetaCard";
-import ProjectProfileCard from "../../../components/Projects/ProjectProfileCard";
+import { BigNumberish, ethers } from "ethers";
+import ProjectActions from "../../../features/projects/ProjectActions";
 import { PROJECT_PROFILE_QUERY } from "../../../utils/Apollo/queries";
 import { Member, Release } from "../../../utils/Apollo/types";
-import ValistContext from "../../../components/Valist/ValistContext";
 import { ProjectMeta, ReleaseMeta } from "../../../utils/Valist/types";
-import LogCard from '../../../components/Logs/LogCard';
-import AccountContext from "../../../components/Accounts/AccountContext";
-import ProjectActions from '../../../components/Projects/ProjectActions';
-import { BigNumberish, ethers } from "ethers";
 import parseError from "../../../utils/Errors";
+import LogCard from "../../../features/logs/LogCard";
+import { getProjectID } from "../../../utils/Valist";
+import { dismiss, notify } from "../../../utils/Notifications";
+import ValistContext from "../../../features/valist/ValistContext";
+import { useAppSelector } from "../../../app/hooks";
+import { selectAddress } from "../../../features/accounts/accountsSlice";
+import ProjectProfileCard from "../../../features/projects/ProjectProfileCard";
+import ProjectMetaCard from "../../../features/projects/ProjectMetaCard";
+import ProjectContent from "../../../features/projects/ProjectContent";
 
 export default function ProjectPage():JSX.Element {
   const router = useRouter();
   const teamName = `${router.query.teamName}`;
   const projectName = `${router.query.projectName}`;
   const valistCtx = useContext(ValistContext);
-  const accountCtx = useContext(AccountContext);
+  const address = useAppSelector(selectAddress);
+  const dispatch = useDispatch();
   const [projectID, setProjectID] = useState<string>('');
-  const [version, setVersion] = useState<string>('');
   const { data, loading, error } = useQuery(PROJECT_PROFILE_QUERY, {
     variables: { project: projectID },
   });
+  const [version, setVersion] = useState<string>('');
   const [view, setView] = useState<string>('Readme');
   const [licensePrice, setLicensePrice] = useState<BigNumberish | null>(null);
   const [projectMeta, setProjectMeta] = useState<ProjectMeta>({
@@ -63,21 +68,19 @@ export default function ProjectPage():JSX.Element {
   ];
 
   useEffect(() => {
-    const getProjectID = async () => {
+    const _getProjectID = async () => {
       if (teamName !== 'undefined') {
         try {
-          const teamID = await valistCtx.contract.getTeamID(teamName);
-          const _projectID = await valistCtx.contract.getProjectID(teamID, projectName);
-          setProjectID(_projectID.toHexString());
+          const _projectID = getProjectID(teamName, projectName);
+          setProjectID(_projectID);
         } catch(err) {
-          // accountCtx.notify('error', String(err));
+          notify('error', String(err));
           console.log("Failed to fetch projectID.", err);
         }
       }
     };
-
-    getProjectID();
-  }, [valistCtx, teamName, projectName, accountCtx]);
+    _getProjectID();
+  }, [teamName, projectName]);
 
   useEffect(() => {
     const fetchReleaseMeta = async (release: Release) => {
@@ -88,7 +91,7 @@ export default function ProjectPage():JSX.Element {
           setReleaseMeta(metaJson);
         }
       } catch(err) {
-        accountCtx.notify('error', String(err));
+        notify('error', String(err));
         console.log("Failed to fetch release metadata.", err);
       }
     };
@@ -98,7 +101,7 @@ export default function ProjectPage():JSX.Element {
         const projectJson = await fetch(metaURI).then(res => res.json());
         setProjectMeta(projectJson);
       } catch(err) {
-        accountCtx.notify('error', String(err));
+        notify('error', String(err));
         console.log("Failed to fetch project metadata.", err);
       }
     };
@@ -113,7 +116,7 @@ export default function ProjectPage():JSX.Element {
         fetchProjectMeta(data?.projects[0]?.metaURI);
       }
     }
-  }, [accountCtx, data]);
+  }, [data]);
 
   useEffect(() => {
     (async () => {
@@ -125,31 +128,31 @@ export default function ProjectPage():JSX.Element {
 
         // @ts-ignore @TODO expose from SDK interface
         let balance = await valistCtx.contract.license.balanceOf(
-          accountCtx.address, licenseID,
+          address, licenseID,
         );
 
         setLicenseBalance(Number(balance));
       }
     })();
-  }, [accountCtx.address, projectID, releaseMeta.licenses, valistCtx.contract]);
+  }, [address, projectID, releaseMeta.licenses, valistCtx.contract]);
 
   const mintLicense = async () => {
-    if (releaseMeta.licenses && releaseMeta.licenses[0] && accountCtx.address !== '0x0') {
+    if (releaseMeta.licenses && releaseMeta.licenses[0] && address !== '0x0') {
       let toastID = '';
       try {
         const transaction = await valistCtx.mintLicense(
           teamName,
           projectName,
           releaseMeta.licenses[0],
-          accountCtx.address,
+          address,
         );
-        toastID = accountCtx.notify('transaction', transaction.hash());
+        toastID = notify('transaction', transaction.hash());
         await transaction.wait();
-        accountCtx.dismiss(toastID);
-        accountCtx.notify('success');
+        dismiss(toastID);
+        notify('success');
       } catch (err: any) {
-        accountCtx.dismiss(toastID);
-        accountCtx.notify('error', parseError(err));
+        dismiss(toastID);
+        notify('error', parseError(err));
       }
     }
   };
@@ -189,7 +192,7 @@ export default function ProjectPage():JSX.Element {
           <ProjectMetaCard
             version={version} 
             teamName={teamName}
-            donate={accountCtx?.setModal}
+            donate={() => {}}
             memberCount={members.length}
             projectName={projectName} 
             projectMeta={projectMeta} 

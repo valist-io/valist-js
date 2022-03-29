@@ -1,6 +1,6 @@
-import ProjectMemberList from '../Projects/ProjectMemberList';
 import { Member, Project } from '../../utils/Apollo/types';
-import ProjectList from '../Projects/ProjectList';
+import ProjectMemberList from '../projects/ProjectMemberList';
+import ProjectList from './TeamProjectList';
 
 interface TeamContentProps {
   view: string,

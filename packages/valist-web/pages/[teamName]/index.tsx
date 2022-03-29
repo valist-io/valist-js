@@ -2,14 +2,14 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 import { useQuery } from "@apollo/client";
 import Layout from '../../components/Layouts/Main';
-import TeamProfileCard from '../../components/Teams/TeamProfileCard';
-import TeamMemberList from '../../components/Teams/TeamMemberList';
-import TeamProjectList from '../../components/Teams/TeamProjectList';
 import { TEAM_PROFILE_QUERY } from '../../utils/Apollo/queries';
 import { Project } from '../../utils/Apollo/types';
 import { TeamMeta } from '../../utils/Valist/types';
-import LogCard from '../../components/Logs/LogCard';
-import LogTable from '../../components/Logs/LogTable';
+import LogTable from '../../features/logs/LogTable';
+import LogCard from '../../features/logs/LogCard';
+import TeamProfileCard from '../../features/teams/TeamProfileCard';
+import TeamProjectList from '../../features/teams/TeamProjectList';
+import TeamMemberList from '../../features/teams/TeamMemberList';
 
 type TeamMember = {
   id: string
@@ -65,7 +65,7 @@ export default function TeamProfilePage() {
             meta={meta}
             tabs={tabs}          
           />
-          {view === 'Projects' && <TeamProjectList projects={projects} linksDisbaled={false} />}
+          {view === 'Projects' && <TeamProjectList projects={projects} linksDisabled={false} />}
           {view === 'Activity' && <LogTable team={teamName} project={''} address={''} />}
         </div>
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">

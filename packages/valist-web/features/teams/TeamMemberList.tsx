@@ -1,11 +1,29 @@
-import EnsResolver from '../Ens';
-import AddressIdenticon from '../Identicons/AddressIdenticon';
+import { useContext, useEffect, useState } from 'react';
+import AddressIdenticon from '../../components/Identicons/AddressIdenticon';
+import Web3Context from '../valist/Web3Context';
 
 interface TeamMemberListItemProps {
   id: string
 }
 
 function TeamMemberListItem(props: TeamMemberListItemProps): JSX.Element {
+  const web3Ctx = useContext(Web3Context);
+  const [ens, setEns] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      let value = null;
+
+      if (props.id !== '0x0') {
+        try {
+          value = await web3Ctx.reverseEns(props.id);
+        } catch (err) {}
+      }
+
+      setEns(value);
+    })();
+  }, [props.id, web3Ctx.reverseEns]);
+
   return (
     <li className="py-4">
       <div className="flex items-center space-x-4">
@@ -14,7 +32,7 @@ function TeamMemberListItem(props: TeamMemberListItemProps): JSX.Element {
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-gray-900 truncate">
-            {EnsResolver ({ address: props.id }) || props.id}
+            {ens || props.id}
           </p>
         </div>
       </div>

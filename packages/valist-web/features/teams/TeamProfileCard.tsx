@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
+import Tabs, { Tab } from '../../components/Tabs';
 import { TeamMeta } from '../../utils/Valist/types';
-import AddressIdenticon from '../Identicons/AddressIdenticon';
-import Tabs, { Tab } from '../Tabs';
+import AddressIdenticon from '../../components/Identicons/AddressIdenticon';
 
 interface TeamProfileCardProps {
   view: string,
