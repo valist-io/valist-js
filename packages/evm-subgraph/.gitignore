@@ -1,7 +1,0 @@
-node_modules
-data
-build
-generated
-
-# ignore generated subgraph config
-subgraph.yaml
