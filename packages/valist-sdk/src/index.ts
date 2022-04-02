@@ -1,13 +1,13 @@
 import { Client, Options, createClient, Provider } from './client';
 
-export class TeamMeta {
-	/** team image */
+export class AccountMeta {
+	/** account image */
 	public image?: string;
-	/** team friendly name. */
+	/** account friendly name. */
 	public name?: string;
-	/** short description of the team. */
+	/** short description of the account. */
 	public description?: string;
-	/** link to the team website. */
+	/** link to the account website. */
 	public external_url?: string;
 }
 
@@ -35,17 +35,6 @@ export class ReleaseMeta {
 	public external_url?: string;
 	/** optional list of licenses linked to the project */
 	public licenses?: string[];
-}
-
-export class LicenseMeta {
-	/** license image */
-	public image?: string;
-	/** license friendly name */
-	public name?: string;
-	/** short description of the license. */
-	public description?: string;
-	/** link to the license website. */
-	public external_url?: string;
 }
 
 export { Client, Options, createClient, Provider };

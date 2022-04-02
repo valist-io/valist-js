@@ -1,225 +1,159 @@
 import axios from 'axios';
+import { RelayProvider } from '@opengsn/provider';
 import { BigNumberish, BigNumber, Contract, PopulatedTransaction, Signer } from 'ethers';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { JsonRpcProvider, Web3Provider } from '@ethersproject/providers';
 import { IPFS } from 'ipfs-core-types';
 import { ImportCandidate, ImportCandidateStream } from 'ipfs-core-types/src/utils';
 import { create } from 'ipfs-http-client';
+import { AccountMeta, ProjectMeta, ReleaseMeta } from './index';
 
-import { TeamMeta, ProjectMeta, ReleaseMeta, LicenseMeta } from './index';
-import { sendMetaTx, sendTx } from './metatx';
-
-import * as valistContract from './contract/Valist.json';
+import * as registryContract from './contract/Registry.json';
 import * as licenseContract from './contract/License.json';
 
 export type Provider = Web3Provider | JsonRpcProvider;
 
+export class Options {
+	public chainID = 137;
+	public ipfsHost = 'https://pin.valist.io';
+	public ipfsGateway = 'https://gateway.valist.io';
+}
+
+export async function createClient(web3: any, options: Options = new Options()): Promise<Client> {
+	const registryAddress = registryAddresses[options.chainID];
+	const licenseAddress = licenseAddresses[options.chainID];
+	const paymasterAddress = paymasterAddresses[options.chainID];
+	
+	const relayProvider = RelayProvider.newProvider({ 
+		provider: web3, 
+		config: { paymasterAddress }
+	});
+	await relayProvider.init();
+
+	// @ts-ignore
+	const provider = new Web3Provider(relayProvider);
+	const registry = new Contract(registryAddress, registryContract.abi, provider);
+	const license = new Contract(licenseAddress, licenseContract.abi, provider);
+	const ipfs = create({ url: options.ipfsHost });
+
+	return new Client(registry, license, ipfs, options.ipfsGateway);
+}
+
 export class Client {
 	constructor(
-		private valist: Contract,
+		private registry: Contract,
 		private license: Contract,
-		private provider: Provider,
 		private ipfs: IPFS,
-		private gateway: string,
-		private metaTx: boolean
+		private ipfsGateway: string
 	) {}
 
-	async createTeam(teamName: string, team: TeamMeta, beneficiary: string, members: string[]): Promise<TransactionResponse> {
-		const metaURI = await this.writeJSON(JSON.stringify(team));
-		const tx = await this.valist.populateTransaction.createTeam(teamName, metaURI, beneficiary, members);
-		return await this.sendTx('createTeam', tx, this.metaTx);
+	async createAccount(name: string, meta: AccountMeta, beneficiary: string, members: string[]): Promise<TransactionResponse> {
+		const metaURI = await this.writeJSON(JSON.stringify(meta));
+		return await this.registry.createAccount(name, metaURI, beneficiary, members);
 	}
 
-	async createProject(teamName: string, projectName: string, project: ProjectMeta, members: string[]): Promise<TransactionResponse> {
-		const metaURI = await this.writeJSON(JSON.stringify(project));
-		const tx = await this.valist.populateTransaction.createProject(teamName, projectName, metaURI, members);
-		return await this.sendTx('createProject', tx, this.metaTx);
+	async createProject(accountID: BigNumberish, name: string, meta: ProjectMeta, members: string[]): Promise<TransactionResponse> {
+		const metaURI = await this.writeJSON(JSON.stringify(meta));
+		return await this.registry.createProject(accountID, name, metaURI, members);
 	}
 
-	async createRelease(teamName: string, projectName: string, releaseName: string, release: ReleaseMeta): Promise<TransactionResponse> {
-		const metaURI = await this.writeJSON(JSON.stringify(release));
-		const tx = await this.valist.populateTransaction.createRelease(teamName, projectName, releaseName, metaURI);
-		return await this.sendTx('createRelease', tx, this.metaTx);
+	async createRelease(projectID: BigNumberish, name: string, meta: ReleaseMeta): Promise<TransactionResponse> {
+		const metaURI = await this.writeJSON(JSON.stringify(meta));
+		return await this.registry.createRelease(projectID, name, metaURI);
 	}
 
-	async createLicense(teamName: string, projectName: string, licenseName: string, license: LicenseMeta, mintPrice: BigNumberish): Promise<TransactionResponse> {
-		const metaURI = await this.writeJSON(JSON.stringify(license));
-		const tx = await this.license.populateTransaction.createLicense(teamName, projectName, licenseName, metaURI, mintPrice);
-		return await this.sendTx('createLicense', tx, this.metaTx);
+	async addAccountMember(accountID: BigNumberish, address: string): Promise<TransactionResponse> {
+		return await this.registry.addAccountMember(accountID, address);
 	}
 
-	async mintLicense(teamName: string, projectName: string, licenseName: string, recipient: string): Promise<TransactionResponse> {
-		const value = await this.getLicensePrice(teamName, projectName, licenseName)
-		return await this.license.mintLicense(teamName, projectName, licenseName, recipient, { value });
+	async removeAccountMember(accountID: BigNumberish, address: string): Promise<TransactionResponse> {
+		return await this.registry.removeAccountMember(accountID, address);
 	}
 
-	async addTeamMember(teamName: string, address: string): Promise<TransactionResponse> {
-		const tx = await this.valist.populateTransaction.addTeamMember(teamName, address);
-		return await this.sendTx('addTeamMember', tx, this.metaTx);
+	async addProjectMember(projectID: BigNumberish, address: string): Promise<TransactionResponse> {
+		return await this.registry.addProjectMember(projectID, address);
 	}
 
-	async removeTeamMember(teamName: string, address: string): Promise<TransactionResponse> {
-		const tx = await this.valist.populateTransaction.removeTeamMember(teamName, address);
-		return await this.sendTx('removeTeamMember', tx, this.metaTx);
+	async removeProjectMember(projectID: BigNumberish, address: string): Promise<TransactionResponse> {
+		return await this.registry.removeProjectMember(projectID, address);
 	}
 
-	async addProjectMember(teamName: string, projectName: string, address: string): Promise<TransactionResponse> {
-		const tx = await this.valist.populateTransaction.addProjectMember(teamName, projectName, address);
-		return await this.sendTx('addProjectMember', tx, this.metaTx);
+	async setAccountMeta(accountID: BigNumberish, meta: AccountMeta): Promise<TransactionResponse> {
+		const metaURI = await this.writeJSON(JSON.stringify(meta));
+		return await this.registry.setAccountMetaURI(accountID, metaURI);
 	}
 
-	async removeProjectMember(teamName: string, projectName: string, address: string): Promise<TransactionResponse> {
-		const tx = await this.valist.populateTransaction.removeProjectMember(teamName, projectName, address);
-		return await this.sendTx('removeProjectMember', tx, this.metaTx);
+	async setProjectMeta(projectID: BigNumberish, meta: ProjectMeta): Promise<TransactionResponse> {
+		const metaURI = await this.writeJSON(JSON.stringify(meta));
+		return await this.registry.setProjectMetaURI(projectID, metaURI);
 	}
 
-	async setTeamMetaURI(teamName: string, metaURI: string): Promise<TransactionResponse> {
-		const tx = await this.valist.populateTransaction.setTeamMetaURI(teamName, metaURI);
-		return await this.sendTx('setTeamMetaURI', tx, this.metaTx);
+	async setBeneficiary(accountID: BigNumberish, beneficiary: string): Promise<TransactionResponse> {
+		return await this.registry.setBeneficiary(accountID, beneficiary);
 	}
 
-	async setProjectMetaURI(teamName: string, projectName: string, metaURI: string): Promise<TransactionResponse> {
-		const tx = await this.valist.populateTransaction.setProjectMetaURI(teamName, projectName, metaURI);
-		return await this.sendTx('setProjectMetaURI', tx, this.metaTx);
+	async approveRelease(releaseID: BigNumberish): Promise<TransactionResponse> {
+		return await this.registry.approveRelease(releaseID);
 	}
 
-	async setTeamBeneficiary(teamName: string, beneficiary: string): Promise<TransactionResponse> {
-		const teamID = await this.valist.getTeamID(teamName);
-		const tx = await this.valist.populateTransaction.setTeamBeneficiary(teamID, beneficiary);
-		return await this.sendTx('setTeamBeneficiary', tx, this.metaTx);
+	async revokeRelease(releaseID: BigNumberish): Promise<TransactionResponse> {
+		return await this.registry.approveRelease(releaseID);
 	}
 
-	async approveRelease(teamName: string, projectName: string, releaseName: string): Promise<TransactionResponse> {
-		const tx = await this.valist.populateTransaction.approveRelease(teamName, projectName, releaseName);
-		return await this.sendTx('approveRelease', tx, this.metaTx);
-	}
-
-	async rejectRelease(teamName: string, projectName: string, releaseName: string): Promise<TransactionResponse> {
-		const tx = await this.valist.populateTransaction.rejectRelease(teamName, projectName, releaseName);
-		return await this.sendTx('rejectRelease', tx, this.metaTx);
-	}
-
-	async getTeamMeta(teamName: string): Promise<TeamMeta> {
-		const metaURI = await this.getTeamMetaURI(teamName);
+	async getAccountMeta(accountID: BigNumberish): Promise<AccountMeta> {
+		const metaURI = await this.registry.metaByID(accountID);
 		const { data } = await axios.get(metaURI);
 		return data;
 	}
 
-	async getProjectMeta(teamName: string, projectName: string): Promise<ProjectMeta> {
-		const metaURI = await this.getProjectMetaURI(teamName, projectName);
+	async getProjectMeta(projectID: BigNumberish): Promise<ProjectMeta> {
+		const metaURI = await this.registry.metaByID(projectID);
 		const { data } = await axios.get(metaURI);
 		return data;
 	}
 
-	async getReleaseMeta(teamName: string, projectName: string, releaseName: string): Promise<ReleaseMeta> {
-		const metaURI = await this.getReleaseMetaURI(teamName, projectName, releaseName);
+	async getReleaseMeta(releaseID: BigNumberish): Promise<ReleaseMeta> {
+		const metaURI = await this.registry.metaByID(releaseID);
 		const { data } = await axios.get(metaURI);
 		return data;
 	}
 
-	async getLatestReleaseMeta(teamName: string, projectName: string): Promise<ReleaseMeta> {
-		const releaseName = await this.getLatestReleaseName(teamName, projectName);
-		return await this.getReleaseMeta(teamName, projectName, releaseName);
+	async getBeneficiary(accountID: BigNumberish): Promise<string> {
+		return await this.registry.getBeneficiary(accountID);
 	}
 
-	async getLicenseMeta(teamName: string, projectName: string, licenseName: string): Promise<LicenseMeta> {
-		const metaURI = await this.getLicenseMetaURI(teamName, projectName, licenseName);
-		const { data } = await axios.get(metaURI);
-		return data;
+	async getAccountMembers(accountID: BigNumberish): Promise<string[]> {
+		return await this.registry.getAccountMembers(accountID);
 	}
 
-	async getLatestReleaseName(teamName: string, projectName: string): Promise<string> {
-		return await this.valist.getLatestRelease(teamName, projectName);
+	async getProjectMembers(projectID: BigNumberish): Promise<string[]> {
+		return await this.registry.getProjectMembers(projectID);
 	}
 
-	async getTeamMetaURI(teamName: string): Promise<string> {
-		return await this.valist.getTeamMetaURI(teamName);
+	async getReleaseSigners(releaseID: BigNumberish): Promise<string[]> {
+		return await this.registry.getReleaseSigners(releaseID);
 	}
 
-	async getProjectMetaURI(teamName: string, projectName: string): Promise<string> {
-		return await this.valist.getProjectMetaURI(teamName, projectName);
+	async getAccountID(chainID: BigNumberish, name: string): Promise<BigNumber> {
+		return await this.registry.generateID(chainID, name); // TODO generate offline
 	}
 
-	async getReleaseMetaURI(teamName: string, projectName: string, releaseName: string): Promise<string> {
-		return await this.valist.getReleaseMetaURI(teamName, projectName, releaseName);
+	async getProjectID(accountID: BigNumberish, name: string): Promise<BigNumber> {
+		return await this.registry.generateID(accountID, name); // TODO generate offline
 	}
 
-	async getTeamNames(page: BigNumberish, size: BigNumberish): Promise<string[]> {
-		return await this.valist.getTeamNames(page, size);
-	}
-
-	async getProjectNames(teamName: string, page: BigNumberish, size: BigNumberish): Promise<string[]> {
-		return await this.valist.getProjectNames(teamName, page, size);
-	}
-
-	async getReleaseNames(teamName: string, projectName: string, page: BigNumberish, size: BigNumberish): Promise<string[]> {
-		return await this.valist.getReleaseNames(teamName, projectName, page, size);
-	}
-
-	async getTeamMembers(teamName: string, page: BigNumberish, size: BigNumberish): Promise<string[]> {
-		return await this.valist.getTeamMembers(teamName, page, size);
-	}
-
-	async getTeamBeneficiary(teamName: string): Promise<string> {
-		const teamID = await this.valist.getTeamID(teamName);
-		return await this.valist.getTeamBeneficiary(teamID);
-	}
-
-	async getProjectMembers(teamName: string, projectName: string, page: BigNumberish, size: BigNumberish): Promise<string[]> {
-		return await this.valist.getProjectMembers(teamName, projectName, page, size);
-	}
-
-	async getReleaseApprovers(teamName: string, projectName: string, releaseName: string, page: BigNumberish, size: BigNumberish): Promise<string[]> {
-		return await this.valist.getReleaseApprovers(teamName, projectName, releaseName, page, size);
-	}
-
-	async getReleaseRejectors(teamName: string, projectName: string, releaseName: string, page: BigNumberish, size: BigNumberish): Promise<string[]> {
-		return await this.valist.getReleaseRejectors(teamName, projectName, releaseName, page, size);
-	}
-
-	async getTeamID(teamName: string): Promise<BigNumber> {
-		return await this.valist.getTeamID(teamName);
-	}
-
-	async getProjectID(teamID: BigNumberish, projectName: string): Promise<BigNumber> {
-		return await this.valist.getProjectID(teamID, projectName);
-	}
-
-	async getReleaseID(projectID: BigNumberish, releaseName: string): Promise<BigNumber> {
-		return await this.valist.getReleaseID(projectID, releaseName);
-	}
-
-	async getLicenseBalance(address: string, licenseID: BigNumberish): Promise<BigNumber> {
-		return await this.license.balanceOf(address, licenseID);
-	}
-
-	async getLicensePrice(teamName: string, projectName: string, licenseName: string): Promise<BigNumber> {
-		const teamID = await this.getTeamID(teamName);
-		const projectID = await this.getProjectID(teamID, projectName);
-		const licenseID = await this.getLicenseID(projectID, licenseName);
-		return await this.license.priceByID(licenseID);
-	}
-
-	async getLicenseMetaURI(teamName: string, projectName: string, licenseName: string): Promise<string> {
-		return await this.license.getLicenseMetaURI(teamName, projectName, licenseName);
-	}
-
-	async getLicenseNames(teamName: string, projectName: string, page: BigNumberish, size: BigNumberish): Promise<string[]> {
-		return await this.license.getNamesByProjectID(teamName, projectName, page, size);
-	}
-
-	async getLicenseID(projectID: BigNumberish, licenseName: string): Promise<BigNumber> {
-		return await this.license.getLicenseID(projectID, licenseName);
+	async getReleaseID(projectID: BigNumberish, name: string): Promise<BigNumber> {
+		return await this.registry.generateID(projectID, name); // TODO generate offline
 	}
 
 	async writeJSON(data: string): Promise<string> {
 		const { cid } = await this.ipfs.add(data);
-		return `${this.gateway}/ipfs/${cid.toString()}`;
+		return `${this.ipfsGateway}/ipfs/${cid.toString()}`;
 	}
 
 	async writeFile(data: ImportCandidate): Promise<string> {
 		const { cid } = await this.ipfs.add(data);
-		return `${this.gateway}/ipfs/${cid.toString()}`;
+		return `${this.ipfsGateway}/ipfs/${cid.toString()}`;
 	}
 
 	async writeFolder(data: ImportCandidateStream): Promise<string> {
@@ -228,22 +162,20 @@ export class Client {
 		for await (const res of this.ipfs.addAll(data, opts)) {
 			cids.push(res.cid.toString());
 		}
-		return `${this.gateway}/ipfs/${cids[cids.length - 1]}`;
-	}
-
-	private async sendTx(functionName: string, params: PopulatedTransaction, metaTx: boolean): Promise<TransactionResponse> {
-		const hash = metaTx
-			? await sendMetaTx(this.provider, functionName, params)
-			: await sendTx(this.provider, functionName, params);
-
-		let tx: TransactionResponse;
-		do { tx = await this.provider.getTransaction(hash); } while (tx == null);
-
-		return tx;
+		return `${this.ipfsGateway}/ipfs/${cids[cids.length - 1]}`;
 	}
 }
 
-export const valistAddresses: {[chainID: number]: string} = {
+export const paymasterAddresses: {[chainID: number]: string} = {
+	// Deterministic Ganache
+	1337: 'TODO',
+	// Mumbai testnet
+	80001: 'TODO',
+	// Polygon mainnet
+	137: 'TODO',
+};
+
+export const registryAddresses: {[chainID: number]: string} = {
 	// Deterministic Ganache
 	1337: '0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab',
 	// Mumbai testnet
@@ -260,28 +192,3 @@ export const licenseAddresses: {[chainID: number]: string} = {
 	// Polygon mainnet
 	137: '0xb85ed41d49Eba25aE6186921Ea63b6055903e810',
 };
-
-export class Options {
-	public chainID = 137;
-	public metaTx = true;
-	public ipfsHost = 'https://gateway.valist.io';
-	public ipfsGateway = 'https://gateway.valist.io';
-}
-
-export function createClient(provider: Provider, signer?: Signer, options: Options = new Options()): Client {
-	const valistAddress = valistAddresses[options.chainID];
-	const licenseAddress = licenseAddresses[options.chainID];
-
-	const valist = new Contract(valistAddress, valistContract.abi, signer || provider);
-	const license = new Contract(licenseAddress, licenseContract.abi, signer || provider);
-	const ipfs = create({url: options.ipfsHost});
-
-	return new Client(
-		valist,
-		license,
-		provider,
-		ipfs,
-		options.ipfsGateway,
-		options.metaTx
-	);
-}
