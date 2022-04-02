@@ -46,9 +46,9 @@ describe('valist client', async function() {
 		release.description = 'Release v0.5.0';
 		release.external_url = 'https://gateway.valist.io/ipfs/Qm123';
 
-		const accountID = await valist.getAccountID(1337, 'valist');
-		const projectID = await valist.getProjectID(accountID, 'sdk');
-		const releaseID = await valist.getReleaseID(projectID, 'v0.5.0');
+		const accountID = valist.getAccountID(1337, 'valist');
+		const projectID = valist.getProjectID(accountID, 'sdk');
+		const releaseID = valist.getReleaseID(projectID, 'v0.5.0');
 
 		const createAccountTx = await valist.createAccount('valist', account, members[0], members);
 		await createAccountTx.wait();

@@ -1,4 +1,4 @@
-import { Client, Options, createClient, Provider } from './client';
+import { Client, Options, createClient } from './client';
 
 export class AccountMeta {
 	/** account image */
@@ -33,8 +33,6 @@ export class ReleaseMeta {
 	public description?: string;
 	/** link to the release assets. */
 	public external_url?: string;
-	/** optional list of licenses linked to the project */
-	public licenses?: string[];
 }
 
-export { Client, Options, createClient, Provider };
+export { Client, Options, createClient };
