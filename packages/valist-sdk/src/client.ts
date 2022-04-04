@@ -221,11 +221,17 @@ export class Client {
 		const { cid } = await this.ipfs.add(data);
 		return `${this.gateway}/ipfs/${cid.toString()}`;
 	}
-
-	async writeFolder(data: ImportCandidateStream): Promise<string> {
-		const opts = { wrapWithDirectory: true };
+ 
+	async writeFolder(data: File[]): Promise<string> {
 		const cids: string[] = [];
-		for await (const res of this.ipfs.addAll(data, opts)) {
+		const fileObjects = data.map((file) => {
+			const fileObject = {
+			  path: (file as any).path,
+			  content: file,
+			};
+			return fileObject;
+		  });
+		for await (const res of this.ipfs.addAll(fileObjects)) {
 			cids.push(res.cid.toString());
 		}
 		return `${this.gateway}/ipfs/${cids[cids.length - 1]}`;
