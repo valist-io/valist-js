@@ -1,17 +1,13 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import Layout from '../../components/Layouts/Main';
-import EditTeam from '../../features/teams/EditTeam';
+import EditTeam from '../../features/teams/ManageTeam';
 
 const EditAccountPage: NextPage = () => {
   const router = useRouter();
   let { name } = router.query;
-  if (Array.isArray(name)) {
-    name = name.join('');
-  }
-  if (!name) {
-    name = '';
-  }
+  if (Array.isArray(name)) name = name.join('');
+  if (!name) name = '';
 
   return (
     <Layout title={`Valist | Create team`}>

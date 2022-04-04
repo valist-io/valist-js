@@ -7,7 +7,6 @@ export interface ReleaseState {
   name: string;
   description: string;
   licenses: string[];
-  availableLicenses: string[];
 };
 
 const initialState: ReleaseState = {
@@ -16,7 +15,6 @@ const initialState: ReleaseState = {
   name: '',
   description: '',
   licenses: [],
-  availableLicenses: [],
 };
 
 export const releaseSlice = createSlice({
@@ -38,14 +36,15 @@ export const releaseSlice = createSlice({
     setLicenses: (state, action: PayloadAction<string[]>) => {
       state.licenses = action.payload;
     },
-    setAvailableLicenses: (state, action: PayloadAction<string[]>) => {
-      state.availableLicenses = action.payload;
-    },
   },
 });
 
 export const { 
-  setTeam, setProject, setName, setDescription, setLicenses, setAvailableLicenses
+  setTeam, setProject, setName, setDescription, setLicenses,
 } = releaseSlice.actions;
 export const selectTeam = (state: RootState) => state.release.team;
+export const selectProject = (state: RootState) => state.release.project;
+export const selectName = (state: RootState) => state.release.name;
+export const selectDescription = (state: RootState) => state.release.description;
+export const selectLicenses = (state: RootState) => state.release.licenses;
 export default releaseSlice.reducer;

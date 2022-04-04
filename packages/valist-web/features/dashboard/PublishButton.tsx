@@ -2,6 +2,7 @@ import Link from "next/link";
 
 interface PublishButtonProps {
   disabled: boolean;
+  account: string,
 }
 
 export default function PublishButton(props: PublishButtonProps) {
@@ -11,12 +12,12 @@ export default function PublishButton(props: PublishButtonProps) {
   
   return (
     <div className="flex content-end sm:mt-0">
-      <Link href={props.disabled ? "create?action=release" : "/"}>
+      <Link href={props.disabled ? `/create/release?account=${props.account}` : "/"}>
         <a className={`flex justify-center py-2 px-4 border border-transparent rounded-md 
         shadow-sm text-sm font-medium text-white ${buttonStyle}`}>
           Publish Release
         </a>
       </Link>
   </div>
-  )
+  );
 }

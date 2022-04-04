@@ -9,6 +9,7 @@ interface ProjectPreviewProps {
   projectImage: File | null,
   projectDescription: string,
   projectMembers: Member[],
+  defaultImage?: string,
 }
 
 export default function ProjectPreview(props: ProjectPreviewProps) {
@@ -29,8 +30,8 @@ export default function ProjectPreview(props: ProjectPreviewProps) {
     <div>
       <ProjectProfileCard 
         teamName={props.teamName} 
-        projectName={name} 
-        projectImg={imgUrl}
+        projectName={name}
+        projectImg={imgUrl || (props.defaultImage ? props.defaultImage : '')}
         tabs={[{ text: 'Readme', disabled: false }, { text: 'Members', disabled: false }]}
         view={view}
         setView={setView} />
