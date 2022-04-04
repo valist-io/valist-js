@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { login, selectAddress, selectLoginType, setAccounts, setMagicAddress } from '../accounts/accountsSlice';
+import { login, selectAccountNames, selectAddress, selectLoginType, setAccounts, setCurrentAccount, setMagicAddress } from '../accounts/accountsSlice';
 import { useEffect, useState } from 'react';
 import { Client } from '@valist/sdk';
 import { createValistClient } from '../../utils/Account';
@@ -18,7 +18,8 @@ import { USER_HOMEPAGE } from '../../utils/Apollo/queries';
 import { normalizeUserProjects } from '../../utils/Apollo/normalization';
 import { Toaster } from 'react-hot-toast';
 
-export default function ValistContainer({children}: any) {
+export default function ValistContainer({ children }: any) {
+  const accountNames  = useAppSelector(selectAccountNames);
   const loginType = useAppSelector(selectLoginType);
   const isModal = useAppSelector(selectIsOpen);
   const address = useAppSelector(selectAddress);
@@ -37,7 +38,7 @@ export default function ValistContainer({children}: any) {
   useEffect(() => {
     dispatch(
       login({
-        loginType, setProvider, setMagic
+        loginType, setProvider, setMagic,
       }),
     );
 
@@ -46,7 +47,7 @@ export default function ValistContainer({children}: any) {
       ['accountsChanged', 'chainChanged'].forEach((event) => {
         window.ethereum.on(event, () => {
           const loginType = (localStorage.getItem('loginType') as LoginType);
-          if (loginType === 'metaMask') dispatch(login({loginType, setProvider}));
+          if (loginType === 'metaMask') dispatch(login({ loginType, setProvider }));
         });
       });
     }
@@ -76,10 +77,15 @@ export default function ValistContainer({children}: any) {
       dispatch(setAccounts({
         accounts: teams,
         accountNames: teamNames,
-        currentAccount: teamNames[0],
       }));
     }
   }, [data]);
+
+  // Load and set currentAccount if saved in local storage
+  useEffect(() => {
+    const savedAccounts = JSON.parse(localStorage.getItem('currentAccount') || '[]');
+    dispatch(setCurrentAccount(savedAccounts[address]));
+  }, [address, dispatch]);
 
   // Check if magic session is active
   useEffect(() => {

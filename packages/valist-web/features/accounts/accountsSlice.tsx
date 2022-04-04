@@ -43,7 +43,6 @@ interface LogoutPayload {
 interface SetAccountsPayload {
   accounts: Record<string, Project[]>;
   accountNames: string[];
-  currentAccount: string;
 };
 
 export const accountsSlice = createSlice({
@@ -65,7 +64,6 @@ export const accountsSlice = createSlice({
     setAccounts: (state, action: PayloadAction<SetAccountsPayload>) => {
       state.accounts = action.payload.accounts;
       state.accountNames = action.payload.accountNames;
-      state.currentAccount = action.payload.currentAccount;
     },
     setAccountNames: (state, action: PayloadAction<string[]>) => {
       state.accountNames = action.payload;

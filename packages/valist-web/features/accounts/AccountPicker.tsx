@@ -3,8 +3,8 @@ import { Menu, Transition } from '@headlessui/react';
 import {
   ChevronDownIcon,
 } from '@heroicons/react/solid';
-import { useAppDispatch } from '../../app/hooks';
-import { setCurrentAccount } from './accountsSlice';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { selectAddress, setCurrentAccount } from './accountsSlice';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
@@ -16,7 +16,21 @@ interface AccountPickerProps {
 }
 
 export default function AccountPicker(props: AccountPickerProps) {
+  const address = useAppSelector(selectAddress);
   const dispatch = useAppDispatch();
+
+  const handleAccountChange = (name: string) => {
+    const accountsString = localStorage.getItem('currentAccount');
+    let accountByAddress: Record<string, string> = {};
+
+    if (accountsString) {
+      accountByAddress = JSON.parse(accountsString);
+    }
+
+    accountByAddress[address] = name;
+    localStorage.setItem('currentAccount', JSON.stringify(accountByAddress));
+    dispatch(setCurrentAccount(name));
+  };
 
   return (
     <Menu as="div" className="relative inline-block text-left">
@@ -46,7 +60,7 @@ export default function AccountPicker(props: AccountPickerProps) {
                       active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
                       'group flex items-center px-4 py-2 text-sm',
                     )}
-                    onClick={() => dispatch(setCurrentAccount(name))}
+                    onClick={() => handleAccountChange(name)}
                   >
                     {name}
                   </div>

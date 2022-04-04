@@ -140,7 +140,7 @@ const Dashboard: NextPage = () => {
        <div className="grid grid-cols-1 gap-4">
         <div className='bg-white rounded-lg bg-white overflow-hidden shadow p-4 overflow-visible'>
           <div className='flex justify-center items-center'>
-            <PublishButton disabled={isProjects} />
+            <PublishButton account={currentAccount} disabled={isProjects} />
             <CreateButton transactions={transactionActions}/>
             </div>
           </div>
