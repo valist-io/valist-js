@@ -50,7 +50,7 @@ describe('valist client', async function() {
 		const projectID = valist.getProjectID(accountID, 'sdk');
 		const releaseID = valist.getReleaseID(projectID, 'v0.5.0');
 
-		const createAccountTx = await valist.createAccount('valist', account, members[0], members);
+		const createAccountTx = await valist.createAccount('valist', account, members);
 		await createAccountTx.wait();
 
 		const createProjectTx = await valist.createProject(accountID, 'sdk', project, members);
@@ -67,14 +67,5 @@ describe('valist client', async function() {
 
 		const otherRelease = await valist.getReleaseMeta(releaseID);
 		expect(otherRelease).to.deep.equal(release);
-
-		const beneficiary = await valist.getBeneficiary(accountID);
-		expect(beneficiary).to.equal(members[0]);
-
-		const setBeneficiaryTx = await valist.setBeneficiary(accountID, '0x9399BB24DBB5C4b782C70c2969F58716Ebbd6a3b');
-		await setBeneficiaryTx.wait();
-
-		const otherBeneficiary = await valist.getBeneficiary(accountID);
-		expect(otherBeneficiary).to.equal('0x9399BB24DBB5C4b782C70c2969F58716Ebbd6a3b');
 	});
 });

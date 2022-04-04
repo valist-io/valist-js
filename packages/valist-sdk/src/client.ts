@@ -18,9 +18,9 @@ export class Client {
 		private ipfsGateway: string
 	) {}
 
-	async createAccount(name: string, meta: AccountMeta, beneficiary: string, members: string[]): Promise<TransactionResponse> {
+	async createAccount(name: string, meta: AccountMeta, members: string[]): Promise<TransactionResponse> {
 		const metaURI = await this.writeJSON(JSON.stringify(meta));
-		return await this.registry.createAccount(name, metaURI, beneficiary, members);
+		return await this.registry.createAccount(name, metaURI, members);
 	}
 
 	async createProject(accountID: ethers.BigNumberish, name: string, meta: ProjectMeta, members: string[]): Promise<TransactionResponse> {
@@ -77,20 +77,12 @@ export class Client {
 		return await this.registry.removeProjectMember(projectID, address);
 	}
 
-	async setBeneficiary(accountID: ethers.BigNumberish, beneficiary: string): Promise<TransactionResponse> {
-		return await this.registry.setBeneficiary(accountID, beneficiary);
-	}
-
 	async approveRelease(releaseID: ethers.BigNumberish): Promise<TransactionResponse> {
 		return await this.registry.approveRelease(releaseID);
 	}
 
 	async revokeRelease(releaseID: ethers.BigNumberish): Promise<TransactionResponse> {
 		return await this.registry.approveRelease(releaseID);
-	}
-
-	async getBeneficiary(accountID: ethers.BigNumberish): Promise<string> {
-		return await this.registry.getBeneficiary(accountID);
 	}
 
 	async getAccountMembers(accountID: ethers.BigNumberish): Promise<string[]> {
