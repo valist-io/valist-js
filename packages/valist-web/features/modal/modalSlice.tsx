@@ -31,7 +31,7 @@ export const modalSlice = createSlice({
   },
 });
 
-export const { toggle, close, showLogin, setView} = modalSlice.actions;
+export const { toggle, close, showLogin, setView } = modalSlice.actions;
 export const selectIsOpen = (state: RootState) => state.modal.isOpen;
 export const selectView = (state: RootState) => state.modal.view;
 export default modalSlice.reducer;

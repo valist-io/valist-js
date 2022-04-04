@@ -41,7 +41,7 @@ export const licenseSlice = createSlice({
 });
 
 export const { 
-  setTeam, setProject, setName, setDescription
+  setTeam, setProject, setName, setDescription, setPrice,
 } = licenseSlice.actions;
 export const selectTeam = (state: RootState) => state.release.team;
 export default licenseSlice.reducer;
