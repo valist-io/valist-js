@@ -270,7 +270,7 @@ export const licenseAddresses: {[chainID: number]: string} = {
 export class Options {
 	public chainID = 137;
 	public metaTx = true;
-	public ipfsHost = 'https://gateway.valist.io';
+	public ipfsHost = 'https://pin.valist.io';
 	public ipfsGateway = 'https://gateway.valist.io';
 }
 
