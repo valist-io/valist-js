@@ -31,7 +31,7 @@ export default function FileUpload(props: FileUploadProps) {
         <ul>
           { props.files && props.files.map((file) => (
             <li key={file.name}>
-              {file.webkitRelativePath ? file.webkitRelativePath : file.name}
+              {(file as any).path || file.webkitRelativePath || file.name }
             </li>
           ))}
         </ul>

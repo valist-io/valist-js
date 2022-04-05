@@ -63,7 +63,7 @@ License name: ${props.licenseName}
   useEffect(() => {
     const checkLicenseName = async (licenseName: string) => {
       try {
-        await valistCtx.contract.getLicenseMetaURI(props.licenseTeam, props.licenseProject, licenseName);
+        await valistCtx.getLicenseMetaURI(props.licenseTeam, props.licenseProject, licenseName);
       } catch (err: any) {
         if (JSON.stringify(err).includes("err-license-not-exist")) {
           return false;
@@ -76,7 +76,7 @@ License name: ${props.licenseName}
       setValidName(!isNameTaken);
       props.setName(name);
     })();
-  }, [name, props.licenseTeam, props.licenseProject, valistCtx.contract]);
+  }, [name, props.licenseTeam, props.licenseProject, valistCtx]);
 
   // Handle form valid check
   useEffect(() => {

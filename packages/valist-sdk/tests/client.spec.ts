@@ -1,4 +1,4 @@
-import { Client, Contract, Storage, TeamMeta, ProjectMeta, ReleaseMeta, LicenseMeta } from '../src/index';
+import { Client, TeamMeta, ProjectMeta, ReleaseMeta, LicenseMeta } from '../src/index';
 import * as IPFS from 'ipfs-core';
 import * as types from 'ipfs-core-types';
 import { HttpGateway } from 'ipfs-http-gateway';
@@ -6,8 +6,8 @@ import { ethers } from 'ethers';
 import { expect } from 'chai';
 import { describe, beforeEach, it } from 'mocha';
 
-import * as valist_contract from '../src/contract/artifacts/Valist.sol/Valist.json';
-import * as license_contract from '../src/contract/artifacts/ERC-1155/SoftwareLicense.sol/SoftwareLicense.json';
+import * as valist_contract from '../src/contract/Valist.json';
+import * as license_contract from '../src/contract/License.json';
 
 const ganache = require("ganache");
 const provider = new ethers.providers.Web3Provider(ganache.provider());
@@ -36,18 +36,17 @@ describe('valist client', async function() {
 		const valist_deploy = await valist_factory.deploy(ethers.constants.AddressZero);
 		await valist_deploy.deployed();
 
-    const license_deploy = await license_factory.deploy(valist_deploy.address, ethers.constants.AddressZero);
-    await license_deploy.deployed();
+		const license_deploy = await license_factory.deploy(valist_deploy.address, ethers.constants.AddressZero);
+		await license_deploy.deployed();
 
-    const options: Contract.EVM_Options = {
-      valistAddress: valist_deploy.address,
-      licenseAddress: license_deploy.address,
-      metaTx: false,
-    };
-
-		const storage = new Storage.IPFS(ipfs, 'http://localhost:9090');
-		const contract = new Contract.EVM(options, provider);
-		const valist = new Client(contract, storage);
+		const valist = new Client(
+			valist_deploy,
+			license_deploy,
+			provider,
+			ipfs,
+			'http://localhost:9090',
+			false
+		);
 
 		const address = await signer.getAddress();
 		const members = [address];
@@ -109,10 +108,10 @@ describe('valist client', async function() {
 		const otherLicense = await valist.getLicenseMeta('valist', 'sdk', 'pro');
 		expect(otherLicense).to.deep.equal(license);
 
-		const licensePrice = await valist.contract.getLicensePrice('valist', 'sdk', 'pro');
+		const licensePrice = await valist.getLicensePrice('valist', 'sdk', 'pro');
 		expect(licensePrice.toString()).to.equal('1000');
 
-		const mintLicenseTx = await valist.contract.mintLicense('valist', 'sdk', 'pro', address);
+		const mintLicenseTx = await valist.mintLicense('valist', 'sdk', 'pro', address);
 		expect(mintLicenseTx).to.not.be.null;
 	});
 });

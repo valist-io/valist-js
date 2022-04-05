@@ -66,8 +66,8 @@ export default function ProjectPage():JSX.Element {
     const getProjectID = async () => {
       if (teamName !== 'undefined') {
         try {
-          const teamID = await valistCtx.contract.getTeamID(teamName);
-          const _projectID = await valistCtx.contract.getProjectID(teamID, projectName);
+          const teamID = await valistCtx.getTeamID(teamName);
+          const _projectID = await valistCtx.getProjectID(teamID, projectName);
           setProjectID(_projectID.toHexString());
         } catch(err) {
           // accountCtx.notify('error', String(err));
@@ -119,19 +119,14 @@ export default function ProjectPage():JSX.Element {
     (async () => {
       if (releaseMeta.licenses && releaseMeta.licenses[0]) {
         const licenseName = releaseMeta.licenses[0];
-        const licenseID = await valistCtx.contract.getLicenseID(projectID, licenseName);
-        const price = await valistCtx.contract.getPriceByID(licenseID);
+        const licenseID = await valistCtx.getLicenseID(projectID, licenseName);
+        const price = await valistCtx.getLicensePrice(teamName, projectName, licenseName);
         setLicensePrice(ethers.utils.formatEther(price));
-
-        // @ts-ignore @TODO expose from SDK interface
-        let balance = await valistCtx.contract.license.balanceOf(
-          accountCtx.address, licenseID,
-        );
-
-        setLicenseBalance(Number(balance));
+        const balance = await valistCtx.getLicenseBalance(accountCtx.address, licenseID);
+        setLicenseBalance(balance.toNumber());
       }
     })();
-  }, [accountCtx.address, projectID, releaseMeta.licenses, valistCtx.contract]);
+  }, [accountCtx.address, projectName, teamName, projectID, releaseMeta.licenses, valistCtx]);
 
   const mintLicense = async () => {
     if (releaseMeta.licenses && releaseMeta.licenses[0] && accountCtx.address !== '0x0') {
@@ -143,7 +138,7 @@ export default function ProjectPage():JSX.Element {
           releaseMeta.licenses[0],
           accountCtx.address,
         );
-        toastID = accountCtx.notify('transaction', transaction.hash());
+        toastID = accountCtx.notify('transaction', transaction.hash);
         await transaction.wait();
         accountCtx.dismiss(toastID);
         accountCtx.notify('success');
