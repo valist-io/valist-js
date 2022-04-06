@@ -1,4 +1,4 @@
-import { Client, Options, createClient } from './client';
+import { Client, createClient, generateID } from './client';
 
 export class AccountMeta {
 	/** account image */
@@ -35,4 +35,4 @@ export class ReleaseMeta {
 	public external_url?: string;
 }
 
-export { Client, Options, createClient };
+export { Client, createClient, generateID };

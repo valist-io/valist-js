@@ -1,4 +1,4 @@
-import { Client, AccountMeta, ProjectMeta, ReleaseMeta } from '../src/index';
+import { Client, AccountMeta, ProjectMeta, ReleaseMeta, generateID } from '../src/index';
 import { ethers } from 'ethers';
 import { create } from 'ipfs-http-client';
 import { expect } from 'chai';
@@ -46,9 +46,9 @@ describe('valist client', async function() {
 		release.description = 'Release v0.5.0';
 		release.external_url = 'https://gateway.valist.io/ipfs/Qm123';
 
-		const accountID = valist.getAccountID(1337, 'valist');
-		const projectID = valist.getProjectID(accountID, 'sdk');
-		const releaseID = valist.getReleaseID(projectID, 'v0.5.0');
+		const accountID = generateID(1337, 'valist');
+		const projectID = generateID(accountID, 'sdk');
+		const releaseID = generateID(projectID, 'v0.5.0');
 
 		const createAccountTx = await valist.createAccount('valist', account, members);
 		await createAccountTx.wait();
