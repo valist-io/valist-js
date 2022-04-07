@@ -3,16 +3,14 @@ import { ethers } from 'ethers';
 import { create } from 'ipfs-http-client';
 import { expect } from 'chai';
 import { describe, beforeEach, it } from 'mocha';
-
-import * as registryContract from '../src/contract/Registry.json';
-import * as licenseContract from '../src/contract/License.json';
+import * as contracts from '../src/contracts';
 
 const ganache = require("ganache");
 const provider = new ethers.providers.Web3Provider(ganache.provider());
 const signer = provider.getSigner();
 
-const Registry = new ethers.ContractFactory(registryContract.abi, registryContract.bytecode, signer);
-const License = new ethers.ContractFactory(licenseContract.abi, licenseContract.bytecode, signer);
+const Registry = new ethers.ContractFactory(contracts.registryABI, contracts.registryBytecode, signer);
+const License = new ethers.ContractFactory(contracts.licenseABI, contracts.licenseBytecode, signer);
 
 describe('valist client', async function() {
 	it('should work', async () => {
