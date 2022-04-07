@@ -157,8 +157,9 @@ export default class Client {
 	}
 
 	async writeFolder(data: ImportCandidateStream): Promise<string> {
+		const opts = { wrapWithDirectory: true };
 		const cids: string[] = [];
-		for await (const res of this.ipfs.addAll(data)) {
+		for await (const res of this.ipfs.addAll(data, opts)) {
 			cids.push(res.cid.toString());
 		}
 		return `${this.ipfsGateway}/ipfs/${cids[cids.length - 1]}`;
