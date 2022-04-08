@@ -2,7 +2,8 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 
 export interface TeamsState {
-  name: string;
+  username: string;
+  displayName: string;
   description: string;
   website: string;
   beneficiary: string;
@@ -10,15 +11,17 @@ export interface TeamsState {
 };
 
 interface TeamPayload {
-  name: '',
-  description: '',
-  website: '',
-  beneficiary: '',
-  members: [],
+  username: '';
+  displayName: '';
+  description: '';
+  website: '';
+  beneficiary: '';
+  members: [];
 }
 
 const initialState: TeamsState = {
-  name: '',
+  username: '',
+  displayName: '',
   description: '',
   website: '',
   beneficiary: '',
@@ -29,8 +32,11 @@ export const createTeamSlice = createSlice({
   name: 'team',
   initialState,
   reducers: {
-    setName: (state, action: PayloadAction<string>) => {
-      state.name = action.payload;
+    setUsername: (state, action: PayloadAction<string>) => {
+      state.username = action.payload;
+    },
+    setDisplayName: (state, action: PayloadAction<string>) => {
+      state.displayName = action.payload;
     },
     setDescription: (state, action: PayloadAction<string>) => {
       state.description = action.payload;
@@ -45,19 +51,29 @@ export const createTeamSlice = createSlice({
       state.members = action.payload;
     },
     setAll: (state, action: PayloadAction<TeamPayload>) => {
-      state.name = action.payload.name;
+      state.username =action.payload.username;
+      state.displayName = action.payload.displayName;
       state.description = action.payload.description;
       state.website = action.payload.website;
       state.beneficiary = action.payload.beneficiary;
       state.members = action.payload.members;
     },
+    clear: (state) => {
+      state.username ='',
+      state.displayName = '';
+      state.description = '';
+      state.website = '';
+      state.beneficiary = '';
+      state.members = [];
+    },
   },
 });
 
 export const { 
-  setName, setDescription, setWebsite, setBeneficiary, setMembers
+  setUsername, setDisplayName, setDescription, setWebsite, setBeneficiary, setMembers, clear,
 } = createTeamSlice.actions;
-export const selectName = (state: RootState) => state.team.name;
+export const selectUsername = (state: RootState) => state.team.username;
+export const selectDisplayName = (state: RootState) => state.team.displayName;
 export const selectDescription = (state: RootState) => state.team.description;
 export const selectWebsite = (state: RootState) => state.team.website;
 export const selectBeneficiary = (state: RootState) => state.team.beneficiary;

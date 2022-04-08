@@ -1,51 +1,72 @@
-import { useState } from "react";
-import TeamContent from "./TeamContent";
+import { Fragment } from "react";
+import ProjectMemberList from "../projects/ProjectMemberList";
+import TeamListCard from "./TeamListCard";
 import TeamProfileCard from "./TeamProfileCard";
 
-type TeamMember = {
-  id: string
+type AccountMember = {
+  id: string;
 }
 
-interface TeamPreviewProps {
-  teamName: string,
-  teamImage: File | null,
-  teamDescription: string,
-  teamMembers: TeamMember[],
-  defaultImage?: string,
+interface AccountPreviewProps {
+  view: string;
+  accountUsername: string;
+  accountDisplayName: string;
+  accountImage: File | null;
+  accountDescription: string;
+  accountMembers: AccountMember[];
+  defaultImage?: string;
 }
 
-export default function TeamPreview(props: TeamPreviewProps) {
-  const [view, setView] = useState<string>("Projects");
-  const name = props.teamName || 'name';
-  const descripton = props.teamDescription || 'An example description';
+export default function AccountPreview(props: AccountPreviewProps) {
+  const displayName = props.accountDisplayName || 'Display Name';
+  const descripton = props.accountDescription || 'An example description';
   
   let imgUrl = "";
-  if (props.teamImage) {
-    imgUrl = URL.createObjectURL(props.teamImage);
+  if (props.accountImage) {
+    imgUrl = URL.createObjectURL(props.accountImage);
   }
+
+  const BasicInfoPreview = () => {
+    return (
+      <div>
+        <TeamProfileCard 
+          view={"Profile"}
+          tabs={[{ text: 'Profile', disabled: false }]} 
+          setView={() => {}}
+          teamName={displayName} 
+          teamImage={imgUrl || (props.defaultImage ? props.defaultImage : '')}
+          meta={{
+            image: "",
+            name: "",
+            description: descripton,
+            external_url: "",
+          }}
+        />
+
+        <br/>
   
+        <TeamListCard text={descripton} image={imgUrl} teamName={displayName} metaURI={""} />
+      </div>
+    );
+  };
+
+  const AccountPreviewContent = () => {
+    switch (props.view) {
+      case 'Basic Info':
+        return (
+          <BasicInfoPreview />
+        );
+      case 'Members':
+        return <ProjectMemberList members={props.accountMembers} />;
+      default:
+        return <Fragment />;
+    }
+  };
+
   return (
     <div>
-      <TeamProfileCard 
-        view={view}
-        tabs={[{ text: 'Projects', disabled: false }, { text: 'Members', disabled: false }]} 
-        setView={setView}
-        teamName={name} 
-        teamImage={imgUrl || (props.defaultImage ? props.defaultImage : '')}
-        meta={{
-          image: "",
-          name: "",
-          description: descripton,
-          external_url: "",
-        }}
-      />
       <div className="mt-4">
-       <TeamContent
-        view={view}
-        teamName={name} 
-        description={descripton} 
-        members={props.teamMembers} 
-      />
+        {AccountPreviewContent()}
       </div>
     </div>
   );

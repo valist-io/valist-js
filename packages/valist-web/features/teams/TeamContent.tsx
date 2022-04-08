@@ -4,7 +4,7 @@ import ProjectList from './TeamProjectList';
 
 interface TeamContentProps {
   view: string,
-  teamName: string,
+  username: string,
   description: string,
   members: Member[]
 }
@@ -16,7 +16,7 @@ export default function TeamContent(props: TeamContentProps): JSX.Element {
       name: "project1",
       metaURI: "https://gateway.valist.io/ipfs/QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
       team: {
-        name: props.teamName,
+        name: props.username,
       },
     },
     {
@@ -24,7 +24,7 @@ export default function TeamContent(props: TeamContentProps): JSX.Element {
       name: "project2",
       metaURI: "https://gateway.valist.io/ipfs/QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
       team: {
-        name: props.teamName,
+        name: props.username,
       },
     },
     {
@@ -32,7 +32,7 @@ export default function TeamContent(props: TeamContentProps): JSX.Element {
       name: "project3",
       metaURI: "https://gateway.valist.io/ipfs/QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
       team: {
-        name: props.teamName,
+        name: props.username,
       },
     },
     {
@@ -40,7 +40,7 @@ export default function TeamContent(props: TeamContentProps): JSX.Element {
       name: "project4",
       metaURI: "https://gateway.valist.io/ipfs/QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
       team: {
-        name: props.teamName,
+        name: props.username,
       },
     },
   ];

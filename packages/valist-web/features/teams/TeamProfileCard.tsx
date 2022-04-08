@@ -2,6 +2,7 @@
 import Tabs, { Tab } from '../../components/Tabs';
 import { TeamMeta } from '../../utils/Valist/types';
 import AddressIdenticon from '../../components/Identicons/AddressIdenticon';
+import TeamProfileCardActions from './TeamProfileCardActions';
 
 interface TeamProfileCardProps {
   view: string,
@@ -15,8 +16,8 @@ interface TeamProfileCardProps {
 export default function TeamProfileCard(props: TeamProfileCardProps): JSX.Element {
   return (
     <section aria-labelledby="profile-overview-title">
-      <div className="rounded-lg bg-white overflow-hidden shadow">
-        <div className="sm:flex sm:items-center pt-6 px-6">
+      <div className="rounded-lg bg-white pt-6 px-6 overflow-hidden shadow">
+        <div className="sm:flex sm:items-center sm:justify-between">
           <div className="sm:flex sm:space-x-5">
             <div className="flex-shrink-0">
               {props.teamImage ? 
@@ -24,7 +25,9 @@ export default function TeamProfileCard(props: TeamProfileCardProps): JSX.Elemen
                   <img src={props.teamImage} alt="profile-image" />
                 </div>
                 :
-                <AddressIdenticon address={props.teamName} height={80} width={80} />
+                <div className="px-6">
+                  <AddressIdenticon address={props.teamName} height={80} width={80} />
+                </div>
               }
             </div>
             <div>

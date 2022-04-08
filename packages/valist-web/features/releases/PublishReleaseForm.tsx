@@ -85,8 +85,6 @@ ${props.releaseLicense && `Release license: ${props.releaseLicense}` || ''}
     }
   }, [_name, validName]);
 
-  console.log('licenses', props.releaseLicenses);
-
   return (
     <form className="grid grid-cols-1 gap-y-6 sm:gap-x-8" action="#" method="POST">
       <ImageUpload setImage={props.setImage} text={'Set Release Image'} />
