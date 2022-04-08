@@ -11,7 +11,7 @@ export default function LoginModal(): JSX.Element {
   useEffect(() => {
     const handleClick = (e: any) => {
       if (element.current && e.target && element.current.contains(e.target)) return;
-      dispatch((toggle()))
+      dispatch((toggle()));
     };
 
     document.addEventListener('mousedown', handleClick);
@@ -22,7 +22,7 @@ export default function LoginModal(): JSX.Element {
 
   return (
     <div className="fixed top-0 left-0 w-screen h-screen flex items-center
-    justify-center" style={{ background: 'rgba(0, 0, 0, 0.3)', zIndex: '100' }}>
+    justify-center" style={{ background: 'rgba(0, 0, 0, 0.3)', zIndex: 100 }}>
       <div ref={element} className="bg-white border py-2 px-5 rounded-lg flex items-center flex-col">
         <ModalContent view={view} />
       </div>

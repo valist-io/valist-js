@@ -74,7 +74,7 @@ ${props.releaseLicense && `Release license: ${props.releaseLicense}` || ''}
       setValidName(!isNameTaken);
       dispatch(setName(_name));
     })();
-  }, [_name, dispatch, props.releaseProject, props.releaseTeam, valistCtx.contract]);
+  }, [_name, dispatch, props.releaseProject, props.releaseTeam, valistCtx.getReleaseMetaURI]);
 
   // Handle form valid check
   useEffect(() => {

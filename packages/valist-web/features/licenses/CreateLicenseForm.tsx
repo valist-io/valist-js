@@ -71,7 +71,7 @@ License name: ${props.licenseName}
       setValidName(!isNameTaken);
       dispatch(setName(_name));
     })();
-  }, [_name, props.licenseTeam, props.licenseProject, valistCtx.contract, dispatch]);
+  }, [_name, props.licenseTeam, props.licenseProject, valistCtx.getLicenseMetaURI, dispatch]);
 
   // Handle form valid check
   useEffect(() => {

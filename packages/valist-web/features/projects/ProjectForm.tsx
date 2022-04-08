@@ -70,7 +70,7 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
     const checkProjectName = async (projectName: string) => {
       try {
         console.log('check', props.accountUsername, projectName);
-        await valistCtx.contract.getProjectMetaURI(props.accountUsername, projectName);
+        await valistCtx.getProjectMetaURI(props.accountUsername, projectName);
       } catch (err: any) {
         if (JSON.stringify(err).includes("err-proj-not-exist")) {
           return false;
@@ -84,7 +84,7 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
       setValidName(!isNameTaken);
       dispatch(setName(_name));
     })();
-  }, [_name, dispatch, props.accountUsername, valistCtx.contract]);
+  }, [_name, dispatch, props.accountUsername, valistCtx.getProjectMetaURI]);
 
   // Handle member list change
   useEffect(() => {
