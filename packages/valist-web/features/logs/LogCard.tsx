@@ -18,7 +18,7 @@ interface LogCardProps {
 
 export default function LogCard(props: LogCardProps) {
   let query = RECENT_LOGS_QUERY;
-  let variables: any = { count: 5 };
+  let variables: any = { count: 4 };
 
   if (props.project && props.team) {
     query = PROJECT_LOGS_QUERY;
