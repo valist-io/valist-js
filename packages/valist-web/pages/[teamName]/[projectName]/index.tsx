@@ -1,7 +1,6 @@
 import { useQuery } from "@apollo/client";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import Layout from "../../../components/Layouts/Main";
 import { BigNumberish, ethers } from "ethers";
 import ProjectActions from "../../../features/projects/ProjectActions";
@@ -26,7 +25,6 @@ export default function ProjectPage():JSX.Element {
   const projectName = `${router.query.projectName}`;
   const valistCtx = useContext(ValistContext);
   const address = useAppSelector(selectAddress);
-  const dispatch = useDispatch();
   const [projectID, setProjectID] = useState<string>('');
   const { data, loading, error } = useQuery(PROJECT_PROFILE_QUERY, {
     variables: { project: projectID },
@@ -123,19 +121,19 @@ export default function ProjectPage():JSX.Element {
     (async () => {
       if (releaseMeta.licenses && releaseMeta.licenses[0]) {
         const licenseName = releaseMeta.licenses[0];
-        const licenseID = await valistCtx.contract.getLicenseID(projectID, licenseName);
-        const price = await valistCtx.contract.getPriceByID(licenseID);
+        const licenseID = await valistCtx.getLicenseID(projectID, licenseName);
+        const price = await valistCtx.getLicensePrice(teamName, projectName, licenseName);
         setLicensePrice(ethers.utils.formatEther(price));
 
         // @ts-ignore @TODO expose from SDK interface
-        let balance = await valistCtx.contract.license.balanceOf(
+        let balance = await valistCtx.license.balanceOf(
           address, licenseID,
         );
 
         setLicenseBalance(Number(balance));
       }
     })();
-  }, [address, projectID, releaseMeta.licenses, valistCtx.contract]);
+  }, [address, projectID, releaseMeta.licenses]);
 
   const mintLicense = async () => {
     if (releaseMeta.licenses && releaseMeta.licenses[0] && address !== '0x0') {
@@ -147,7 +145,7 @@ export default function ProjectPage():JSX.Element {
           releaseMeta.licenses[0],
           address,
         );
-        toastID = notify('transaction', transaction.hash());
+        toastID = notify('transaction', transaction.hash);
         await transaction.wait();
         dismiss(toastID);
         notify('success');

@@ -58,7 +58,7 @@ License name: ${props.licenseName}
   useEffect(() => {
     const checkLicenseName = async (licenseName: string) => {
       try {
-        await valistCtx.contract.getLicenseMetaURI(props.licenseTeam, props.licenseProject, licenseName);
+        await valistCtx.getLicenseMetaURI(props.licenseTeam, props.licenseProject, licenseName);
       } catch (err: any) {
         if (JSON.stringify(err).includes("err-license-not-exist")) {
           return false;

@@ -61,7 +61,7 @@ ${props.releaseLicense && `Release license: ${props.releaseLicense}` || ''}
   useEffect(() => {
     const checkReleaseName = async (releaseName: string) => {
       try {
-        await valistCtx.contract.getReleaseMetaURI(props.releaseTeam, props.releaseProject, releaseName);
+        await valistCtx.getReleaseMetaURI(props.releaseTeam, props.releaseProject, releaseName);
       } catch (err: any) {
         if (JSON.stringify(err).includes("err-release-not-exist")) {
           return false;

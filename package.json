@@ -8,6 +8,6 @@
     "test": "lerna run test",
     "lint": "lerna run lint",
     "build": "lerna run build",
-    "dev": "lerna run deploy:ganache && lerna run bootstrap && lerna run dev --parallel"
+    "dev": "lerna run dev --parallel"
   }
 }

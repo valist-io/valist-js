@@ -89,7 +89,7 @@ export default function ManageAccount(props: EditAccountProps) {
     let imgURL = "";
 
     if (accountImage) {
-      imgURL = await valistCtx.storage.writeFile(accountImage);
+      imgURL = await valistCtx.writeFile(accountImage);
     } else {
       imgURL = currentImage;
     }
@@ -111,11 +111,10 @@ export default function ManageAccount(props: EditAccountProps) {
       toastID = notify('pending');
 
       // If props.teamName call setTeamMeta else createTeam
-      let transaction: TransactionAPI;
+      let transaction: any;
       if (props.accountUsername) {
-        const updatedMeta = await valistCtx.storage.writeJSON(JSON.stringify(meta));
-        console.log('tetsdtqd', accountUsername);
-        transaction = await valistCtx.contract.setTeamMetaURI(accountUsername, updatedMeta);
+        const updatedMeta = await valistCtx.writeJSON(JSON.stringify(meta));
+        transaction = await valistCtx.setTeamMetaURI(accountUsername, updatedMeta);
       } else {
         transaction = await valistCtx.createTeam(
           accountUsername,
@@ -126,7 +125,7 @@ export default function ManageAccount(props: EditAccountProps) {
       }
       
       dismiss(toastID);
-      toastID = notify('transaction', transaction.hash());
+      toastID = notify('transaction', transaction.hash);
       await transaction.wait();
 
       // Inject created account/team into global state

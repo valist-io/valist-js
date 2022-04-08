@@ -2,10 +2,5 @@
   "version": "2.0.0",
   "packages": [
     "packages/*"
-  ],
-  "command": {
-    "bootstrap": {
-      "ignore": "@valist/near-contracts"
-    }
-  }
+  ]
 }

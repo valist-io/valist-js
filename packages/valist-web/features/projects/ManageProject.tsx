@@ -10,7 +10,6 @@ import parseError from '../../utils/Errors';
 import { clear, selectDescription, selectDisplayName, selectMembers, selectName, selectShortDescription, selectTags, selectTeam, selectType, selectWebsite, setDescription, setDisplayName, setName, setShortDescription, setTags, setTeam, setType, setWebsite } from '../../features/projects/projectSlice';
 import ProjectPreview from '../../features/projects/ProjectPreview';
 import CreateProjectForm from './ProjectForm';
-import { TransactionAPI } from '@valist/sdk/dist/contract';
 import Tabs from '../../components/Tabs';
 import { Asset } from './ProjectGallery';
 
@@ -110,13 +109,13 @@ export default function ManageProject(props: ManageProjectProps) {
     let galleryItems:Asset[] = (projectGallery.length !== 0) ? [] : projectAssets;
 
     if (projectImage[0]) {
-      imgURL = await valistCtx.storage.writeFile(projectImage[0]);
+      imgURL = await valistCtx.writeFile(projectImage[0]);
     } else {
       imgURL = currentImage;
     }
 
     for (let i = 0; i < projectGallery.length; i++) {
-      const url = await valistCtx.storage.writeFile(projectGallery[i]);
+      const url = await valistCtx.writeFile(projectGallery[i]);
       galleryItems.push({
         name: projectGallery[i].name,
         type: projectGallery[i].type,
@@ -144,10 +143,10 @@ export default function ManageProject(props: ManageProjectProps) {
       toastID = notify('pending');
 
       // If props.project call setProjectMeta else createTeam
-      let transaction: TransactionAPI;
+      let transaction: any;
       if (props.accountUsername && props.projectName) {
-        const updatedMeta = await valistCtx.storage.writeJSON(JSON.stringify(project));
-        transaction = await valistCtx.contract.setProjectMetaURI(
+        const updatedMeta = await valistCtx.writeJSON(JSON.stringify(project));
+        transaction = await valistCtx.setProjectMetaURI(
           props.accountUsername, 
           props.projectName,
           updatedMeta,
@@ -162,7 +161,7 @@ export default function ManageProject(props: ManageProjectProps) {
       }
 
       dismiss(toastID);
-      toastID = notify('transaction', transaction.hash());
+      toastID = notify('transaction', transaction.hash);
       await transaction.wait();
 
       dismiss(toastID);

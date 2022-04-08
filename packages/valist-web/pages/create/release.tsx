@@ -73,7 +73,7 @@ const PublishReleasePage: NextPage = () => {
     (async () => {
       let licenses = [];
       try {
-        licenses = await valistCtx.contract.getLicenseNames(
+        licenses = await valistCtx.getLicenseNames(
           account,
           project,
           0,
@@ -91,13 +91,13 @@ const PublishReleasePage: NextPage = () => {
         console.log('err', err);
       }
     })();
-  }, [account, dispatch, project, valistCtx.contract]);
+  }, [account, dispatch, project, valistCtx.getLicenseNames]);
 
   const createRelease = async () => {
     let imgURL = "";
 
     if (releaseImage) {
-      imgURL = await valistCtx.storage.writeFile(releaseImage);
+      imgURL = await valistCtx.writeFile(releaseImage);
     }
 
     const release = new ReleaseMeta();
@@ -107,7 +107,8 @@ const PublishReleasePage: NextPage = () => {
     release.licenses = license;
     
     const uploadToast = notify('text', 'Uploading files...');
-    release.external_url = await valistCtx.storage.writeFolder(releaseFiles);
+    console.log('files', releaseFiles);
+    release.external_url = await valistCtx.writeFolder(releaseFiles);
     dismiss(uploadToast);
   
     console.log("Release Team", account);
@@ -126,7 +127,7 @@ const PublishReleasePage: NextPage = () => {
       );
 
       dismiss(toastID);
-      toastID = notify('transaction', transaction.hash());
+      toastID = notify('transaction', transaction.hash);
       await transaction.wait();
       
       dismiss(toastID);

@@ -1,9 +1,4 @@
-import { Client, createClient } from './client';
-import * as Storage from './storage';
-import { createIPFS } from './storage/ipfs';
-import { createPinata } from './storage/pinata';
-import * as Contract from './contract/';
-import { ValistABIs } from './abis';
+import { Client, Options, createClient, Provider } from './client';
 
 export class TeamMeta {
 	/** team image */
@@ -27,6 +22,8 @@ export class ProjectMeta {
 	public description?: string;
 	/** link to the project website. */
 	public external_url?: string;
+	/** type used by clients to handle project */
+	public type?: string;
 	/** tags used for searching and categorization */
 	public tags?: string[];
 	/** videos and graphics of the project */
@@ -62,12 +59,4 @@ export class LicenseMeta {
 	public external_url?: string;
 }
 
-export {
-	Client,
-	Storage,
-	Contract,
-	ValistABIs,
-	createClient,
-	createIPFS,
-	createPinata,
-};
+export { Client, Options, createClient, Provider };

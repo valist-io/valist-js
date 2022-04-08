@@ -1,9 +1,8 @@
-import { useLazyQuery } from '@apollo/client';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
-import { ReleaseMeta, LicenseMeta, ProjectMeta } from '@valist/sdk';
-import { BigNumber, BigNumberish } from 'ethers';
+import { LicenseMeta } from '@valist/sdk';
+import { BigNumber } from 'ethers';
 import ValistContext from '../../features/valist/ValistContext';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { selectAccountNames, selectAccounts, selectLoginTried, selectLoginType } from '../../features/accounts/accountsSlice';
@@ -59,7 +58,7 @@ const CreateLicensePage: NextPage = () => {
     let imgURL = "";
 
     if (licenseImage) {
-      imgURL = await valistCtx.storage.writeFile(licenseImage);
+      imgURL = await valistCtx.writeFile(licenseImage);
     }
 
     const license = new LicenseMeta();
@@ -86,7 +85,7 @@ const CreateLicensePage: NextPage = () => {
       );
 
       dismiss(toastID);
-      toastID = notify('transaction', transaction.hash());
+      toastID = notify('transaction', transaction.hash);
       await transaction.wait();
       
       dismiss(toastID);
