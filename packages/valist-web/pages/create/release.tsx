@@ -1,5 +1,4 @@
 import Layout from '../../components/Layouts/Main';
-import Accordion from '../../components/Accordian/Accordion';
 import ValistContext from '../../features/valist/ValistContext';
 import parseError from '../../utils/Errors';
 import type { NextPage } from 'next';
@@ -10,8 +9,7 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { selectAccountNames, selectAccounts, selectLoginTried, selectLoginType } from '../../features/accounts/accountsSlice';
 import { showLogin } from '../../features/modal/modalSlice';
 import { dismiss, notify } from '../../utils/Notifications';
-import { selectDescription, selectLicenses, selectProject, selectTeam, setLicenses, setProject, setTeam } from '../../features/releases/releaseSlice';
-import { selectName } from '../../features/projects/projectSlice';
+import { selectName, selectDescription, selectLicenses, selectProject, selectTeam, setLicenses, setProject, setTeam } from '../../features/releases/releaseSlice';
 import { getProjectNames } from '../../utils/Apollo/normalization';
 import ReleasePreview from '../../features/releases/ReleasePreview';
 import PublishReleaseForm from '../../features/releases/PublishReleaseForm';
@@ -107,6 +105,7 @@ const PublishReleasePage: NextPage = () => {
 		release.name = name;
 		release.description = description;
     release.licenses = license;
+    
     const uploadToast = notify('text', 'Uploading files...');
     release.external_url = await valistCtx.storage.writeFolder(releaseFiles);
     dismiss(uploadToast);
@@ -145,11 +144,6 @@ const PublishReleasePage: NextPage = () => {
       <div className="grid grid-cols-1 gap-4 items-start gap-y-6 lg:grid-cols-12 lg:gap-8">
         {/* Right Column */}
         <div className="grid grid-cols-1 gap-x-4 gap-y-6 lg:col-span-5">
-          <Accordion name={'release'} title={
-            <div>
-              <span className='mr-4'></span>Publish Release
-            </div>
-          }>
             <div className="p-4">
               <PublishReleaseForm
                 teamNames={accountNames}
@@ -165,7 +159,6 @@ const PublishReleasePage: NextPage = () => {
                 submit={() => {createRelease();}}
               />
             </div>
-          </Accordion>
         </div>
 
         {/* Right column */}

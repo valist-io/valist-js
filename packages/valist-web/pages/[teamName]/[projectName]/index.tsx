@@ -17,7 +17,8 @@ import { useAppSelector } from "../../../app/hooks";
 import { selectAddress } from "../../../features/accounts/accountsSlice";
 import ProjectProfileCard from "../../../features/projects/ProjectProfileCard";
 import ProjectMetaCard from "../../../features/projects/ProjectMetaCard";
-import ProjectContent from "../../../features/projects/ProjectContent";
+import ProjectContent from "../../../features/projects/ProjectProfileContent";
+import ProjectProfileCardActions from "../../../features/projects/ProjectProfileCardActions";
 
 export default function ProjectPage():JSX.Element {
   const router = useRouter();
@@ -156,7 +157,7 @@ export default function ProjectPage():JSX.Element {
       }
     }
   };
-
+ 
   return (
     <Layout title="Valist | Project">
       <div className="grid grid-cols-1 gap-4 items-start lg:grid-cols-6 lg:gap-8">
@@ -189,14 +190,14 @@ export default function ProjectPage():JSX.Element {
             mintLicense={mintLicense} 
             licenseBalance={licenseBalance}         
           />
+          <ProjectProfileCardActions accountName={teamName} projectName={projectName} />
           <ProjectMetaCard
             version={version} 
             teamName={teamName}
             donate={() => {}}
             memberCount={members.length}
             projectName={projectName} 
-            projectMeta={projectMeta} 
-            releaseMeta={releaseMeta} 
+            projectMeta={projectMeta}
           />
           <LogCard team={teamName} project={projectName} />
         </div>

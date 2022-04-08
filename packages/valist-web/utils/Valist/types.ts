@@ -1,3 +1,4 @@
+import { Asset } from "../../features/projects/ProjectGallery";
 import { Project } from "../Apollo/types";
 
 export declare type Team = {
@@ -25,6 +26,7 @@ export declare type ProjectMeta = {
   description?: string;
   external_url?: string;
   short_description?: string;
+  gallery?: Asset[];
 };
 
 export type ReleaseMeta = {

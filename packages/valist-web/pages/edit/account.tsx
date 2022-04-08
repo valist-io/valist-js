@@ -11,7 +11,7 @@ const EditAccountPage: NextPage = () => {
 
   return (
     <Layout title={`Valist | Create team`}>
-      <EditTeam teamName={name} />
+      <EditTeam accountUsername={name} />
     </Layout>
   );
 };
