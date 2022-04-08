@@ -10,6 +10,7 @@ import LogCard from '../../features/logs/LogCard';
 import TeamProfileCard from '../../features/teams/TeamProfileCard';
 import TeamProjectList from '../../features/teams/TeamProjectList';
 import TeamMemberList from '../../features/teams/TeamMemberList';
+import TeamProfileCardActions from '../../features/teams/TeamProfileCardActions';
 
 type TeamMember = {
   id: string
@@ -69,6 +70,7 @@ export default function TeamProfilePage() {
           {view === 'Activity' && <LogTable team={teamName} project={''} address={''} />}
         </div>
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
+          <TeamProfileCardActions accountName={teamName} />
           <TeamMemberList 
             teamMembers={members} 
             teamName={teamName}          
