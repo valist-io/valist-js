@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { SetUseState } from '../../utils/Account/types';
 import { ProjectMeta, ReleaseMeta } from '../../utils/Valist/types';
@@ -8,13 +9,12 @@ interface RepoMetaCardProps {
   projectName: string;
   memberCount: number;
   projectMeta: ProjectMeta;
-  releaseMeta: ReleaseMeta;
   donate: SetUseState<boolean>;
 }
 
 const ProjectMetaCard = (props: RepoMetaCardProps) => {
   const {
-   teamName, projectName, projectMeta, releaseMeta, 
+   teamName, projectName, projectMeta, 
   } = props;
 
   const [downloads, setDownloads] = useState(0);
@@ -46,14 +46,14 @@ const ProjectMetaCard = (props: RepoMetaCardProps) => {
           <h3 className="text-lg text-gray-900 mb-1">Downloads</h3>
           <div className="text-gray-600">{downloads}</div>
         </div>
-          
+
         <div>
-          <h3 className="text-lg text-gray-900 mb-1">Total Files</h3>
+          <h3 className="text-lg text-gray-900 mb-1">Members</h3>
           <div className="text-gray-600">
-            {releaseMeta.artifacts?.size || 0}
+            {props.memberCount || 0}
           </div>
         </div>
-
+        
         {props.version &&
           <div>
             <h3 className="text-lg text-gray-900 mb-1">Version</h3>
@@ -61,10 +61,10 @@ const ProjectMetaCard = (props: RepoMetaCardProps) => {
           </div>}
 
         <div>
-          <h3 className="text-lg text-gray-900 mb-1">Members</h3>
-          <div className="text-gray-600">
-            {props.memberCount || 0}
-          </div>
+          <h3 className="text-lg text-gray-900 mb-1">Published by</h3>
+          <Link href={`/${teamName}`}>
+            <a className="text-gray-600 hover:text-indigo-500">{teamName}</a>
+          </Link>
         </div>
       </div>
     </div>
