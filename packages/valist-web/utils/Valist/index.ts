@@ -1,11 +1,10 @@
-import { ContractAPI } from "@valist/sdk/dist/contract";
 import { utils } from "ethers";
 import { Project } from "../Apollo/types";
 import { License } from "./types";
 
 export async function getLicenses(
   projectList: Project[],
-  getLicenseNames: ContractAPI["getLicenseNames"],
+  getLicenseNames: any,
   getLicenseID: any,
 ) {
   let licenses:License[] = [];
