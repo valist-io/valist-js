@@ -3,21 +3,24 @@ import { SetUseState } from '../../utils/Account/types';
 import { useDropzone } from 'react-dropzone';
 
 interface FileUploadProps {
-  files: File[]
-  setFiles: SetUseState<File[]>
+  title?: string;
+  files: File[];
+  setFiles: SetUseState<File[]>;
 }
 
 export default function FileUpload(props: FileUploadProps) {
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
   
   useEffect(() => {
-    props.setFiles(acceptedFiles);
-  }, [acceptedFiles, props]);
+    if (acceptedFiles.length != 0) {
+      props.setFiles(acceptedFiles);
+    }
+  }, [acceptedFiles, props.setFiles]);
   
   return (
     <div>
       <label htmlFor="cover-photo" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
-        Files
+        {props.title || 'Files'}
       </label>
       <div className="mt-1 sm:mt-0 sm:col-span-2">
         <div className="max-w-lg flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md" {...getRootProps()}>
@@ -29,7 +32,7 @@ export default function FileUpload(props: FileUploadProps) {
           </div>
         </div>
         <ul>
-          { props.files && props.files.map((file) => (
+          {props.files && props.files.map((file) => (
             <li key={file.name}>
               {file.webkitRelativePath ? file.webkitRelativePath : file.name}
             </li>
