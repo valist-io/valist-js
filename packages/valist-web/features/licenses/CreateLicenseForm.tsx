@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { BigNumberish, ethers } from "ethers";
+import { ethers } from "ethers";
 import { SetUseState } from "../../utils/Account/types";
 import { versionFilterRegex } from "../../utils/Validation";
 import ValistContext from "../valist/ValistContext";
@@ -33,7 +33,6 @@ export default function CreateLicenseForm(props: CreateLicenseFormProps) {
   const [validName, setValidName] = useState<boolean>(false);
   const [validForm, setValidForm] = useState<boolean>(false);
 
-
   const handleSubmit = async () => {
     if (validForm) {
       alert(`
@@ -49,7 +48,7 @@ License name: ${props.licenseName}
 
   useEffect(() => {
     try {
-      const priceInWei = ethers.utils.parseEther(_price || '0');
+      const priceInWei = ethers.utils.parseEther(_price || '0').toHexString();
       dispatch(setPrice(priceInWei));
     } catch (err) {
       console.log('Invalid number for price');
@@ -106,7 +105,9 @@ License name: ${props.licenseName}
         text-gray-700">
           Project <span className="float-right"><Tooltip text='The project where this license will be published.' /></span>
         </label>
-        <select onChange={(e) => {dispatch(setProject(e.target.value));}}
+        <select onChange={(e) => {
+          dispatch(setProject(e.target.value));
+        }}
         id="projectType" className="mt-1 form-select block w-full pl-3 pr-10 py-2
         text-base leading-6 border-gray-300 focus:outline-none focus:shadow-outline-blue
         focus:border-blue-300 sm:text-sm sm:leading-5">

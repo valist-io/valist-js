@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { BigNumberish } from 'ethers';
 import { RootState } from '../../app/store';
 
 export interface LicenseState {
@@ -7,7 +6,7 @@ export interface LicenseState {
   project: string;
   name: string;
   description: string;
-  price: BigNumberish;
+  price: string;
 };
 
 const initialState: LicenseState = {
@@ -15,7 +14,7 @@ const initialState: LicenseState = {
   project: '',
   name: '',
   description: '',
-  price: 0,
+  price: '',
 };
 
 export const licenseSlice = createSlice({
@@ -34,7 +33,7 @@ export const licenseSlice = createSlice({
     setDescription: (state, action: PayloadAction<string>) => {
       state.description = action.payload;
     },
-    setPrice: (state, action: PayloadAction<BigNumberish>) => {
+    setPrice: (state, action: PayloadAction<string>) => {
       state.price = action.payload;
     },
   },
@@ -43,5 +42,9 @@ export const licenseSlice = createSlice({
 export const { 
   setTeam, setProject, setName, setDescription, setPrice,
 } = licenseSlice.actions;
-export const selectTeam = (state: RootState) => state.release.team;
+export const selectName = (state: RootState) => state.license.name;
+export const selectTeam = (state: RootState) => state.license.team;
+export const selectProject = (state: RootState) => state.license.project;
+export const selectDescription = (state: RootState) => state.license.description;
+export const selectPrice = (state: RootState) => state.license.price;
 export default licenseSlice.reducer;
