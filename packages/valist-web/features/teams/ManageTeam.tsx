@@ -10,7 +10,6 @@ import { selectDescription, selectWebsite, selectBeneficiary, selectMembers, set
 import parseError from '../../utils/Errors';
 import TeamPreview from './TeamPreview';
 import CreateTeamForm from './TeamForm';
-import { TransactionAPI } from '@valist/sdk/dist/contract';
 import Tabs from '../../components/Tabs';
 
 type Member = {
