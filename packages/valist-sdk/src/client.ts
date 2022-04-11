@@ -85,6 +85,14 @@ export default class Client {
 		return await this.registry.approveRelease(releaseID);
 	}
 
+	async setProductLimit(projectID: ethers.BigNumberish, limit: ethers.BigNumberish): Promise<TransactionResponse> {
+		return await this.license.setLimit(projectID, limit);
+	}
+
+	async setProductRoyalty(projectID: ethers.BigNumberish, recipient: string, amount: ethers.BigNumberish): Promise<TransactionResponse> {
+		return await this.license.setRoyalty(projectID, recipient, amount);
+	}
+
 	async setProductPrice(projectID: ethers.BigNumberish, price: ethers.BigNumberish): Promise<TransactionResponse> {
 		const setPrice = this.license['setPrice(uint256,uint256)'];
 		return await setPrice(projectID, price);
@@ -122,6 +130,14 @@ export default class Client {
 		return await getPrice(token, projectID);
 	}
 
+	async getProductLimit(projectID: ethers.BigNumberish): Promise<ethers.BigNumber> {
+		return await this.license.getLimit(projectID);
+	}
+
+	async getProductSupply(projectID: ethers.BigNumberish): Promise<ethers.BigNumber> {
+		return await this.license.getSupply(projectID);
+	}
+
 	async getAccountMembers(accountID: ethers.BigNumberish): Promise<string[]> {
 		return await this.registry.getAccountMembers(accountID);
 	}
@@ -132,6 +148,22 @@ export default class Client {
 
 	async getReleaseSigners(releaseID: ethers.BigNumberish): Promise<string[]> {
 		return await this.registry.getReleaseSigners(releaseID);
+	}
+
+	async getLatestReleaseID(projectID: ethers.BigNumberish): Promise<ethers.BigNumber> {
+		return await this.registry.getLatestReleaseID(projectID);
+	}
+
+	async getPreviousReleaseID(releaseID: ethers.BigNumberish): Promise<ethers.BigNumber> {
+		return await this.registry.getPreviousReleaseID(releaseID);
+	}
+
+	async getProjectAccountID(projectID: ethers.BigNumberish): Promise<ethers.BigNumber> {
+		return await this.registry.getProjectAccountID(projectID);
+	}
+
+	async getReleaseProjectID(releaseID: ethers.BigNumberish): Promise<ethers.BigNumber> {
+		return await this.registry.getReleaseProjectID(releaseID);
 	}
 
 	async isAccountMember(accountID: ethers.BigNumberish, address: string): Promise<boolean> {
