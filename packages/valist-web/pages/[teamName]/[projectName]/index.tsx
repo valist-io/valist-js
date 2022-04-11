@@ -165,7 +165,7 @@ export default function ProjectPage():JSX.Element {
             setView={setView}
             tabs={tabs}
             teamName={teamName}
-            projectName={projectName} 
+            projectName={projectMeta?.name || projectName} 
             projectImg={projectMeta.image ? projectMeta.image : '' }
           />
           <ProjectContent

@@ -12,6 +12,7 @@ export interface ProjectState {
   description: string;
   shortDescription: string;
   website: string;
+  youtubeUrl: string;
   type: string;
   tags: string[],
   members: string[];
@@ -24,6 +25,7 @@ interface ProjectPayload {
   description: string;
   shortDescription: string;
   website: string;
+  youtubeUrl: string;
   type: string;
   tags: string[],
   members: string[];
@@ -33,11 +35,12 @@ const initialState: ProjectState = {
   team: '',
   name: '',
   displayName: '',
-  type: '',
-  tags: [],
   description: defaultReadme,
   shortDescription: '',
   website: '',
+  youtubeUrl: '',
+  type: '',
+  tags: [],
   members: [],
 };
 
@@ -62,6 +65,9 @@ export const projectSlice = createSlice({
     },
     setWebsite: (state, action: PayloadAction<string>) => {
       state.website = action.payload;
+    },
+    setYoutubeUrl: (state, action: PayloadAction<string>) => {
+      state.youtubeUrl = action.payload;
     },
     setMembers: (state, action: PayloadAction<string[]>) => {
       state.members = action.payload;
@@ -103,7 +109,7 @@ export const projectSlice = createSlice({
 });
 
 export const { 
-  setTeam, setDisplayName, setName, setDescription, setShortDescription, setWebsite, setMembers, setType, setTags, addTag, removeTag, setAll, clear,
+  setTeam, setDisplayName, setName, setDescription, setShortDescription, setWebsite, setMembers, setYoutubeUrl, setType, setTags, addTag, removeTag, setAll, clear,
 } = projectSlice.actions;
 export const selectTeam = (state: RootState) => state.project.team;
 export const selectDisplayName = (state: RootState) => state.project.displayName;
@@ -112,6 +118,7 @@ export const selectDescription = (state: RootState) => state.project.description
 export const selectShortDescription = (state: RootState) => state.project.shortDescription;
 export const selectWebsite = (state: RootState) => state.project.website;
 export const selectMembers = (state: RootState) => state.project.members;
+export const selectYoutubeUrl = (state: RootState) => state.project.youtubeUrl;
 export const selectType = (state: RootState) => state.project.type;
 export const selectTags = (state: RootState) => state.project.tags;
 export default projectSlice.reducer;

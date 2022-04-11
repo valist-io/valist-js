@@ -7,7 +7,7 @@ import { selectAccountNames, selectAccounts, selectLoginTried, selectLoginType }
 import { showLogin } from '../../features/modal/modalSlice';
 import { dismiss, notify } from '../../utils/Notifications';
 import parseError from '../../utils/Errors';
-import { clear, selectDescription, selectDisplayName, selectMembers, selectName, selectShortDescription, selectTags, selectTeam, selectType, selectWebsite, setDescription, setDisplayName, setName, setShortDescription, setTags, setTeam, setType, setWebsite } from '../../features/projects/projectSlice';
+import { clear, selectDescription, selectDisplayName, selectMembers, selectName, selectShortDescription, selectTags, selectTeam, selectType, selectWebsite, selectYoutubeUrl, setDescription, setDisplayName, setName, setShortDescription, setTags, setTeam, setType, setWebsite } from '../../features/projects/projectSlice';
 import ProjectPreview from '../../features/projects/ProjectPreview';
 import CreateProjectForm from './ProjectForm';
 import Tabs from '../../components/Tabs';
@@ -48,6 +48,7 @@ export default function ManageProject(props: ManageProjectProps) {
   const [projectMembersParsed, setProjectMembersParsed] = useState<Member[]>([]);
   const [projectGallery, setProjectGallery] = useState<File[]>([]);
   const [projectAssets, setProjectAssets] = useState<Asset[]>([]);
+  const youtubeUrl = useAppSelector(selectYoutubeUrl);
 
   // Check if user is authenticated, prompt them to login if not logged in
   useEffect(() => {
@@ -207,25 +208,26 @@ export default function ManageProject(props: ManageProjectProps) {
       {/* Right Column */}
       <div className="grid grid-cols-1 gap-x-4 gap-y-6 lg:col-span-5">
         <div className="p-4">
-          <CreateProjectForm
-            edit={(props.accountUsername && props.projectName) ? true : false}
-            submitText={props.accountUsername ? 'Save changes' : 'Create project'}
-            userAccounts={accountNames}
-            accountUsername={projectAccount}
-            projectName={projectName}
-            projectDisplayName={projectDisplayName}
-            shortDescription={projectShortDescription}
-            projectDescription={projectDescription}
-            projectWebsite={projectWebsite}
-            projectMembers={projectMembers}
-            projectType={projectType}
-            projectTags={projectTags}
-            projectGallery={projectGallery}   
-            view={formView}
-            setImage={setProjectImage}
-            setGallery={setProjectGallery}
-            submit={createProject}       
-          />
+            <CreateProjectForm
+              edit={(props.accountUsername && props.projectName) ? true : false}
+              submitText={props.accountUsername ? 'Save changes' : 'Create project'}
+              userAccounts={accountNames}
+              accountUsername={projectAccount}
+              projectName={projectName}
+              projectDisplayName={projectDisplayName}
+              shortDescription={projectShortDescription}
+              projectDescription={projectDescription}
+              projectWebsite={projectWebsite}
+              projectMembers={projectMembers}
+              projectType={projectType}
+              projectTags={projectTags}
+              projectGallery={projectGallery}
+              youtubeUrl={youtubeUrl}
+              view={formView}
+              setImage={setProjectImage}
+              setGallery={setProjectGallery}
+              submit={createProject}         
+            />
         </div>
       </div>
 
@@ -242,7 +244,7 @@ export default function ManageProject(props: ManageProjectProps) {
           projectMembers={projectMembersParsed}
           defaultImage={currentImage}
           projectGallery={projectGallery}
-          projectAssets={projectAssets} 
+          projectAssets={projectAssets}
         />
       </div>
     </div>

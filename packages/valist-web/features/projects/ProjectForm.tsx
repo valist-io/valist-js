@@ -6,7 +6,7 @@ import { SetUseState } from "../../utils/Account/types";
 import { shortnameFilterRegex } from "../../utils/Validation";
 import ValistContext from "../valist/ValistContext";
 import Web3Context from "../valist/Web3Context";
-import { setDescription, setMembers, setDisplayName, setName, setShortDescription, setTeam, setWebsite } from "./projectSlice";
+import { setDescription, setMembers, setDisplayName, setName, setShortDescription, setTeam, setWebsite, setYoutubeUrl } from "./projectSlice";
 import ProjectTagsInput from "./ProjectTagsInput";
 import ProjectTypeSelect from "./ProjectTypeSelect";
 
@@ -23,6 +23,7 @@ interface CreateProjectFormProps {
   projectType: string;
   projectTags: string[];
   projectGallery: File[];
+  youtubeUrl: string;
   userAccounts: string[];
   view: string;
   setImage: SetUseState<File[]>;
@@ -139,6 +140,7 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
 
   interface GraphicFormProps {
     galleryFiles: File[];
+    youtubeUrl: string;
     setGallery: SetUseState<File[]>;
   }
 
@@ -146,6 +148,24 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
     return (
       <form className="grid grid-cols-1 gap-y-6 sm:gap-x-8" action="#" method="POST">
         <FileUpload setFiles={props.setGallery} title={"Project Profile Image"} files={[]} />
+
+        {/* <div>
+          <label htmlFor="youtube" className="block text-sm font-medium text-gray-700">
+            Youtube Url <span className="float-right"><Tooltip text='Youtube video.' /></span>
+          </label>
+          <div className="mt-1">
+            <input
+              id="youtube"
+              name="youtube"
+              required
+              onChange={(e) => dispatch(setYoutubeUrl(e.target.value))}
+              className="appearance-none block w-full px-3 py-2 border border-gray-300 
+              rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 
+              focus:border-indigo-500 sm:text-sm"
+              placeholder="Youtube Url"
+            />
+          </div>
+        </div> */}
       </form>
     );
   };
@@ -173,7 +193,11 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
           projectDescription={props.projectDescription} 
         />;
       case 'Graphics':
-        return <GraphicsForm galleryFiles={props.projectGallery} setGallery={props.setGallery} />;
+        return <GraphicsForm   
+          galleryFiles={props.projectGallery}
+          youtubeUrl={props.youtubeUrl}
+          setGallery={props.setGallery}   
+        />;
       case 'Members':
         return <MembersForm 
           memberText={memberText} 
