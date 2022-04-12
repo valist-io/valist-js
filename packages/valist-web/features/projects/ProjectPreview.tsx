@@ -19,6 +19,7 @@ interface ProjectPreviewProps {
   projectAssets: Asset[];
   defaultImage?: string;
   view: string;
+  removeMember?: (address:string) => Promise<void>;
 }
 
 export default function ProjectPreview(props: ProjectPreviewProps) {
@@ -102,7 +103,7 @@ export default function ProjectPreview(props: ProjectPreviewProps) {
       case 'Graphics':
         return <ProjectGallery assets={_gallery} />;
       case 'Members':
-        return <ProjectMemberList members={props.projectMembers} />;
+        return <ProjectMemberList removeMember={props.removeMember} members={props.projectMembers} />;
       default:
         return (
           <ProjectProfileCard 

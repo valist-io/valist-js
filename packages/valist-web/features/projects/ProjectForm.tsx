@@ -28,6 +28,7 @@ interface CreateProjectFormProps {
   view: string;
   setImage: SetUseState<File[]>;
   setGallery: SetUseState<File[]>;
+  addMember: (address: string) => Promise<void>;
   submit: () => void;
 }
 
@@ -200,11 +201,13 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
         />;
       case 'Members':
         return <MembersForm 
-          memberText={memberText} 
-          validMemberList={validMemberList} 
+          memberText={memberText}
+          validMemberList={validMemberList}
           loading={loading}
-          setLoading={setLoading} 
-          setMemberText={setMemberText} 
+          setLoading={setLoading}
+          setMemberText={setMemberText}
+          addMember={props.addMember} 
+          edit={props.edit}        
         />;
       default:
         return <Fragment />;
@@ -214,7 +217,7 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
   return (
     <div>
       {ProjectFormContent()}
-      <SubmitButton />
+      {(!props.edit || (props.view !== 'Members' && props.edit)) && <SubmitButton />}
     </div>
   );
 }
@@ -381,14 +384,18 @@ interface MemebersFormProps {
   memberText: string;
   validMemberList: boolean;
   loading: boolean;
+  edit: boolean;
   setLoading: SetUseState<boolean>;
   setMemberText: SetUseState<string>;
+  addMember: (address: string) => Promise<void>;
 }
 
 const MembersForm = (props: MemebersFormProps) => {
+  const [member, setMember] = useState('');
+  
   return (
     <form className="grid grid-cols-1 gap-y-6 sm:gap-x-8" action="#" method="POST">
-      <div>
+       {!props.edit && <div>
         <label htmlFor="members" className="block text-sm font-medium text-gray-700">
           Members <span className="float-right"><Tooltip text='A list of project members seperated by new-line.' /></span>
         </label>
@@ -405,7 +412,33 @@ const MembersForm = (props: MemebersFormProps) => {
             placeholder="List of members"
           />
         </div>
-      </div> 
+      </div>}
+
+      {props.edit &&  <div>
+        <label htmlFor="new-member" className="block text-sm font-medium text-gray-700">
+          New Member <span className="float-right"><Tooltip text="A new member address to be added to the account." /></span>
+        </label>
+        <div className="mt-1 flex">
+          <input
+            id="new-member"
+            name="new-member"
+            type="text"
+            onChange={(e) => setMember(e.target.value)}
+            placeholder='Member address'
+            required
+            className="bg-slate-50 appearance-none block w-full px-3 py-2 border border-gray-300 
+            rounded-l-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-indigo-500 
+            focus:border-indigo-500 sm:text-sm"
+          />
+      <button
+        type="button"
+        onClick={() => props.addMember(member)}
+        className="-ml-px relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+      >
+        Add
+      </button>
+        </div>
+      </div>}
     </form>
   );
 };

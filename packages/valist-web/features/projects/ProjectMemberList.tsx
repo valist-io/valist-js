@@ -3,6 +3,7 @@ import RepoMemberListItem from './ProjectMemberListItem';
 
 interface RepoMemberListItemProps {
   members: Member[]
+  removeMember?: (address:string) => Promise<void>;
 }
 
 export default function ManageProjectAccessCard(props: RepoMemberListItemProps): JSX.Element {
@@ -28,7 +29,7 @@ export default function ManageProjectAccessCard(props: RepoMemberListItemProps):
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                { props.members.map((member: Member) => <RepoMemberListItem key={member.id} address={member.id} />)}
+                { props.members.map((member: Member) => <RepoMemberListItem removeMember={props.removeMember} key={member.id} address={member.id} />)}
               </tbody>
             </table>
           </div>
