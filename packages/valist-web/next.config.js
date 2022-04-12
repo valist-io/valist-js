@@ -23,7 +23,7 @@ const nextConfig = {
     return config;
   },
   // trailingSlash: true,
-  // assetPrefix: './',
+  assetPrefix: './',
 };
 
 module.exports = nextConfig;
