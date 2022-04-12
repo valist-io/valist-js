@@ -66,8 +66,6 @@ export default function TeamProfilePage() {
     }
   }, [accountNames, teamName]);
 
-  console.log('isMember', isMember);
-
   return (
     <Layout title='Valist | Team'>
       <div className="grid grid-cols-1 gap-4 items-start lg:grid-cols-6 lg:gap-8">
