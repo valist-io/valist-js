@@ -13,7 +13,7 @@ import { getProjectID } from "../../../utils/Valist";
 import { dismiss, notify } from "../../../utils/Notifications";
 import ValistContext from "../../../features/valist/ValistContext";
 import { useAppSelector } from "../../../app/hooks";
-import { selectAddress } from "../../../features/accounts/accountsSlice";
+import { selectAccounts, selectAddress } from "../../../features/accounts/accountsSlice";
 import ProjectProfileCard from "../../../features/projects/ProjectProfileCard";
 import ProjectMetaCard from "../../../features/projects/ProjectMetaCard";
 import ProjectContent from "../../../features/projects/ProjectProfileContent";
@@ -24,6 +24,7 @@ export default function ProjectPage():JSX.Element {
   const teamName = `${router.query.teamName}`;
   const projectName = `${router.query.projectName}`;
   const valistCtx = useContext(ValistContext);
+  const accounts = useAppSelector(selectAccounts);
   const address = useAppSelector(selectAddress);
   const [projectID, setProjectID] = useState<string>('');
   const { data, loading, error } = useQuery(PROJECT_PROFILE_QUERY, {
@@ -65,6 +66,7 @@ export default function ProjectPage():JSX.Element {
       disabled: false,
     },
   ];
+  const [isMember, setIsMember] = useState(false);
 
   useEffect(() => {
     const _getProjectID = async () => {
@@ -135,6 +137,18 @@ export default function ProjectPage():JSX.Element {
     })();
   }, [address, projectID, releaseMeta.licenses]);
 
+  useEffect(() => {
+    if (teamName && projectName) {
+       const profileAccount = accounts[teamName];
+       
+       if (profileAccount) {
+        profileAccount.map((project) => {
+           if (project.name === projectName) setIsMember(true);
+        });
+       }
+    }
+  }, [accounts, projectName, teamName]);
+
   const mintLicense = async () => {
     if (releaseMeta.licenses && releaseMeta.licenses[0] && address !== '0x0') {
       let toastID = '';
@@ -188,7 +202,7 @@ export default function ProjectPage():JSX.Element {
             mintLicense={mintLicense} 
             licenseBalance={licenseBalance}         
           />
-          <ProjectProfileCardActions accountName={teamName} projectName={projectName} />
+          {isMember && <ProjectProfileCardActions accountName={teamName} projectName={projectName} />}
           <ProjectMetaCard
             version={version} 
             teamName={teamName}
