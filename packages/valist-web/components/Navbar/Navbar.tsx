@@ -8,10 +8,10 @@ import MobileMenu from './MobileMenu';
 import { classNames } from '../../utils/Styles';
 import { truncate } from '../../utils/Formatting/truncate';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { logout, selectAddress, selectLoginType } from '../accounts/accountsSlice';
-import { showLogin } from '../modal/modalSlice';
+import { logout, selectAddress, selectLoginType } from '../../features/accounts/accountsSlice';
+import { showLogin } from '../../features/modal/modalSlice';
 import { useContext } from 'react';
-import Web3Context from '../valist/Web3Context';
+import Web3Context from '../../features/valist/Web3Context';
 
 export default function Navbar() {
   const address = useAppSelector(selectAddress);
@@ -70,7 +70,7 @@ export default function Navbar() {
                         <img
                           className="block h-8 w-auto"
                           src="/images/valistlogo128.png"
-                          alt="Workflow"
+                          alt="Valist"
                         />
                       </a>
                     </Link>
