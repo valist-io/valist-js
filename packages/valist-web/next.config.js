@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  assetPrefix: './',
   images: {
     domains: ['valist.mypinata.cloud', 'gateway.valist.io', 'https://gateway.valist.io', 'localhost'],
   },
@@ -23,7 +24,5 @@ const nextConfig = {
     return config;
   },
   // trailingSlash: true,
-  assetPrefix: './',
 };
-
 module.exports = nextConfig;
