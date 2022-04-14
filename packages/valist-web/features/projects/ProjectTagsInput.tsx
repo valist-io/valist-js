@@ -5,7 +5,7 @@ import { MultiSelect } from '@mantine/core';
 import { tagFilterRegex } from "../../utils/Validation";
 
 const defaultTags = [
- 'game', 'protocol', 'application', 'uitilities', 'storage', 'networks',
+ 'game', 'protocol', 'application', 'utilities', 'storage', 'networks',
  'social', 'communication', 'nft', 'defi', 'media', 'music',
 ];
 

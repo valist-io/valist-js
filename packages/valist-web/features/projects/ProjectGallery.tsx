@@ -29,7 +29,7 @@ export default function ProjectGallery(props: ProjectGalleryProps):JSX.Element {
       );
     } else if (currentAsset?.type.includes('video')) {
       return (
-        <video controls autoPlay style={{ maxWidth: '100%', maxHeight: '100%' }}>
+        <video controls style={{ maxWidth: '100%', maxHeight: '100%' }}>
           <source src={currentAsset.src} type={currentAsset.type} />
         </video>
       );
@@ -47,7 +47,6 @@ export default function ProjectGallery(props: ProjectGalleryProps):JSX.Element {
     }
     return <div style={{ height: '450px', width: "850" }} ></div>;
   };
-  console.log('assets', props.assets);
  
   return (
     <div>
@@ -60,7 +59,7 @@ export default function ProjectGallery(props: ProjectGalleryProps):JSX.Element {
             <img 
               style={{ maxWidth: '100%', maxHeight: '100%' }}
               onClick={() => setCurrentAsset(asset)}
-              src={(asset?.type.includes('video') && '/images/play-video.png/') || (asset.preview || asset.src)} 
+              src={((asset?.type.includes('video') || asset?.type.includes('youtube')) && '/images/play-video.png/') || (asset.preview || asset.src)} 
               alt={asset.name} 
             />
           </Fragment>

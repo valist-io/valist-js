@@ -6,7 +6,7 @@ import { selectAccountNames, selectLoginTried, selectLoginType, setAccountNames 
 import { showLogin } from '../modal/modalSlice';
 import { dismiss, notify } from '../../utils/Notifications';
 import { setTeam } from '../projects/projectSlice';
-import { selectDescription, selectWebsite, selectBeneficiary, selectMembers, setWebsite, setDescription, setDisplayName, clear, selectUsername, setUsername, selectDisplayName } from './teamSlice';
+import { selectDescription, selectWebsite, selectBeneficiary, selectMembers, setWebsite, setDescription, setDisplayName, clear, selectUsername, setUsername, selectDisplayName, setMembers } from './teamSlice';
 import parseError from '../../utils/Errors';
 import TeamPreview from './TeamPreview';
 import CreateTeamForm from './TeamForm';
@@ -41,6 +41,7 @@ export default function ManageAccount(props: EditAccountProps) {
   const [accountImage, setTeamImage] = useState<File | null>(null);
   const [currentImage, setCurrentImage] = useState<string>('');
   const [accountMembersParsed, setTeamMembersParsed] = useState<Member[]>([]);
+  const [membersChanged, setMembersChanged] = useState(0);
 
   // Check if user is authenticated, prompt them to login if not logged in
   useEffect(() => {
@@ -70,18 +71,27 @@ export default function ManageAccount(props: EditAccountProps) {
       
       if (props.accountUsername) {
         try {
+          console.log('incoming -- props.accountUsername', props.accountUsername);
           dispatch(setUsername(props.accountUsername));
           accountData = await valistCtx.getTeamMeta(props.accountUsername);
           if (accountData.image) setCurrentImage(accountData.image);
           if (accountData.name) dispatch(setDisplayName(accountData.name));
           if (accountData.external_url) dispatch(setWebsite(accountData.external_url));
           if (accountData.description) dispatch(setDescription(accountData.description));
+
+          const members = await valistCtx.getTeamMembers(
+            props.accountUsername,
+            0,
+            100,
+          );
+  
+          if (members) dispatch(setMembers(members));
         } catch (err) {
           console.log('err', err);
         }
       }
     })();
-  }, [dispatch, props.accountUsername, valistCtx.getTeamMeta]);
+  }, [dispatch, props.accountUsername, valistCtx.getTeamMeta, membersChanged]);
 
   // Wrap Valist Sdk call for create team
   const createTeam = async () => {
@@ -144,17 +154,61 @@ export default function ManageAccount(props: EditAccountProps) {
     }
   };
 
+  const addMember = async (address: string) => {
+    console.log(`Adding ${address} to ${accountUsername}`);
+    let toastID = '';
+    let transaction;
+
+    try {
+      toastID = notify('pending');
+      transaction = await valistCtx.addTeamMember(accountUsername, address);
+      dismiss(toastID);
+      toastID = notify('transaction', transaction.hash);
+      await transaction.wait();
+      dismiss(toastID);
+      notify('success');
+      setMembersChanged(membersChanged + 1);
+    } catch(err) {
+      dismiss(toastID);
+      notify('error', parseError(err));
+    }
+
+    dismiss(toastID);
+  };
+
+  const removeMember = async (address: string) =>  {
+    console.log(`Removing ${address} from ${accountUsername}`);
+    let toastID = '';
+    let transaction: any;
+
+    try {
+      toastID = notify('pending');
+      transaction = await valistCtx.removeTeamMember(accountUsername, address);
+      dismiss(toastID);
+      toastID = notify('transaction', transaction.hash);
+      await transaction.wait();
+      dismiss(toastID);
+      notify('success');
+      setMembersChanged(membersChanged + 1);
+    } catch(err) {
+      dismiss(toastID);
+      notify('error', parseError(err));
+    }
+
+    dismiss(toastID);
+  };
+
+
   const PageTabs = [
     {
       text: 'Basic Info',
       disabled: false,
     },
+    { 
+      text: 'Members',
+      disabled: false,
+    },
   ];
-
-  if (!props.accountUsername) PageTabs.push(    { 
-    text: 'Members',
-    disabled: false,
-  });
 
   return (
     <div>
@@ -176,6 +230,7 @@ export default function ManageAccount(props: EditAccountProps) {
               teamBeneficiary={accountBeneficiary}
               teamWebsite={accountWebsite}   
               setImage={setTeamImage}
+              addMember={addMember}
               submit={createTeam}        
             />
           </div>
@@ -190,6 +245,7 @@ export default function ManageAccount(props: EditAccountProps) {
             accountImage={accountImage}
             accountMembers={accountMembersParsed}
             defaultImage={currentImage}
+            removeMember={removeMember}
           />
         </div>
       </div>

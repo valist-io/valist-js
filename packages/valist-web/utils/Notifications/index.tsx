@@ -14,7 +14,7 @@ export const notify = (type: string, text?: string): string => {
     case 'pending':
       return toast.custom(() => (
         <div className='toast'>
-         Creating transaction..
+         Creating transaction...
         </div>
       ), {
         position: 'top-right',
@@ -50,6 +50,6 @@ export const notify = (type: string, text?: string): string => {
   return '';
 };
 
-export const dismiss = (id: string) => {
+export const dismiss = (id?: string) => {
   toast.dismiss(id);
 };

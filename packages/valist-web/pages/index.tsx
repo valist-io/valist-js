@@ -43,7 +43,7 @@ const Dashboard: NextPage = () => {
   // Set user account from accountNames or local storage
   useEffect(() => {
     if (accountNames.length !== 0) {
-      setUserAccount(currentAccount);
+      setUserAccount(currentAccount || accountNames[0]);
     }
   }, [accountNames, currentAccount]);
 

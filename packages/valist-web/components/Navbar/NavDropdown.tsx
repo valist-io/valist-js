@@ -3,7 +3,7 @@ import { Fragment } from 'react';
 import Link from 'next/link';
 import { LoginType } from '../../utils/Account/types';
 import { checkLoggedIn } from '../../utils/Account/index';
-import AddressIdenticon from '../../components/Identicons/AddressIdenticon';
+import AddressIdenticon from '../Identicons/AddressIdenticon';
 import { ActionItem } from './types';
 
 interface NavDropdownProps {

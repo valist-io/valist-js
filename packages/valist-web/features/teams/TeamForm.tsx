@@ -19,6 +19,7 @@ interface CreateTeamFormProps {
   teamDescription: string;
   teamBeneficiary: string;
   setImage: SetUseState<File | null>;
+  addMember: (address: string) => Promise<void>;
   submit: () => void;
 }
 
@@ -41,6 +42,8 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
 
   const [formValid, setFormValid] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  console.log('props on form', props);
 
   useEffect(() => {
     const checkTeamName = async (teamName: string) => {
@@ -120,7 +123,7 @@ ${props.teamMembers.join('\n')}
       props.submit();
     }
   };
-
+  
   const ProjectFormContent = () => {
     switch (props.view) {
       case 'Basic Info':
@@ -152,7 +155,8 @@ ${props.teamMembers.join('\n')}
           loading={loading}
           setMemberText={setMemberText} 
           setLoading={setLoading} 
-          _setBeneficiary={_setBeneficiary} 
+          _setBeneficiary={_setBeneficiary}
+          addMember={props.addMember}
           handleSubmit={handleSubmit}  
         />;
       default:
@@ -297,10 +301,13 @@ interface MembersFormProps {
   setMemberText: SetUseState<any>;
   setLoading: SetUseState<boolean>;
   _setBeneficiary: SetUseState<string>;
+  addMember: (address: string) => Promise<void>;
   handleSubmit: () => void;
 }
 
 const MembersForm = (props: MembersFormProps) => {
+  const [member, setMember] = useState('');
+
   return (
     <form className="grid grid-cols-1 gap-y-6 sm:gap-x-8" action="#" method="POST">
 
@@ -343,13 +350,39 @@ const MembersForm = (props: MembersFormProps) => {
           />
         </div>
       </div>}
+
+      {props.edit &&  <div>
+        <label htmlFor="new-member" className="block text-sm font-medium text-gray-700">
+          New Member <span className="float-right"><Tooltip text="A new member address to be added to the account." /></span>
+        </label>
+        <div className="mt-1 flex">
+          <input
+            id="new-member"
+            name="new-member"
+            type="text"
+            onChange={(e) => setMember(e.target.value)}
+            placeholder='Member address'
+            required
+            className="bg-slate-50 appearance-none block w-full px-3 py-2 border border-gray-300 
+            rounded-l-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-indigo-500 
+            focus:border-indigo-500 sm:text-sm"
+          />
+      <button
+        type="button"
+        onClick={() => props.addMember(member)}
+        className="-ml-px relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+      >
+        Add
+      </button>
+        </div>
+      </div>}
             
-      <SubmitButton 
+      {!props.edit && <SubmitButton 
         handleSubmit={props.handleSubmit} 
         formValid={props.formValid} 
         loading={props.loading} 
         submitText={props.submitText} 
-      />
+      />}
     </form>
   );
 };

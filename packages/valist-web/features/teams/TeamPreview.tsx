@@ -13,8 +13,9 @@ interface AccountPreviewProps {
   accountDisplayName: string;
   accountImage: File | null;
   accountDescription: string;
-  accountMembers: AccountMember[];
   defaultImage?: string;
+  accountMembers: AccountMember[];
+  removeMember?: (address:string) => Promise<void>;
 }
 
 export default function AccountPreview(props: AccountPreviewProps) {
@@ -57,7 +58,7 @@ export default function AccountPreview(props: AccountPreviewProps) {
           <BasicInfoPreview />
         );
       case 'Members':
-        return <ProjectMemberList members={props.accountMembers} />;
+        return <ProjectMemberList removeMember={props.removeMember} members={props.accountMembers} />;
       default:
         return <Fragment />;
     }

@@ -29,8 +29,10 @@ export default function ProjectContent(props: ProjectContentProps): JSX.Element 
       case 'Readme':
         return (
           <Fragment>
-            {props?.projectMeta?.gallery && <ProjectGallery assets={props?.projectMeta?.gallery} />}
-            <div className={props?.projectMeta?.gallery ? 'mt-4' : ''}>
+            {(props?.projectMeta?.gallery && props?.projectMeta?.gallery.length !== 0) && 
+              <ProjectGallery assets={props?.projectMeta?.gallery} />
+            }
+            <div className={props?.projectMeta?.gallery?.length !== 0 ? 'mt-4' : ''}>
               <ProjectReadme repoReadme={props?.projectMeta?.description || ''} />
             </div>
           </Fragment>

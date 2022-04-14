@@ -7,7 +7,7 @@ import { selectAccountNames, selectAccounts, selectLoginTried, selectLoginType }
 import { showLogin } from '../../features/modal/modalSlice';
 import { dismiss, notify } from '../../utils/Notifications';
 import parseError from '../../utils/Errors';
-import { clear, selectDescription, selectDisplayName, selectMembers, selectName, selectShortDescription, selectTags, selectTeam, selectType, selectWebsite, selectYoutubeUrl, setDescription, setDisplayName, setName, setShortDescription, setTags, setTeam, setType, setWebsite } from '../../features/projects/projectSlice';
+import { clear, selectDescription, selectDisplayName, selectMembers, selectName, selectShortDescription, selectTags, selectTeam, selectType, selectWebsite, selectYoutubeUrl, setDescription, setDisplayName, setMembers, setName, setShortDescription, setTags, setTeam, setType, setWebsite } from '../../features/projects/projectSlice';
 import ProjectPreview from '../../features/projects/ProjectPreview';
 import CreateProjectForm from './ProjectForm';
 import Tabs from '../../components/Tabs';
@@ -49,6 +49,7 @@ export default function ManageProject(props: ManageProjectProps) {
   const [projectGallery, setProjectGallery] = useState<File[]>([]);
   const [projectAssets, setProjectAssets] = useState<Asset[]>([]);
   const youtubeUrl = useAppSelector(selectYoutubeUrl);
+  const [membersChanged, setMembersChanged] = useState(0);
 
   // Check if user is authenticated, prompt them to login if not logged in
   useEffect(() => {
@@ -98,17 +99,28 @@ export default function ManageProject(props: ManageProjectProps) {
             if (projectData.type) dispatch(setType(projectData.type));
             if (projectData.tags) dispatch(setTags(projectData.tags));
             if (projectData.gallery) setProjectAssets(projectData.gallery);
-          } catch (err) {
-            console.log('err', err);
-          }
+
+            const members = await valistCtx.getProjectMembers(
+              props.accountUsername,
+              props.projectName,
+              0,
+              100,
+            );
+    
+            if (members) dispatch(setMembers(members));
+            } catch (err) {
+              console.log('err', err);
+            }
         }
       })();
-    }, [dispatch, props.accountUsername, props.projectName, valistCtx.getProjectMeta]);
+    }, [dispatch, props.accountUsername, props.projectName, valistCtx.getProjectMeta, membersChanged]);
 
   const createProject = async () => {
+    let toastID = '';
     let imgURL = currentImage;
     let galleryItems:Asset[] = (projectGallery.length !== 0) ? [] : projectAssets;
 
+    const uploadToast = notify('text', 'Uploading files...');
     if (projectImage[0]) {
       imgURL = await valistCtx.writeFile(projectImage[0]);
     } else {
@@ -123,6 +135,11 @@ export default function ManageProject(props: ManageProjectProps) {
         src: url,
       });
     };
+
+    setTimeout(() => {
+      // set artificial buffer for if upload is too quick, since react-hot-toast doesn't like when you call dismiss too fast
+      dismiss(uploadToast);
+    }, 300);
 
     const project = new ProjectMeta();
     project.image = imgURL;
@@ -139,7 +156,6 @@ export default function ManageProject(props: ManageProjectProps) {
     console.log("Project Members", projectMembers);
     console.log("Meta", project);
 
-    let toastID = '';
     try {
       toastID = notify('pending');
 
@@ -177,6 +193,56 @@ export default function ManageProject(props: ManageProjectProps) {
     }
   };
 
+  const addMember = async (address: string) => {
+    let toastID = '';
+    let transaction;
+
+    if (props.projectName) {
+      try {
+        toastID = notify('pending');
+        console.log('address:', address);
+        console.log('account:', projectAccount);
+        console.log('projectName', props.projectName);
+        transaction = await valistCtx.addProjectMember(projectAccount, props.projectName, address);
+        dismiss(toastID);
+        toastID = notify('transaction', transaction.hash);
+        await transaction.wait();
+        dismiss(toastID);
+        notify('success');
+        setMembersChanged(membersChanged + 1);
+      } catch(err) {
+        dismiss(toastID);
+        notify('error', parseError(err));
+      }
+  
+      dismiss(toastID);
+    }
+  };
+
+  const removeMember = async (address: string) =>  {
+    if (props.projectName) {
+      console.log(`Removing ${address} from ${projectAccount}/${props.projectName}`);
+      let toastID = '';
+      let transaction: any;
+
+      try {
+        toastID = notify('pending');
+        transaction = await valistCtx.removeProjectMember(projectAccount, props.projectName, address);
+        dismiss(toastID);
+        toastID = notify('transaction', transaction.hash);
+        await transaction.wait();
+        dismiss(toastID);
+        notify('success');
+        setMembersChanged(membersChanged + 1);
+      } catch(err) {
+        dismiss(toastID);
+        notify('error', parseError(err));
+      }
+
+      dismiss(toastID);
+    }
+  };
+
   // Set page tabs
   const PageTabs = [        
     { 
@@ -187,18 +253,16 @@ export default function ManageProject(props: ManageProjectProps) {
       text: 'Descriptions',
       disabled: false,
     },
-  ];
-
-  if (!(props.accountUsername && props.projectName)) PageTabs.push({ 
-    text: 'Members',
-    disabled: false,
-  });
-
-  PageTabs.push({ 
+    { 
+      text: 'Members',
+      disabled: false,
+    },
+    { 
     text: 'Graphics',
     disabled: false,
-  });
-
+    },
+  ];
+  
   return (
     <div>
       <div className='border-b'>
@@ -226,6 +290,7 @@ export default function ManageProject(props: ManageProjectProps) {
               view={formView}
               setImage={setProjectImage}
               setGallery={setProjectGallery}
+              addMember={addMember}
               submit={createProject}         
             />
         </div>
@@ -245,6 +310,7 @@ export default function ManageProject(props: ManageProjectProps) {
           defaultImage={currentImage}
           projectGallery={projectGallery}
           projectAssets={projectAssets}
+          removeMember={removeMember}
         />
       </div>
     </div>

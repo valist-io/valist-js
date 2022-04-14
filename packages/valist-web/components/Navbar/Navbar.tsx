@@ -2,16 +2,16 @@
 import { Popover } from '@headlessui/react';
 import { MenuIcon, XIcon } from '@heroicons/react/outline';
 import Link from 'next/link';
-import NavDropdown from './NavDropdown';
-import SearchBar from './Searchbar';
-import MobileMenu from './MobileMenu';
 import { classNames } from '../../utils/Styles';
 import { truncate } from '../../utils/Formatting/truncate';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { logout, selectAddress, selectLoginType } from '../accounts/accountsSlice';
-import { showLogin } from '../modal/modalSlice';
+import { logout, selectAddress, selectLoginType } from '../../features/accounts/accountsSlice';
+import { showLogin } from '../../features/modal/modalSlice';
 import { useContext } from 'react';
-import Web3Context from '../valist/Web3Context';
+import Web3Context from '../../features/valist/Web3Context';
+import NavDropdown from './NavDropdown';
+import MobileMenu from './MobileMenu';
+import SearchBar from './Searchbar';
 
 export default function Navbar() {
   const address = useAppSelector(selectAddress);
@@ -69,8 +69,8 @@ export default function Navbar() {
                       <a>
                         <img
                           className="block h-8 w-auto"
-                          src="/images/valistlogo128.png"
-                          alt="Workflow"
+                          src="/images/logo.png"
+                          alt="Valist"
                         />
                       </a>
                     </Link>

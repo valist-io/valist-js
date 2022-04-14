@@ -11,6 +11,8 @@ import TeamProfileCard from '../../features/teams/TeamProfileCard';
 import TeamProjectList from '../../features/teams/TeamProjectList';
 import TeamMemberList from '../../features/teams/TeamMemberList';
 import TeamProfileCardActions from '../../features/teams/TeamProfileCardActions';
+import { useAppSelector } from '../../app/hooks';
+import { selectAccountNames } from '../../features/accounts/accountsSlice';
 
 type TeamMember = {
   id: string
@@ -19,6 +21,7 @@ type TeamMember = {
 export default function TeamProfilePage() {
   const router = useRouter();
   const teamName = `${router.query.teamName}`;
+  const accountNames = useAppSelector(selectAccountNames);
   const { data, loading, error } = useQuery(TEAM_PROFILE_QUERY, {
     variables: { team: teamName },
   });
@@ -38,6 +41,7 @@ export default function TeamProfilePage() {
       disabled: false,
     },
   ];
+  const [isMember, setIsMember] = useState(false);
 
   useEffect(() => {
     const fetchMeta = async (metaURI: string) => {
@@ -53,6 +57,14 @@ export default function TeamProfilePage() {
       setMembers(data.teams[0].members);
     }
   }, [data, loading, error, setMeta]);
+
+  useEffect(() => {
+    if (teamName) {
+      accountNames.map((name) => {
+        if (teamName === name) setIsMember(true);
+      });
+    }
+  }, [accountNames, teamName]);
 
   return (
     <Layout title='Valist | Team'>
@@ -70,7 +82,7 @@ export default function TeamProfilePage() {
           {view === 'Activity' && <LogTable team={teamName} project={''} address={''} />}
         </div>
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
-          <TeamProfileCardActions accountName={teamName} />
+          {isMember && <TeamProfileCardActions accountName={teamName} />}
           <TeamMemberList 
             teamMembers={members} 
             teamName={teamName}          
