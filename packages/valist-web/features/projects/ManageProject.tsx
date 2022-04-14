@@ -120,7 +120,7 @@ export default function ManageProject(props: ManageProjectProps) {
     let imgURL = currentImage;
     let galleryItems:Asset[] = (projectGallery.length !== 0) ? [] : projectAssets;
 
-    toastID = notify('text', 'Uploading files...');
+    const uploadToast = notify('text', 'Uploading files...');
     if (projectImage[0]) {
       imgURL = await valistCtx.writeFile(projectImage[0]);
     } else {
@@ -136,7 +136,10 @@ export default function ManageProject(props: ManageProjectProps) {
       });
     };
 
-    dismiss(toastID);
+    setTimeout(() => {
+      // set artificial buffer for if upload is too quick, since react-hot-toast doesn't like when you call dismiss too fast
+      dismiss(uploadToast);
+    }, 300);
 
     const project = new ProjectMeta();
     project.image = imgURL;

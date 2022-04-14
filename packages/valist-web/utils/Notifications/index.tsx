@@ -50,6 +50,6 @@ export const notify = (type: string, text?: string): string => {
   return '';
 };
 
-export const dismiss = (id: string) => {
+export const dismiss = (id?: string) => {
   toast.dismiss(id);
 };
