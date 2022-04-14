@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // assetPrefix: './',
+  assetPrefix: process.env.IPFS_BUILD ? './' : undefined,
   images: {
     domains: ['gateway.valist.io', 'https://gateway.valist.io', 'localhost'],
   },
