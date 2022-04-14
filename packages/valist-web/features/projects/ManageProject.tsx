@@ -116,9 +116,11 @@ export default function ManageProject(props: ManageProjectProps) {
     }, [dispatch, props.accountUsername, props.projectName, valistCtx.getProjectMeta, membersChanged]);
 
   const createProject = async () => {
+    let toastID = '';
     let imgURL = currentImage;
     let galleryItems:Asset[] = (projectGallery.length !== 0) ? [] : projectAssets;
 
+    toastID = notify('text', 'Uploading files...');
     if (projectImage[0]) {
       imgURL = await valistCtx.writeFile(projectImage[0]);
     } else {
@@ -133,6 +135,8 @@ export default function ManageProject(props: ManageProjectProps) {
         src: url,
       });
     };
+
+    dismiss(toastID);
 
     const project = new ProjectMeta();
     project.image = imgURL;
@@ -149,7 +153,6 @@ export default function ManageProject(props: ManageProjectProps) {
     console.log("Project Members", projectMembers);
     console.log("Meta", project);
 
-    let toastID = '';
     try {
       toastID = notify('pending');
 

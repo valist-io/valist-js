@@ -14,7 +14,7 @@ export const notify = (type: string, text?: string): string => {
     case 'pending':
       return toast.custom(() => (
         <div className='toast'>
-         Creating transaction..
+         Creating transaction...
         </div>
       ), {
         position: 'top-right',
