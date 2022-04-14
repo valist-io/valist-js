@@ -1,9 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  assetPrefix: './',
+  // assetPrefix: './',
   images: {
-    domains: ['valist.mypinata.cloud', 'gateway.valist.io', 'https://gateway.valist.io', 'localhost'],
+    domains: ['gateway.valist.io', 'https://gateway.valist.io', 'localhost'],
   },
   publicRuntimeConfig: {
     CHAIN_ID: process.env.CHAIN_ID || 1337,
