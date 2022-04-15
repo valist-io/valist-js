@@ -1,22 +1,28 @@
 /* eslint-disable @next/next/no-img-element */
-import { useContext, useState } from 'react';
 import { Popover } from '@headlessui/react';
 import { MenuIcon, XIcon } from '@heroicons/react/outline';
 import Link from 'next/link';
-import AccountContext from '../Accounts/AccountContext';
-import NavDropdown from './NavDropdown';
-import SearchBar from './Searchbar';
-import MobileMenu from './MobileMenu';
 import { classNames } from '../../utils/Styles';
-import { logout } from '../../utils/Account';
 import { truncate } from '../../utils/Formatting/truncate';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { logout, selectAddress, selectLoginType } from '../../features/accounts/accountsSlice';
+import { showLogin } from '../../features/modal/modalSlice';
+import { useContext } from 'react';
+import Web3Context from '../../features/valist/Web3Context';
+import NavDropdown from './NavDropdown';
+import MobileMenu from './MobileMenu';
+import SearchBar from './Searchbar';
 
 export default function Navbar() {
-  const accountCtx = useContext(AccountContext);
+  const address = useAppSelector(selectAddress);
+  const loginType = useAppSelector(selectLoginType);
+  const webCtx = useContext(Web3Context);
+  const dispatch = useAppDispatch();
+
   const dropdownItems = [
     {
-      name: truncate(accountCtx.address, 5), 
-      href: `/addr/${accountCtx.address}`,
+      name: truncate(address, 5), 
+      href: `/addr/${address}`,
       isLoggedIn: true,
       isMobile: false,
       action: () => {},
@@ -26,14 +32,14 @@ export default function Navbar() {
       href: '',
       isLoggedIn: false,
       isMobile: true,
-      action: () => accountCtx.setShowLogin(true),
+      action: () => dispatch(showLogin()),
     },
     { 
       name: 'Logout',
       href: '',
       isLoggedIn: true,
       isMobile: true,   
-      action: () => logout(accountCtx.setLoginType, accountCtx.setAddress, accountCtx.setProvider, accountCtx.magic), 
+      action: () => dispatch(logout({ magic: webCtx.magic, setProvider: webCtx.setValist })), 
   }];
 
   const navItems = [
@@ -63,8 +69,8 @@ export default function Navbar() {
                       <a>
                         <img
                           className="block h-8 w-auto"
-                          src="/valistlogo128.png"
-                          alt="Workflow"
+                          src="/images/logo.png"
+                          alt="Valist"
                         />
                       </a>
                     </Link>
@@ -93,11 +99,11 @@ export default function Navbar() {
                       </a>
                     </Link>
                   ))}
-                  <NavDropdown loginType={accountCtx.loginType} address={accountCtx.address} actions={dropdownItems} />
+                  <NavDropdown loginType={loginType} address={address} actions={dropdownItems} />
                 </div>
               </div>
             </div>
-            <MobileMenu loginType={accountCtx.loginType} actions={dropdownItems} navigation={navItems} address={accountCtx.address} />
+            <MobileMenu loginType={loginType} actions={dropdownItems} navigation={navItems} address={address} />
           </>
         )}
       </Popover>

@@ -1,13 +1,13 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Layout from "../../../components/Layouts/Main";
 import { NextPage } from "next";
-import AddressProfileCard from "../../../components/Address/AddressProfileCard";
-import LogCard from '../../../components/Logs/LogCard';
-import ProjectList from "../../../components/Projects/ProjectList";
 import { useQuery } from "@apollo/client";
 import { USER_PROJECTS } from "../../../utils/Apollo/queries";
 import { Project } from "../../../utils/Apollo/types";
+import ProjectList from "../../../features/projects/ProjectList";
+import LogCard from "../../../features/logs/LogCard";
+import AddressProfileCard from "../../../features/addresses/AddressProfileCard";
 
 const AddressPage: NextPage = () => {
   const router = useRouter();

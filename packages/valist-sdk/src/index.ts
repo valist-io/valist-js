@@ -22,6 +22,17 @@ export class ProjectMeta {
 	public description?: string;
 	/** link to the project website. */
 	public external_url?: string;
+	/** type used by clients to handle project */
+	public type?: string;
+	/** tags used for searching and categorization */
+	public tags?: string[];
+	/** videos and graphics of the project */
+	public gallery?: {
+		name: string,
+		src: string,
+		type: string,
+		preview?: string,
+	}[];
 }
 
 export class ReleaseMeta {

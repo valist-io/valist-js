@@ -7,7 +7,6 @@ export type SetUseState<T> = React.Dispatch<React.SetStateAction<T>>;
 export type LoginType = 'readOnly' | 'metaMask' | 'walletConnect' | 'magic';
 
 export type ValistProvider = ethers.providers.JsonRpcProvider | ethers.providers.Web3Provider;
-
 export type Login = (
   loginType:LoginType,
   setLoginType: SetUseState<LoginType>,

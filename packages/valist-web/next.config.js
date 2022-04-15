@@ -1,8 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  assetPrefix: process.env.IPFS_BUILD ? './' : undefined,
   images: {
-    domains: ['valist.mypinata.cloud', 'gateway.valist.io', 'https://gateway.valist.io', 'localhost'],
+    domains: ['gateway.valist.io', 'https://gateway.valist.io', 'localhost'],
   },
   publicRuntimeConfig: {
     CHAIN_ID: process.env.CHAIN_ID || 1337,
@@ -23,7 +24,5 @@ const nextConfig = {
     return config;
   },
   // trailingSlash: true,
-  // assetPrefix: './',
 };
-
 module.exports = nextConfig;

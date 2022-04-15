@@ -217,8 +217,11 @@ export class Client {
 		return `${this.gateway}/ipfs/${cid.toString()}`;
 	}
 
-	async writeFile(data: ImportCandidate): Promise<string> {
-		const { cid } = await this.ipfs.add(data);
+	async writeFile(data: File): Promise<string> {
+		const { cid } = await this.ipfs.add({
+			path: (data as any).path,
+			content: data
+		});
 		return `${this.gateway}/ipfs/${cid.toString()}`;
 	}
  

@@ -1,78 +1,8 @@
-import { ethers } from 'ethers';
-import { Magic } from 'magic-sdk';
-import { addressFromProvider, providers } from '../Providers';
-import { ProviderParams } from '../Providers/types';
-import { SetUseState, LoginType, ValistProvider } from './types';
+import { LoginType } from './types';
+import getConfig from 'next/config';
+import { Options, createClient, Provider } from '@valist/sdk';
 
-export const logout = async (
-  setLoginType: SetUseState<LoginType>,
-  setAddress: SetUseState<string>,
-  setProvider: SetUseState<ValistProvider>,
-  magic: Magic | null,
-) => {
-  window.localStorage.setItem('loginType', 'readOnly');
-  if (magic && magic?.user) {
-    await magic.user.logout();
-  }
-  setAddress('0x0');
-  setLoginType('readOnly');
-};
-
-export const login = async (
-  loginType: LoginType,
-  setLoginType: SetUseState<LoginType>, 
-  setProvider: SetUseState<ValistProvider>,
-  setAddress: SetUseState<string>,
-  setLoginTried: SetUseState<boolean>,
-  setMagic: SetUseState<Magic | null>,
-  email: string,
-) => {
-  try {
-    let account = '0x0';
-    let params: ProviderParams = { email: '', setMagic: () => {} };
-
-    if (loginType === 'magic') {
-      params = { 
-        email,
-        setMagic, 
-      };
-    }
-
-    const providerURL = await providers[loginType](params);
-
-    if (loginType != 'readOnly') {
-      const provider = new ethers.providers.Web3Provider(
-        providerURL,
-      );
-      account = await addressFromProvider(provider);
-      window.localStorage.setItem('loginType', loginType);
-      setProvider(provider);
-      setAddress(account);
-      setLoginType(loginType);
-    }
-
-    setLoginTried(true);
-  } catch (err) {}
-};
-
-export const onAccountChanged = (
-  setLoginType: SetUseState<LoginType>,
-  setProvider: SetUseState<ValistProvider>,
-  setAddress: SetUseState<string>,
-  setLoginTried: SetUseState<boolean>,
-  email: string,
-) => {
-  if (window && window.ethereum) {
-    ['accountsChanged', 'chainChanged'].forEach((event) => {
-      window.ethereum.on(event, () => {
-        const loginType = (localStorage.getItem('loginType') as LoginType);
-        if (loginType === 'metaMask') {
-          login(loginType, setLoginType, setProvider, setAddress, setLoginTried, ()=>{}, email);
-        }
-      });
-    });
-  };
-};
+const { publicRuntimeConfig } = getConfig();
 
 export const checkLoggedIn = (required:boolean, loginType:LoginType) => {
   if (required) {
@@ -80,3 +10,17 @@ export const checkLoggedIn = (required:boolean, loginType:LoginType) => {
   }
   return true;
 };
+
+export function createValistClient(provider: Provider) {
+  const options: Options = {
+    chainID: publicRuntimeConfig.CHAIN_ID,
+    metaTx: publicRuntimeConfig.METATX_ENABLED,
+    ipfsHost: publicRuntimeConfig.IPFS_HOST,
+    ipfsGateway: publicRuntimeConfig.IPFS_GATEWAY,
+  };
+
+  // read-only if the provider is not capable of signing
+  const signer = provider.connection.url.match(/meta|eip/) ? provider.getSigner() : undefined;
+
+  return createClient(provider, signer, options);
+}
