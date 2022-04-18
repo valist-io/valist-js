@@ -33,11 +33,11 @@ export function normalizeUserProjects(teamList: Team[], projectList:Project[]) {
 }
 
 export function getProjectNames(teams:Record<string, Project[]>, teamName: string) {
-  const firstTeamProjects = teams[teamName];
+  const teamProjects = teams[teamName];
   const projectNames:string[] = [];
 
-  for (let i = 0; i < firstTeamProjects?.length; i++) {
-    projectNames.push(firstTeamProjects[i].name);
+  for (let i = 0; i < teamProjects?.length; i++) {
+    projectNames.push(teamProjects[i].name);
   }
 
   return projectNames;

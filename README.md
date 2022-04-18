@@ -1,9 +1,11 @@
-[![Logo](https://github.com/valist-io/valist/raw/main/docs/src/img/logo-large-with-text.png)](https://valist.io)
+[![Logo](https://raw.githubusercontent.com/valist-io/valist/main/img/logo-header.png)](https://valist.io)
 
 [![Discord](https://img.shields.io/discord/785535462311591976)](https://discord.com/channels/785535462311591976)
 [![Valist](https://img.shields.io/badge/valist-published-blue)](https://app.valist.io/valist)
 
 Web3-native software distribution.
+
+# Valist TypeScript SDK & Web Implementation
 
 ## Features
 

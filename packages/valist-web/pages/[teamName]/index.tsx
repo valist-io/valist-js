@@ -2,14 +2,17 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 import { useQuery } from "@apollo/client";
 import Layout from '../../components/Layouts/Main';
-import TeamProfileCard from '../../components/Teams/TeamProfileCard';
-import TeamMemberList from '../../components/Teams/TeamMemberList';
-import TeamProjectList from '../../components/Teams/TeamProjectList';
 import { TEAM_PROFILE_QUERY } from '../../utils/Apollo/queries';
 import { Project } from '../../utils/Apollo/types';
 import { TeamMeta } from '../../utils/Valist/types';
-import LogCard from '../../components/Logs/LogCard';
-import LogTable from '../../components/Logs/LogTable';
+import LogTable from '../../features/logs/LogTable';
+import LogCard from '../../features/logs/LogCard';
+import TeamProfileCard from '../../features/teams/TeamProfileCard';
+import TeamProjectList from '../../features/teams/TeamProjectList';
+import TeamMemberList from '../../features/teams/TeamMemberList';
+import TeamProfileCardActions from '../../features/teams/TeamProfileCardActions';
+import { useAppSelector } from '../../app/hooks';
+import { selectAccountNames } from '../../features/accounts/accountsSlice';
 
 type TeamMember = {
   id: string
@@ -18,6 +21,7 @@ type TeamMember = {
 export default function TeamProfilePage() {
   const router = useRouter();
   const teamName = `${router.query.teamName}`;
+  const accountNames = useAppSelector(selectAccountNames);
   const { data, loading, error } = useQuery(TEAM_PROFILE_QUERY, {
     variables: { team: teamName },
   });
@@ -37,6 +41,7 @@ export default function TeamProfilePage() {
       disabled: false,
     },
   ];
+  const [isMember, setIsMember] = useState(false);
 
   useEffect(() => {
     const fetchMeta = async (metaURI: string) => {
@@ -53,6 +58,14 @@ export default function TeamProfilePage() {
     }
   }, [data, loading, error, setMeta]);
 
+  useEffect(() => {
+    if (teamName) {
+      accountNames.map((name) => {
+        if (teamName === name) setIsMember(true);
+      });
+    }
+  }, [accountNames, teamName]);
+
   return (
     <Layout title='Valist | Team'>
       <div className="grid grid-cols-1 gap-4 items-start lg:grid-cols-6 lg:gap-8">
@@ -65,10 +78,11 @@ export default function TeamProfilePage() {
             meta={meta}
             tabs={tabs}          
           />
-          {view === 'Projects' && <TeamProjectList projects={projects} linksDisbaled={false} />}
+          {view === 'Projects' && <TeamProjectList projects={projects} linksDisabled={false} />}
           {view === 'Activity' && <LogTable team={teamName} project={''} address={''} />}
         </div>
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
+          {isMember && <TeamProfileCardActions accountName={teamName} />}
           <TeamMemberList 
             teamMembers={members} 
             teamName={teamName}          
