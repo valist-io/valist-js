@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
-import { RelayProvider, GSNConfig } from '@opengsn/provider';
 import { create as createIPFS } from 'ipfs-http-client';
 import Client from './client';
+import { createRelaySigner } from './metatx';
 import * as contracts from './contracts';
 
 export class AccountMeta {
@@ -50,70 +50,55 @@ export class ReleaseMeta {
 	public external_url?: string;
 }
 
+// providers accepted by the client constructor helpers
+export type Provider = ethers.providers.JsonRpcProvider | ethers.providers.Web3Provider;
+
+// additional options for configuring the client
+export interface Options {
+	ipfsHost: string;
+	ipfsGateway: string;
+	metaTx: boolean;
+	wallet: ethers.Wallet;
+}
+
 /**
- * Create a read-only Valist client using the given RPC URL.
+ * Create a read-only Valist client using the given JSON RPC provider.
  * 
- * @param url URL of the Ethereum RPC to use.
+ * @param provider Provider to use for transactions
+ * @param options Additional client options
  */
-export async function createReadOnly(url: string): Promise<Client> {
-	const provider = new ethers.providers.JsonRpcProvider(url);
+export async function create(provider: Provider, options: Partial<Options>): Promise<Client> {
 	const { chainId } = await provider.getNetwork();
-
 	const registryAddress = contracts.getRegistryAddress(chainId);
 	const licenseAddress = contracts.getLicenseAddress(chainId);
-	const paymasterAddress = contracts.getPaymasterAddress(chainId);
 
-	const registry = new ethers.Contract(registryAddress, contracts.registryABI, provider);
-	const license = new ethers.Contract(licenseAddress, contracts.licenseABI, provider);
-	const ipfs = createIPFS({ url: 'https://pin.valist.io' });
+	let registry: ethers.Contract;
+	let license: ethers.Contract;
 
-	return new Client(registry, license, ipfs, 'https://gateway.valist.io');
-} 
+	if (provider instanceof ethers.providers.Web3Provider) {
+		const web3Provider = provider as ethers.providers.Web3Provider;
+		const web3Signer = web3Provider.getSigner();
 
-/**
- * Create a Valist client using the given web3 provider.
- * 
- * @param web3 Web3 provider to use for transactions.
- * @param wallet Wallet for signing transactions (optional).
- */
-export async function createWeb3(web3: ethers.providers.ExternalProvider, wallet?: ethers.Wallet): Promise<Client> {
-	const web3Provider = new ethers.providers.Web3Provider(web3);
-	const { chainId } = await web3Provider.getNetwork();
-
-	const registryAddress = contracts.getRegistryAddress(chainId);
-	const licenseAddress = contracts.getLicenseAddress(chainId);
-	const paymasterAddress = contracts.getPaymasterAddress(chainId);
-
-	// recommended settings for polygon see below for more info
-	// https://docs.opengsn.org/networks/polygon/polygon.html
-	const config: Partial<GSNConfig> = {
-		paymasterAddress,
-		relayLookupWindowBlocks: 990,
-		relayRegistrationLookupBlocks: 990,
-		pastEventsQueryMaxPageSize: 990,
-	};
-
-	// @ts-ignore
-	const relayProvider = RelayProvider.newProvider({ provider: web3, config });
-	await relayProvider.init();
-
-	// add the wallet account if set
-	let signerAddress: string | undefined;
-	if (wallet) {
-		relayProvider.addAccount(wallet.privateKey);
-		signerAddress = wallet.address;
+		// if meta transactions enabled setup opengsn relay signer
+		let metaSigner: ethers.providers.JsonRpcSigner;
+		if (options.metaTx) {
+			metaSigner = await createRelaySigner(web3Provider, options.wallet);
+		} else {
+			metaSigner = web3Signer;
+		}
+		
+		registry = new ethers.Contract(registryAddress, contracts.registryABI, metaSigner);
+		license = new ethers.Contract(licenseAddress, contracts.licenseABI, web3Signer);
+	} else {
+		registry = new ethers.Contract(registryAddress, contracts.registryABI, provider);
+		license = new ethers.Contract(licenseAddress, contracts.licenseABI, provider);	
 	}
 
-	// @ts-ignore
-	const metaProvider = new ethers.providers.Web3Provider(relayProvider);
-	const metaSigner = metaProvider.getSigner(signerAddress);
-	const web3Signer = web3Provider.getSigner();
+	const ipfsHost = options.ipfsHost || 'https://pin.valist.io';
+	const ipfsGateway = options.ipfsGateway || 'https://gateway.valist.io';
+	const ipfs = createIPFS({ url: ipfsHost });
 
-	const registry = new ethers.Contract(registryAddress, contracts.registryABI, metaSigner);
-	const license = new ethers.Contract(licenseAddress, contracts.licenseABI, web3Signer);
-	const ipfs = createIPFS({ url: 'https://pin.valist.io' });
-
-	return new Client(registry, license, ipfs, 'https://gateway.valist.io');
+	return new Client(registry, license, ipfs, ipfsGateway);
 }
 
 /**

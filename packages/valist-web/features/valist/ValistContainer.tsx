@@ -25,7 +25,7 @@ export default function ValistContainer({ children }: any) {
   const address = useAppSelector(selectAddress);
   const dispatch = useAppDispatch();
 
-  const [valistClient, setValistClient] = useState<Client>(createValistClient(defaultProvider));
+  const [valistClient, setValistClient] = useState<Client>();
   const [provider, setProvider] = useState<ValistProvider>(defaultProvider);
   const [mainnet, setMainnet] = useState<JsonRpcProvider>(new ethers.providers.JsonRpcProvider('https://rpc.valist.io/ens'));
   const [magic, setMagic] = useState<Magic>(newMagic());
@@ -51,11 +51,11 @@ export default function ValistContainer({ children }: any) {
         });
       });
     }
-  }, []);
+  }, [setValistClient]);
   
   // Set Valist client on provider change.
   useEffect(() => {
-    setValistClient(createValistClient(provider));
+    createValistClient(provider).then(setValistClient);
   }, [provider]);
 
   // Add Valist client to window
