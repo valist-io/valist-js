@@ -16,14 +16,14 @@ export default function ProjectList(props: ProjectListProps) {
           <Fragment key={project.id}>
             {props.linksDisabled ? 
               <ProjectListCard
-                teamName={project.team.name} 
+                teamName={project.account.name} 
                 projectName={project.name}
                 metaURI={project.metaURI} />
               :
-              <Link href={`/${project.team.name}/${project.name}`}>
+              <Link href={`/${project.account.name}/${project.name}`}>
                 <a>
                   <ProjectListCard
-                    teamName={project.team.name} 
+                    teamName={project.account.name} 
                     projectName={project.name}
                     metaURI={project.metaURI} />
                 </a>

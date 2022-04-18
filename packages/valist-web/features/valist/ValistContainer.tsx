@@ -70,7 +70,7 @@ export default function ValistContainer({ children }: any) {
   useEffect(() => {
     if (data?.users[0]) {
       const { teamNames, teams } = normalizeUserProjects(
-        data.users[0].teams,
+        data.users[0].accounts,
         data.users[0].projects,
       );
 

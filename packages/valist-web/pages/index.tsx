@@ -74,7 +74,7 @@ const Dashboard: NextPage = () => {
 
           try {
             licenseNames = await valistCtx.getLicenseNames(
-              project.team.name,
+              project.account.name,
               project.name,
               0,
               100,
@@ -89,7 +89,7 @@ const Dashboard: NextPage = () => {
               id: id.toString(),
               image: '',
               name: licenseNames[j],
-              team: project.team.name,
+              team: project.account.name,
               project: project.name,
               description: '',
             });

@@ -12,7 +12,7 @@ export type Project = {
   id: string,
   name: string,
   metaURI: string,
-  team: {
+  account: {
     name: string,
   }
 };
@@ -22,7 +22,7 @@ export type Log = {
   project: string,
   release: string,
   sender: string,
-  team: string,
+  account: string,
   type: string,
   member: string,
 }

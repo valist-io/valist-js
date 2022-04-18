@@ -9,7 +9,6 @@ import { Member, Release } from "../../../utils/Apollo/types";
 import { ProjectMeta, ReleaseMeta } from "../../../utils/Valist/types";
 import parseError from "../../../utils/Errors";
 import LogCard from "../../../features/logs/LogCard";
-import { getProjectID } from "../../../utils/Valist";
 import { dismiss, notify } from "../../../utils/Notifications";
 import ValistContext from "../../../features/valist/ValistContext";
 import { useAppSelector } from "../../../app/hooks";
@@ -28,14 +27,17 @@ export default function ProjectPage():JSX.Element {
   const address = useAppSelector(selectAddress);
   const [projectID, setProjectID] = useState<string>('');
   const { data, loading, error } = useQuery(PROJECT_PROFILE_QUERY, {
-    variables: { project: projectID },
+    variables: { project: projectName },
   });
+
+  console.log('Project Profile Data', data);
+
   const [version, setVersion] = useState<string>('');
   const [view, setView] = useState<string>('Readme');
   const [licensePrice, setLicensePrice] = useState<BigNumberish | null>(null);
   const [projectMeta, setProjectMeta] = useState<ProjectMeta>({
     image: '',
-    name: 'loading',
+    name: '',
     description: '# Not Found',
     external_url: '',
   });
@@ -67,21 +69,6 @@ export default function ProjectPage():JSX.Element {
     },
   ];
   const [isMember, setIsMember] = useState(false);
-
-  useEffect(() => {
-    const _getProjectID = async () => {
-      if (teamName !== 'undefined') {
-        try {
-          const _projectID = getProjectID(teamName, projectName);
-          setProjectID(_projectID);
-        } catch(err) {
-          notify('error', String(err));
-          console.log("Failed to fetch projectID.", err);
-        }
-      }
-    };
-    _getProjectID();
-  }, [teamName, projectName]);
 
   useEffect(() => {
     const fetchReleaseMeta = async (release: Release) => {
@@ -204,7 +191,7 @@ export default function ProjectPage():JSX.Element {
           />
           {isMember && <ProjectProfileCardActions accountName={teamName} projectName={projectName} />}
           <ProjectMetaCard
-            version={version} 
+            version={version}
             teamName={teamName}
             donate={() => {}}
             memberCount={members.length}
