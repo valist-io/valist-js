@@ -5,10 +5,9 @@ export const RECENT_LOGS_QUERY = gql`
     logs (first: 5){
       id
       type
-      team
+      account
       project
       release
-      member
       sender
     }
   }
@@ -19,48 +18,45 @@ export const USER_LOGS_QUERY = gql`
     logs (where: {sender: $address}, first: $count){
       id
       type
-      team
+      account
       project
       release
-      member
       sender
     }
   }
 `;
 
-export const TEAM_LOGS_QUERY = gql`
-  query TeamLogs($team: String, $count: Int){
-    logs (where: {team: $team}, first: $count){
+export const ACCOUNT_LOGS_QUERY = gql`
+  query TeamLogs($account: String, $count: Int){
+    logs (where: {account: $account}, first: $count){
       id
       type
-      team
+      account
       project
       release
-      member
       sender
     }
   }
 `;
 
 export const PROJECT_LOGS_QUERY = gql`
-  query ProjectLogs($team: String, $project: String, $count: Int){
-    logs (where: {team: $team, project: $project}, first: $count){
+  query ProjectLogs($account: String, $project: String, $count: Int){
+    logs (where: {account: $account, project: $project}, first: $count){
       id
       type
-      team
+      account
       project
       release
-      member
       sender
     }
   }
 `;
 
-export const USER_TEAMS = gql`
+export const USER_ACCOUNTS = gql`
   query Projects($address: String){
     users(where: {id: $address}) {
       id
-      teams {
+      accounts {
         name
         projects{
           name
@@ -74,7 +70,7 @@ export const USER_PROJECTS = gql`
   query Projects($address: String){
     users(where: {id: $address}) {
       id
-      teams {
+      accounts {
         name
         projects{
           name
@@ -84,7 +80,7 @@ export const USER_PROJECTS = gql`
         id
         name
         metaURI
-        team {
+        account {
           name
         }
       }
@@ -96,13 +92,13 @@ export const USER_HOMEPAGE = gql`
   query Homepage($address: String){
     users(where: {id: $address}) {
       id
-      teams {
+      accounts {
         name
         projects{
           id
           name
           metaURI
-          team {
+          account {
             name
           }
         }
@@ -112,7 +108,7 @@ export const USER_HOMEPAGE = gql`
         id
         name
         metaURI
-        team {
+        account {
           name
         }
       }
@@ -120,9 +116,9 @@ export const USER_HOMEPAGE = gql`
   }
 `;
 
-export const TEAM_PROFILE_QUERY = gql`
-  query Team($team: String) {
-    teams(where: { name: $team} ){
+export const ACCOUNT_PROFILE_QUERY = gql`
+  query Account($account: String) {
+    accounts(where: { name: $account} ){
       id
       name
       metaURI
@@ -133,7 +129,7 @@ export const TEAM_PROFILE_QUERY = gql`
         id
         name
         metaURI
-        team {
+        account {
           name
         }
       }
@@ -148,7 +144,7 @@ export const PROJECT_SEARCH_QUERY = gql`
       id
       name
       metaURI
-      team{
+      account {
         name
       }
     }
@@ -157,17 +153,17 @@ export const PROJECT_SEARCH_QUERY = gql`
 
 export const PROJECT_PROFILE_QUERY = gql`
   query ProjectProfile($project: String){
-    projects(where: {id: $project}){
+    projects(where: {name: $project}){
       id
       name
       metaURI
-      team{
+      account {
         name
       }
-      releases(orderBy: createdAt, orderDirection: "desc",) {
+      releases(orderBy: blockTime, orderDirection: "desc",) {
         name
         metaURI
-        createdAt
+        blockTime
       }
       members{
         id
@@ -181,7 +177,7 @@ export const ADDR_PROFILE_QUERY =  gql`
     keys (where: { address: $address} ){
       id
       address
-      team{
+      account {
         id
         project{
           id
@@ -193,7 +189,7 @@ export const ADDR_PROFILE_QUERY =  gql`
         id
         name
         metaURI
-        team{
+        account {
           name
         }
       }
