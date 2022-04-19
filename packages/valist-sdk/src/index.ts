@@ -75,7 +75,7 @@ export async function create(provider: Provider, options: Partial<Options>): Pro
 	let registry: ethers.Contract;
 	let license: ethers.Contract;
 
-	if (provider instanceof ethers.providers.Web3Provider) {
+	if ((provider as ethers.providers.Web3Provider).provider) {
 		const web3Provider = provider as ethers.providers.Web3Provider;
 		const web3Signer = web3Provider.getSigner();
 
