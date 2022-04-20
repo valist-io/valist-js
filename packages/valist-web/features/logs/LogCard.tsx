@@ -20,9 +20,9 @@ export default function LogCard(props: LogCardProps) {
                 {props?.logs?.slice(0, 4).map((log) => (
                   <li key={log.id} className="py-4">
                     <div className="flex-1 space-y-1">
-                      <p className="text-sm">
+                      <div className="text-sm">
                         <LogText log={log} />
-                      </p>
+                      </div>
                       {log.type && 
                         <a href={`https://polygonscan.com//tx/${log.id}`} className="text-sm text-gray-500">
                           view transaction

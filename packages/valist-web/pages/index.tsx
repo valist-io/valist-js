@@ -68,8 +68,6 @@ const Dashboard: NextPage = () => {
     }
   },[currentProjects, address, isAccounts]);
 
-  console.log('logs', logs, data);
-
   if (address === '0x0' && loginTried) {
     return (
       <Layout title="Valist | Login">
