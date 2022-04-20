@@ -126,7 +126,7 @@ export default class Client {
 	}
 
 	async getProductBalance(address: string, projectID: ethers.BigNumberish): Promise<ethers.BigNumber> {
-		const balanceOf = this.license['balanceOf(address, uint256)'];
+		const balanceOf = this.license['balanceOf(address,uint256)'];
 		return await balanceOf(address, projectID);
 	}
 
