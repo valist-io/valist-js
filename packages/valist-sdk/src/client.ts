@@ -125,6 +125,11 @@ export default class Client {
 		return await getPrice(projectID);
 	}
 
+	async getProductBalance(address: string, projectID: ethers.BigNumberish): Promise<ethers.BigNumber> {
+		const balanceOf = this.license['balanceOf(address, uint256)'];
+		return await balanceOf(address, projectID);
+	}
+
 	async getProductTokenPrice(token: string, projectID: ethers.BigNumberish): Promise<ethers.BigNumber> {
 		const getPrice = this.license['getPrice(address,uint256)'];
 		return await getPrice(token, projectID);
