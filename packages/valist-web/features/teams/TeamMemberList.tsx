@@ -45,8 +45,8 @@ type TeamMember = {
 }
 
 interface TeamMemberListProps {
-  teamName: string,
-  teamMembers: TeamMember[]
+  accountName: string,
+  accountMembers: TeamMember[]
 }
 
 export default function TeamMemberList(props: TeamMemberListProps): JSX.Element {
@@ -57,7 +57,7 @@ export default function TeamMemberList(props: TeamMemberListProps): JSX.Element 
           <h2 className="text-base font-medium text-gray-900" id="recent-hires-title">Members</h2>
           <div className="flow-root mt-6">
             <ul className="-my-5 divide-y divide-gray-200">
-              { props.teamMembers.map((member: TeamMember) => <TeamMemberListItem key={member.id} id={member.id} />)}
+              { props.accountMembers.map((member: TeamMember) => <TeamMemberListItem key={member.id} id={member.id} />)}
             </ul>
           </div>
         </div>
