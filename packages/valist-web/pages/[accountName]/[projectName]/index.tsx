@@ -32,12 +32,9 @@ export default function ProjectPage():JSX.Element {
   const { data, loading, error } = useQuery(PROJECT_PROFILE_QUERY, {
     variables: { projectID: projectID },
   });
-
-  console.log('Project Profile Data', data);
-
   const [version, setVersion] = useState<string>('');
   const [view, setView] = useState<string>('Readme');
-  const [licensePrice, setLicensePrice] = useState<BigNumberish | null>(null);
+  const [licensePrice, setLicensePrice] = useState<string>('0');
   const [projectMeta, setProjectMeta] = useState<ProjectMeta>({
     image: '',
     name: '',
@@ -120,7 +117,7 @@ export default function ProjectPage():JSX.Element {
 
   useEffect(() => {
     (async () => {
-      if (valistCtx && releaseMeta.licenses && releaseMeta.licenses[0]) {
+      if (valistCtx && projectID) {
         const price = await valistCtx.getProductPrice(projectID);
         setLicensePrice(ethers.utils.formatEther(price));
 
@@ -128,7 +125,7 @@ export default function ProjectPage():JSX.Element {
         setLicenseBalance(Number(balance));
       }
     })();
-  }, [address, projectID, releaseMeta.licenses]);
+  }, [address, projectID, valistCtx]);
 
   useEffect(() => {
     if (accountName && projectName) {
@@ -143,9 +140,10 @@ export default function ProjectPage():JSX.Element {
   }, [accounts, projectName, accountName]);
 
   const mintLicense = async () => {
-    if (releaseMeta.licenses && releaseMeta.licenses[0] && address !== '0x0' && valistCtx) {
+    if ( valistCtx && projectID && address !== '0x0') {
       let toastID = '';
       try {
+        console.log('test');
         const transaction = await valistCtx.purchaseProduct(
           projectID,
           address,
@@ -204,7 +202,7 @@ export default function ProjectPage():JSX.Element {
             projectName={projectName} 
             projectMeta={projectMeta}
           />
-          <LogCard logs={logs} account={accountName} project={projectName} />
+          <LogCard logs={logs} />
         </div>
       </div>
     </Layout>

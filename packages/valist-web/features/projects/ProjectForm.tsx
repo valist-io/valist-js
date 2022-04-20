@@ -1,5 +1,5 @@
 import { generateID } from "@valist/sdk";
-import { BigNumberish } from "ethers";
+import { BigNumberish, ethers } from "ethers";
 import { Fragment, useContext, useEffect, useState } from "react";
 import { useAppDispatch } from "../../app/hooks";
 import FileUpload from "../../components/Files/FileUpload";
@@ -8,7 +8,7 @@ import { SetUseState } from "../../utils/Account/types";
 import { shortnameFilterRegex } from "../../utils/Validation";
 import ValistContext from "../valist/ValistContext";
 import Web3Context from "../valist/Web3Context";
-import { setDescription, setMembers, setDisplayName, setName, setShortDescription, setTeam, setWebsite, setYoutubeUrl } from "./projectSlice";
+import { setDescription, setMembers, setDisplayName, setName, setShortDescription, setTeam, setWebsite, setPrice } from "./projectSlice";
 import ProjectTagsInput from "./ProjectTagsInput";
 import ProjectTypeSelect from "./ProjectTypeSelect";
 
@@ -19,6 +19,7 @@ interface ProjectFormProps {
   accountID: BigNumberish | null;
   projectName: string;
   projectDisplayName: string;
+  price: string;
   shortDescription: string;
   projectDescription: string;
   projectWebsite: string;
@@ -82,15 +83,17 @@ export default function ProjectForm(props: ProjectFormProps) {
         console.log('check projectID', projectID);
 
         const resp = await valistCtx?.getProjectMeta(projectID);
-        console.log('Project meta resp', resp);
+        if (JSON.stringify(resp).includes("<html><head>")) {
+          return false;
+        }
+
       } catch (err: any) {
         console.log('err', err);
         if (JSON.stringify(err).includes("err-proj-not-exist")) {
           return false;
         }
       }
-      
-      console.log('i got here');
+
       return true;
     };
 
@@ -205,6 +208,10 @@ export default function ProjectForm(props: ProjectFormProps) {
         return <DescriptionsForm 
           shortDescription={props.shortDescription} 
           projectDescription={props.projectDescription} 
+        />;
+      case 'Pricing':
+        return <PriceForm 
+          price={props.price} 
         />;
       case 'Graphics':
         return <GraphicsForm   
@@ -452,6 +459,39 @@ const MembersForm = (props: MemebersFormProps) => {
       </button>
         </div>
       </div>}
+    </form>
+  );
+};
+
+interface PriceFormProps {
+  price: string;
+}
+
+const PriceForm = (props: PriceFormProps) => {
+  const dispatch = useAppDispatch();
+
+  return (
+    <form className="grid grid-cols-1 gap-y-6 sm:gap-x-8" action="#" method="POST">
+      <div>
+        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+          Price (in MATIC)  <span className="float-right"><Tooltip text='The price to mint/purchase the license in MATIC. ERC-20 payments coming soon!' /></span>
+        </label>
+        <div className="mt-1">
+          <input
+            id="price"
+            name="price"
+            type="number"
+            min="0"
+            onChange={(e) => dispatch(setPrice(e.target.value))}
+            value={props.price}
+            required={true}
+            className="appearance-none block w-full px-3 py-2 border border-gray-300 
+            rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 
+            focus:border-indigo-500 sm:text-sm"
+            placeholder="0.00"
+          />
+        </div>
+      </div>
     </form>
   );
 };

@@ -9,6 +9,7 @@ export interface ProjectState {
   team: string;
   name: string;
   displayName: string;
+  price: string;
   description: string;
   shortDescription: string;
   website: string;
@@ -22,6 +23,7 @@ interface ProjectPayload {
   team: string;
   name: string;
   displayName: string;
+  price: string;
   description: string;
   shortDescription: string;
   website: string;
@@ -35,6 +37,7 @@ const initialState: ProjectState = {
   team: '',
   name: '',
   displayName: '',
+  price: '0',
   description: defaultReadme,
   shortDescription: '',
   website: '',
@@ -56,6 +59,9 @@ export const projectSlice = createSlice({
     },
     setName: (state, action: PayloadAction<string>) => {
       state.name = action.payload;
+    },
+    setPrice: (state, action: PayloadAction<string>) => {
+      state.price = action.payload;
     },
     setDescription: (state, action: PayloadAction<string>) => {
       state.description = action.payload;
@@ -86,17 +92,12 @@ export const projectSlice = createSlice({
       state.tags = state.tags.splice(index, 1);
     },
     setAll: (state, action: PayloadAction<ProjectPayload>) => {
-      state.team = action.payload.team;
-      state.name = action.payload.name;
-      state.displayName = action.payload.displayName;
-      state.description = action.payload.description;
-      state.shortDescription = action.payload.shortDescription;
-      state.website = action.payload.website;
-      state.members = action.payload.members;
+      state = action.payload;
     },
     clear: (state) => {
       state.team = '';
       state.displayName = '';
+      state.price = '0';
       state.name = '';
       state.description = defaultReadme;
       state.shortDescription = '';
@@ -109,10 +110,11 @@ export const projectSlice = createSlice({
 });
 
 export const { 
-  setTeam, setDisplayName, setName, setDescription, setShortDescription, setWebsite, setMembers, setYoutubeUrl, setType, setTags, addTag, removeTag, setAll, clear,
+  setTeam, setDisplayName, setName, setPrice, setDescription, setShortDescription, setWebsite, setMembers, setYoutubeUrl, setType, setTags, addTag, removeTag, setAll, clear,
 } = projectSlice.actions;
 export const selectTeam = (state: RootState) => state.project.team;
 export const selectDisplayName = (state: RootState) => state.project.displayName;
+export const selectPrice = (state: RootState) => state.project.price;
 export const selectName = (state: RootState) => state.project.name;
 export const selectDescription = (state: RootState) => state.project.description;
 export const selectShortDescription = (state: RootState) => state.project.shortDescription;

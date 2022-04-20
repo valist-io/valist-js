@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import Layout from '../../components/Layouts/Main';
-import ManageTeam from '../../features/teams/ManageAccount';
+import ManageTeam from '../../features/accounts/ManageAccount';
 
 const CreateAccountPage: NextPage = () => {
   return (

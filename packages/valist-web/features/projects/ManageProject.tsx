@@ -3,18 +3,19 @@ import { useContext, useEffect, useState } from 'react';
 import { ProjectMeta } from '@valist/sdk';
 import ValistContext from '../../features/valist/ValistContext';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { selectAccountNames, selectAccounts, selectLoginTried, selectLoginType } from '../../features/accounts/accountsSlice';
+import { selectAccountNames, selectLoginTried, selectLoginType } from '../../features/accounts/accountsSlice';
 import { showLogin } from '../../features/modal/modalSlice';
 import { dismiss, notify } from '../../utils/Notifications';
 import parseError from '../../utils/Errors';
-import { clear, selectDescription, selectDisplayName, selectMembers, selectName, selectShortDescription, selectTags, selectTeam, selectType, selectWebsite, selectYoutubeUrl, setDescription, setDisplayName, setMembers, setName, setShortDescription, setTags, setTeam, setType, setWebsite } from '../../features/projects/projectSlice';
+import { clear, selectDescription, selectDisplayName, selectMembers, selectName, selectPrice, selectShortDescription, selectTags, selectTeam, selectType, selectWebsite, selectYoutubeUrl, setDescription, setDisplayName, setMembers, setName, setPrice, setShortDescription, setTags, setTeam, setType, setWebsite } from '../../features/projects/projectSlice';
 import ProjectPreview from '../../features/projects/ProjectPreview';
 import ProjectForm from './ProjectForm';
 import Tabs from '../../components/Tabs';
 import { Asset } from './ProjectGallery';
 import { generateID } from '@valist/sdk';
 import getConfig from 'next/config';
-import { BigNumber, BigNumberish } from 'ethers';
+import { BigNumber, BigNumberish, ethers } from 'ethers';
+import { projectMetaChanged } from '../../utils/Validation';
 
 type Member = {
   id: string,
@@ -28,7 +29,6 @@ export default function ManageProject(props: ManageProjectProps) {
   // Page State
   const valistCtx = useContext(ValistContext);
   const accountNames = useAppSelector(selectAccountNames);
-  const accounts = useAppSelector(selectAccounts);
   const loginType = useAppSelector(selectLoginType);
   const loginTried = useAppSelector(selectLoginTried);
   const dispatch = useAppDispatch();
@@ -40,6 +40,7 @@ export default function ManageProject(props: ManageProjectProps) {
   const projectAccount = useAppSelector(selectTeam);
   const projectDisplayName = useAppSelector(selectDisplayName);
   const projectName = useAppSelector(selectName);
+  const projectPrice = useAppSelector(selectPrice);
   const projectDescription = useAppSelector(selectDescription);
   const projectShortDescription = useAppSelector(selectShortDescription);
   const projectWebsite = useAppSelector(selectWebsite);
@@ -48,6 +49,7 @@ export default function ManageProject(props: ManageProjectProps) {
   const projectTags = useAppSelector(selectTags);
 
   const [accountID, setAccountID] = useState<string | null>(null);
+  const [previousMeta, setPreviousMeta] = useState<ProjectMeta>({});
   const [projectID, setProjectID] = useState<BigNumberish | null>(null);
   const [projectImage, setProjectImage] = useState<File[]>([]);
   const [currentImage, setCurrentImage] = useState<string>('');
@@ -88,8 +90,6 @@ export default function ManageProject(props: ManageProjectProps) {
       setProjectID(projectID);
     }
   }, [projectAccount, projectName, publicRuntimeConfig.CHAIN_ID]);
-
-  console.log("IDs", accountID, projectID);
   
   // If in edit mode & projectID && valistCtx, render current values in form
   useEffect(() => {
@@ -99,6 +99,8 @@ export default function ManageProject(props: ManageProjectProps) {
       if (props.accountUsername && props.projectName && projectID && valistCtx && valistCtx.getProjectMeta) {
         try {
           projectData = await valistCtx.getProjectMeta(projectID);
+          setPreviousMeta(projectData);
+
           if (projectData.image) setCurrentImage(projectData.image);
           if (projectData.name) dispatch(setDisplayName(projectData.name));
           if (projectData.external_url) dispatch(setWebsite(projectData.external_url));
@@ -110,6 +112,9 @@ export default function ManageProject(props: ManageProjectProps) {
 
           const members = await valistCtx.getProjectMembers(projectID);
           if (members) dispatch(setMembers(members));
+
+          const price = await valistCtx.getProductPrice(projectID);
+          dispatch(setPrice(ethers.utils.formatEther(price).toString()));
         } catch (err) {
           console.log('err', err);
         }
@@ -169,33 +174,57 @@ export default function ManageProject(props: ManageProjectProps) {
     console.log("Project Name", projectDisplayName);
     console.log("Project Members", projectMembers);
     console.log("Meta", project);
-
+ 
     try {
-      toastID = notify('pending');
-
+      const metaChanged = projectMetaChanged(previousMeta, project);
       // If props.project call setProjectMeta else createTeam
       let transaction: any;
       if (props.accountUsername && props.projectName) {
-        transaction = await valistCtx.setProjectMeta(
-          projectID,
-          project,
-        );
+        if (metaChanged) {
+          toastID = notify('pending');
+          transaction = await valistCtx.setProjectMeta(
+            projectID,
+            project,
+          );
+
+          dismiss(toastID);
+          toastID = notify('transaction', transaction.hash);
+          await transaction.wait();
+        } else {
+          notify('message', 'Project Meta has not changed.');
+        }
       } else {
+        toastID = notify('pending');
         transaction = await valistCtx.createProject(
           projectID,
           projectName,
           project,
           projectMembers,
         );
+
+        dismiss(toastID);
+        toastID = notify('transaction', transaction.hash);
+        await transaction.wait();
       }
 
-      dismiss(toastID);
-      toastID = notify('transaction', transaction.hash);
-      await transaction.wait();
+      const previousPrice = await valistCtx.getProductPrice(projectID) || 0;
+      const currentPrice = ethers.utils.parseEther(projectPrice || '0');
 
-      dismiss(toastID);
-      notify('success');
-      if (!(props.accountUsername && props.projectName)) {
+      if (!currentPrice.eq(previousPrice)) {
+        transaction = await valistCtx.setProductPrice(
+          projectID,
+          currentPrice,
+        );
+
+        dismiss(toastID);
+        toastID = notify('transaction', transaction.hash);
+        await transaction.wait();
+  
+        dismiss(toastID);
+        notify('success');
+      }
+
+      if (!(props.accountUsername && props.projectName) && metaChanged) {
         router.push('/');
       }
     } catch(err) {
@@ -266,6 +295,10 @@ export default function ManageProject(props: ManageProjectProps) {
       disabled: false,
     },
     { 
+      text: 'Pricing',
+      disabled: false,
+    },
+    { 
       text: 'Members',
       disabled: false,
     },
@@ -292,6 +325,7 @@ export default function ManageProject(props: ManageProjectProps) {
               accountID={accountID}
               projectName={projectName}
               projectDisplayName={projectDisplayName}
+              price={projectPrice}
               shortDescription={projectShortDescription}
               projectDescription={projectDescription}
               projectWebsite={projectWebsite}
