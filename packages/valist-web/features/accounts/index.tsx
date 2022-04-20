@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useQuery } from "@apollo/client";
 import Layout from '../../components/Layouts/Main';
@@ -7,10 +7,10 @@ import { Log, Project } from '../../utils/Apollo/types';
 import { AccountMeta } from '../../utils/Valist/types';
 import LogTable from '../logs/LogTable';
 import LogCard from '../logs/LogCard';
-import TeamProfileCard from '../../features/teams/AccountProfileCard';
-import TeamProjectList from '../../features/teams/AccountProjectList';
-import TeamMemberList from '../../features/teams/AccountMemberList';
-import TeamProfileCardActions from '../../features/teams/AccountProfileCardActions';
+import TeamProfileCard from '../../features/accounts/AccountProfileCard';
+import TeamProjectList from '../../features/accounts/AccountProjectList';
+import TeamMemberList from '../../features/accounts/AccountMemberList';
+import TeamProfileCardActions from '../../features/accounts/AccountProfileCardActions';
 import { useAppSelector } from '../../app/hooks';
 import { selectAccountNames } from './accountsSlice';
 
