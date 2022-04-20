@@ -2,9 +2,9 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 import { useQuery } from "@apollo/client";
 import Layout from '../../components/Layouts/Main';
-import { TEAM_PROFILE_QUERY } from '../../utils/Apollo/queries';
-import { Project } from '../../utils/Apollo/types';
-import { TeamMeta } from '../../utils/Valist/types';
+import { ACCOUNT_PROFILE_QUERY } from '../../utils/Apollo/queries';
+import { Log, Project } from '../../utils/Apollo/types';
+import { AccountMeta } from '../../utils/Valist/types';
 import LogTable from '../../features/logs/LogTable';
 import LogCard from '../../features/logs/LogCard';
 import TeamProfileCard from '../../features/teams/TeamProfileCard';
@@ -14,22 +14,26 @@ import TeamProfileCardActions from '../../features/teams/TeamProfileCardActions'
 import { useAppSelector } from '../../app/hooks';
 import { selectAccountNames } from '../../features/accounts/accountsSlice';
 
-type TeamMember = {
+type AccountMember = {
   id: string
 }
 
 export default function TeamProfilePage() {
   const router = useRouter();
-  const teamName = `${router.query.teamName}`;
+  const accountName = `${router.query.accountName}`;
   const accountNames = useAppSelector(selectAccountNames);
-  const { data, loading, error } = useQuery(TEAM_PROFILE_QUERY, {
-    variables: { team: teamName },
+  const { data, loading, error } = useQuery(ACCOUNT_PROFILE_QUERY, {
+    variables: { account: accountName },
   });
+
+  console.log("account profile data", data);
+
   const [view, setView] = useState<string>('Projects');
-  const [meta, setMeta] = useState<TeamMeta>({
+  const [meta, setMeta] = useState<AccountMeta>({
     image: '',
   });
-  const [members, setMembers] = useState<TeamMember[]>([]);
+  const [members, setMembers] = useState<AccountMember[]>([]);
+  const [logs, setLogs] = useState<Log[]>([]);
   const [projects, setaProjects] = useState<Project[]>([]);
   const tabs = [
     {
@@ -46,25 +50,26 @@ export default function TeamProfilePage() {
   useEffect(() => {
     const fetchMeta = async (metaURI: string) => {
       try {
-        const teamMeta = await fetch(metaURI).then(res => res.json());
-        setMeta(teamMeta);
+        const accountMeta = await fetch(metaURI).then(res => res.json());
+        setMeta(accountMeta);
       } catch(err) { /* TODO HANDLE */ }
     };
 
-    if (data && data.teams && data.teams[0] && data.teams[0].metaURI) {
-      fetchMeta(data.teams[0].metaURI);
-      setaProjects(data.teams[0].projects);
-      setMembers(data.teams[0].members);
+    if (data && data.accounts && data.accounts[0] && data.accounts[0].metaURI) {
+      fetchMeta(data.accounts[0].metaURI);
+      setaProjects(data.accounts[0].projects);
+      setMembers(data.accounts[0].members);
+      setLogs(data.accounts[0].logs);
     }
   }, [data, loading, error, setMeta]);
 
   useEffect(() => {
-    if (teamName) {
+    if (accountName) {
       accountNames.map((name) => {
-        if (teamName === name) setIsMember(true);
+        if (accountName === name) setIsMember(true);
       });
     }
-  }, [accountNames, teamName]);
+  }, [accountNames, accountName]);
 
   return (
     <Layout title='Valist | Team'>
@@ -73,21 +78,21 @@ export default function TeamProfilePage() {
           <TeamProfileCard
             view={view}
             setView={setView}
-            teamName={teamName}
-            teamImage={meta.image ? meta.image : ''}
+            accountName={accountName}
+            accountImage={meta.image ? meta.image : ''}
             meta={meta}
             tabs={tabs}          
           />
           {view === 'Projects' && <TeamProjectList projects={projects} linksDisabled={false} />}
-          {view === 'Activity' && <LogTable team={teamName} project={''} address={''} />}
+          {view === 'Activity' && <LogTable logs={logs} />}
         </div>
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
-          {isMember && <TeamProfileCardActions accountName={teamName} />}
-          <TeamMemberList 
-            teamMembers={members} 
-            teamName={teamName}          
+          {isMember && <TeamProfileCardActions accountName={accountName} />}
+          <TeamMemberList
+            accountMembers={members} 
+            accountName={accountName}          
           />
-          <LogCard team={teamName} />
+          <LogCard logs={logs} />
         </div>
       </div> 
     </Layout>

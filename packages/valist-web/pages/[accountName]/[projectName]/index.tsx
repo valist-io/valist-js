@@ -2,10 +2,10 @@ import { useQuery } from "@apollo/client";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import Layout from "../../../components/Layouts/Main";
-import { BigNumberish, ethers } from "ethers";
+import { BigNumber, BigNumberish, ethers } from "ethers";
 import ProjectActions from "../../../features/projects/ProjectActions";
 import { PROJECT_PROFILE_QUERY } from "../../../utils/Apollo/queries";
-import { Member, Release } from "../../../utils/Apollo/types";
+import { Log, Member, Release } from "../../../utils/Apollo/types";
 import { ProjectMeta, ReleaseMeta } from "../../../utils/Valist/types";
 import parseError from "../../../utils/Errors";
 import LogCard from "../../../features/logs/LogCard";
@@ -17,17 +17,20 @@ import ProjectProfileCard from "../../../features/projects/ProjectProfileCard";
 import ProjectMetaCard from "../../../features/projects/ProjectMetaCard";
 import ProjectContent from "../../../features/projects/ProjectProfileContent";
 import ProjectProfileCardActions from "../../../features/projects/ProjectProfileCardActions";
+import getConfig from "next/config";
+import { generateID } from "@valist/sdk";
 
 export default function ProjectPage():JSX.Element {
+  const { publicRuntimeConfig } = getConfig();
   const router = useRouter();
-  const teamName = `${router.query.teamName}`;
+  const accountName = `${router.query.accountName}`;
   const projectName = `${router.query.projectName}`;
   const valistCtx = useContext(ValistContext);
   const accounts = useAppSelector(selectAccounts);
   const address = useAppSelector(selectAddress);
   const [projectID, setProjectID] = useState<string>('');
   const { data, loading, error } = useQuery(PROJECT_PROFILE_QUERY, {
-    variables: { project: projectName },
+    variables: { projectID: projectID },
   });
 
   console.log('Project Profile Data', data);
@@ -69,6 +72,14 @@ export default function ProjectPage():JSX.Element {
     },
   ];
   const [isMember, setIsMember] = useState(false);
+  const [logs, setLogs] = useState<Log[]>([]);
+
+  useEffect(() => {
+    const chainID = BigNumber.from(publicRuntimeConfig.CHAIN_ID);
+    const accountID = generateID(chainID, accountName);
+    const projectID = generateID(accountID, projectName);
+    setProjectID(projectID.toString());
+  }, [publicRuntimeConfig.CHAIN_ID]);
 
   useEffect(() => {
     const fetchReleaseMeta = async (release: Release) => {
@@ -98,6 +109,7 @@ export default function ProjectPage():JSX.Element {
       setMembers(data?.projects[0]?.members);
       setReleases(data?.projects[0]?.releases);
       setVersion(data?.projects[0]?.releases[0]?.name);
+      setLogs(data?.projects[0]?.logs);
       fetchReleaseMeta(data?.projects[0]?.releases[0]);
 
       if (data?.projects[0]?.metaURI !== '') {
@@ -108,25 +120,19 @@ export default function ProjectPage():JSX.Element {
 
   useEffect(() => {
     (async () => {
-      if (releaseMeta.licenses && releaseMeta.licenses[0]) {
-        const licenseName = releaseMeta.licenses[0];
-        const licenseID = await valistCtx.getLicenseID(projectID, licenseName);
-        const price = await valistCtx.getLicensePrice(teamName, projectName, licenseName);
+      if (valistCtx && releaseMeta.licenses && releaseMeta.licenses[0]) {
+        const price = await valistCtx.getProductPrice(projectID);
         setLicensePrice(ethers.utils.formatEther(price));
 
-        // @ts-ignore @TODO expose from SDK interface
-        let balance = await valistCtx.license.balanceOf(
-          address, licenseID,
-        );
-
+        let balance = await valistCtx.getProductBalance(address, projectID);
         setLicenseBalance(Number(balance));
       }
     })();
   }, [address, projectID, releaseMeta.licenses]);
 
   useEffect(() => {
-    if (teamName && projectName) {
-       const profileAccount = accounts[teamName];
+    if (accountName && projectName) {
+       const profileAccount = accounts[accountName];
        
        if (profileAccount) {
         profileAccount.map((project) => {
@@ -134,16 +140,14 @@ export default function ProjectPage():JSX.Element {
         });
        }
     }
-  }, [accounts, projectName, teamName]);
+  }, [accounts, projectName, accountName]);
 
   const mintLicense = async () => {
-    if (releaseMeta.licenses && releaseMeta.licenses[0] && address !== '0x0') {
+    if (releaseMeta.licenses && releaseMeta.licenses[0] && address !== '0x0' && valistCtx) {
       let toastID = '';
       try {
-        const transaction = await valistCtx.mintLicense(
-          teamName,
-          projectName,
-          releaseMeta.licenses[0],
+        const transaction = await valistCtx.purchaseProduct(
+          projectID,
           address,
         );
         toastID = notify('transaction', transaction.hash);
@@ -165,7 +169,7 @@ export default function ProjectPage():JSX.Element {
             view={view}
             setView={setView}
             tabs={tabs}
-            teamName={teamName}
+            teamName={accountName}
             projectName={projectMeta?.name || projectName} 
             projectImg={projectMeta.image ? projectMeta.image : '' }
           />
@@ -175,12 +179,14 @@ export default function ProjectPage():JSX.Element {
             projectMeta={projectMeta}
             releaseMeta={releaseMeta}
             view={view}
-            teamName={teamName}
-            members={members} />
+            teamName={accountName}
+            members={members}
+            logs={logs}
+          />
         </div>
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
           <ProjectActions
-            teamName={teamName}
+            teamName={accountName}
             projectName={projectName}
             showAll={false}
             releases={releases}
@@ -189,16 +195,16 @@ export default function ProjectPage():JSX.Element {
             mintLicense={mintLicense} 
             licenseBalance={licenseBalance}         
           />
-          {isMember && <ProjectProfileCardActions accountName={teamName} projectName={projectName} />}
+          {isMember && <ProjectProfileCardActions accountName={accountName} projectName={projectName} />}
           <ProjectMetaCard
             version={version}
-            teamName={teamName}
+            teamName={accountName}
             donate={() => {}}
             memberCount={members.length}
             projectName={projectName} 
             projectMeta={projectMeta}
           />
-          <LogCard team={teamName} project={projectName} />
+          <LogCard logs={logs} account={accountName} project={projectName} />
         </div>
       </div>
     </Layout>

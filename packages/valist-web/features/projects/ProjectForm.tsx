@@ -1,3 +1,5 @@
+import { generateID } from "@valist/sdk";
+import { BigNumberish } from "ethers";
 import { Fragment, useContext, useEffect, useState } from "react";
 import { useAppDispatch } from "../../app/hooks";
 import FileUpload from "../../components/Files/FileUpload";
@@ -10,10 +12,11 @@ import { setDescription, setMembers, setDisplayName, setName, setShortDescriptio
 import ProjectTagsInput from "./ProjectTagsInput";
 import ProjectTypeSelect from "./ProjectTypeSelect";
 
-interface CreateProjectFormProps {
+interface ProjectFormProps {
   edit: boolean,
   submitText: string,
   accountUsername: string;
+  accountID: BigNumberish | null;
   projectName: string;
   projectDisplayName: string;
   shortDescription: string;
@@ -35,7 +38,7 @@ interface CreateProjectFormProps {
 const errorStyle = 'border-red-300 placeholder-red-400 focus:ring-red-500 focus:border-red-500';
 const normalStyle = 'border-gray-300 placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500';
 
-export default function CreateProjectForm(props: CreateProjectFormProps) {
+export default function ProjectForm(props: ProjectFormProps) {
   const web3Ctx = useContext(Web3Context);
   const valistCtx = useContext(ValistContext);
   const dispatch = useAppDispatch();
@@ -72,12 +75,22 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
     const checkProjectName = async (projectName: string) => {
       try {
         console.log('check', props.accountUsername, projectName);
-        await valistCtx.getProjectMetaURI(props.accountUsername, projectName);
+        if (!props.accountID) throw('accountID not found');
+        if (!valistCtx) throw('valistCtx not found');
+
+        const projectID = generateID(props.accountID, projectName).toString();
+        console.log('check projectID', projectID);
+
+        const resp = await valistCtx?.getProjectMeta(projectID);
+        console.log('Project meta resp', resp);
       } catch (err: any) {
+        console.log('err', err);
         if (JSON.stringify(err).includes("err-proj-not-exist")) {
           return false;
         }
       }
+      
+      console.log('i got here');
       return true;
     };
 
@@ -86,7 +99,7 @@ export default function CreateProjectForm(props: CreateProjectFormProps) {
       setValidName(!isNameTaken);
       dispatch(setName(_name));
     })();
-  }, [_name, dispatch, props.accountUsername, valistCtx.getProjectMetaURI]);
+  }, [_name, dispatch, props.accountUsername, valistCtx?.getProjectMeta]);
 
   // Handle member list change
   useEffect(() => {

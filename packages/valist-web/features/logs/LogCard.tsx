@@ -3,9 +3,6 @@ import { Log } from '../../utils/Apollo/types';
 import LogText from "./LogText";
 
 interface LogCardProps {
-  account?: string;
-  project?: string;
-  address?: string;
   logs: Log[];
 }
 

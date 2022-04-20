@@ -9,9 +9,12 @@ import { dismiss, notify } from '../../utils/Notifications';
 import parseError from '../../utils/Errors';
 import { clear, selectDescription, selectDisplayName, selectMembers, selectName, selectShortDescription, selectTags, selectTeam, selectType, selectWebsite, selectYoutubeUrl, setDescription, setDisplayName, setMembers, setName, setShortDescription, setTags, setTeam, setType, setWebsite } from '../../features/projects/projectSlice';
 import ProjectPreview from '../../features/projects/ProjectPreview';
-import CreateProjectForm from './ProjectForm';
+import ProjectForm from './ProjectForm';
 import Tabs from '../../components/Tabs';
 import { Asset } from './ProjectGallery';
+import { generateID } from '@valist/sdk';
+import getConfig from 'next/config';
+import { BigNumber, BigNumberish } from 'ethers';
 
 type Member = {
   id: string,
@@ -31,6 +34,7 @@ export default function ManageProject(props: ManageProjectProps) {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [formView, setFormView] = useState('Basic Info');
+  const { publicRuntimeConfig } = getConfig();
 
   // Project State
   const projectAccount = useAppSelector(selectTeam);
@@ -43,6 +47,8 @@ export default function ManageProject(props: ManageProjectProps) {
   const projectType = useAppSelector(selectType);
   const projectTags = useAppSelector(selectTags);
 
+  const [accountID, setAccountID] = useState<string | null>(null);
+  const [projectID, setProjectID] = useState<BigNumberish | null>(null);
   const [projectImage, setProjectImage] = useState<File[]>([]);
   const [currentImage, setCurrentImage] = useState<string>('');
   const [projectMembersParsed, setProjectMembersParsed] = useState<Member[]>([]);
@@ -60,14 +66,56 @@ export default function ManageProject(props: ManageProjectProps) {
     })();
   }, [dispatch, loginTried, loginType]);
 
-  // Set page state for user's accounts and projects if not in edit mode
+  // On initial page load, if in edit mode, set projectAccount & projectName
   useEffect(() => {
-    if (!props.accountUsername) {
-      if (accountNames.length > 0) {
-        dispatch(setTeam(accountNames[0]));
-      }
+    dispatch(clear());
+    console.log('accountUsername', props.accountUsername);
+    dispatch(setTeam(props.accountUsername || accountNames[0]));
+
+    if (props.projectName) {
+      dispatch(setName(props.projectName));
     }
-  }, [accountNames, accounts, dispatch]);
+  }, [accountNames, dispatch, props.accountUsername, props.projectName]);
+
+  // If projectAccount && projectName, generate account and projectID
+  useEffect(() => {
+    if (projectAccount && projectName) {
+      const chainID = BigNumber.from(publicRuntimeConfig.CHAIN_ID);
+      const accountID = generateID(chainID, projectAccount);
+      setAccountID(accountID.toString());
+      
+      const projectID = generateID(accountID, projectName);
+      setProjectID(projectID);
+    }
+  }, [projectAccount, projectName, publicRuntimeConfig.CHAIN_ID]);
+
+  console.log("IDs", accountID, projectID);
+  
+  // If in edit mode & projectID && valistCtx, render current values in form
+  useEffect(() => {
+    (async () => {
+      let projectData: ProjectMeta;
+      
+      if (props.accountUsername && props.projectName && projectID && valistCtx && valistCtx.getProjectMeta) {
+        try {
+          projectData = await valistCtx.getProjectMeta(projectID);
+          if (projectData.image) setCurrentImage(projectData.image);
+          if (projectData.name) dispatch(setDisplayName(projectData.name));
+          if (projectData.external_url) dispatch(setWebsite(projectData.external_url));
+          if (projectData.short_description) dispatch(setShortDescription(projectData.short_description));
+          if (projectData.description) dispatch(setDescription(projectData.description));
+          if (projectData.type) dispatch(setType(projectData.type));
+          if (projectData.tags) dispatch(setTags(projectData.tags));
+          if (projectData.gallery) setProjectAssets(projectData.gallery);
+
+          const members = await valistCtx.getProjectMembers(projectID);
+          if (members) dispatch(setMembers(members));
+        } catch (err) {
+          console.log('err', err);
+        }
+      }
+    })();
+  }, [dispatch, projectID, props.accountUsername, props.projectName, valistCtx]);
 
   // Normalize projectMember data for ProjectPreview component
   useEffect(() => {
@@ -80,42 +128,8 @@ export default function ManageProject(props: ManageProjectProps) {
     setProjectMembersParsed(members);
   }, [projectMembers]);
 
-    // If props.account & props.project, render current values, else clear values
-    useEffect(() => {
-      (async () => {
-        let projectData: ProjectMeta;
-        dispatch(clear());
-        
-        if (props.accountUsername && props.projectName) {
-          try {
-            dispatch(setTeam(props.accountUsername));
-            dispatch(setName(props.projectName));
-            projectData = await valistCtx.getProjectMeta(props.accountUsername, props.projectName);
-            if (projectData.image) setCurrentImage(projectData.image);
-            if (projectData.name) dispatch(setDisplayName(projectData.name));
-            if (projectData.external_url) dispatch(setWebsite(projectData.external_url));
-            if (projectData.short_description) dispatch(setShortDescription(projectData.short_description));
-            if (projectData.description) dispatch(setDescription(projectData.description));
-            if (projectData.type) dispatch(setType(projectData.type));
-            if (projectData.tags) dispatch(setTags(projectData.tags));
-            if (projectData.gallery) setProjectAssets(projectData.gallery);
-
-            const members = await valistCtx.getProjectMembers(
-              props.accountUsername,
-              props.projectName,
-              0,
-              100,
-            );
-    
-            if (members) dispatch(setMembers(members));
-            } catch (err) {
-              console.log('err', err);
-            }
-        }
-      })();
-    }, [dispatch, props.accountUsername, props.projectName, valistCtx.getProjectMeta, membersChanged]);
-
   const createProject = async () => {
+    if (!projectID || !valistCtx) return;
     let toastID = '';
     let imgURL = currentImage;
     let galleryItems:Asset[] = (projectGallery.length !== 0) ? [] : projectAssets;
@@ -162,15 +176,13 @@ export default function ManageProject(props: ManageProjectProps) {
       // If props.project call setProjectMeta else createTeam
       let transaction: any;
       if (props.accountUsername && props.projectName) {
-        const updatedMeta = await valistCtx.writeJSON(JSON.stringify(project));
-        transaction = await valistCtx.setProjectMetaURI(
-          props.accountUsername, 
-          props.projectName,
-          updatedMeta,
+        transaction = await valistCtx.setProjectMeta(
+          projectID,
+          project,
         );
       } else {
         transaction = await valistCtx.createProject(
-          projectAccount,
+          projectID,
           projectName,
           project,
           projectMembers,
@@ -197,13 +209,13 @@ export default function ManageProject(props: ManageProjectProps) {
     let toastID = '';
     let transaction;
 
-    if (props.projectName) {
+    if (projectID && props.projectName && valistCtx) {
       try {
         toastID = notify('pending');
         console.log('address:', address);
         console.log('account:', projectAccount);
         console.log('projectName', props.projectName);
-        transaction = await valistCtx.addProjectMember(projectAccount, props.projectName, address);
+        transaction = await valistCtx.addProjectMember(projectID, address);
         dismiss(toastID);
         toastID = notify('transaction', transaction.hash);
         await transaction.wait();
@@ -220,14 +232,14 @@ export default function ManageProject(props: ManageProjectProps) {
   };
 
   const removeMember = async (address: string) =>  {
-    if (props.projectName) {
+    if (projectID && props.projectName && valistCtx) {
       console.log(`Removing ${address} from ${projectAccount}/${props.projectName}`);
       let toastID = '';
       let transaction: any;
 
       try {
         toastID = notify('pending');
-        transaction = await valistCtx.removeProjectMember(projectAccount, props.projectName, address);
+        transaction = await valistCtx.removeProjectMember(projectID, address);
         dismiss(toastID);
         toastID = notify('transaction', transaction.hash);
         await transaction.wait();
@@ -270,13 +282,14 @@ export default function ManageProject(props: ManageProjectProps) {
       </div>
       <div className="grid grid-cols-1 gap-4 items-start gap-y-6 lg:grid-cols-12 lg:gap-8">
       {/* Right Column */}
-      <div className="grid grid-cols-1 gap-x-4 gap-y-6 lg:col-span-5">
-        <div className="p-4">
-            <CreateProjectForm
+        <div className="grid grid-cols-1 gap-x-4 gap-y-6 lg:col-span-5">
+          <div className="p-4">
+            <ProjectForm
               edit={(props.accountUsername && props.projectName) ? true : false}
               submitText={props.accountUsername ? 'Save changes' : 'Create project'}
               userAccounts={accountNames}
               accountUsername={projectAccount}
+              accountID={accountID}
               projectName={projectName}
               projectDisplayName={projectDisplayName}
               shortDescription={projectShortDescription}
@@ -293,27 +306,27 @@ export default function ManageProject(props: ManageProjectProps) {
               addMember={addMember}
               submit={createProject}         
             />
+          </div>
+        </div>
+
+        {/* Right column */}
+        <div className="grid grid-cols-1 lg:col-span-7 gap-4">
+          <ProjectPreview
+            view={formView}
+            projectAccount={projectAccount}
+            projectDisplayName={projectDisplayName}
+            projectImage={projectImage[0]}
+            projectShortDescription={projectShortDescription}
+            projectDescription={projectDescription}
+            projectWebsite={projectWebsite}
+            projectMembers={projectMembersParsed}
+            defaultImage={currentImage}
+            projectGallery={projectGallery}
+            projectAssets={projectAssets}
+            removeMember={removeMember}
+          />
         </div>
       </div>
-
-      {/* Right column */}
-      <div className="grid grid-cols-1 lg:col-span-7 gap-4">
-        <ProjectPreview
-          view={formView}
-          projectAccount={projectAccount}
-          projectDisplayName={projectDisplayName}
-          projectImage={projectImage[0]}
-          projectShortDescription={projectShortDescription} 
-          projectDescription={projectDescription}
-          projectWebsite={projectWebsite}
-          projectMembers={projectMembersParsed}
-          defaultImage={currentImage}
-          projectGallery={projectGallery}
-          projectAssets={projectAssets}
-          removeMember={removeMember}
-        />
-      </div>
-    </div>
     </div>
   );
 };

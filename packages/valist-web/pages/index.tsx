@@ -1,6 +1,7 @@
 // /* eslint-disable react-hooks/exhaustive-deps */
+import { useQuery } from '@apollo/client';
 import type { NextPage } from 'next';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppSelector } from '../app/hooks';
 import Layout from '../components/Layouts/Main';
 import { selectAccountNames, selectAccounts, selectAddress, selectCurrentAccount, selectLoginTried } from '../features/accounts/accountsSlice';
@@ -10,35 +11,39 @@ import DashboardContent from '../features/dashboard/DashboardContent';
 import HomepageProfileCard from '../features/dashboard/DashboardProfileCard';
 import PublishButton from '../features/dashboard/PublishButton';
 import LogCard from '../features/logs/LogCard';
-import ValistContext from '../features/valist/ValistContext';
-import { Project } from '../utils/Apollo/types';
+import { USER_LOGS_QUERY } from '../utils/Apollo/queries';
+import { Log, Project } from '../utils/Apollo/types';
 import { truncate } from '../utils/Formatting/truncate';
-import { License } from '../utils/Valist/types';
 
 const Dashboard: NextPage = () => {
-  const valistCtx = useContext(ValistContext);
   const address = useAppSelector(selectAddress);
   const currentAccount = useAppSelector(selectCurrentAccount);
   const loginTried = useAppSelector(selectLoginTried);
   const accounts = useAppSelector(selectAccounts);
   const accountNames = useAppSelector(selectAccountNames);
+  const { data, loading, error } = useQuery(USER_LOGS_QUERY, {
+    variables: { address: address.toLowerCase() },
+  });
+  const [logs, setLogs] = useState<Log[]>([]);
   const [userAccount, setUserAccount] = useState<string>('');
   const [currentProjects, setCurrentProjects] = useState<Project[]>([]);
-  const [userLicenses, setUserLicenses] = useState<License[]>([]);
   const [view, setView] = useState<string>('');
-  const isTeams = (accountNames.length !== 0);
+  const isAccounts = (accountNames.length !== 0);
   const isProjects = (currentProjects.length !== 0);
-  const isLicenses = (userLicenses.length !== 0);
   const transactionActions = ['Account'];
-  if (isTeams) transactionActions.push('Project');
-  if (isProjects) transactionActions.push('License');
+  if (isAccounts) transactionActions.push('Project');
   
   const initialActivity = [
     {
       id: '0x0',
+      type: 'Connected',
       sender: truncate(address, 10),
     },
   ];
+
+  useEffect(() => {
+    if (data?.logs) setLogs(data.logs);
+  }, [data]);
 
   // Set user account from accountNames or local storage
   useEffect(() => {
@@ -54,54 +59,16 @@ const Dashboard: NextPage = () => {
 
   // Set homepageView
   useEffect(() => {
-    if (!isTeams) {
+    if (!isAccounts) {
       setView('EmptyTeams');
     } else if (currentProjects.length === 0) {
       setView('EmptyProjects');
     } else {
       setView('Projects');
     }
-  },[currentProjects, address, isTeams]);
+  },[currentProjects, address, isAccounts]);
 
-  useEffect(() => {
-    (async () => {
-      if (currentProjects.length > 0) {
-        let licenses:License[] = [];
-
-        for (let i = 0; i < currentProjects.length; ++i) {
-          const project = currentProjects[i];
-          let licenseNames: string[] = [];
-
-          try {
-            licenseNames = await valistCtx.getLicenseNames(
-              project.account.name,
-              project.name,
-              0,
-              100,
-            );
-          } catch (err) {
-            console.log(err);
-          }
-
-          for (let j = 0; j < licenseNames.length; ++j) {
-            const id = await valistCtx.getLicenseID(project.id, licenseNames[j]);
-            licenses.push({
-              id: id.toString(),
-              image: '',
-              name: licenseNames[j],
-              team: project.account.name,
-              project: project.name,
-              description: '',
-            });
-          }
-        }
-        
-        setUserLicenses(licenses);
-      } else {
-        setUserLicenses([]);
-      };
-    })();
-  }, [currentProjects, currentProjects.length, valistCtx]);
+  console.log('logs', logs, data);
 
   if (address === '0x0' && loginTried) {
     return (
@@ -122,8 +89,7 @@ const Dashboard: NextPage = () => {
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
           <HomepageProfileCard 
             isProjects={isProjects}
-            isTeams={isTeams}
-            isLicenses={isLicenses}
+            isAccounts={isAccounts}
             view={view}
             accountNames={accountNames}
             userAccount={userAccount}
@@ -131,7 +97,7 @@ const Dashboard: NextPage = () => {
           />
           <DashboardContent 
             userProjects={currentProjects}
-            userLicenses={userLicenses}
+            logs={logs}
             address={address}
             view={view}
           />
@@ -144,7 +110,7 @@ const Dashboard: NextPage = () => {
               <CreateButton transactions={transactionActions}/>
             </div>
           </div>
-          <LogCard initialLogs={initialActivity} address={address} />
+          <LogCard logs={logs.length !== 0 ? logs : initialActivity} address={address} />
         </div>
       </div>}
     </Layout>
