@@ -5,14 +5,14 @@ import Layout from '../../components/Layouts/Main';
 import { ACCOUNT_PROFILE_QUERY } from '../../utils/Apollo/queries';
 import { Log, Project } from '../../utils/Apollo/types';
 import { AccountMeta } from '../../utils/Valist/types';
-import LogTable from '../../features/logs/LogTable';
-import LogCard from '../../features/logs/LogCard';
+import LogTable from '../logs/LogTable';
+import LogCard from '../logs/LogCard';
 import TeamProfileCard from '../../features/teams/AccountProfileCard';
 import TeamProjectList from '../../features/teams/AccountProjectList';
 import TeamMemberList from '../../features/teams/AccountMemberList';
 import TeamProfileCardActions from '../../features/teams/AccountProfileCardActions';
 import { useAppSelector } from '../../app/hooks';
-import { selectAccountNames } from '../../features/accounts/accountsSlice';
+import { selectAccountNames } from './accountsSlice';
 
 type AccountMember = {
   id: string
