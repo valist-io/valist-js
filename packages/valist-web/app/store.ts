@@ -5,7 +5,7 @@ import licenseReducer from '../features/licenses/licenseSlice';
 import modalReducer from '../features/modal/modalSlice';
 import projectsReducer from '../features/projects/projectSlice';
 import releaseReducer from '../features/releases/releaseSlice';
-import teamsReducer from '../features/teams/teamSlice';
+import teamsReducer from '../features/accounts/teamSlice';
 
 export const store = configureStore({
   reducer: {

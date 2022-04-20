@@ -2,7 +2,7 @@ import { Log, Project } from '../../utils/Apollo/types';
 import LogTable from '../logs/LogTable';
 import ProjectList from '../projects/ProjectList';
 import EmptyProjectList from '../projects/EmptyProjects';
-import EmptyTeams from '../teams/EmptyAccounts';
+import EmptyTeams from '../accounts/EmptyAccounts';
 
 interface DashboardContentProps {
   userProjects: Project[]
