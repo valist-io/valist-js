@@ -8,8 +8,8 @@ import { dismiss, notify } from '../../utils/Notifications';
 import { setTeam } from '../projects/projectSlice';
 import { selectDescription, selectWebsite, selectBeneficiary, selectMembers, setWebsite, setDescription, setDisplayName, clear, selectUsername, setUsername, selectDisplayName, setMembers } from './teamSlice';
 import parseError from '../../utils/Errors';
-import TeamPreview from './TeamPreview';
-import CreateTeamForm from './TeamForm';
+import TeamPreview from './AccountPreview';
+import CreateTeamForm from './AccountForm';
 import Tabs from '../../components/Tabs';
 
 type Member = {

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Project } from "../../utils/Apollo/types";
 import { Fragment } from "react";
-import ProjectCard from '../../features/projects/ProjectListCard';
+import ProjectCard from '../projects/ProjectListCard';
 
 interface TeamProjectListProps {
   projects: Project[],

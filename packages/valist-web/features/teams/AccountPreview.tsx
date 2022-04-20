@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import ProjectMemberList from "../projects/ProjectMemberList";
-import TeamListCard from "./TeamListCard";
-import TeamProfileCard from "./TeamProfileCard";
+import TeamListCard from "./AccountListCard";
+import TeamProfileCard from "./AccountProfileCard";
 
 type AccountMember = {
   id: string;

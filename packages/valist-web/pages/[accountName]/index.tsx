@@ -7,10 +7,10 @@ import { Log, Project } from '../../utils/Apollo/types';
 import { AccountMeta } from '../../utils/Valist/types';
 import LogTable from '../../features/logs/LogTable';
 import LogCard from '../../features/logs/LogCard';
-import TeamProfileCard from '../../features/teams/TeamProfileCard';
-import TeamProjectList from '../../features/teams/TeamProjectList';
-import TeamMemberList from '../../features/teams/TeamMemberList';
-import TeamProfileCardActions from '../../features/teams/TeamProfileCardActions';
+import TeamProfileCard from '../../features/teams/AccountProfileCard';
+import TeamProjectList from '../../features/teams/AccountProjectList';
+import TeamMemberList from '../../features/teams/AccountMemberList';
+import TeamProfileCardActions from '../../features/teams/AccountProfileCardActions';
 import { useAppSelector } from '../../app/hooks';
 import { selectAccountNames } from '../../features/accounts/accountsSlice';
 
