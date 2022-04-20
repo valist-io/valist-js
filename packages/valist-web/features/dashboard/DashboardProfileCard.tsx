@@ -10,8 +10,7 @@ import Web3Context from "../valist/Web3Context";
 
 interface HomepageProfileCardProps {
   isProjects: boolean;
-  isTeams: boolean;
-  isLicenses: boolean;
+  isAccounts: boolean;
   view: string;
   accountNames: string[];
   userAccount: string;
@@ -25,29 +24,13 @@ export default function HomepageProfileCard(props:HomepageProfileCardProps) {
   const tabs = [
     {
       text: 'Projects',
-      disabled: true,
-    },
-    {
-      text: 'Licenses',
-      disabled: true,
+      disabled: !props.isAccounts,
     },
     {
       text: 'Activity',
-      disabled: true,
+      disabled: false,
     },
   ];
-
-  if (props.isTeams) {
-    tabs[2].disabled = false;
-  }
-
-  if (props.isProjects) {
-    tabs[0].disabled = false;
-  }
-
-  if (props.isLicenses) {
-    tabs[1].disabled = false;
-  }
 
   useEffect(() => {
     (async () => {
