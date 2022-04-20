@@ -30,9 +30,9 @@ const SearchPage: NextPage = () => {
         {/* Right column */}
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
           {list.map((project: Project) => (
-            <Link key={project.id} href={`/${project.team.name}/${project.name}`}>
+            <Link key={project.id} href={`/${project.account.name}/${project.name}`}>
               <a>
-                <ProjectListCard teamName={project.team.name} projectName={project.name} metaURI={project.metaURI} />
+                <ProjectListCard teamName={project.account.name} projectName={project.name} metaURI={project.metaURI} />
               </a>
             </Link>
           ))}

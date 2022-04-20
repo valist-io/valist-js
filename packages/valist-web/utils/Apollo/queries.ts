@@ -18,9 +18,22 @@ export const USER_LOGS_QUERY = gql`
     logs (where: {sender: $address}, first: $count){
       id
       type
-      account
-      project
-      release
+      blockTime
+      account {
+        id
+        name
+      }
+      project {
+        id
+        name
+        account {
+          name
+        }
+      }
+      release{
+        id
+        name
+      }
       sender
     }
   }
@@ -111,6 +124,9 @@ export const USER_HOMEPAGE = gql`
         account {
           name
         }
+         product {
+          id
+        }
       }
     }
   }
@@ -133,6 +149,27 @@ export const ACCOUNT_PROFILE_QUERY = gql`
           name
         }
       }
+      logs(orderBy: blockTime, orderDirection: "desc"){
+        id
+        type
+        blockTime
+        account {
+          id
+          name
+        }
+        project {
+          id
+          name
+          account {
+            name
+          }
+        }
+        release{
+          id
+          name
+        }
+        sender
+      }
     }
   }
 `;
@@ -152,21 +189,42 @@ export const PROJECT_SEARCH_QUERY = gql`
 `;
 
 export const PROJECT_PROFILE_QUERY = gql`
-  query ProjectProfile($project: String){
-    projects(where: {name: $project}){
+  query ProjectProfile($projectID: String){
+    projects(where: {id: $projectID}){
       id
       name
       metaURI
       account {
         name
       }
-      releases(orderBy: blockTime, orderDirection: "desc",) {
+      releases(orderBy: blockTime, orderDirection: "desc") {
         name
         metaURI
         blockTime
       }
       members{
         id
+      }
+      logs(orderBy: blockTime, orderDirection: "desc"){
+        id
+        type
+        blockTime
+        account {
+          id
+          name
+        }
+        project {
+          id
+          name
+          account {
+            name
+          }
+        }
+        release{
+          id
+          name
+        }
+        sender
       }
     }
   }

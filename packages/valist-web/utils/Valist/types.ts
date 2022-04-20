@@ -13,7 +13,7 @@ export declare type ReleaseArtifact = {
   provider?: string;
 };
 
-export declare type TeamMeta = {
+export declare type AccountMeta = {
   image?: string;
   name?: string;
   description?: string;
