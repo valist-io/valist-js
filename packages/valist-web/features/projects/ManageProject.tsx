@@ -7,7 +7,7 @@ import { selectAccountNames, selectLoginTried, selectLoginType } from '../../fea
 import { showLogin } from '../../features/modal/modalSlice';
 import { dismiss, notify } from '../../utils/Notifications';
 import parseError from '../../utils/Errors';
-import { clear, selectDescription, selectDisplayName, selectLimit, selectMembers, selectName, selectPrice, selectRoyalty, selectShortDescription, selectTags, selectTeam, selectType, selectWebsite, selectYoutubeUrl, setDescription, setDisplayName, setLimit, setMembers, setName, setPrice, setRoyalty, setShortDescription, setTags, setTeam, setType, setWebsite } from '../../features/projects/projectSlice';
+import { clear, selectDescription, selectDisplayName, selectLimit, selectMembers, selectName, selectPrice, selectRoyalty, selectRoyaltyAddress, selectShortDescription, selectTags, selectTeam, selectType, selectWebsite, selectYoutubeUrl, setDescription, setDisplayName, setLimit, setMembers, setName, setPrice, setRoyalty, setRoyaltyAddress, setShortDescription, setTags, setTeam, setType, setWebsite } from '../../features/projects/projectSlice';
 import ProjectPreview from '../../features/projects/ProjectPreview';
 import ProjectForm from './ProjectForm';
 import Tabs from '../../components/Tabs';
@@ -43,6 +43,7 @@ export default function ManageProject(props: ManageProjectProps) {
   const projectPrice = useAppSelector(selectPrice);
   const projectLimit = useAppSelector(selectLimit);
   const projectRoyalty = useAppSelector(selectRoyalty);
+  const projectRoyaltyAddress = useAppSelector(selectRoyaltyAddress);
   const projectDescription = useAppSelector(selectDescription);
   const projectShortDescription = useAppSelector(selectShortDescription);
   const projectWebsite = useAppSelector(selectWebsite);
@@ -125,8 +126,9 @@ export default function ManageProject(props: ManageProjectProps) {
           const limit = await valistCtx.getProductLimit(projectID);
           dispatch(setLimit(limit.toString()));
 
-          const royalty = await valistCtx.getProductRoyalty(projectID);
-          dispatch(setRoyalty(royalty.toString()));
+          const royalty = await valistCtx.getProductRoyaltyInfo(projectID, ethers.BigNumber.from(10000));
+          dispatch(setRoyalty(royalty[1].div(100).toString()));
+          dispatch(setRoyaltyAddress(royalty[0]));
         } catch (err) {
           console.log('err', err);
         }
@@ -254,8 +256,24 @@ export default function ManageProject(props: ManageProjectProps) {
         notify('success');
       }
 
-      const previousRoyalty = await valistCtx.getProductRoyalty(projectID);
+      const _royalty = await valistCtx.getProductRoyaltyInfo(projectID, BigNumber.from(10000));
+      const previousRoyalty = _royalty[1].div(100);
       const currentRoyalty = BigNumber.from(projectRoyalty);
+
+      if (!currentRoyalty.eq(previousRoyalty)) {
+        transaction = await valistCtx.setProductRoyalty(
+          projectID,
+          projectRoyaltyAddress,
+          Number(currentRoyalty) * 100,
+        );
+
+        dismiss(toastID);
+        toastID = notify('transaction', transaction.hash);
+        await transaction.wait();
+  
+        dismiss(toastID);
+        notify('success');
+      }
 
       if (!(props.accountUsername && props.projectName) && metaChanged) {
         router.push('/');
@@ -361,6 +379,7 @@ export default function ManageProject(props: ManageProjectProps) {
               price={projectPrice}
               limit={projectLimit}
               royalty={projectRoyalty}
+              royaltyAddress={projectRoyaltyAddress}
               shortDescription={projectShortDescription}
               projectDescription={projectDescription}
               projectWebsite={projectWebsite}

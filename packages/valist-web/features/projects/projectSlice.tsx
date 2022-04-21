@@ -12,6 +12,7 @@ export interface ProjectState {
   price: string;
   limit: string;
   royalty: string;
+  royaltyAddress: string;
   description: string;
   shortDescription: string;
   website: string;
@@ -28,6 +29,7 @@ interface ProjectPayload {
   price: string;
   limit: string;
   royalty: string;
+  royaltyAddress: string;
   description: string;
   shortDescription: string;
   website: string;
@@ -44,6 +46,7 @@ const initialState: ProjectState = {
   price: '0',
   limit: '0',
   royalty: '0',
+  royaltyAddress: '',
   description: defaultReadme,
   shortDescription: '',
   website: '',
@@ -74,6 +77,9 @@ export const projectSlice = createSlice({
     },
     setRoyalty: (state, action: PayloadAction<string>) => {
       state.royalty = action.payload;
+    },
+    setRoyaltyAddress: (state, action: PayloadAction<string>) => {
+      state.royaltyAddress = action.payload;
     },
     setDescription: (state, action: PayloadAction<string>) => {
       state.description = action.payload;
@@ -109,10 +115,11 @@ export const projectSlice = createSlice({
     clear: (state) => {
       state.team = '';
       state.displayName = '';
+      state.name = '';
       state.price = '0';
       state.limit = '0';
       state.royalty = '0';
-      state.name = '';
+      state.royaltyAddress = '';
       state.description = defaultReadme;
       state.shortDescription = '';
       state.website = '';
@@ -124,13 +131,14 @@ export const projectSlice = createSlice({
 });
 
 export const { 
-  setTeam, setDisplayName, setName, setPrice, setLimit, setRoyalty, setDescription, setShortDescription, setWebsite, setMembers, setYoutubeUrl, setType, setTags, addTag, removeTag, setAll, clear,
+  setTeam, setDisplayName, setName, setPrice, setLimit, setRoyalty, setRoyaltyAddress, setDescription, setShortDescription, setWebsite, setMembers, setYoutubeUrl, setType, setTags, addTag, removeTag, setAll, clear,
 } = projectSlice.actions;
 export const selectTeam = (state: RootState) => state.project.team;
 export const selectDisplayName = (state: RootState) => state.project.displayName;
 export const selectPrice = (state: RootState) => state.project.price;
 export const selectLimit = (state: RootState) => state.project.limit;
 export const selectRoyalty = (state: RootState) => state.project.royalty;
+export const selectRoyaltyAddress = (state: RootState) => state.project.royaltyAddress;
 export const selectName = (state: RootState) => state.project.name;
 export const selectDescription = (state: RootState) => state.project.description;
 export const selectShortDescription = (state: RootState) => state.project.shortDescription;

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { IPFS } from 'ipfs-core-types';
 import { ImportCandidate, ImportCandidateStream } from 'ipfs-core-types/src/utils';
@@ -139,8 +139,8 @@ export default class Client {
 		return await this.license.getLimit(projectID);
 	}
 
-	async getProductRoyalty(projectID: ethers.BigNumberish): Promise<ethers.BigNumber> {
-		return await this.license.getRoyalty(projectID);
+	async getProductRoyaltyInfo(projectID: ethers.BigNumberish, price: ethers.BigNumberish): Promise<[string, BigNumber]> {
+		return await this.license.royaltyInfo(projectID, price);
 	}
 
 	async getProductSupply(projectID: ethers.BigNumberish): Promise<ethers.BigNumber> {
