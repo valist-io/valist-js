@@ -139,6 +139,10 @@ export default class Client {
 		return await this.license.getLimit(projectID);
 	}
 
+	async getProductRoyalty(projectID: ethers.BigNumberish): Promise<ethers.BigNumber> {
+		return await this.license.getRoyalty(projectID);
+	}
+
 	async getProductSupply(projectID: ethers.BigNumberish): Promise<ethers.BigNumber> {
 		return await this.license.getSupply(projectID);
 	}
