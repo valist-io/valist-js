@@ -7,6 +7,7 @@ interface LogTableProps {
 }
 
 export default function LogTable(props: LogTableProps) {
+  console.log('props.logs', props.logs);
   return (
     <div className="flex flex-col">
       <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">

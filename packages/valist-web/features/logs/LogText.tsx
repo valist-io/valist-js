@@ -34,6 +34,10 @@ export default function LogText(props: LogTextProps) {
       return <React.Fragment>Price changed for <a href={`/${props.log.account}/${props.log.project?.name}`} className="font-medium">{props.log.project?.name}</a></React.Fragment>;
     case 'LimitChanged':
       return <React.Fragment>Limit changed for <a href={`/${props.log.account}/${props.log.project?.name}`} className="font-medium">{props.log.project?.name}</a></React.Fragment>;
+    case 'RoyaltyChanged':
+      return <React.Fragment>Royalty changed for <a href={`/${props.log.account}/${props.log.project?.name}`} className="font-medium">{props.log.project?.name}</a></React.Fragment>;
+    case 'ProductPurchased':
+      return <React.Fragment>Purchase on <a href={`/${props.log.account}/${props.log.project?.name}`} className="font-medium">{props.log.project?.name}</a></React.Fragment>;
     case 'Connected':
       return <React.Fragment>Connected wallet <p className="font-medium inline-block">{props.log.sender}</p></React.Fragment>;
     default:
