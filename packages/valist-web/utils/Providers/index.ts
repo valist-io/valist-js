@@ -1,4 +1,3 @@
-import getConfig from 'next/config';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import { Web3Provider } from "@ethersproject/providers";
 import { MetaMaskInpageProvider } from "@metamask/providers";
