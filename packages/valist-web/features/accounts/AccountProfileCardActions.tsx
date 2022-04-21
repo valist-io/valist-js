@@ -7,7 +7,7 @@ interface TeamProfileActionsProps {
 export default function TeamProfileCardActions(props: TeamProfileActionsProps) {
   return (
     <div className='rounded-lg bg-white overflow-hidden shadow p-4 overflow-visible'>
-      <Link href={`/create/${props.accountName}`}>
+      <Link href={`/create/project?account=${props.accountName}`}>
         <a className="flex justify-center items-center px-4 py-2 border
         border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700
         bg-white hover:bg-gray-50 mb-1">

@@ -12,17 +12,32 @@ export type Project = {
   id: string,
   name: string,
   metaURI: string,
-  team: {
+  account: {
     name: string,
+  },
+  product?: {
+    id: string,
   }
 };
 
 export type Log = {
-  id: string,
-  project: string,
-  release: string,
-  sender: string,
-  team: string,
-  type: string,
-  member: string,
+  id: string;
+  type: string;
+  sender: string;
+  account?: {
+    id: string;
+    name: string;
+  }
+  project?: {
+    id: string;
+    name: string;
+    account: {
+      name: string;
+    }
+  },
+  release?: {
+    id: string;
+    name: string;
+  }
+  member?: string;
 }

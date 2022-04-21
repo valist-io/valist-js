@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Project } from "../../utils/Apollo/types";
 import { Fragment } from "react";
-import ProjectCard from '../../features/projects/ProjectListCard';
+import ProjectCard from '../projects/ProjectListCard';
 
 interface TeamProjectListProps {
   projects: Project[],
@@ -15,11 +15,11 @@ export default function ProjectList(props: TeamProjectListProps) {
           {props.projects.map((project) => (
             <Fragment key={project.name}>
               {props.linksDisabled ? 
-                <ProjectCard teamName={project.team.name} projectName={project.name} metaURI={project.metaURI} />
+                <ProjectCard teamName={project.account.name} projectName={project.name} metaURI={project.metaURI} />
               :
-                <Link key={project.id} href={`${project.team.name}/${project.name}`}>
+                <Link key={project.id} href={`${project.account.name}/${project.name}`}>
                   <a>
-                    <ProjectCard teamName={project.team.name} projectName={project.name} metaURI={project.metaURI} />
+                    <ProjectCard teamName={project.account.name} projectName={project.name} metaURI={project.metaURI} />
                   </a>
                 </Link>
               }

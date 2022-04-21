@@ -1,45 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { useQuery } from "@apollo/client";
+import React from 'react';
 import { Log } from '../../utils/Apollo/types';
 import LogText from "./LogText";
-import { 
-    RECENT_LOGS_QUERY, 
-    USER_LOGS_QUERY, 
-    TEAM_LOGS_QUERY, 
-    PROJECT_LOGS_QUERY, 
-} from '../../utils/Apollo/queries';
 
 interface LogTableProps {
-  team?: string,
-  project?: string,
-  address?: string,
+  logs: Log[],
 }
 
 export default function LogTable(props: LogTableProps) {
-  let query = RECENT_LOGS_QUERY;
-  let variables: any = { count: 100 };
-
-  if (props.project && props.team) {
-    query = PROJECT_LOGS_QUERY;
-    variables.team = props.team;
-    variables.project = props.project;
-  } else if (props.team) {
-    query = TEAM_LOGS_QUERY;
-    variables.team = props.team;
-  } else if (props.address) {
-    query = USER_LOGS_QUERY;
-    variables.address = props.address.toLowerCase();
-  }
-
-  const { data, loading, error } = useQuery(query, { variables });
-  const [ logs, setLogs ] = useState<Log[]>([]);
-
-  useEffect(() => {
-    if (data && data.logs) {
-      setLogs(data.logs);
-    }
-  }, [data, loading, error]);
-
   return (
     <div className="flex flex-col">
       <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -64,7 +31,7 @@ export default function LogTable(props: LogTableProps) {
                 </tr>
               </thead>
               <tbody>
-                {logs.map((log, index) => (
+                {props?.logs?.map((log, index) => (
                   <tr key={log.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <LogText log={log} />

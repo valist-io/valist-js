@@ -17,13 +17,13 @@ export function normalizeUserProjects(teamList: Team[], projectList:Project[]) {
     const rawProjects: Project[] = projectList;
 
     for (let i = 0; i < rawProjects.length; i++) {
-      let projectTeamName = rawProjects[i].team.name;
+      let projectTeamName = rawProjects[i].account.name;
       if (!Object.keys(teams).includes(projectTeamName)) {
         if (teams[projectTeamName]?.includes(rawProjects[i])) {
           teams[projectTeamName].push(rawProjects[i]);
         } else {
           teams[projectTeamName] = [rawProjects[i]];
-          teamNames.push(rawProjects[i].team.name);
+          teamNames.push(rawProjects[i].account.name);
         }
       }
     }

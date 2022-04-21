@@ -12,6 +12,7 @@ interface CreateTeamFormProps {
   edit: boolean;
   submitText: string;
   view: string;
+  accountID: string;
   teamUsername: string;
   teamDisplayName: string;
   teamWebsite: string;
@@ -43,12 +44,13 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
   const [formValid, setFormValid] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  console.log('props on form', props);
-
   useEffect(() => {
     const checkTeamName = async (teamName: string) => {
       try {
-        await valistCtx.getTeamMetaURI(teamName);
+        if (!props.accountID) return true;
+        if (!valistCtx) return true;
+
+        await valistCtx.getAccountMeta(teamName);
       } catch (err: any) {
         if (JSON.stringify(err).includes("err-team-not-exist")) {
           console.log('error', err);
@@ -63,7 +65,7 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
       setValidName(!isNameTaken);
       dispatch(setUsername(_name));
     })();
-  }, [_name, dispatch, valistCtx.getTeamMetaURI]);
+  }, [_name, dispatch, props.accountID, valistCtx]);
 
   useEffect(() => {
     (async () => {

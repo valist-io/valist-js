@@ -3,7 +3,7 @@ import ReleaseList from '../releases/ReleaseList';
 import ProjectReadme from './ProjectReadme';
 import PublishReleaseSteps from '../releases/PublishReleaseSteps';
 import LogTable from '../logs/LogTable';
-import { Member, Release } from '../../utils/Apollo/types';
+import { Log, Member, Release } from '../../utils/Apollo/types';
 import { ProjectMeta, ReleaseMeta } from '../../utils/Valist/types';
 import { Fragment } from 'react';
 import ProjectGallery from './ProjectGallery';
@@ -16,6 +16,7 @@ interface ProjectContentProps {
   releaseMeta: ReleaseMeta,
   view: string,
   members: Member[],
+  logs: Log[],
 }
 
 export default function ProjectContent(props: ProjectContentProps): JSX.Element {
@@ -48,7 +49,7 @@ export default function ProjectContent(props: ProjectContentProps): JSX.Element 
       case 'ReleaseSteps':
         return <PublishReleaseSteps />;
       case 'Activity':
-        return <LogTable team={props.teamName} project={props.projectName} />;
+        return <LogTable logs={props.logs} />;
       default:
         return <Fragment />;
     }

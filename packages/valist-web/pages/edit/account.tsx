@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import Layout from '../../components/Layouts/Main';
-import EditTeam from '../../features/teams/ManageTeam';
+import EditTeam from '../../features/accounts/ManageAccount';
 
 const EditAccountPage: NextPage = () => {
   const router = useRouter();
