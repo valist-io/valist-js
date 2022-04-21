@@ -14,8 +14,9 @@ interface ProjectActionsProps {
 }
 
 const ProjectActions = (props: ProjectActionsProps) => {
+  console.log('price & balance', props.licensePrice, props.licenseBalance);
   const renderButton =  () => {
-    if (Number(props.licensePrice) === 0) {
+    if (Number(props.licensePrice) === 0 || props.licenseBalance !== 0) {
       return (
         <div className="flex justify-center py-2 px-4 border border-transparent rounded-md 
          shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none 
