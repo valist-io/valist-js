@@ -143,7 +143,6 @@ export default function ProjectPage():JSX.Element {
     if ( valistCtx && projectID && address !== '0x0') {
       let toastID = '';
       try {
-        console.log('test');
         const transaction = await valistCtx.purchaseProduct(
           projectID,
           address,

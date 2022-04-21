@@ -57,20 +57,18 @@ export default function ManageAccount(props: EditAccountProps) {
     })();
   }, [dispatch, loginTried, loginType]);
 
-  // Normalize accountMember data for AccountPreview component
+  // On initial page load, if in edit mode, set projectAccount & projectName
   useEffect(() => {
-    const members:Member[] = [];
-    for (const accountMember of accountMembers) {
-      members.push({
-        id: accountMember,
-      });
-    }
-    setTeamMembersParsed(members);
-  }, [accountMembers]);
+    console.log('accountsUsername', props.accountUsername);
+    dispatch(clear());
+    dispatch(setUsername(props.accountUsername || accountNames[0]));
+  }, [props.accountUsername, accountNames, dispatch]);
 
   // If projectAccount, generate accountID
   useEffect(() => {
+    // console.log('accountUsername', accountUsername);
     if (accountUsername) {
+      console.log('accountUserName', accountUsername);
       const chainID = BigNumber.from(publicRuntimeConfig.CHAIN_ID);
       const accountID = generateID(chainID, accountUsername);
       setAccountID(accountID.toString());
@@ -81,9 +79,7 @@ export default function ManageAccount(props: EditAccountProps) {
   useEffect(() => {
     (async () => {
       let accountData;
-      dispatch(clear());
-      
-      if (valistCtx && accountID) {
+      if (props.accountUsername && valistCtx && accountID) {
         try {
           accountData = await valistCtx.getAccountMeta(accountID);
           if (accountData.image) setCurrentImage(accountData.image);
@@ -100,6 +96,17 @@ export default function ManageAccount(props: EditAccountProps) {
       }
     })();
   }, [accountID, dispatch, valistCtx]);
+
+  // Normalize accountMember data for AccountPreview component
+  useEffect(() => {
+    const members:Member[] = [];
+    for (const accountMember of accountMembers) {
+      members.push({
+        id: accountMember,
+      });
+    }
+    setTeamMembersParsed(members);
+  }, [accountMembers]);
 
   // Wrap Valist Sdk call for create team
   const createTeam = async () => {

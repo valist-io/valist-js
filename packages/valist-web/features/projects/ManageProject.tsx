@@ -7,7 +7,7 @@ import { selectAccountNames, selectLoginTried, selectLoginType } from '../../fea
 import { showLogin } from '../../features/modal/modalSlice';
 import { dismiss, notify } from '../../utils/Notifications';
 import parseError from '../../utils/Errors';
-import { clear, selectDescription, selectDisplayName, selectMembers, selectName, selectPrice, selectShortDescription, selectTags, selectTeam, selectType, selectWebsite, selectYoutubeUrl, setDescription, setDisplayName, setMembers, setName, setPrice, setShortDescription, setTags, setTeam, setType, setWebsite } from '../../features/projects/projectSlice';
+import { clear, selectDescription, selectDisplayName, selectLimit, selectMembers, selectName, selectPrice, selectRoyalty, selectShortDescription, selectTags, selectTeam, selectType, selectWebsite, selectYoutubeUrl, setDescription, setDisplayName, setLimit, setMembers, setName, setPrice, setRoyalty, setShortDescription, setTags, setTeam, setType, setWebsite } from '../../features/projects/projectSlice';
 import ProjectPreview from '../../features/projects/ProjectPreview';
 import ProjectForm from './ProjectForm';
 import Tabs from '../../components/Tabs';
@@ -41,6 +41,8 @@ export default function ManageProject(props: ManageProjectProps) {
   const projectDisplayName = useAppSelector(selectDisplayName);
   const projectName = useAppSelector(selectName);
   const projectPrice = useAppSelector(selectPrice);
+  const projectLimit = useAppSelector(selectLimit);
+  const projectRoyalty = useAppSelector(selectRoyalty);
   const projectDescription = useAppSelector(selectDescription);
   const projectShortDescription = useAppSelector(selectShortDescription);
   const projectWebsite = useAppSelector(selectWebsite);
@@ -68,9 +70,13 @@ export default function ManageProject(props: ManageProjectProps) {
     })();
   }, [dispatch, loginTried, loginType]);
 
-  // On initial page load, if in edit mode, set projectAccount & projectName
+  // On page load, clear any input from previous pages/sessions
   useEffect(() => {
     dispatch(clear());
+  }, []);
+
+  // On initial page load, if in edit mode, set projectAccount & projectName
+  useEffect(() => {
     console.log('accountUsername', props.accountUsername);
     dispatch(setTeam(props.accountUsername || accountNames[0]));
 
@@ -115,6 +121,12 @@ export default function ManageProject(props: ManageProjectProps) {
 
           const price = await valistCtx.getProductPrice(projectID);
           dispatch(setPrice(ethers.utils.formatEther(price).toString()));
+
+          const limit = await valistCtx.getProductLimit(projectID);
+          dispatch(setLimit(limit.toString()));
+
+          const royalty = await valistCtx.getProductRoyalty(projectID);
+          dispatch(setRoyalty(royalty.toString()));
         } catch (err) {
           console.log('err', err);
         }
@@ -177,6 +189,7 @@ export default function ManageProject(props: ManageProjectProps) {
  
     try {
       const metaChanged = projectMetaChanged(previousMeta, project);
+
       // If props.project call setProjectMeta else createTeam
       let transaction: any;
       if (props.accountUsername && props.projectName) {
@@ -223,6 +236,26 @@ export default function ManageProject(props: ManageProjectProps) {
         dismiss(toastID);
         notify('success');
       }
+
+      const previousLimit = await valistCtx.getProductLimit(projectID);
+      const currentLimit = BigNumber.from(projectLimit);
+
+      if (!currentLimit.eq(previousLimit)) {
+        transaction = await valistCtx.setProductLimit(
+          projectID,
+          currentLimit,
+        );
+
+        dismiss(toastID);
+        toastID = notify('transaction', transaction.hash);
+        await transaction.wait();
+  
+        dismiss(toastID);
+        notify('success');
+      }
+
+      const previousRoyalty = await valistCtx.getProductRoyalty(projectID);
+      const currentRoyalty = BigNumber.from(projectRoyalty);
 
       if (!(props.accountUsername && props.projectName) && metaChanged) {
         router.push('/');
@@ -326,6 +359,8 @@ export default function ManageProject(props: ManageProjectProps) {
               projectName={projectName}
               projectDisplayName={projectDisplayName}
               price={projectPrice}
+              limit={projectLimit}
+              royalty={projectRoyalty}
               shortDescription={projectShortDescription}
               projectDescription={projectDescription}
               projectWebsite={projectWebsite}

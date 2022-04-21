@@ -8,7 +8,7 @@ import { SetUseState } from "../../utils/Account/types";
 import { shortnameFilterRegex } from "../../utils/Validation";
 import ValistContext from "../valist/ValistContext";
 import Web3Context from "../valist/Web3Context";
-import { setDescription, setMembers, setDisplayName, setName, setShortDescription, setTeam, setWebsite, setPrice } from "./projectSlice";
+import { setDescription, setMembers, setDisplayName, setName, setShortDescription, setTeam, setWebsite, setPrice, setLimit, setRoyalty } from "./projectSlice";
 import ProjectTagsInput from "./ProjectTagsInput";
 import ProjectTypeSelect from "./ProjectTypeSelect";
 
@@ -20,6 +20,8 @@ interface ProjectFormProps {
   projectName: string;
   projectDisplayName: string;
   price: string;
+  limit: string;
+  royalty: string;
   shortDescription: string;
   projectDescription: string;
   projectWebsite: string;
@@ -211,7 +213,8 @@ export default function ProjectForm(props: ProjectFormProps) {
         />;
       case 'Pricing':
         return <PriceForm 
-          price={props.price} 
+          price={props.price}
+          limit={props.limit} 
         />;
       case 'Graphics':
         return <GraphicsForm   
@@ -465,6 +468,8 @@ const MembersForm = (props: MemebersFormProps) => {
 
 interface PriceFormProps {
   price: string;
+  limit: string;
+  royalty: string;
 }
 
 const PriceForm = (props: PriceFormProps) => {
@@ -473,7 +478,7 @@ const PriceForm = (props: PriceFormProps) => {
   return (
     <form className="grid grid-cols-1 gap-y-6 sm:gap-x-8" action="#" method="POST">
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="price" className="block text-sm font-medium text-gray-700">
           Price (in MATIC)  <span className="float-right"><Tooltip text='The price to mint/purchase the license in MATIC. ERC-20 payments coming soon!' /></span>
         </label>
         <div className="mt-1">
@@ -484,7 +489,6 @@ const PriceForm = (props: PriceFormProps) => {
             min="0"
             onChange={(e) => dispatch(setPrice(e.target.value))}
             value={props.price}
-            required={true}
             className="appearance-none block w-full px-3 py-2 border border-gray-300 
             rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 
             focus:border-indigo-500 sm:text-sm"
@@ -492,6 +496,46 @@ const PriceForm = (props: PriceFormProps) => {
           />
         </div>
       </div>
+
+      <div>
+        <label htmlFor="limit" className="block text-sm font-medium text-gray-700">
+          Limit  <span className="float-right"><Tooltip text='The maximum number of licenses that can be created.' /></span>
+        </label>
+        <div className="mt-1">
+          <input
+            id="limit"
+            name="limit"
+            type="number"
+            min="0"
+            onChange={(e) => dispatch(setLimit(e.target.value))}
+            value={props.limit}
+            className="appearance-none block w-full px-3 py-2 border border-gray-300 
+            rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 
+            focus:border-indigo-500 sm:text-sm"
+            placeholder="0.00"
+          />
+        </div>
+      </div>
+
+      {/* <div>
+        <label htmlFor="limit" className="block text-sm font-medium text-gray-700">
+          Royalty  <span className="float-right"><Tooltip text='The percentage given to the project on re-sales.' /></span>
+        </label>
+        <div className="mt-1">
+          <input
+            id="royalty"
+            name="royalty"
+            type="number"
+            min="0"
+            onChange={(e) => dispatch(setRoyalty(e.target.value))}
+            value={props.royalty}
+            className="appearance-none block w-full px-3 py-2 border border-gray-300 
+            rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 
+            focus:border-indigo-500 sm:text-sm"
+            placeholder="0"
+          />
+        </div>
+      </div> */}
     </form>
   );
 };
