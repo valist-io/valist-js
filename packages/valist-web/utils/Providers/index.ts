@@ -1,3 +1,4 @@
+import getConfig from 'next/config';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import { Web3Provider } from "@ethersproject/providers";
 import { MetaMaskInpageProvider } from "@metamask/providers";
@@ -22,7 +23,8 @@ export const newMagic = () => {
   return new Magic('pk_live_631BA2340BB9ACD8', { network: customNodeOptions });
 };
 
-export const defaultProvider = new ethers.providers.JsonRpcProvider("https://rpc.valist.io/polygon");
+const { publicRuntimeConfig } = getConfig();
+export const defaultProvider = new ethers.providers.JsonRpcProvider(publicRuntimeConfig.WEB3_PROVIDER);
 
 export const addressFromProvider = async (provider: Web3Provider) => {
   const signer = provider.getSigner();
