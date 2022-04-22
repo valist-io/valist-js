@@ -1,5 +1,6 @@
 import { Fragment, useContext, useEffect, useState } from "react";
 import { useAppDispatch } from "../../app/hooks";
+import FileUpload from "../../components/Files/FileUpload";
 import ImageUpload from "../../components/Images/ImageUpload";
 import Tooltip from "../../components/Tooltip";
 import { SetUseState } from "../../utils/Account/types";
@@ -13,13 +14,13 @@ interface CreateTeamFormProps {
   submitText: string;
   view: string;
   accountID: string | null;
-  teamUsername: string;
-  teamDisplayName: string;
-  teamWebsite: string;
-  teamMembers: string[];
-  teamDescription: string;
-  teamBeneficiary: string;
-  setImage: SetUseState<File | null>;
+  accountUsername: string;
+  accountDisplayName: string;
+  accountWebsite: string;
+  accountMembers: string[];
+  accountDescription: string;
+  accountBeneficiary: string;
+  setImage: SetUseState<File[]>;
   addMember: (address: string) => Promise<void>;
   submit: () => void;
 }
@@ -45,16 +46,16 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const checkTeamName = async (teamName: string) => {
+    const checkTeamName = async (accountName: string) => {
       try {
         if (!valistCtx || !props.accountID) return true;
 
-        const resp = await valistCtx.getAccountMeta(teamName);
+        const resp = await valistCtx.getAccountMeta(accountName);
         if (JSON.stringify(resp).includes("<html><head>")) {
           return false;
         }
       } catch (err: any) {
-        if (JSON.stringify(err).includes("err-team-not-exist")) {
+        if (JSON.stringify(err).includes("err-account-not-exist")) {
           console.log('error', err);
           return false;
         }
@@ -116,12 +117,12 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
     if (formValid && !loading) {
       if (!props.edit) {
         alert(`
-Confirmation: You are about to create "${props.teamUsername}" with the following details:
-Account username: ${props.teamUsername}
-Account display name: ${props.teamDisplayName}
-Beneficiary address: ${props.teamBeneficiary}
+Confirmation: You are about to create "${props.accountUsername}" with the following details:
+Account username: ${props.accountUsername}
+Account display name: ${props.accountDisplayName}
+Beneficiary address: ${props.accountBeneficiary}
 Members (admins):
-${props.teamMembers.join('\n')}
+${props.accountMembers.join('\n')}
 `);
       }
       props.submit();
@@ -135,12 +136,12 @@ ${props.teamMembers.join('\n')}
           setImage={props.setImage}
           setCleanName={setCleanName}
           _setName={_setName}
-          teamName={props.teamDisplayName}
+          accountName={props.accountDisplayName}
           edit={props.edit}
           cleanName={cleanName}
           validName={validName}
-          teamWebsite={props.teamWebsite} 
-          teamDescription={props.teamDescription}
+          accountWebsite={props.accountWebsite} 
+          accountDescription={props.accountDescription}
           formValid={formValid}
           submitText={props.submitText} 
           loading={loading} 
@@ -176,16 +177,16 @@ ${props.teamMembers.join('\n')}
 }
 
 interface BasicInfoProps {
-  teamName: string;
-  teamWebsite: string;
-  teamDescription: string;
+  accountName: string;
+  accountWebsite: string;
+  accountDescription: string;
   edit: boolean;
   cleanName: string;
   validName: boolean;
   formValid: boolean;
   submitText: string;
   loading: boolean;
-  setImage: SetUseState<File | null>;
+  setImage: SetUseState<File[]>;
   setCleanName: SetUseState<string>;
   setLoading: SetUseState<boolean>;
   _setName: SetUseState<string>;
@@ -197,10 +198,10 @@ const BasicInfoForm = (props: BasicInfoProps) => {
 
   return (
     <form className="grid grid-cols-1 gap-y-6 sm:gap-x-8" action="#" method="POST">
-      <ImageUpload text={'Set Image'} setImage={props.setImage} />
+      <FileUpload title={'Set Image'} setFiles={props.setImage} files={[]} />
       {!props.edit && <div>
         <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-          Username (Cannot be changed) <span className="float-right"><Tooltip text='Immutable namespace for your team or account.' /></span>
+          Username (Cannot be changed) <span className="float-right"><Tooltip text='Immutable namespace for your account or account.' /></span>
         </label>
         <div className="mt-1">
           <input
@@ -238,21 +239,21 @@ const BasicInfoForm = (props: BasicInfoProps) => {
             className='bg-slate-50 appearance-none block w-full px-3 py-2 border border-gray-300 
             rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-indigo-500 
             focus:border-indigo-500 sm:text-sm'
-            value={props.teamName}
+            value={props.accountName}
           />
         </div>
       </div>
 
       <div>
         <label htmlFor="website" className="block text-sm font-medium text-gray-700">
-          Website <span className="float-right"><Tooltip text="The link to your team or account's website." /></span>
+          Website <span className="float-right"><Tooltip text="The link to your account or account's website." /></span>
         </label>
         <div className="mt-1">
           <input
             id="website"
             name="website"
             type="text"
-            value={props.teamWebsite}
+            value={props.accountWebsite}
             onChange={(e) => dispatch(setWebsite(e.target.value))}
             placeholder='Website URL'
             required
@@ -272,7 +273,7 @@ const BasicInfoForm = (props: BasicInfoProps) => {
             id="description"
             name="description"
             onChange={(e) => dispatch(setDescription(e.target.value))}
-            value={props.teamDescription}
+            value={props.accountDescription}
             rows={4}
             className="bg-slate-50 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block 
             w-full sm:text-sm border border-gray-300 rounded-md"

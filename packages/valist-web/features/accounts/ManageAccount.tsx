@@ -43,9 +43,9 @@ export default function ManageAccount(props: EditAccountProps) {
   const accountMembers = useAppSelector(selectMembers);
 
   const [accountID, setAccountID] = useState<string | null>(null);
-  const [accountImage, setTeamImage] = useState<File | null>(null);
+  const [accountImage, setAccountImage] = useState<File[]>([]);
   const [currentImage, setCurrentImage] = useState<string>('');
-  const [accountMembersParsed, setTeamMembersParsed] = useState<Member[]>([]);
+  const [accountMembersParsed, setAccountMembersParsed] = useState<Member[]>([]);
   const [membersChanged, setMembersChanged] = useState(0);
 
   // Check if user is authenticated, prompt them to login if not logged in
@@ -105,16 +105,17 @@ export default function ManageAccount(props: EditAccountProps) {
         id: accountMember,
       });
     }
-    setTeamMembersParsed(members);
+    setAccountMembersParsed(members);
   }, [accountMembers]);
 
-  // Wrap Valist Sdk call for create team
-  const createTeam = async () => {
+  // Wrap Valist Sdk call for create account
+  const createAccount = async () => {
     if (!accountID || !valistCtx) return;
     let imgURL = "";
 
-    if (accountImage) {
-      imgURL = await valistCtx.writeFile(accountImage);
+    if (accountImage.length !== 0) {
+      console.log('file', accountImage[0]);
+      imgURL = await valistCtx.writeFile(accountImage[0]);
     } else {
       imgURL = currentImage;
     }
@@ -135,7 +136,7 @@ export default function ManageAccount(props: EditAccountProps) {
     try { 
       toastID = notify('pending');
 
-      // If props.teamName call setTeamMeta else createTeam
+      // If props.accountName call setTeamMeta else createTeam
       let transaction: any;
       if (props.accountUsername) {
         transaction = await valistCtx.setAccountMeta(accountID, meta);
@@ -151,7 +152,7 @@ export default function ManageAccount(props: EditAccountProps) {
       toastID = notify('transaction', transaction.hash);
       await transaction.wait();
 
-      // Inject created account/team into global state
+      // Inject created account/account into global state
       dispatch(setAccountNames([...accountNames, accountDisplayName]));
       dispatch(setTeam(accountUsername));
 
@@ -239,18 +240,18 @@ export default function ManageAccount(props: EditAccountProps) {
           <div className="p-4">
             <CreateTeamForm
               edit={props.accountUsername ? true : false}
-              submitText={props.accountUsername ? 'Save changes' : 'Create team'}
+              submitText={props.accountUsername ? 'Save changes' : 'Create account'}
               view={formView}
               accountID={accountID}
-              teamUsername={accountUsername}
-              teamDisplayName={accountDisplayName} 
-              teamMembers={accountMembers} 
-              teamDescription={accountDescription}
-              teamBeneficiary={accountBeneficiary}
-              teamWebsite={accountWebsite}   
-              setImage={setTeamImage}
+              accountUsername={accountUsername}
+              accountDisplayName={accountDisplayName} 
+              accountMembers={accountMembers} 
+              accountDescription={accountDescription}
+              accountBeneficiary={accountBeneficiary}
+              accountWebsite={accountWebsite}   
+              setImage={setAccountImage}
               addMember={addMember}
-              submit={createTeam}        
+              submit={createAccount}      
             />
           </div>
         </div>
@@ -261,7 +262,7 @@ export default function ManageAccount(props: EditAccountProps) {
             accountDescription={accountDescription}
             accountDisplayName={accountDisplayName}
             accountUsername={accountUsername}
-            accountImage={accountImage}
+            accountImage={(accountImage.length !== 0) ? accountImage[0] : null}
             accountMembers={accountMembersParsed}
             defaultImage={currentImage}
             removeMember={removeMember}
