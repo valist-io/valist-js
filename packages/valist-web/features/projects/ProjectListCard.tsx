@@ -27,8 +27,6 @@ export default function ProjectListCard({ text, image, teamName, projectName, me
           setMeta(projectJson);
         } catch (err) {
           console.log("Failed to fetch project metadata.", err);
-          console.log(metaURI);
-          notify('error', String(err));
         }
       };
       fetchProjectMeta(metaURI);

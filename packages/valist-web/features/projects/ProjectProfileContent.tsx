@@ -26,6 +26,8 @@ export default function ProjectContent(props: ProjectContentProps): JSX.Element 
       currentView = 'releaseSteps';
     }
 
+    const isGallery = props?.projectMeta?.gallery !== undefined && props?.projectMeta?.gallery.length !== 0;
+
     switch (currentView) {
       case 'Readme':
         return (
@@ -33,7 +35,7 @@ export default function ProjectContent(props: ProjectContentProps): JSX.Element 
             {(props?.projectMeta?.gallery && props?.projectMeta?.gallery.length !== 0) && 
               <ProjectGallery assets={props?.projectMeta?.gallery} />
             }
-            <div className={props?.projectMeta?.gallery?.length !== 0 ? 'mt-4' : ''}>
+            <div className={isGallery ? 'mt-4' : ''}>
               <ProjectReadme repoReadme={props?.projectMeta?.description || ''} />
             </div>
           </Fragment>
