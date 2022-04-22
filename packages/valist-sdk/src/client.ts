@@ -3,7 +3,7 @@ import { BigNumber, ethers } from 'ethers';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { IPFS } from 'ipfs-core-types';
 import { ImportCandidate, ImportCandidateStream } from 'ipfs-core-types/src/utils';
-import { AccountMeta, ProjectMeta, ReleaseMeta } from './index';
+import { AccountMeta, generateID, ProjectMeta, ReleaseMeta } from './index';
 
 // minimal ABI for interacting with erc20 tokens
 const erc20ABI = [
@@ -205,4 +205,6 @@ export default class Client {
 		}
 		return `${this.ipfsGateway}/ipfs/${cids[cids.length - 1]}`;
 	}
+
+	generateID = generateID
 }
