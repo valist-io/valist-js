@@ -6,7 +6,7 @@ import { SetUseState } from "../../utils/Account/types";
 import { shortnameFilterRegex } from "../../utils/Validation";
 import ValistContext from "../valist/ValistContext";
 import Web3Context from "../valist/Web3Context";
-import { setBeneficiary, setDescription, setMembers, setDisplayName, setUsername, setWebsite } from "./teamSlice";
+import { setDescription, setMembers, setDisplayName, setUsername, setWebsite } from "./teamSlice";
 
 interface CreateTeamFormProps {
   edit: boolean;
@@ -18,7 +18,6 @@ interface CreateTeamFormProps {
   teamWebsite: string;
   teamMembers: string[];
   teamDescription: string;
-  teamBeneficiary: string;
   setImage: SetUseState<File | null>;
   addMember: (address: string) => Promise<void>;
   submit: () => void;
@@ -34,35 +33,22 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
   const [memberText, setMemberText] = useState<string>('');
 
   const [_name, _setName] = useState<string>('');
-  const [_beneficiary, _setBeneficiary] = useState<string>('');
 
   const [cleanName, setCleanName] = useState<string>('');
   const [validName, setValidName] = useState<boolean>(false);
-  const [validBeneficiary, setValidBeneficiary] = useState(false);
   const [validMemberList, setValidMemberList] = useState(false);
 
   const [formValid, setFormValid] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const checkTeamName = async (teamName: string) => {
-      try {
-        if (!props.accountID) return true;
-        if (!valistCtx) return true;
-
-        await valistCtx.getAccountMeta(teamName);
-      } catch (err: any) {
-        if (JSON.stringify(err).includes("err-team-not-exist")) {
-          console.log('error', err);
-          return false;
-        }
-      }
-      return true;
-    };
-
     (async () => {
-      let isNameTaken = _name?.length > 0 && await checkTeamName(_name);
-      setValidName(!isNameTaken);
+      if (valistCtx && props.accountID){
+        const accountExists = await valistCtx.accountExists(props.accountID);
+        setValidName(!accountExists);
+      } else {
+        setValidName(true);
+      }
       dispatch(setUsername(_name));
     })();
   }, [_name, dispatch, props.accountID, valistCtx]);
@@ -89,26 +75,12 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
   }, [dispatch, memberText, web3Ctx.isValidAddress]);
 
   useEffect(() => {
-    (async () => {
-      const address = await web3Ctx.isValidAddress(_beneficiary) || '';
-
-      if (address) {
-        setValidBeneficiary(true);
-      } else {
-        setValidBeneficiary(false);
-      }
-      
-      dispatch(setBeneficiary(address));
-    })();
-  }, [_beneficiary, dispatch, web3Ctx.isValidAddress]);
-
-  useEffect(() => {
-    if (props.edit || (_name && validName && validBeneficiary && validMemberList)) {
+    if (props.edit || (_name && validName && validMemberList)) {
       setFormValid(true);
     } else {
       setFormValid(false);
     }
-  }, [_name, validName, validBeneficiary, validMemberList]);
+  }, [_name, validName, validMemberList]);
 
   const handleSubmit = () => {
     if (formValid && !loading) {
@@ -117,7 +89,6 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
 Confirmation: You are about to create "${props.teamUsername}" with the following details:
 Account username: ${props.teamUsername}
 Account display name: ${props.teamDisplayName}
-Beneficiary address: ${props.teamBeneficiary}
 Members (admins):
 ${props.teamMembers.join('\n')}
 `);
@@ -149,15 +120,12 @@ ${props.teamMembers.join('\n')}
         return <MembersForm 
           edit={props.edit}
           submitText={props.submitText} 
-          validBeneficiary={validBeneficiary} 
           memberText={memberText} 
-          _beneficiary={_beneficiary}
           validMemberList={validMemberList} 
           formValid={formValid}
           loading={loading}
           setMemberText={setMemberText} 
           setLoading={setLoading} 
-          _setBeneficiary={_setBeneficiary}
           addMember={props.addMember}
           handleSubmit={handleSubmit}  
         />;
@@ -293,16 +261,13 @@ const BasicInfoForm = (props: BasicInfoProps) => {
 
 interface MembersFormProps {
   memberText: string;
-  _beneficiary: string;
   edit: boolean;
   validMemberList: boolean;
-  validBeneficiary: boolean;
   formValid: boolean;
   submitText: string;
   loading: boolean;
   setMemberText: SetUseState<any>;
   setLoading: SetUseState<boolean>;
-  _setBeneficiary: SetUseState<string>;
   addMember: (address: string) => Promise<void>;
   handleSubmit: () => void;
 }
@@ -313,27 +278,6 @@ const MembersForm = (props: MembersFormProps) => {
   return (
     <form className="grid grid-cols-1 gap-y-6 sm:gap-x-8" action="#" method="POST">
 
-      {!props.edit && <div>
-        <label htmlFor="beneficiary" className="block text-sm font-medium text-gray-700">
-          Beneficiary Address<span className="float-right"><Tooltip text='The Polygon address where license or donation funds will be received.' /></span>
-        </label>
-        <div className="mt-1">
-          <input
-            id="beneficiary"
-            name="beneficiary"
-            type="text"
-            onBlur={(e) => props._setBeneficiary(e.target.value)}
-            placeholder='Address'
-            required
-            className={`${props.validBeneficiary ? normalStyle : !props._beneficiary ? normalStyle : errorStyle}
-            bg-slate-50 appearance-none block w-full px-3 py-2 border rounded-md shadow-sm
-            focus:outline-none focus:ring-indigo-500 sm:text-sm`}
-            defaultValue={props._beneficiary}
-          />
-        </div>
-      </div>}
-
-    
        {!props.edit && <div>
         <label htmlFor="members" className="block text-sm font-medium text-gray-700">
           Member Addresses <span className="float-right"><Tooltip text='A list of members seperated by new-line.' /></span>

@@ -1,10 +1,10 @@
 import getConfig from 'next/config';
 import { generateID } from '@valist/sdk';
-import { createValistClient } from '../../../../../../utils/Account';
-import { defaultProvider } from '../../../../../../utils/Providers';
+import { createValistClient } from '@/utils/Account';
+import { defaultProvider } from '@/utils/Providers';
 
 export default async function handler(req, res) {
-  const { accountName, projectName } = req.query;
+  const { accountName, projectName, address } = req.query;
   const { publicRuntimeConfig } = getConfig();
 
   const chainID = publicRuntimeConfig.CHAIN_ID;
@@ -13,8 +13,8 @@ export default async function handler(req, res) {
 
   try {
     const valist = await createValistClient(defaultProvider);
-    const account = await valist.getProjectMeta(projectID);
-    res.status(200).json(account);
+    const balance = await valist.getProductBalance(address, projectID);
+    res.status(200).json({ balance: balance.toString() });
   } catch(err) {
     res.status(500).json({error: 'failed to get project'});
   }

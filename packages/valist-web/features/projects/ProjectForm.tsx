@@ -75,36 +75,18 @@ export default function ProjectForm(props: ProjectFormProps) {
 
   // Handle project name change check onBlur
   useEffect(() => {
-    const checkProjectName = async (projectName: string) => {
-      try {
-        console.log('check', props.accountUsername, projectName);
-        if (!props.accountID) throw('accountID not found');
-        if (!valistCtx) throw('valistCtx not found');
-
-        const projectID = generateID(props.accountID, projectName).toString();
-        console.log('check projectID', projectID);
-
-        const resp = await valistCtx?.getProjectMeta(projectID);
-        if (JSON.stringify(resp).includes("<html><head>")) {
-          return false;
-        }
-
-      } catch (err: any) {
-        console.log('err', err);
-        if (JSON.stringify(err).includes("err-proj-not-exist")) {
-          return false;
-        }
+    (async () => {
+      if (valistCtx && props.accountID && _name) {
+        const projectID = generateID(props.accountID, _name);
+        const projectExists = await valistCtx.projectExists(projectID);
+        setValidName(!projectExists);
+      } else {
+        setValidName(true);
       }
 
-      return true;
-    };
-
-    (async () => {
-      let isNameTaken = _name?.length > 0 && await checkProjectName(_name);
-      setValidName(!isNameTaken);
       dispatch(setName(_name));
     })();
-  }, [_name, dispatch, props.accountUsername, valistCtx?.getProjectMeta]);
+  }, [_name, dispatch, props.accountUsername, valistCtx]);
 
   // Handle member list change
   useEffect(() => {

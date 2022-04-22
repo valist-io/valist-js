@@ -33,6 +33,21 @@ export default class Client {
 		return await this.registry.createRelease(projectID, name, metaURI);
 	}
 
+	async accountExists(accountID: ethers.BigNumberish): Promise<boolean> {
+		const metaURI = await this.registry.metaByID(accountID);
+		return metaURI !== "";
+	}
+
+	async projectExists(projectID: ethers.BigNumberish): Promise<boolean> {
+		const metaURI = await this.registry.metaByID(projectID);
+		return metaURI !== "";
+	}
+
+	async releaseExists(releaseID: ethers.BigNumberish): Promise<boolean> {
+		const metaURI = await this.registry.metaByID(releaseID);
+		return metaURI !== "";
+	}
+
 	async getAccountMeta(accountID: ethers.BigNumberish): Promise<AccountMeta> {
 		const metaURI = await this.registry.metaByID(accountID);
 		const { data } = await axios.get(metaURI);

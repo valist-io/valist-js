@@ -1,4 +1,5 @@
 import { Fragment } from 'react';
+import Link from "next/link";
 import { Release } from "../../utils/Apollo/types";
 import { ReleaseMeta } from '../../utils/Valist/types';
 
@@ -17,12 +18,13 @@ const ProjectActions = (props: ProjectActionsProps) => {
   const renderButton =  () => {
     if (Number(props.licensePrice) === 0) {
       return (
-        <div className="flex justify-center py-2 px-4 border border-transparent rounded-md 
-         shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none 
-         focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer" 
-         onClick={() => window.open(props.releaseMeta.external_url, "_blank")}>
-          Launch
-        </div>
+        <Link href={`/${props.teamName}/${props.projectName}/${props.releases[0].name}`}>
+          <div className="flex justify-center py-2 px-4 border border-transparent rounded-md 
+           shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none 
+           focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer">
+            Launch
+          </div>
+        </Link>
       );
     } else if (props.licensePrice && props.licenseBalance === 0) {
       return (

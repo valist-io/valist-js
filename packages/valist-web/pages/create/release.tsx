@@ -68,31 +68,6 @@ const PublishReleasePage: NextPage = () => {
     }
   }, [account, accounts, dispatch, incomingAccount]);
 
-  // Query available license names if team or project change
-  useEffect(() => {
-    (async () => {
-      let licenses = [];
-      try {
-        licenses = await valistCtx.getLicenseNames(
-          account,
-          project,
-          0,
-          1000,
-        );
-
-        if (licenses.length !== 0) {
-          setAvailableLicenses(licenses);
-          dispatch(setLicenses([licenses[0]]));
-        } else {
-          setAvailableLicenses([]);
-          dispatch(setLicenses([]));
-        }
-      } catch (err) {
-        console.log('err', err);
-      }
-    })();
-  }, [account, dispatch, project, valistCtx.getLicenseNames]);
-
   const createRelease = async () => {
     let imgURL = "";
 

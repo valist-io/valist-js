@@ -1,4 +1,5 @@
 import { Fragment, useContext, useEffect, useState } from "react";
+import getConfig from "next/config";
 import { useAppDispatch } from "../../app/hooks";
 import FileUpload from "../../components/Files/FileUpload";
 import ImageUpload from "../../components/Images/ImageUpload";
@@ -7,6 +8,7 @@ import { SetUseState } from "../../utils/Account/types";
 import { versionFilterRegex } from "../../utils/Validation";
 import ValistContext from "../valist/ValistContext";
 import { setDescription, setLicenses, setName, setProject, setTeam } from "./releaseSlice";
+import { generateID } from '@valist/sdk';
 
 interface PublishReleaseFormProps {
   teamNames: string[];
@@ -35,6 +37,8 @@ export default function PublishReleaseForm(props: PublishReleaseFormProps) {
   const [validName, setValidName] = useState<boolean>(false);
   const [validForm, setValidForm] = useState<boolean>(false);
 
+  const { publicRuntimeConfig } = getConfig();
+
   const handleSubmit = async () => {
     if (validForm) {
       alert(`
@@ -59,22 +63,19 @@ ${props.releaseLicense && `Release license: ${props.releaseLicense}` || ''}
   };
 
   useEffect(() => {
-    const checkReleaseName = async (releaseName: string) => {
-      try {
-        await valistCtx.getReleaseMetaURI(props.releaseTeam, props.releaseProject, releaseName);
-      } catch (err: any) {
-        if (JSON.stringify(err).includes("err-release-not-exist")) {
-          return false;
-        }
-      }
-      return true;
-    };
     (async () => {
-      let isNameTaken = _name?.length > 0 && await checkReleaseName(_name);
-      setValidName(!isNameTaken);
+      if (valistCtx && _name) {
+        const accountID = generateID(publicRuntimeConfig.CHAIN_ID, props.releaseTeam);
+        const projectID = generateID(accountID, props.releaseProject);
+        const releaseID = generateID(projectID, _name);
+        const releaseExists = await valistCtx.releaseExists(releaseID);
+        setValidName(!releaseExists);
+      } else {
+        setValidName(true);
+      }
       dispatch(setName(_name));
     })();
-  }, [_name, dispatch, props.releaseProject, props.releaseTeam, valistCtx.getReleaseMetaURI]);
+  }, [_name, dispatch, props.releaseProject, props.releaseTeam, valistCtx]);
 
   // Handle form valid check
   useEffect(() => {

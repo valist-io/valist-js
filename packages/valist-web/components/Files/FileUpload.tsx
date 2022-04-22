@@ -13,7 +13,9 @@ export default function FileUpload(props: FileUploadProps) {
   
   useEffect(() => {
     if (acceptedFiles.length != 0) {
-      props.setFiles(acceptedFiles);
+      props.setFiles(acceptedFiles.map(file => {
+        return { path: file.path, content: file };
+      }));
     }
   }, [acceptedFiles, props.setFiles]);
   
@@ -33,8 +35,8 @@ export default function FileUpload(props: FileUploadProps) {
         </div>
         <ul>
           {props.files && props.files.map((file) => (
-            <li key={file.name}>
-              {(file as any).path || file.webkitRelativePath || file.name }
+            <li key={file.path}>
+              { file.path }
             </li>
           ))}
         </ul>

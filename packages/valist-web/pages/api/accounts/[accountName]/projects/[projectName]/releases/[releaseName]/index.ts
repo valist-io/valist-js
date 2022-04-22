@@ -1,7 +1,7 @@
 import getConfig from 'next/config';
 import { generateID } from '@valist/sdk';
-import { createValistClient } from '../../../../../../../../utils/Account';
-import { defaultProvider } from '../../../../../../../../utils/Providers';
+import { createValistClient } from '@/utils/Account';
+import { defaultProvider } from '@/utils/Providers';
 
 export default async function handler(req, res) {
   const { accountName, projectName, releaseName } = req.query;
