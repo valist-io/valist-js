@@ -108,7 +108,7 @@ const Dashboard: NextPage = () => {
               <CreateButton transactions={transactionActions}/>
             </div>
           </div>
-          <LogCard logs={logs.length !== 0 ? logs : initialActivity} address={address} />
+          <LogCard logs={logs.length !== 0 ? logs : initialActivity} />
         </div>
       </div>}
     </Layout>

@@ -1,23 +1,21 @@
 import React, { useEffect } from 'react';
 import { SetUseState } from '../../utils/Account/types';
 import { useDropzone } from 'react-dropzone';
+import { FileWithPath } from 'file-selector';
 
 interface FileUploadProps {
   title?: string;
-  files: File[];
-  setFiles: SetUseState<File[]>;
+  files: FileWithPath[];
+  setFiles: SetUseState<FileWithPath[]>;
 }
 
 export default function FileUpload(props: FileUploadProps) {
+  const { setFiles } = props;
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
   
   useEffect(() => {
-    if (acceptedFiles.length != 0) {
-      props.setFiles(acceptedFiles.map(file => {
-        return { path: file.path, content: file };
-      }));
-    }
-  }, [acceptedFiles, props.setFiles]);
+    setFiles(acceptedFiles);
+  }, [acceptedFiles, setFiles]);
   
   return (
     <div>

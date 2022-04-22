@@ -7,7 +7,7 @@ import { selectAccountNames, selectLoginTried, selectLoginType } from '../../fea
 import { showLogin } from '../../features/modal/modalSlice';
 import { dismiss, notify } from '../../utils/Notifications';
 import parseError from '../../utils/Errors';
-import { clear, selectDescription, selectDisplayName, selectLimit, selectMembers, selectName, selectPrice, selectRoyalty, selectShortDescription, selectTags, selectTeam, selectType, selectWebsite, selectYoutubeUrl, setDescription, setDisplayName, setLimit, setMembers, setName, setPrice, setRoyalty, setShortDescription, setTags, setTeam, setType, setWebsite } from '../../features/projects/projectSlice';
+import { clear, selectDescription, selectDisplayName, selectLimit, selectMembers, selectName, selectPrice, selectRoyalty, selectRoyaltyAddress, selectShortDescription, selectTags, selectTeam, selectType, selectWebsite, selectYoutubeUrl, setDescription, setDisplayName, setLimit, setMembers, setName, setPrice, setRoyalty, setRoyaltyAddress, setShortDescription, setTags, setTeam, setType, setWebsite } from '../../features/projects/projectSlice';
 import ProjectPreview from '../../features/projects/ProjectPreview';
 import ProjectForm from './ProjectForm';
 import Tabs from '../../components/Tabs';
@@ -16,6 +16,7 @@ import { generateID } from '@valist/sdk';
 import getConfig from 'next/config';
 import { BigNumber, BigNumberish, ethers } from 'ethers';
 import { projectMetaChanged } from '../../utils/Validation';
+import { FileWithPath } from "file-selector";
 
 type Member = {
   id: string,
@@ -43,6 +44,7 @@ export default function ManageProject(props: ManageProjectProps) {
   const projectPrice = useAppSelector(selectPrice);
   const projectLimit = useAppSelector(selectLimit);
   const projectRoyalty = useAppSelector(selectRoyalty);
+  const projectRoyaltyAddress = useAppSelector(selectRoyaltyAddress);
   const projectDescription = useAppSelector(selectDescription);
   const projectShortDescription = useAppSelector(selectShortDescription);
   const projectWebsite = useAppSelector(selectWebsite);
@@ -53,10 +55,10 @@ export default function ManageProject(props: ManageProjectProps) {
   const [accountID, setAccountID] = useState<string | null>(null);
   const [previousMeta, setPreviousMeta] = useState<ProjectMeta>({});
   const [projectID, setProjectID] = useState<BigNumberish | null>(null);
-  const [projectImage, setProjectImage] = useState<File[]>([]);
+  const [projectImage, setProjectImage] = useState<FileWithPath[]>([]);
   const [currentImage, setCurrentImage] = useState<string>('');
   const [projectMembersParsed, setProjectMembersParsed] = useState<Member[]>([]);
-  const [projectGallery, setProjectGallery] = useState<File[]>([]);
+  const [projectGallery, setProjectGallery] = useState<FileWithPath[]>([]);
   const [projectAssets, setProjectAssets] = useState<Asset[]>([]);
   const youtubeUrl = useAppSelector(selectYoutubeUrl);
   const [membersChanged, setMembersChanged] = useState(0);
@@ -125,8 +127,9 @@ export default function ManageProject(props: ManageProjectProps) {
           const limit = await valistCtx.getProductLimit(projectID);
           dispatch(setLimit(limit.toString()));
 
-          const royalty = await valistCtx.getProductRoyalty(projectID);
-          dispatch(setRoyalty(royalty.toString()));
+          const royalty = await valistCtx.getProductRoyaltyInfo(projectID, ethers.BigNumber.from(10000));
+          dispatch(setRoyalty(royalty[1].div(100).toString()));
+          dispatch(setRoyaltyAddress(royalty[0]));
         } catch (err) {
           console.log('err', err);
         }
@@ -254,8 +257,24 @@ export default function ManageProject(props: ManageProjectProps) {
         notify('success');
       }
 
-      const previousRoyalty = await valistCtx.getProductRoyalty(projectID);
+      const _royalty = await valistCtx.getProductRoyaltyInfo(projectID, BigNumber.from(10000));
+      const previousRoyalty = _royalty[1].div(100);
       const currentRoyalty = BigNumber.from(projectRoyalty);
+
+      if (!currentRoyalty.eq(previousRoyalty)) {
+        transaction = await valistCtx.setProductRoyalty(
+          projectID,
+          projectRoyaltyAddress,
+          Number(currentRoyalty) * 100,
+        );
+
+        dismiss(toastID);
+        toastID = notify('transaction', transaction.hash);
+        await transaction.wait();
+  
+        dismiss(toastID);
+        notify('success');
+      }
 
       if (!(props.accountUsername && props.projectName) && metaChanged) {
         router.push('/');
@@ -361,6 +380,7 @@ export default function ManageProject(props: ManageProjectProps) {
               price={projectPrice}
               limit={projectLimit}
               royalty={projectRoyalty}
+              royaltyAddress={projectRoyaltyAddress}
               shortDescription={projectShortDescription}
               projectDescription={projectDescription}
               projectWebsite={projectWebsite}

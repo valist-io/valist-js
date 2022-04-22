@@ -76,7 +76,7 @@ export default function ProjectPage():JSX.Element {
     const accountID = generateID(chainID, accountName);
     const projectID = generateID(accountID, projectName);
     setProjectID(projectID.toString());
-  }, [publicRuntimeConfig.CHAIN_ID]);
+  }, [publicRuntimeConfig.CHAIN_ID, accountName, projectName]);
 
   useEffect(() => {
     const fetchReleaseMeta = async (release: Release) => {
@@ -87,7 +87,7 @@ export default function ProjectPage():JSX.Element {
           setReleaseMeta(metaJson);
         }
       } catch(err) {
-        notify('error', String(err));
+        notify('error', "Failed to fetch release metadata.");
         console.log("Failed to fetch release metadata.", err);
       }
     };
@@ -97,7 +97,7 @@ export default function ProjectPage():JSX.Element {
         const projectJson = await fetch(metaURI).then(res => res.json());
         setProjectMeta(projectJson);
       } catch(err) {
-        notify('error', String(err));
+        notify('error', "Failed to fetch project metadata.");
         console.log("Failed to fetch project metadata.", err);
       }
     };

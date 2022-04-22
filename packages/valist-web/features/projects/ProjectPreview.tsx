@@ -6,16 +6,17 @@ import ProjectMetaCard from "./ProjectMetaCard";
 import ProjectMemberList from "./ProjectMemberList";
 import ProjectListCard from "./ProjectListCard";
 import { useEffect, useState } from "react";
+import { FileWithPath } from "file-selector";
 
 interface ProjectPreviewProps {
   projectAccount: string;
   projectDisplayName: string;
-  projectImage: File | null;
+  projectImage: FileWithPath | null;
   projectShortDescription: string;
   projectDescription: string;
   projectWebsite: string;
   projectMembers: Member[];
-  projectGallery: File[];
+  projectGallery: FileWithPath[];
   projectAssets: Asset[];
   defaultImage?: string;
   view: string;
@@ -67,16 +68,15 @@ export default function ProjectPreview(props: ProjectPreviewProps) {
         <ProjectContent 
           view={'Readme'}
           teamName={props.projectAccount}
-          projectMeta={
-            {
-              name: name,
-              description,
-            }
-          }
-          members={props.projectMembers} 
+          projectMeta={{
+            name: name,
+            description,
+          }}
+          members={props.projectMembers}
           projectName={name}
-          projectReleases={[]} 
+          projectReleases={[]}
           releaseMeta={{}} 
+          logs={[]}        
         />
       </div>
     );

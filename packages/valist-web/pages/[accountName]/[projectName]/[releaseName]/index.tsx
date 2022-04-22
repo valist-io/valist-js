@@ -10,9 +10,9 @@ export default function ProjectPage(): JSX.Element {
   const [src, setSrc] = useState('');
 
   const router = useRouter();
-  const accountName = `${router.query.accountName}`;
-  const projectName = `${router.query.projectName}`;
-  const releaseName = `${router.query.releaseName}`;
+  const accountName = `${ router.query.accountName }`;
+  const projectName = `${ router.query.projectName }`;
+  const releaseName = `${ router.query.releaseName }`;
 
   const { publicRuntimeConfig } = getConfig();
   const chainID = publicRuntimeConfig.CHAIN_ID;
@@ -22,13 +22,13 @@ export default function ProjectPage(): JSX.Element {
 
   useEffect(() => {
     if (valistCtx) {
-      valistCtx.getReleaseMeta(releaseID).then(meta => setSrc(meta.external_url));
+      valistCtx.getReleaseMeta(releaseID).then((meta: any) => setSrc(meta.external_url));
     }
   }, [valistCtx, releaseID, setSrc]);
 
   return (
-    <div style={{height: '100vh', width: '100vw', paddingTop: '25px'}}>
-      <div style={{height: '25px', marginTop: '-25px'}}>
+    <div style={{ height: '100vh', width: '100vw', paddingTop: '25px' }}>
+      <div style={{ height: '25px', marginTop: '-25px' }}>
         <Link href={`/${accountName}/${projectName}`}>
           <a>Return to Valist</a>
         </Link>

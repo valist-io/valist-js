@@ -1,5 +1,5 @@
 import { generateID } from "@valist/sdk";
-import { BigNumberish, ethers } from "ethers";
+import { BigNumberish } from "ethers";
 import { Fragment, useContext, useEffect, useState } from "react";
 import { useAppDispatch } from "../../app/hooks";
 import FileUpload from "../../components/Files/FileUpload";
@@ -8,9 +8,10 @@ import { SetUseState } from "../../utils/Account/types";
 import { shortnameFilterRegex } from "../../utils/Validation";
 import ValistContext from "../valist/ValistContext";
 import Web3Context from "../valist/Web3Context";
-import { setDescription, setMembers, setDisplayName, setName, setShortDescription, setTeam, setWebsite, setPrice, setLimit, setRoyalty } from "./projectSlice";
+import { setDescription, setMembers, setDisplayName, setName, setShortDescription, setTeam, setWebsite, setPrice, setLimit, setRoyalty, setRoyaltyAddress } from "./projectSlice";
 import ProjectTagsInput from "./ProjectTagsInput";
 import ProjectTypeSelect from "./ProjectTypeSelect";
+import { FileWithPath } from "file-selector";
 
 interface ProjectFormProps {
   edit: boolean,
@@ -22,18 +23,19 @@ interface ProjectFormProps {
   price: string;
   limit: string;
   royalty: string;
+  royaltyAddress: string;
   shortDescription: string;
   projectDescription: string;
   projectWebsite: string;
   projectMembers: string[];
   projectType: string;
   projectTags: string[];
-  projectGallery: File[];
+  projectGallery: FileWithPath[];
   youtubeUrl: string;
   userAccounts: string[];
   view: string;
-  setImage: SetUseState<File[]>;
-  setGallery: SetUseState<File[]>;
+  setImage: SetUseState<FileWithPath[]>;
+  setGallery: SetUseState<FileWithPath[]>;
   addMember: (address: string) => Promise<void>;
   submit: () => void;
 }
@@ -140,9 +142,9 @@ export default function ProjectForm(props: ProjectFormProps) {
   };
 
   interface GraphicFormProps {
-    galleryFiles: File[];
+    galleryFiles: FileWithPath[];
     youtubeUrl: string;
-    setGallery: SetUseState<File[]>;
+    setGallery: SetUseState<FileWithPath[]>;
   }
 
   const GraphicsForm = (props: GraphicFormProps) => {
@@ -196,7 +198,9 @@ export default function ProjectForm(props: ProjectFormProps) {
       case 'Pricing':
         return <PriceForm 
           price={props.price}
-          limit={props.limit} 
+          limit={props.limit}
+          royalty={props.royalty}
+          royaltyAddress={props.royaltyAddress} 
         />;
       case 'Graphics':
         return <GraphicsForm   
@@ -237,7 +241,7 @@ interface BasicInfoProps {
   edit: boolean;
   cleanName: string;
   validName: boolean;
-  setImage: SetUseState<File[]>;
+  setImage: SetUseState<FileWithPath[]>;
   setCleanName: SetUseState<string>;
   _setName: SetUseState<string>;
 }
@@ -452,6 +456,7 @@ interface PriceFormProps {
   price: string;
   limit: string;
   royalty: string;
+  royaltyAddress: string;
 }
 
 const PriceForm = (props: PriceFormProps) => {
@@ -499,9 +504,9 @@ const PriceForm = (props: PriceFormProps) => {
         </div>
       </div>
 
-      {/* <div>
+      <div>
         <label htmlFor="limit" className="block text-sm font-medium text-gray-700">
-          Royalty  <span className="float-right"><Tooltip text='The percentage given to the project on re-sales.' /></span>
+          Royalty Percent <span className="float-right"><Tooltip text='The percentage given to the project on re-sales.' /></span>
         </label>
         <div className="mt-1">
           <input
@@ -517,7 +522,27 @@ const PriceForm = (props: PriceFormProps) => {
             placeholder="0"
           />
         </div>
-      </div> */}
+      </div>
+
+      <div>
+        <label htmlFor="royaltyAddress" className="block text-sm font-medium text-gray-700">
+          Royalty Address <span className="float-right"><Tooltip text='Editable dispaly name on the project profile.' /></span>
+        </label>
+        <div className="mt-1">
+          <input
+            id="royaltyAddress"
+            name="royaltyAddress"
+            type="text"
+            onChange={(e) => dispatch(setRoyaltyAddress(e.target.value))}
+            value={props.royaltyAddress}
+            required
+            className="appearance-none block w-full px-3 py-2 border border-gray-300 
+            rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 
+            focus:border-indigo-500 sm:text-sm"
+            placeholder="0x00000000"
+          />
+        </div>
+      </div>
     </form>
   );
 };

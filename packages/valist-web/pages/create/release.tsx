@@ -4,7 +4,7 @@ import parseError from '../../utils/Errors';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
-import { ReleaseMeta } from '@valist/sdk';
+import { generateID, ReleaseMeta } from '@valist/sdk';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { selectAccountNames, selectAccounts, selectLoginTried, selectLoginType } from '../../features/accounts/accountsSlice';
 import { showLogin } from '../../features/modal/modalSlice';
@@ -13,10 +13,14 @@ import { selectName, selectDescription, selectLicenses, selectProject, selectTea
 import { getProjectNames } from '../../utils/Apollo/normalization';
 import ReleasePreview from '../../features/releases/ReleasePreview';
 import PublishReleaseForm from '../../features/releases/PublishReleaseForm';
+import { BigNumber, BigNumberish } from 'ethers';
+import getConfig from 'next/config';
+import { FileWithPath } from 'file-selector';
 
 const PublishReleasePage: NextPage = () => {
   // Page State
   const router = useRouter();
+  const { publicRuntimeConfig } = getConfig();
   const valistCtx = useContext(ValistContext);
   const loginType = useAppSelector(selectLoginType);
   const loginTried = useAppSelector(selectLoginTried);
@@ -31,7 +35,8 @@ const PublishReleasePage: NextPage = () => {
   const description = useAppSelector(selectDescription);
   const license = useAppSelector(selectLicenses);
   
-  const [releaseFiles, setReleaseFiles] = useState<File[]>([]);
+  const [projectID, setProjectID] = useState<BigNumberish | null>(null);
+  const [releaseFiles, setReleaseFiles] = useState<FileWithPath[]>([]);
   const [availableProjects, setAvailableProjects] = useState<string[]>([]);
   const [availableLicenses, setAvailableLicenses] = useState<string[]>([]);
   const [releaseImage, setReleaseImage] = useState<File | null>(null);
@@ -59,6 +64,16 @@ const PublishReleasePage: NextPage = () => {
     }
   }, [accountNames, accounts, dispatch, incomingAccount, incomingProject]);
 
+  // If projectAccount && projectName, generate account and projectID
+  useEffect(() => {
+    if (project) {
+      const chainID = BigNumber.from(publicRuntimeConfig.CHAIN_ID);
+      const accountID = generateID(chainID, project);
+      const projectID = generateID(accountID, project);
+      setProjectID(projectID);
+    }
+  }, [project, publicRuntimeConfig.CHAIN_ID]);
+
   // If the selected releaseTeam changes set the projectNames under that team
   useEffect(() => {
     if (account && account !== incomingAccount) {
@@ -69,6 +84,7 @@ const PublishReleasePage: NextPage = () => {
   }, [account, accounts, dispatch, incomingAccount]);
 
   const createRelease = async () => {
+    if (!projectID || !valistCtx) return;
     let imgURL = "";
 
     if (releaseImage) {
@@ -79,11 +95,14 @@ const PublishReleasePage: NextPage = () => {
 		release.image = imgURL;
 		release.name = name;
 		release.description = description;
-    release.licenses = license;
     
     const uploadToast = notify('text', 'Uploading files...');
     console.log('files', releaseFiles);
-    release.external_url = await valistCtx.writeFolder(releaseFiles);
+    // map the files to a format IPFS can handle
+    const files = releaseFiles.map(file => {
+      return { path: file.path, content: file };
+    });
+    release.external_url = await valistCtx.writeFolder(files);
     dismiss(uploadToast);
   
     console.log("Release Team", account);
@@ -95,8 +114,7 @@ const PublishReleasePage: NextPage = () => {
     try {
       toastID = notify('pending');
       const transaction = await valistCtx.createRelease(
-        account,
-        project,
+        projectID,
         name,
         release,
       );
@@ -123,6 +141,7 @@ const PublishReleasePage: NextPage = () => {
             <div className="p-4">
               <PublishReleaseForm
                 teamNames={accountNames}
+                projectID={projectID}
                 projectNames={availableProjects}
                 releaseTeam={account}
                 releaseProject={project}
