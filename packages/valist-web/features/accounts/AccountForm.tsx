@@ -47,8 +47,7 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
   useEffect(() => {
     const checkTeamName = async (teamName: string) => {
       try {
-        if (!props.accountID) return true;
-        if (!valistCtx) return true;
+        if (!valistCtx || !props.accountID) return true;
 
         await valistCtx.getAccountMeta(teamName);
       } catch (err: any) {
@@ -193,8 +192,6 @@ interface BasicInfoProps {
 const BasicInfoForm = (props: BasicInfoProps) => {
   const dispatch = useAppDispatch();
 
-  console.log('isEdit', props.edit);
-  
   return (
     <form className="grid grid-cols-1 gap-y-6 sm:gap-x-8" action="#" method="POST">
       <ImageUpload text={'Set Image'} setImage={props.setImage} />
