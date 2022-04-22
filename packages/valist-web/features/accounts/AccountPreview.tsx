@@ -34,8 +34,8 @@ export default function AccountPreview(props: AccountPreviewProps) {
           view={"Profile"}
           tabs={[{ text: 'Profile', disabled: false }]} 
           setView={() => {}}
-          teamName={displayName} 
-          teamImage={imgUrl || (props.defaultImage ? props.defaultImage : '')}
+          accountName={displayName} 
+          accountImage={imgUrl || (props.defaultImage ? props.defaultImage : '')}
           meta={{
             image: "",
             name: "",

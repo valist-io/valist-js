@@ -12,7 +12,7 @@ interface CreateTeamFormProps {
   edit: boolean;
   submitText: string;
   view: string;
-  accountID: string;
+  accountID: string | null;
   teamUsername: string;
   teamDisplayName: string;
   teamWebsite: string;

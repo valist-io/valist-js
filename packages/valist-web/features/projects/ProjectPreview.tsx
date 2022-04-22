@@ -67,16 +67,15 @@ export default function ProjectPreview(props: ProjectPreviewProps) {
         <ProjectContent 
           view={'Readme'}
           teamName={props.projectAccount}
-          projectMeta={
-            {
-              name: name,
-              description,
-            }
-          }
-          members={props.projectMembers} 
+          projectMeta={{
+            name: name,
+            description,
+          }}
+          members={props.projectMembers}
           projectName={name}
-          projectReleases={[]} 
+          projectReleases={[]}
           releaseMeta={{}} 
+          logs={[]}        
         />
       </div>
     );
