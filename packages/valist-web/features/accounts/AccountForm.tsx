@@ -49,7 +49,10 @@ export default function CreateTeamForm(props: CreateTeamFormProps) {
       try {
         if (!valistCtx || !props.accountID) return true;
 
-        await valistCtx.getAccountMeta(teamName);
+        const resp = await valistCtx.getAccountMeta(teamName);
+        if (JSON.stringify(resp).includes("<html><head>")) {
+          return false;
+        }
       } catch (err: any) {
         if (JSON.stringify(err).includes("err-team-not-exist")) {
           console.log('error', err);
