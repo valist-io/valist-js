@@ -4,6 +4,7 @@ import { Select } from '@mantine/core';
 import Tooltip from "../../components/Tooltip";
 
 const defaultTypes = [
+  "web",
   "web-game",
   "installable-game",
   "binary/executable",
