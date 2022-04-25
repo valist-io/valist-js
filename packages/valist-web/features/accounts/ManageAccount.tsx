@@ -114,9 +114,11 @@ export default function ManageAccount(props: EditAccountProps) {
     if (!accountID || !valistCtx) return;
     let imgURL = "";
 
-    if (accountImage.length !== 0) {
-      console.log('file', accountImage[0]);
-      imgURL = await valistCtx.writeFile(accountImage[0]);
+    if (accountImage.length > 0) {
+      imgURL = await valistCtx.writeFile({ 
+        path: accountImage[0].path,
+        content: accountImage[0] 
+      });
     } else {
       imgURL = currentImage;
     }

@@ -155,14 +155,20 @@ export default function ManageProject(props: ManageProjectProps) {
     let galleryItems:Asset[] = (projectGallery.length !== 0) ? [] : projectAssets;
 
     const uploadToast = notify('text', 'Uploading files...');
-    if (projectImage[0]) {
-      imgURL = await valistCtx.writeFile(projectImage[0]);
+    if (projectImage.length > 0) {
+      imgURL = await valistCtx.writeFile({ 
+        path: projectImage[0].path, 
+        content: projectImage[0] 
+      });
     } else {
       imgURL = currentImage;
     }
 
     for (let i = 0; i < projectGallery.length; i++) {
-      const url = await valistCtx.writeFile(projectGallery[i]);
+      const url = await valistCtx.writeFile({
+        path: projectGallery[i].path,
+        content: projectGallery[i]
+      });
       galleryItems.push({
         name: projectGallery[i].name,
         type: projectGallery[i].type,
