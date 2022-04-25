@@ -136,7 +136,7 @@ export const ACCOUNT_PROFILE_QUERY = gql`
           name
         }
       }
-      logs(orderBy: blockTime, orderDirection: "asc"){
+      logs(orderBy: blockTime, orderDirection: "desc"){
         id
         type
         blockTime
@@ -151,7 +151,7 @@ export const ACCOUNT_PROFILE_QUERY = gql`
             name
           }
         }
-        release(orderBy: blockTime, orderDirection: "asc"){
+        release(orderBy: blockTime, orderDirection: "desc"){
           id
           name
         }
@@ -192,7 +192,7 @@ export const PROJECT_PROFILE_QUERY = gql`
       members{
         id
       }
-      logs(orderBy: blockTime, orderDirection: "asc"){
+      logs(orderBy: blockTime, orderDirection: "desc"){
         id
         type
         blockTime

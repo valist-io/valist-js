@@ -2,7 +2,7 @@ import { useQuery } from "@apollo/client";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import Layout from "../../../components/Layouts/Main";
-import { BigNumber, BigNumberish, ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import ProjectActions from "../../../features/projects/ProjectActions";
 import { PROJECT_PROFILE_QUERY } from "../../../utils/Apollo/queries";
 import { Log, Member, Release } from "../../../utils/Apollo/types";
