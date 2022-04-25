@@ -1,21 +1,8 @@
 import { gql } from "@apollo/client";
 
-export const RECENT_LOGS_QUERY = gql`
-  query RecentLogs{
-    logs (first: 5){
-      id
-      type
-      account
-      project
-      release
-      sender
-    }
-  }
-`;
-
 export const USER_LOGS_QUERY = gql`
   query UserLogs($address: String, $count: Int){
-    logs (where: {sender: $address}, first: $count){
+    logs (where: {sender: $address}, orderBy: blockTime, orderDirection: "desc", first: $count){
       id
       type
       blockTime
@@ -149,7 +136,7 @@ export const ACCOUNT_PROFILE_QUERY = gql`
           name
         }
       }
-      logs(orderBy: blockTime, orderDirection: "desc"){
+      logs(orderBy: blockTime, orderDirection: "asc"){
         id
         type
         blockTime
@@ -164,7 +151,7 @@ export const ACCOUNT_PROFILE_QUERY = gql`
             name
           }
         }
-        release{
+        release(orderBy: blockTime, orderDirection: "asc"){
           id
           name
         }
@@ -197,7 +184,7 @@ export const PROJECT_PROFILE_QUERY = gql`
       account {
         name
       }
-      releases(orderBy: blockTime, orderDirection: "desc") {
+      releases(orderBy: blockTime, orderDirection: "asc") {
         name
         metaURI
         blockTime
@@ -205,7 +192,7 @@ export const PROJECT_PROFILE_QUERY = gql`
       members{
         id
       }
-      logs(orderBy: blockTime, orderDirection: "desc"){
+      logs(orderBy: blockTime, orderDirection: "asc"){
         id
         type
         blockTime
