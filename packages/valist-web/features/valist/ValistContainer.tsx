@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { login, selectAccountNames, selectAddress, selectLoginType, setAccounts, setCurrentAccount, setMagicAddress } from '../accounts/accountsSlice';
+import { login, selectAddress, selectLoginType, setAccounts, setCurrentAccount, setMagicAddress } from '../accounts/accountsSlice';
 import { useEffect, useState } from 'react';
 import { Client, createReadOnly } from '@valist/sdk';
 import { createValistClient } from '../../utils/Account';
@@ -20,7 +20,6 @@ import { Toaster } from 'react-hot-toast';
 import getConfig from 'next/config';
 
 export default function ValistContainer({ children }: any) {
-  const accountNames  = useAppSelector(selectAccountNames);
   const loginType = useAppSelector(selectLoginType);
   const isModal = useAppSelector(selectIsOpen);
   const address = useAppSelector(selectAddress);
@@ -63,7 +62,10 @@ export default function ValistContainer({ children }: any) {
   
   // Set Valist client on provider change.
   useEffect(() => {
-    createValistClient(provider).then(setValistClient);
+    (async () => {
+      const client = await createValistClient(provider);
+      if (client) setValistClient(client);
+    })();
   }, [provider]);
 
   // Add Valist client to window

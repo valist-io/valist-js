@@ -112,8 +112,8 @@ export async function create(provider: Provider, options: Partial<Options>): Pro
 		let metaSigner: ethers.providers.JsonRpcSigner;
 
 		if (options.metaTx && contracts.chainIds.includes(options.chainId)) {
+			console.log('hello', options.chainId);
 			metaSigner = await createRelaySigner(web3Provider, options);
-			console.log('Meta-transactions enabled');
 		} else {
 			console.log('Meta-transactions disabled');
 			metaSigner = web3Signer;
