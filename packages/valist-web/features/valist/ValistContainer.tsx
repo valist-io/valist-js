@@ -58,7 +58,7 @@ export default function ValistContainer({ children }: any) {
         });
       });
     }
-  }, [setValistClient]);
+  }, []);
   
   // Set Valist client on provider change.
   useEffect(() => {

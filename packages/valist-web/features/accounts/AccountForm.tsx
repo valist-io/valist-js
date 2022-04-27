@@ -1,7 +1,6 @@
 import { Fragment, useContext, useEffect, useState } from "react";
 import { useAppDispatch } from "../../app/hooks";
 import FileUpload from "../../components/Files/FileUpload";
-import ImageUpload from "../../components/Images/ImageUpload";
 import Tooltip from "../../components/Tooltip";
 import { SetUseState } from "../../utils/Account/types";
 import { shortnameFilterRegex } from "../../utils/Validation";
@@ -20,6 +19,7 @@ interface CreateTeamFormProps {
   accountWebsite: string;
   accountMembers: string[];
   accountDescription: string;
+  setView: SetUseState<string>;
   setImage: SetUseState<FileWithPath[]>;
   addMember: (address: string) => Promise<void>;
   submit: () => void;
@@ -112,9 +112,11 @@ ${props.accountMembers.join('\n')}
           validName={validName}
           accountWebsite={props.accountWebsite} 
           accountDescription={props.accountDescription}
+          validMemberList={validMemberList}
           formValid={formValid}
           submitText={props.submitText} 
-          loading={loading} 
+          loading={loading}
+          setView={props.setView}
           setLoading={setLoading} 
           handleSubmit={handleSubmit}      
         />;
@@ -149,10 +151,12 @@ interface BasicInfoProps {
   accountDescription: string;
   edit: boolean;
   cleanName: string;
+  validMemberList: boolean;
   validName: boolean;
   formValid: boolean;
   submitText: string;
   loading: boolean;
+  setView: SetUseState<string>;
   setImage: SetUseState<FileWithPath[]>;
   setCleanName: SetUseState<string>;
   setLoading: SetUseState<boolean>;
@@ -250,10 +254,11 @@ const BasicInfoForm = (props: BasicInfoProps) => {
       </div>
             
       <SubmitButton 
-        handleSubmit={props.handleSubmit} 
+        handleSubmit={!props.validMemberList ? () => props.setView('Members') : props.handleSubmit} 
         formValid={props.formValid} 
         loading={props.loading} 
-        submitText={props.submitText} 
+        submitText={!props.validMemberList ? 'Continue to Members' : props.submitText}
+        navigation={!props.validMemberList}
       />
     </form>
   );
@@ -338,6 +343,7 @@ interface SubmitButtonProps {
   formValid: boolean;
   loading: boolean;
   submitText: string;
+  navigation?: boolean;
 }
 
 const SubmitButton = (props: SubmitButtonProps) => {
@@ -346,7 +352,7 @@ const SubmitButton = (props: SubmitButtonProps) => {
     <button onClick={() => props.handleSubmit()} value="Submit" type="button"
       className={`w-full inline-flex items-center justify-center px-6 py-3 border border-transparent
       text-base leading-6 font-medium rounded-md text-white transition ease-in-out duration-150
-      ${props.formValid && !props.loading ?
+      ${(props.formValid && !props.loading) || props.navigation ?
         'bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700' :
         'bg-indigo-200 hover:bg-indigo-200 focus:outline-none focus:shadow-outline-grey cursor-not-allowed'
       }`}>

@@ -253,7 +253,8 @@ export default function ManageAccount(props: EditAccountProps) {
               accountDisplayName={accountDisplayName} 
               accountMembers={accountMembers} 
               accountDescription={accountDescription}
-              accountWebsite={accountWebsite}   
+              accountWebsite={accountWebsite}  
+              setView={setFormView} 
               setImage={setAccountImage}
               addMember={addMember}
               submit={createAccount}      
