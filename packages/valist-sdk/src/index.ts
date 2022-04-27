@@ -55,10 +55,13 @@ export type Provider = ethers.providers.JsonRpcProvider | ethers.providers.Web3P
 
 // additional options for configuring the client
 export interface Options {
+	chainId: number;
 	ipfsHost: string;
 	ipfsGateway: string;
 	metaTx: boolean;
 	wallet: ethers.Wallet;
+	registryAddress: string;
+	licenseAddress: string;
 }
 
 /**
@@ -67,10 +70,36 @@ export interface Options {
  * @param provider Provider to use for transactions
  * @param options Additional client options
  */
+ export function createReadOnly(provider: Provider, options: Partial<Options>): Client {
+	const chainId = options.chainId || 137;
+	console.log('chainId inside createReadOnly', chainId);
+	const registryAddress = options.registryAddress || contracts.getRegistryAddress(chainId);
+	const licenseAddress = options.licenseAddress || contracts.getLicenseAddress(chainId);
+
+	const registry = new ethers.Contract(registryAddress, contracts.registryABI, provider);
+	const license = new ethers.Contract(licenseAddress, contracts.licenseABI, provider);	
+
+	const ipfsHost = options.ipfsHost || 'https://pin.valist.io';
+	const ipfsGateway = options.ipfsGateway || 'https://gateway.valist.io';
+	const ipfs = createIPFS({ url: ipfsHost });
+
+	return new Client(registry, license, ipfs, ipfsGateway);
+}
+
+/**
+ * Create a Valist client using the given JSON RPC provider.
+ * 
+ * @param provider Provider to use for transactions
+ * @param options Additional client options
+ */
 export async function create(provider: Provider, options: Partial<Options>): Promise<Client> {
-	const { chainId } = await provider.getNetwork();
-	const registryAddress = contracts.getRegistryAddress(chainId);
-	const licenseAddress = contracts.getLicenseAddress(chainId);
+	if (!options.chainId) {
+		const network = await provider.getNetwork();
+		options.chainId = network.chainId;
+	}
+
+	const registryAddress = options.registryAddress || contracts.getRegistryAddress(options.chainId);
+	const licenseAddress = options.licenseAddress || contracts.getLicenseAddress(options.chainId);
 
 	let registry: ethers.Contract;
 	let license: ethers.Contract;
@@ -81,9 +110,12 @@ export async function create(provider: Provider, options: Partial<Options>): Pro
 
 		// if meta transactions enabled setup opengsn relay signer
 		let metaSigner: ethers.providers.JsonRpcSigner;
-		if (options.metaTx) {
-			metaSigner = await createRelaySigner(web3Provider, options.wallet);
+
+		if (options.metaTx && contracts.chainIds.includes(options.chainId)) {
+			metaSigner = await createRelaySigner(web3Provider, options);
+			console.log('Meta-transactions enabled');
 		} else {
+			console.log('Meta-transactions disabled');
 			metaSigner = web3Signer;
 		}
 		
