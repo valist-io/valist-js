@@ -254,11 +254,11 @@ const BasicInfoForm = (props: BasicInfoProps) => {
       </div>
             
       <SubmitButton 
-        handleSubmit={!props.validMemberList ? () => props.setView('Members') : props.handleSubmit} 
-        formValid={props.formValid} 
+        handleSubmit={(!props.validMemberList && !props.edit) ? () => props.setView('Members') : props.handleSubmit} 
+        formValid={props.formValid}
         loading={props.loading} 
-        submitText={!props.validMemberList ? 'Continue to Members' : props.submitText}
-        navigation={!props.validMemberList}
+        submitText={(!props.validMemberList && !props.edit) ? 'Continue to Members' : props.submitText}
+        navigation={(!props.validMemberList && !props.edit)}
       />
     </form>
   );
