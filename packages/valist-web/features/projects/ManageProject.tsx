@@ -7,7 +7,7 @@ import { selectAccountNames, selectLoginTried, selectLoginType } from '../../fea
 import { showLogin } from '../../features/modal/modalSlice';
 import { dismiss, notify } from '../../utils/Notifications';
 import parseError from '../../utils/Errors';
-import { clear, selectDescription, selectDisplayName, selectLimit, selectMembers, selectName, selectPrice, selectRoyalty, selectRoyaltyAddress, selectShortDescription, selectTags, selectTeam, selectType, selectWebsite, selectYoutubeUrl, setDescription, setDisplayName, setLimit, setMembers, setName, setPrice, setRoyalty, setRoyaltyAddress, setShortDescription, setTags, setTeam, setType, setWebsite } from '../../features/projects/projectSlice';
+import { clear, selectAccount, selectDescription, selectDisplayName, selectLimit, selectMembers, selectName, selectPrice, selectRoyalty, selectRoyaltyAddress, selectShortDescription, selectTags, selectType, selectWebsite, selectYoutubeUrl, setDescription, setDisplayName, setLimit, setMembers, setName, setPrice, setRoyalty, setRoyaltyAddress, setShortDescription, setTags, setAccount, setType, setWebsite } from '../../features/projects/projectSlice';
 import ProjectPreview from '../../features/projects/ProjectPreview';
 import ProjectForm from './ProjectForm';
 import Tabs from '../../components/Tabs';
@@ -38,7 +38,7 @@ export default function ManageProject(props: ManageProjectProps) {
   const { publicRuntimeConfig } = getConfig();
 
   // Project State
-  const projectAccount = useAppSelector(selectTeam);
+  const projectAccount = useAppSelector(selectAccount);
   const projectDisplayName = useAppSelector(selectDisplayName);
   const projectName = useAppSelector(selectName);
   const projectPrice = useAppSelector(selectPrice);
@@ -63,6 +63,8 @@ export default function ManageProject(props: ManageProjectProps) {
   const youtubeUrl = useAppSelector(selectYoutubeUrl);
   const [membersChanged, setMembersChanged] = useState(0);
 
+  console.log('projectAccount', projectAccount);
+
   // Check if user is authenticated, prompt them to login if not logged in
   useEffect(() => {
     (async () => {
@@ -80,12 +82,12 @@ export default function ManageProject(props: ManageProjectProps) {
   // On initial page load, if in edit mode, set projectAccount & projectName
   useEffect(() => {
     console.log('accountUsername', props.accountUsername);
-    dispatch(setTeam(props.accountUsername || accountNames[0]));
+    dispatch(setAccount(props.accountUsername || accountNames[0]));
 
     if (props.projectName) {
       dispatch(setName(props.projectName));
     }
-  }, [accountNames, dispatch, props.accountUsername, props.projectName]);
+  }, []);
 
   // If projectAccount && projectName, generate account and projectID
   useEffect(() => {
@@ -135,7 +137,7 @@ export default function ManageProject(props: ManageProjectProps) {
         }
       }
     })();
-  }, [dispatch, projectID, props.accountUsername, props.projectName, valistCtx]);
+  }, [dispatch, projectID, props.accountUsername, props.projectName]);
 
   // Normalize projectMember data for ProjectPreview component
   useEffect(() => {
@@ -158,7 +160,7 @@ export default function ManageProject(props: ManageProjectProps) {
     if (projectImage.length > 0) {
       imgURL = await valistCtx.writeFile({ 
         path: projectImage[0].path, 
-        content: projectImage[0] 
+        content: projectImage[0],
       });
     } else {
       imgURL = currentImage;
@@ -167,7 +169,7 @@ export default function ManageProject(props: ManageProjectProps) {
     for (let i = 0; i < projectGallery.length; i++) {
       const url = await valistCtx.writeFile({
         path: projectGallery[i].path,
-        content: projectGallery[i]
+        content: projectGallery[i],
       });
       galleryItems.push({
         name: projectGallery[i].name,

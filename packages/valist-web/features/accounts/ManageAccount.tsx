@@ -5,8 +5,7 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { selectAccountNames, selectLoginTried, selectLoginType, setAccountNames } from '../accounts/accountsSlice';
 import { showLogin } from '../modal/modalSlice';
 import { dismiss, notify } from '../../utils/Notifications';
-import { setTeam } from '../projects/projectSlice';
-import { selectDescription, selectWebsite, selectBeneficiary, selectMembers, setWebsite, setDescription, setDisplayName, clear, selectUsername, setUsername, selectDisplayName, setMembers } from './teamSlice';
+import { selectDescription, selectWebsite, selectMembers, setWebsite, setDescription, setDisplayName, clear, selectUsername, setUsername, selectDisplayName, setMembers } from './teamSlice';
 import parseError from '../../utils/Errors';
 import TeamPreview from './AccountPreview';
 import CreateTeamForm from './AccountForm';
@@ -15,6 +14,7 @@ import { BigNumber } from 'ethers';
 import getConfig from 'next/config';
 import { generateID } from '@valist/sdk';
 import { FileWithPath } from 'file-selector';
+import { setAccount } from '../projects/projectSlice';
 
 type Member = {
   id: string,
@@ -40,7 +40,6 @@ export default function ManageAccount(props: EditAccountProps) {
   const accountDisplayName = useAppSelector(selectDisplayName);
   const accountDescription = useAppSelector(selectDescription);
   const accountWebsite = useAppSelector(selectWebsite);
-  const accountBeneficiary = useAppSelector(selectBeneficiary);
   const accountMembers = useAppSelector(selectMembers);
 
   const [accountID, setAccountID] = useState<string | null>(null);
@@ -58,16 +57,21 @@ export default function ManageAccount(props: EditAccountProps) {
     })();
   }, [dispatch, loginTried, loginType]);
 
-  // On initial page load, if in edit mode, set projectAccount & projectName
+  // On page load, clear any input from previous pages/sessions
   useEffect(() => {
-    console.log('accountsUsername', props.accountUsername);
     dispatch(clear());
-    dispatch(setUsername(props.accountUsername || accountNames[0]));
+  }, []);
+
+  // On initial page load, if in edit mode, set projectAccount
+  useEffect(() => {
+    console.log('props.accountsUsername', props.accountUsername);
+    if (props.accountUsername) {
+      dispatch(setUsername(props.accountUsername));
+    }
   }, [props.accountUsername, accountNames, dispatch]);
 
   // If projectAccount, generate accountID
   useEffect(() => {
-    // console.log('accountUsername', accountUsername);
     if (accountUsername) {
       console.log('accountUserName', accountUsername);
       const chainID = BigNumber.from(publicRuntimeConfig.CHAIN_ID);
@@ -96,7 +100,7 @@ export default function ManageAccount(props: EditAccountProps) {
         }
       }
     })();
-  }, [accountID, dispatch, valistCtx]);
+  }, [accountID, dispatch]);
 
   // Normalize accountMember data for AccountPreview component
   useEffect(() => {
@@ -117,7 +121,7 @@ export default function ManageAccount(props: EditAccountProps) {
     if (accountImage.length > 0) {
       imgURL = await valistCtx.writeFile({ 
         path: accountImage[0].path,
-        content: accountImage[0] 
+        content: accountImage[0], 
       });
     } else {
       imgURL = currentImage;
@@ -156,7 +160,7 @@ export default function ManageAccount(props: EditAccountProps) {
 
       // Inject created account/account into global state
       dispatch(setAccountNames([...accountNames, accountDisplayName]));
-      dispatch(setTeam(accountUsername));
+      dispatch(setAccount(accountUsername));
 
       dismiss(toastID);
       notify('success');

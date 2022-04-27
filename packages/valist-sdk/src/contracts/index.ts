@@ -23,7 +23,6 @@ export function getRegistryAddress(chainId: number): string {
 }
 
 export function getPaymasterAddress(chainId?: number): string {
-	console.log('chainId in paymaster', chainId);
 	switch(chainId) {
 		case 137: // Polygon mainnet
 			return 'TODO';

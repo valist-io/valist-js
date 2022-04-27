@@ -6,7 +6,7 @@ const defaultReadme = `# Example header
 You can write Markdown here!`;
 
 export interface ProjectState {
-  team: string;
+  account: string;
   name: string;
   displayName: string;
   price: string;
@@ -23,7 +23,7 @@ export interface ProjectState {
 };
 
 interface ProjectPayload {
-  team: string;
+  account: string;
   name: string;
   displayName: string;
   price: string;
@@ -40,7 +40,7 @@ interface ProjectPayload {
 }
 
 const initialState: ProjectState = {
-  team: '',
+  account: '',
   name: '',
   displayName: '',
   price: '0',
@@ -60,8 +60,8 @@ export const projectSlice = createSlice({
   name: 'project',
   initialState,
   reducers: {
-    setTeam: (state, action: PayloadAction<string>) => {
-      state.team = action.payload;
+    setAccount: (state, action: PayloadAction<string>) => {
+      state.account = action.payload;
     },
     setDisplayName: (state, action: PayloadAction<string>) => {
       state.displayName = action.payload;
@@ -113,7 +113,7 @@ export const projectSlice = createSlice({
       state = action.payload;
     },
     clear: (state) => {
-      state.team = '';
+      state.account = '';
       state.displayName = '';
       state.name = '';
       state.price = '0';
@@ -131,9 +131,9 @@ export const projectSlice = createSlice({
 });
 
 export const { 
-  setTeam, setDisplayName, setName, setPrice, setLimit, setRoyalty, setRoyaltyAddress, setDescription, setShortDescription, setWebsite, setMembers, setYoutubeUrl, setType, setTags, addTag, removeTag, setAll, clear,
+  setAccount, setDisplayName, setName, setPrice, setLimit, setRoyalty, setRoyaltyAddress, setDescription, setShortDescription, setWebsite, setMembers, setYoutubeUrl, setType, setTags, addTag, removeTag, setAll, clear,
 } = projectSlice.actions;
-export const selectTeam = (state: RootState) => state.project.team;
+export const selectAccount = (state: RootState) => state.project.account;
 export const selectDisplayName = (state: RootState) => state.project.displayName;
 export const selectPrice = (state: RootState) => state.project.price;
 export const selectLimit = (state: RootState) => state.project.limit;
