@@ -72,7 +72,6 @@ export interface Options {
  */
  export function createReadOnly(provider: Provider, options: Partial<Options>): Client {
 	const chainId = options.chainId || 137;
-	console.log('chainId inside createReadOnly', chainId);
 	const registryAddress = options.registryAddress || contracts.getRegistryAddress(chainId);
 	const licenseAddress = options.licenseAddress || contracts.getLicenseAddress(chainId);
 
@@ -112,8 +111,8 @@ export async function create(provider: Provider, options: Partial<Options>): Pro
 		let metaSigner: ethers.providers.JsonRpcSigner;
 
 		if (options.metaTx && contracts.chainIds.includes(options.chainId)) {
-			console.log('hello', options.chainId);
 			metaSigner = await createRelaySigner(web3Provider, options);
+			console.log('Meta-transactions enabled');
 		} else {
 			console.log('Meta-transactions disabled');
 			metaSigner = web3Signer;
