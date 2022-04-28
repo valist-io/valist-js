@@ -52,9 +52,9 @@ export default function ManageProject(props: ManageProjectProps) {
   const projectType = useAppSelector(selectType);
   const projectTags = useAppSelector(selectTags);
 
-  const [accountID, setAccountID] = useState<string | null>(null);
+  const [accountID, setAccountID] = useState<string>('');
   const [previousMeta, setPreviousMeta] = useState<ProjectMeta>({});
-  const [projectID, setProjectID] = useState<BigNumberish | null>(null);
+  const [projectID, setProjectID] = useState<string>('');
   const [projectImage, setProjectImage] = useState<FileWithPath[]>([]);
   const [currentImage, setCurrentImage] = useState<string>('');
   const [projectMembersParsed, setProjectMembersParsed] = useState<Member[]>([]);
@@ -92,9 +92,9 @@ export default function ManageProject(props: ManageProjectProps) {
   // If projectAccount && projectName, generate account and projectID
   useEffect(() => {
     if (projectAccount && projectName) {
-      const chainID = BigNumber.from(publicRuntimeConfig.CHAIN_ID);
+      const chainID = publicRuntimeConfig.CHAIN_ID;
       const accountID = generateID(chainID, projectAccount);
-      setAccountID(accountID.toString());
+      setAccountID(accountID);
       
       const projectID = generateID(accountID, projectName);
       setProjectID(projectID);
@@ -194,7 +194,8 @@ export default function ManageProject(props: ManageProjectProps) {
     project.gallery = galleryItems;
 
     console.log("Project Team", projectAccount);
-    console.log("Project Name", projectDisplayName);
+    console.log("Project Name", projectName);
+    console.log("Project Display Name", projectDisplayName);
     console.log("Project Members", projectMembers);
     console.log("Meta", project);
  
@@ -220,7 +221,7 @@ export default function ManageProject(props: ManageProjectProps) {
       } else {
         toastID = notify('pending');
         transaction = await valistCtx.createProject(
-          projectID,
+          accountID,
           projectName,
           project,
           projectMembers,

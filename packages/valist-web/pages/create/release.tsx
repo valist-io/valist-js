@@ -70,8 +70,8 @@ const PublishReleasePage: NextPage = () => {
   // If projectAccount && projectName, generate account and projectID
   useEffect(() => {
     if (project) {
-      const chainID = BigNumber.from(publicRuntimeConfig.CHAIN_ID);
-      const accountID = generateID(chainID, project);
+      const chainID = publicRuntimeConfig.CHAIN_ID;
+      const accountID = generateID(chainID, account);
       const projectID = generateID(accountID, project);
       setProjectID(projectID);
     }

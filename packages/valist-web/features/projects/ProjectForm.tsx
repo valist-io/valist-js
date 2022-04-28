@@ -150,7 +150,7 @@ export default function ProjectForm(props: ProjectFormProps) {
   const GraphicsForm = (props: GraphicFormProps) => {
     return (
       <form className="grid grid-cols-1 gap-y-6 sm:gap-x-8" action="#" method="POST">
-        <FileUpload setFiles={props.setGallery} title={"Project Profile Image"} files={[]} />
+        <FileUpload setFiles={props.setGallery} title={"Screenshots & Videos"} files={[]} />
 
         {/* <div>
           <label htmlFor="youtube" className="block text-sm font-medium text-gray-700">

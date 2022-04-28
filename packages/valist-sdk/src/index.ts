@@ -138,7 +138,7 @@ export async function create(provider: Provider, options: Partial<Options>): Pro
  * @param parentID ID of the parent account or release. Use chainId for accounts.
  * @param name Name of the account, project, or rlease.
  */
-export function generateID(parentID: ethers.BigNumberish, name: string): ethers.BigNumberish {
+export function generateID(parentID: ethers.BigNumberish, name: string): string {
 	const nameBytes = ethers.utils.toUtf8Bytes(name);
 	const nameHash = ethers.utils.keccak256(nameBytes);
 	return ethers.utils.solidityKeccak256([ "uint256", "bytes32" ], [ parentID, nameHash ]);
