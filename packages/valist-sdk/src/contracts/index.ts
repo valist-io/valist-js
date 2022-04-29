@@ -12,7 +12,7 @@ export function getRegistryAddress(chainId: number): string {
 		case 137: // Polygon mainnet
 			return '0xc70A069eC7F887a7497a4bdC7bE666C1e18c8DC3';
 		case 80001: // Mumbai testnet
-			return '0x83B5f729DB18E2Cae6388A414210543581f9df17';
+			return '0xD504d012D78B81fA27288628f3fC89B0e2f56e24';
 		case 1337: // Deterministic Ganache
 			return '0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab';
 		default:
@@ -25,7 +25,7 @@ export function getPaymasterAddress(chainId: number): string {
 		case 137: // Polygon mainnet
 			return 'TODO';
 		case 80001: // Mumbai testnet
-			return '0xe59447Fb03f44Af0a483840a7A6059a4B03FB4fC';
+			return '0x137F8009fc7795dD8a004fdb38852F54368194e8';
 		case 1337: // Deterministic Ganache
 			return '0xCfEB869F69431e42cdB54A4F4f105C19C080A601';
 		default:
@@ -38,7 +38,7 @@ export function getLicenseAddress(chainId: number): string {
 		case 137: // Polygon mainnet
 			return '0xb85ed41d49Eba25aE6186921Ea63b6055903e810';
 		case 80001: // Mumbai testnet
-			return '0xF0D58AacF271629B2c598d557E8c2FCF047FfD30';
+			return '0x3cE643dc61bb40bB0557316539f4A93016051b81';
 		case 1337: // Deterministic Ganache
 			return '0x5b1869D9A4C187F2EAa108f3062412ecf0526b24';
 		default:
