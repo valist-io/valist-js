@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { Member } from "../../utils/Apollo/types";
 import ProjectContent from "./ProjectProfileContent";
 import ProjectGallery, { Asset } from "./ProjectGallery";
@@ -7,6 +8,9 @@ import ProjectMemberList from "./ProjectMemberList";
 import ProjectListCard from "./ProjectListCard";
 import { useEffect, useState } from "react";
 import { FileWithPath } from "file-selector";
+import DicoveryItem from "../discovery/DiscoveryItem";
+import { setYouTubeUrl } from "./projectSlice";
+import { getYouTubeEmbedURL, getYouTubeID } from "../../utils/Youtube";
 
 interface ProjectPreviewProps {
   projectAccount: string;
@@ -18,7 +22,9 @@ interface ProjectPreviewProps {
   projectMembers: Member[];
   projectGallery: FileWithPath[];
   projectAssets: Asset[];
+  mainImage: FileWithPath | null;
   defaultImage?: string;
+  youtubeUrl?: string;
   view: string;
   removeMember?: (address:string) => Promise<void>;
 }
@@ -26,7 +32,9 @@ interface ProjectPreviewProps {
 export default function ProjectPreview(props: ProjectPreviewProps) {
   const name = props.projectDisplayName || 'name';
   const description = props.projectDescription || '# Readme Not Found';
-  const [imgUrl, setImgUrl] = useState('');
+  const [imgUrl, setImgUrl] = useState<string>('');
+  const [youtubeEmbed, setYotubeEmbed] = useState<string>('');
+  const [mainImgUrl, setMainImgUrl] = useState('');
   const [galleryAssets, setGalleryAssets] = useState<Asset[]>([]);
   const _gallery = (galleryAssets.length !== 0) ? galleryAssets : props.projectAssets;
 
@@ -37,7 +45,34 @@ export default function ProjectPreview(props: ProjectPreviewProps) {
   }, [props.projectImage]);
 
   useEffect(() => {
+    if (props.mainImage) {
+      setMainImgUrl(URL.createObjectURL(props.mainImage));
+    }
+  }, [props.mainImage]);
+
+  useEffect(() => {
+    console.log('props.youtubeUrl', props.youtubeUrl);
+    if (props.youtubeUrl) {
+      const id = getYouTubeID(props.youtubeUrl);
+      if (id) {
+        const youtubeUrl = getYouTubeEmbedURL(id);
+        console.log('Youtube Url', youtubeUrl);
+        setYotubeEmbed(youtubeUrl);
+      }
+    }
+  }, [props.youtubeUrl]);
+
+  useEffect(() => {
     const assets: Asset[] = [];
+    console.log('youtube url', props.youtubeUrl);
+
+    if (props.youtubeUrl && youtubeEmbed) {
+      assets.push({
+        src: youtubeEmbed,
+        type: 'youtube',
+        name: 'YouTube',
+      });
+    }
 
     props.projectGallery.map((item) => {
       console.log('fileInfo', item);
@@ -52,7 +87,7 @@ export default function ProjectPreview(props: ProjectPreviewProps) {
     });
 
     setGalleryAssets(assets);
-  }, [props.projectGallery]);
+  }, [props.projectGallery, props.youtubeUrl, youtubeEmbed]);
 
   const DescriptionsPreview = () => {
     return (
@@ -101,7 +136,19 @@ export default function ProjectPreview(props: ProjectPreviewProps) {
           <DescriptionsPreview />
         );
       case 'Graphics':
-        return <ProjectGallery assets={_gallery} />;
+        return (
+          <div>
+            {mainImgUrl &&
+              <div className="mb-2"> 
+                <DicoveryItem 
+                  text={'main-image'} 
+                  image={mainImgUrl}             
+                />
+              </div>
+            }
+            <ProjectGallery assets={_gallery} />
+          </div>
+        );
       case 'Members':
         return <ProjectMemberList removeMember={props.removeMember} members={props.projectMembers} />;
       default:

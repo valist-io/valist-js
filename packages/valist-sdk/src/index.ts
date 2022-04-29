@@ -16,8 +16,10 @@ export class AccountMeta {
 }
 
 export class ProjectMeta {
-	/** project image */
+	/** project image used for profile pic */
 	public image?: string;
+	/** main project image used for discovery */
+	public main_capsule?: string;
 	/** project friendly name */
 	public name?: string;
 	/** short description of the project. */

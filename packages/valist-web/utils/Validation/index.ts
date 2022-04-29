@@ -3,6 +3,7 @@ import { ProjectMeta } from "@valist/sdk";
 export const shortnameFilterRegex = /[^\w-]/g;
 export const versionFilterRegex = /[^\w-.]/g;
 export const tagFilterRegex = /[^a-z-]/g;
+export const youtubeRegex = /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/; // https://stackoverflow.com/a/27728417
 
 export const projectMetaChanged = (original: ProjectMeta, current: ProjectMeta):Boolean => {
   if (original.image !== current.image) return true;

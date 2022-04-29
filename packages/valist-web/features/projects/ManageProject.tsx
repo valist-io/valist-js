@@ -7,7 +7,7 @@ import { selectAccountNames, selectLoginTried, selectLoginType } from '../../fea
 import { showLogin } from '../../features/modal/modalSlice';
 import { dismiss, notify } from '../../utils/Notifications';
 import parseError from '../../utils/Errors';
-import { clear, selectAccount, selectDescription, selectDisplayName, selectLimit, selectMembers, selectName, selectPrice, selectRoyalty, selectRoyaltyAddress, selectShortDescription, selectTags, selectType, selectWebsite, selectYoutubeUrl, setDescription, setDisplayName, setLimit, setMembers, setName, setPrice, setRoyalty, setRoyaltyAddress, setShortDescription, setTags, setAccount, setType, setWebsite } from '../../features/projects/projectSlice';
+import { clear, selectAccount, selectDescription, selectDisplayName, selectLimit, selectMembers, selectName, selectPrice, selectRoyalty, selectRoyaltyAddress, selectShortDescription, selectTags, selectType, selectWebsite, selectYouTubeUrl, setDescription, setDisplayName, setLimit, setMembers, setName, setPrice, setRoyalty, setRoyaltyAddress, setShortDescription, setTags, setAccount, setType, setWebsite } from '../../features/projects/projectSlice';
 import ProjectPreview from '../../features/projects/ProjectPreview';
 import ProjectForm from './ProjectForm';
 import Tabs from '../../components/Tabs';
@@ -55,12 +55,13 @@ export default function ManageProject(props: ManageProjectProps) {
   const [accountID, setAccountID] = useState<string>('');
   const [previousMeta, setPreviousMeta] = useState<ProjectMeta>({});
   const [projectID, setProjectID] = useState<string>('');
+  const [mainImage, setMainImage] = useState<FileWithPath[]>([]);
   const [projectImage, setProjectImage] = useState<FileWithPath[]>([]);
   const [currentImage, setCurrentImage] = useState<string>('');
   const [projectMembersParsed, setProjectMembersParsed] = useState<Member[]>([]);
   const [projectGallery, setProjectGallery] = useState<FileWithPath[]>([]);
   const [projectAssets, setProjectAssets] = useState<Asset[]>([]);
-  const youtubeUrl = useAppSelector(selectYoutubeUrl);
+  const youtubeUrl = useAppSelector(selectYouTubeUrl);
   const [membersChanged, setMembersChanged] = useState(0);
 
   console.log('projectAccount', projectAccount);
@@ -177,6 +178,14 @@ export default function ManageProject(props: ManageProjectProps) {
         src: url,
       });
     };
+
+    if (youtubeUrl) {
+      galleryItems.push({
+        name: youtubeUrl,
+        type: 'youtube',
+        src: youtubeUrl,
+      });
+    }
 
     setTimeout(() => {
       // set artificial buffer for if upload is too quick, since react-hot-toast doesn't like when you call dismiss too fast
@@ -399,6 +408,7 @@ export default function ManageProject(props: ManageProjectProps) {
               projectGallery={projectGallery}
               youtubeUrl={youtubeUrl}
               view={formView}
+              setMainImage={setMainImage}
               setImage={setProjectImage}
               setGallery={setProjectGallery}
               addMember={addMember}
@@ -414,6 +424,7 @@ export default function ManageProject(props: ManageProjectProps) {
             projectAccount={projectAccount}
             projectDisplayName={projectDisplayName}
             projectImage={projectImage[0]}
+            mainImage={mainImage[0]}
             projectShortDescription={projectShortDescription}
             projectDescription={projectDescription}
             projectWebsite={projectWebsite}
@@ -421,6 +432,7 @@ export default function ManageProject(props: ManageProjectProps) {
             defaultImage={currentImage}
             projectGallery={projectGallery}
             projectAssets={projectAssets}
+            youtubeUrl={youtubeUrl}
             removeMember={removeMember}
           />
         </div>
