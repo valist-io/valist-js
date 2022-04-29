@@ -12,7 +12,7 @@ export const chainIds = [137, 80001, 1337];
 export function getRegistryAddress(chainId: number): string {
 	switch(chainId) {
 		case 137: // Polygon mainnet
-			return '0xc70A069eC7F887a7497a4bdC7bE666C1e18c8DC3';
+			return '0xD504d012D78B81fA27288628f3fC89B0e2f56e24';
 		case 80001: // Mumbai testnet
 			return '0xD504d012D78B81fA27288628f3fC89B0e2f56e24';
 		case 1337: // Deterministic Ganache
@@ -25,7 +25,7 @@ export function getRegistryAddress(chainId: number): string {
 export function getPaymasterAddress(chainId?: number): string {
 	switch(chainId) {
 		case 137: // Polygon mainnet
-			return 'TODO';
+			return '0x137F8009fc7795dD8a004fdb38852F54368194e8';
 		case 80001: // Mumbai testnet
 			return '0x137F8009fc7795dD8a004fdb38852F54368194e8';
 		case 1337: // Deterministic Ganache
@@ -38,7 +38,7 @@ export function getPaymasterAddress(chainId?: number): string {
 export function getLicenseAddress(chainId: number): string {
 	switch(chainId) {
 		case 137: // Polygon mainnet
-			return '0xb85ed41d49Eba25aE6186921Ea63b6055903e810';
+			return '0x3cE643dc61bb40bB0557316539f4A93016051b81';
 		case 80001: // Mumbai testnet
 			return '0x3cE643dc61bb40bB0557316539f4A93016051b81';
 		case 1337: // Deterministic Ganache
