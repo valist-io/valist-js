@@ -18,8 +18,6 @@ interface PublishReleaseFormProps {
   releaseTeam: string;
   releaseProject: string;
   releaseName: string;
-  releaseLicense: string;
-  releaseLicenses: string[];
   releaseFiles: FileWithPath[];
   setImage: SetUseState<File | null>;
   setFiles: SetUseState<FileWithPath[]>;
@@ -47,7 +45,6 @@ Confirmation: You are about to publish "${props.releaseName}" with the following
 Team name: ${props.releaseTeam}
 Project name: ${props.releaseProject}
 Version tag: ${props.releaseName}
-${props.releaseLicense && `Release license: ${props.releaseLicense}` || ''}
 `);
       props.submit();
     }
@@ -56,16 +53,14 @@ ${props.releaseLicense && `Release license: ${props.releaseLicense}` || ''}
   useEffect(() => {
     (async () => {
       if (valistCtx && props.projectID && _name) {
-        console.log(props.projectID);
         const releaseID = generateID(props.projectID, _name);
         const releaseExists = await valistCtx.releaseExists(releaseID);
+        console.log('Release Exists?', releaseExists);
         setValidName(!releaseExists);
-      } else {
-        setValidName(true);
       }
       dispatch(setName(_name));
     })();
-  }, [_name, dispatch, props.projectID, valistCtx]);
+  }, [_name, dispatch, props.projectID]);
 
   // Handle form valid check
   useEffect(() => {

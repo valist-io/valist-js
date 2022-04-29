@@ -35,8 +35,8 @@ export default function ProjectGallery(props: ProjectGalleryProps):JSX.Element {
       );
     } else if (currentAsset?.type.includes('youtube')) {
       return (
-        <iframe 
-          style={{ maxWidth: '100%', maxHeight: '100%' }}
+        <iframe
+          width="100%"
           src={currentAsset.src} 
           title="YouTube video player"
           frameBorder="0" 

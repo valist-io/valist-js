@@ -5,13 +5,14 @@ import { useAppDispatch } from "../../app/hooks";
 import FileUpload from "../../components/Files/FileUpload";
 import Tooltip from "../../components/Tooltip";
 import { SetUseState } from "../../utils/Account/types";
-import { shortnameFilterRegex } from "../../utils/Validation";
+import { shortnameFilterRegex, youtubeRegex } from "../../utils/Validation";
 import ValistContext from "../valist/ValistContext";
 import Web3Context from "../valist/Web3Context";
-import { setDescription, setMembers, setDisplayName, setName, setShortDescription, setTeam, setWebsite, setPrice, setLimit, setRoyalty, setRoyaltyAddress } from "./projectSlice";
+import { setDescription, setMembers, setDisplayName, setName, setShortDescription, setAccount, setWebsite, setPrice, setLimit, setRoyalty, setRoyaltyAddress, setYouTubeUrl } from "./projectSlice";
 import ProjectTagsInput from "./ProjectTagsInput";
 import ProjectTypeSelect from "./ProjectTypeSelect";
 import { FileWithPath } from "file-selector";
+import { getYouTubeID } from "../../utils/Youtube";
 
 interface ProjectFormProps {
   edit: boolean,
@@ -34,6 +35,7 @@ interface ProjectFormProps {
   youtubeUrl: string;
   userAccounts: string[];
   view: string;
+  setMainImage: SetUseState<FileWithPath[]>;
   setImage: SetUseState<FileWithPath[]>;
   setGallery: SetUseState<FileWithPath[]>;
   addMember: (address: string) => Promise<void>;
@@ -88,7 +90,7 @@ export default function ProjectForm(props: ProjectFormProps) {
 
       dispatch(setName(_name));
     })();
-  }, [_name, dispatch, props.accountUsername, valistCtx]);
+  }, [_name, dispatch, props.accountID, props.accountUsername, valistCtx?.projectExists]);
 
   // Handle member list change
   useEffect(() => {
@@ -141,38 +143,6 @@ export default function ProjectForm(props: ProjectFormProps) {
     );
   };
 
-  interface GraphicFormProps {
-    galleryFiles: FileWithPath[];
-    youtubeUrl: string;
-    setGallery: SetUseState<FileWithPath[]>;
-  }
-
-  const GraphicsForm = (props: GraphicFormProps) => {
-    return (
-      <form className="grid grid-cols-1 gap-y-6 sm:gap-x-8" action="#" method="POST">
-        <FileUpload setFiles={props.setGallery} title={"Project Profile Image"} files={[]} />
-
-        {/* <div>
-          <label htmlFor="youtube" className="block text-sm font-medium text-gray-700">
-            Youtube Url <span className="float-right"><Tooltip text='Youtube video.' /></span>
-          </label>
-          <div className="mt-1">
-            <input
-              id="youtube"
-              name="youtube"
-              required
-              onChange={(e) => dispatch(setYoutubeUrl(e.target.value))}
-              className="appearance-none block w-full px-3 py-2 border border-gray-300 
-              rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 
-              focus:border-indigo-500 sm:text-sm"
-              placeholder="Youtube Url"
-            />
-          </div>
-        </div> */}
-      </form>
-    );
-  };
-
   const ProjectFormContent = () => {
     switch (props.view) {
       case 'Basic Info':
@@ -206,7 +176,8 @@ export default function ProjectForm(props: ProjectFormProps) {
         return <GraphicsForm   
           galleryFiles={props.projectGallery}
           youtubeUrl={props.youtubeUrl}
-          setGallery={props.setGallery}   
+          setGallery={props.setGallery}
+          setMainImage={props.setMainImage}        
         />;
       case 'Members':
         return <MembersForm 
@@ -256,7 +227,7 @@ const BasicInfoForm = (props: BasicInfoProps) => {
         <label htmlFor="projectType" className="block text-sm leading-5 font-medium text-gray-700">
           Account or Team <span className="float-right"><Tooltip text='The team where this project will be published.' /></span>
         </label>
-        <select onChange={(e) => dispatch(setTeam(e.target.value))}
+        <select onChange={(e) => dispatch(setAccount(e.target.value))}
         id="projectAccount" className="mt-1 form-select block w-full pl-3 pr-10 py-2
         text-base leading-6 border-gray-300 focus:outline-none focus:shadow-outline-blue
         focus:border-blue-300 sm:text-sm sm:leading-5">
@@ -335,6 +306,57 @@ const BasicInfoForm = (props: BasicInfoProps) => {
 
       <ProjectTagsInput tags={props.projectTags} />
     </form>
+  );
+};
+
+
+interface GraphicFormProps {
+  galleryFiles: FileWithPath[];
+  youtubeUrl: string;
+  setMainImage: SetUseState<FileWithPath[]>;
+  setGallery: SetUseState<FileWithPath[]>;
+}
+
+const GraphicsForm = (props: GraphicFormProps) => {
+  const dispatch = useAppDispatch();
+  const [validYouTube, setValidYouTube] = useState(true);
+
+  const setYoutubeUrl = (url: string) => {
+    if (getYouTubeID(url)) {
+      dispatch(setYouTubeUrl(url));
+      setValidYouTube(true);
+    } else {
+      dispatch(setYouTubeUrl(''));
+      setValidYouTube(false);
+    }
+  };
+  
+  return (
+    <div>
+      <div className="mb-4">
+        <FileUpload setFiles={props.setMainImage} title={"Main Image (recommend 616px x 353px)"} files={[]} />
+      </div>
+      <div className="mb-6">
+        <FileUpload setFiles={props.setGallery} title={"Screenshots & Videos (recommend 1280x720 or 1920x1080)"} files={[]} />
+      </div>
+      <div>
+        <label htmlFor="youtube" className="block text-sm font-medium text-gray-700">
+          YouTube URL (must paste)<span className="float-right"><Tooltip text='YouTube video.' /></span>
+        </label>
+        <div className="mt-1">
+          <input
+            id="youtube"
+            name="youtube"
+            onChange={(e) => setYoutubeUrl(e.target.value)}
+            value={props.youtubeUrl}
+            className="appearance-none block w-full px-3 py-2 border border-gray-300 
+            rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 
+            focus:border-indigo-500 sm:text-sm"
+            placeholder="YouTube URL"
+          />
+        </div>
+      </div>
+    </div>
   );
 };
 

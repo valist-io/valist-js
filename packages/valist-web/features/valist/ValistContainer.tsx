@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { login, selectAccountNames, selectAddress, selectLoginType, setAccounts, setCurrentAccount, setMagicAddress } from '../accounts/accountsSlice';
+import { login, selectAddress, selectLoginType, setAccounts, setCurrentAccount, setMagicAddress } from '../accounts/accountsSlice';
 import { useEffect, useState } from 'react';
-import { Client } from '@valist/sdk';
+import { Client, createReadOnly } from '@valist/sdk';
 import { createValistClient } from '../../utils/Account';
 import { addressFromProvider, defaultProvider, newMagic } from '../../utils/Providers';
 import { LoginType, ValistProvider } from '../../utils/Account/types';
@@ -17,16 +17,23 @@ import { useQuery } from '@apollo/client';
 import { USER_HOMEPAGE } from '../../utils/Apollo/queries';
 import { normalizeUserProjects } from '../../utils/Apollo/normalization';
 import { Toaster } from 'react-hot-toast';
+import getConfig from 'next/config';
 
 export default function ValistContainer({ children }: any) {
-  const accountNames  = useAppSelector(selectAccountNames);
   const loginType = useAppSelector(selectLoginType);
   const isModal = useAppSelector(selectIsOpen);
   const address = useAppSelector(selectAddress);
   const dispatch = useAppDispatch();
-
-  const [valistClient, setValistClient] = useState<Client>();
+  const { publicRuntimeConfig } = getConfig();
   const [provider, setProvider] = useState<ValistProvider>(defaultProvider);
+
+  const [valistClient, setValistClient] = useState<Client>(
+    createReadOnly(provider,
+    {
+      chainId: Number(publicRuntimeConfig.CHAIN_ID),
+    },
+  ));
+
   const [mainnet, setMainnet] = useState<JsonRpcProvider>(new ethers.providers.JsonRpcProvider('https://rpc.valist.io/ens'));
   const [magic, setMagic] = useState<Magic>(newMagic());
 
@@ -51,11 +58,14 @@ export default function ValistContainer({ children }: any) {
         });
       });
     }
-  }, [setValistClient]);
+  }, []);
   
   // Set Valist client on provider change.
   useEffect(() => {
-    createValistClient(provider).then(setValistClient);
+    (async () => {
+      const client = await createValistClient(provider);
+      if (client) setValistClient(client);
+    })();
   }, [provider]);
 
   // Add Valist client to window

@@ -13,6 +13,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const valist = await createValistClient(defaultProvider);
+    if (!valist) return res.status(500).json({ error: 'failed to get account' });
+    
     const account = await valist.getAccountMeta(accountID);
     res.status(200).json(account);
   } catch(err) {

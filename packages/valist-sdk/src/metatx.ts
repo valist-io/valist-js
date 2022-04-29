@@ -1,10 +1,10 @@
 import { ethers } from 'ethers';
 import { RelayProvider, GSNConfig } from '@opengsn/provider';
 import * as contracts from './contracts';
+import { Options } from './';
 
-export async function createRelaySigner(provider: ethers.providers.Web3Provider, wallet?: ethers.Wallet): Promise<ethers.providers.JsonRpcSigner> {
-	const { chainId } = await provider.getNetwork();
-	const paymasterAddress = contracts.getPaymasterAddress(chainId);
+export async function createRelaySigner(provider: ethers.providers.Web3Provider, options: Partial<Options>): Promise<ethers.providers.JsonRpcSigner> {
+	const paymasterAddress = contracts.getPaymasterAddress(options.chainId);
 
 	// recommended settings for polygon see below for more info
 	// https://docs.opengsn.org/networks/polygon/polygon.html
@@ -21,9 +21,9 @@ export async function createRelaySigner(provider: ethers.providers.Web3Provider,
 
 	// add the wallet account if set
 	let signerAddress: string | undefined;
-	if (wallet) {
-		relayProvider.addAccount(wallet.privateKey);
-		signerAddress = wallet.address;
+	if (options.wallet) {
+		relayProvider.addAccount(options.wallet.privateKey);
+		signerAddress = options.wallet.address;
 	}
 
 	// @ts-ignore

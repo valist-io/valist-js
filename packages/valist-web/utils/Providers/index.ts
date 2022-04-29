@@ -70,7 +70,7 @@ export const providers:Record<any, any> = {
     return magic.rpcProvider;
   },
   readOnly: async () => {
-    return "https://rpc.valist.io/polygon"
+    return publicRuntimeConfig.WEB3_PROVIDER;
   },
 };
 

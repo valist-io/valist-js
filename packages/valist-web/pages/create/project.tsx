@@ -8,7 +8,7 @@ const CreateProjectPage: NextPage = () => {
   let { account } = router.query;
   if (Array.isArray(account)) account = account.join('');
   if (!account) account = '';
-  
+
   return (
     <Layout title={`Valist | Create Project`}>
       <ManageProject accountUsername={account} />

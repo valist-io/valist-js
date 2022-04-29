@@ -7,6 +7,8 @@ export const licenseABI = licenseContract.abi;
 export const registryBytecode = registryContract.bytecode;
 export const licenseBytecode = licenseContract.bytecode;
 
+export const chainIds = [137, 80001, 1337];
+
 export function getRegistryAddress(chainId: number): string {
 	switch(chainId) {
 		case 137: // Polygon mainnet
@@ -20,7 +22,7 @@ export function getRegistryAddress(chainId: number): string {
 	}
 }
 
-export function getPaymasterAddress(chainId: number): string {
+export function getPaymasterAddress(chainId?: number): string {
 	switch(chainId) {
 		case 137: // Polygon mainnet
 			return 'TODO';

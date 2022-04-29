@@ -41,7 +41,7 @@ export class Web3ContextInstance {
     try {
       const name = await this.mainnet.lookupAddress(address);
       if (name !== null) {
-        store.dispatch(setName({name: name, address:address}));
+        store.dispatch(setName({ name: name, address:address }));
         return name;
       }
     } catch (err) {
@@ -61,7 +61,7 @@ export class Web3ContextInstance {
     try {
       const address = await this.mainnet.resolveName(ens);
       if (address !== null) {
-        store.dispatch(setName({name: ens, address: address}));
+        store.dispatch(setName({ name: ens, address: address }));
         return address;
       }
     } catch (err) {

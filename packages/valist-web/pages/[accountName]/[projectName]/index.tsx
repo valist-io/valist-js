@@ -121,8 +121,10 @@ export default function ProjectPage():JSX.Element {
         const price = await valistCtx.getProductPrice(projectID);
         setLicensePrice(ethers.utils.formatEther(price));
 
-        let balance = await valistCtx.getProductBalance(address, projectID);
-        setLicenseBalance(Number(balance));
+        if (address !== '0x0') {
+          let balance = await valistCtx.getProductBalance(address, projectID);
+          setLicenseBalance(Number(balance));
+        }
       }
     })();
   }, [address, projectID, valistCtx]);

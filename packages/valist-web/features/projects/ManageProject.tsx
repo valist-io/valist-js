@@ -7,7 +7,7 @@ import { selectAccountNames, selectLoginTried, selectLoginType } from '../../fea
 import { showLogin } from '../../features/modal/modalSlice';
 import { dismiss, notify } from '../../utils/Notifications';
 import parseError from '../../utils/Errors';
-import { clear, selectDescription, selectDisplayName, selectLimit, selectMembers, selectName, selectPrice, selectRoyalty, selectRoyaltyAddress, selectShortDescription, selectTags, selectTeam, selectType, selectWebsite, selectYoutubeUrl, setDescription, setDisplayName, setLimit, setMembers, setName, setPrice, setRoyalty, setRoyaltyAddress, setShortDescription, setTags, setTeam, setType, setWebsite } from '../../features/projects/projectSlice';
+import { clear, selectAccount, selectDescription, selectDisplayName, selectLimit, selectMembers, selectName, selectPrice, selectRoyalty, selectRoyaltyAddress, selectShortDescription, selectTags, selectType, selectWebsite, selectYouTubeUrl, setDescription, setDisplayName, setLimit, setMembers, setName, setPrice, setRoyalty, setRoyaltyAddress, setShortDescription, setTags, setAccount, setType, setWebsite } from '../../features/projects/projectSlice';
 import ProjectPreview from '../../features/projects/ProjectPreview';
 import ProjectForm from './ProjectForm';
 import Tabs from '../../components/Tabs';
@@ -38,7 +38,7 @@ export default function ManageProject(props: ManageProjectProps) {
   const { publicRuntimeConfig } = getConfig();
 
   // Project State
-  const projectAccount = useAppSelector(selectTeam);
+  const projectAccount = useAppSelector(selectAccount);
   const projectDisplayName = useAppSelector(selectDisplayName);
   const projectName = useAppSelector(selectName);
   const projectPrice = useAppSelector(selectPrice);
@@ -52,16 +52,19 @@ export default function ManageProject(props: ManageProjectProps) {
   const projectType = useAppSelector(selectType);
   const projectTags = useAppSelector(selectTags);
 
-  const [accountID, setAccountID] = useState<string | null>(null);
+  const [accountID, setAccountID] = useState<string>('');
   const [previousMeta, setPreviousMeta] = useState<ProjectMeta>({});
-  const [projectID, setProjectID] = useState<BigNumberish | null>(null);
+  const [projectID, setProjectID] = useState<string>('');
+  const [mainImage, setMainImage] = useState<FileWithPath[]>([]);
   const [projectImage, setProjectImage] = useState<FileWithPath[]>([]);
   const [currentImage, setCurrentImage] = useState<string>('');
   const [projectMembersParsed, setProjectMembersParsed] = useState<Member[]>([]);
   const [projectGallery, setProjectGallery] = useState<FileWithPath[]>([]);
   const [projectAssets, setProjectAssets] = useState<Asset[]>([]);
-  const youtubeUrl = useAppSelector(selectYoutubeUrl);
+  const youtubeUrl = useAppSelector(selectYouTubeUrl);
   const [membersChanged, setMembersChanged] = useState(0);
+
+  console.log('projectAccount', projectAccount);
 
   // Check if user is authenticated, prompt them to login if not logged in
   useEffect(() => {
@@ -80,19 +83,19 @@ export default function ManageProject(props: ManageProjectProps) {
   // On initial page load, if in edit mode, set projectAccount & projectName
   useEffect(() => {
     console.log('accountUsername', props.accountUsername);
-    dispatch(setTeam(props.accountUsername || accountNames[0]));
+    dispatch(setAccount(props.accountUsername || accountNames[0]));
 
     if (props.projectName) {
       dispatch(setName(props.projectName));
     }
-  }, [accountNames, dispatch, props.accountUsername, props.projectName]);
+  }, []);
 
   // If projectAccount && projectName, generate account and projectID
   useEffect(() => {
     if (projectAccount && projectName) {
-      const chainID = BigNumber.from(publicRuntimeConfig.CHAIN_ID);
+      const chainID = publicRuntimeConfig.CHAIN_ID;
       const accountID = generateID(chainID, projectAccount);
-      setAccountID(accountID.toString());
+      setAccountID(accountID);
       
       const projectID = generateID(accountID, projectName);
       setProjectID(projectID);
@@ -135,7 +138,7 @@ export default function ManageProject(props: ManageProjectProps) {
         }
       }
     })();
-  }, [dispatch, projectID, props.accountUsername, props.projectName, valistCtx]);
+  }, [dispatch, projectID, props.accountUsername, props.projectName]);
 
   // Normalize projectMember data for ProjectPreview component
   useEffect(() => {
@@ -158,7 +161,7 @@ export default function ManageProject(props: ManageProjectProps) {
     if (projectImage.length > 0) {
       imgURL = await valistCtx.writeFile({ 
         path: projectImage[0].path, 
-        content: projectImage[0] 
+        content: projectImage[0],
       });
     } else {
       imgURL = currentImage;
@@ -167,7 +170,7 @@ export default function ManageProject(props: ManageProjectProps) {
     for (let i = 0; i < projectGallery.length; i++) {
       const url = await valistCtx.writeFile({
         path: projectGallery[i].path,
-        content: projectGallery[i]
+        content: projectGallery[i],
       });
       galleryItems.push({
         name: projectGallery[i].name,
@@ -175,6 +178,14 @@ export default function ManageProject(props: ManageProjectProps) {
         src: url,
       });
     };
+
+    if (youtubeUrl) {
+      galleryItems.push({
+        name: youtubeUrl,
+        type: 'youtube',
+        src: youtubeUrl,
+      });
+    }
 
     setTimeout(() => {
       // set artificial buffer for if upload is too quick, since react-hot-toast doesn't like when you call dismiss too fast
@@ -192,7 +203,8 @@ export default function ManageProject(props: ManageProjectProps) {
     project.gallery = galleryItems;
 
     console.log("Project Team", projectAccount);
-    console.log("Project Name", projectDisplayName);
+    console.log("Project Name", projectName);
+    console.log("Project Display Name", projectDisplayName);
     console.log("Project Members", projectMembers);
     console.log("Meta", project);
  
@@ -218,7 +230,7 @@ export default function ManageProject(props: ManageProjectProps) {
       } else {
         toastID = notify('pending');
         transaction = await valistCtx.createProject(
-          projectID,
+          accountID,
           projectName,
           project,
           projectMembers,
@@ -396,6 +408,7 @@ export default function ManageProject(props: ManageProjectProps) {
               projectGallery={projectGallery}
               youtubeUrl={youtubeUrl}
               view={formView}
+              setMainImage={setMainImage}
               setImage={setProjectImage}
               setGallery={setProjectGallery}
               addMember={addMember}
@@ -411,6 +424,7 @@ export default function ManageProject(props: ManageProjectProps) {
             projectAccount={projectAccount}
             projectDisplayName={projectDisplayName}
             projectImage={projectImage[0]}
+            mainImage={mainImage[0]}
             projectShortDescription={projectShortDescription}
             projectDescription={projectDescription}
             projectWebsite={projectWebsite}
@@ -418,6 +432,7 @@ export default function ManageProject(props: ManageProjectProps) {
             defaultImage={currentImage}
             projectGallery={projectGallery}
             projectAssets={projectAssets}
+            youtubeUrl={youtubeUrl}
             removeMember={removeMember}
           />
         </div>
