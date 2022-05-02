@@ -184,7 +184,7 @@ export const PROJECT_PROFILE_QUERY = gql`
       account {
         name
       }
-      releases(orderBy: blockTime, orderDirection: "asc") {
+      releases(orderBy: blockTime, orderDirection: "desc") {
         name
         metaURI
         blockTime
