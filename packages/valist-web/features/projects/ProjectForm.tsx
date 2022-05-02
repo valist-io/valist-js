@@ -120,7 +120,7 @@ export default function ProjectForm(props: ProjectFormProps) {
 
   // Handle form valid check
   useEffect(() => {
-    if (props.edit || (_name && validName && validMemberList)) {
+    if (props.edit || (_name && validName)) {
       setFormValid(true);
     } else {
       setFormValid(false);
@@ -239,7 +239,7 @@ const BasicInfoForm = (props: BasicInfoProps) => {
 
       {!props.edit && <div>
         <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-          Name (Cannot be changed)<span className="float-right"><Tooltip text='Immutable namespace for your project.' /></span>
+          Project Name. Cannot be changed.<span className="float-right"><Tooltip text='Immutable namespace for your project.' /></span>
         </label>
         <div className="mt-1">
           <input
@@ -341,7 +341,7 @@ const GraphicsForm = (props: GraphicFormProps) => {
       </div>
       <div>
         <label htmlFor="youtube" className="block text-sm font-medium text-gray-700">
-          YouTube URL (must paste)<span className="float-right"><Tooltip text='YouTube video.' /></span>
+          YouTube URL<span className="float-right"><Tooltip text='YouTube video.' /></span>
         </label>
         <div className="mt-1">
           <input
@@ -488,7 +488,7 @@ const PriceForm = (props: PriceFormProps) => {
     <form className="grid grid-cols-1 gap-y-6 sm:gap-x-8" action="#" method="POST">
       <div>
         <label htmlFor="price" className="block text-sm font-medium text-gray-700">
-          Price (in MATIC)  <span className="float-right"><Tooltip text='The price to mint/purchase the license in MATIC. ERC-20 payments coming soon!' /></span>
+          Price in MATIC  <span className="float-right"><Tooltip text='The price to mint/purchase the license in MATIC. ERC-20 payments coming soon!' /></span>
         </label>
         <div className="mt-1">
           <input
@@ -508,7 +508,7 @@ const PriceForm = (props: PriceFormProps) => {
 
       <div>
         <label htmlFor="limit" className="block text-sm font-medium text-gray-700">
-          Limit  <span className="float-right"><Tooltip text='The maximum number of licenses that can be created.' /></span>
+          Limit <span className="float-right"><Tooltip text='The maximum number of licenses that can be created.' /></span>
         </label>
         <div className="mt-1">
           <input
