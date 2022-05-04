@@ -14,9 +14,10 @@ import Tabs from '../../components/Tabs';
 import { Asset } from './ProjectGallery';
 import { generateID } from '@valist/sdk';
 import getConfig from 'next/config';
-import { BigNumber, BigNumberish, ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import { projectMetaChanged } from '../../utils/Validation';
-import { FileWithPath } from "file-selector";
+import { useListState } from '@mantine/hooks';
+import { FileList } from '@/components/Files/FileUpload';
 
 type Member = {
   id: string,
@@ -55,11 +56,11 @@ export default function ManageProject(props: ManageProjectProps) {
   const [accountID, setAccountID] = useState<string>('');
   const [previousMeta, setPreviousMeta] = useState<ProjectMeta>({});
   const [projectID, setProjectID] = useState<string>('');
-  const [mainImage, setMainImage] = useState<FileWithPath[]>([]);
-  const [projectImage, setProjectImage] = useState<FileWithPath[]>([]);
+  const [projectGallery, handleGallery] = useListState<FileList>([]);
+  const [mainImage, setMainImage] = useListState<FileList>([]);
+  const [projectImage, setProjectImage] = useListState<FileList>([]);
   const [currentImage, setCurrentImage] = useState<string>('');
   const [projectMembersParsed, setProjectMembersParsed] = useState<Member[]>([]);
-  const [projectGallery, setProjectGallery] = useState<FileWithPath[]>([]);
   const [projectAssets, setProjectAssets] = useState<Asset[]>([]);
   const youtubeUrl = useAppSelector(selectYouTubeUrl);
   const [membersChanged, setMembersChanged] = useState(0);
@@ -112,14 +113,32 @@ export default function ManageProject(props: ManageProjectProps) {
           projectData = await valistCtx.getProjectMeta(projectID);
           setPreviousMeta(projectData);
 
-          if (projectData.image) setCurrentImage(projectData.image);
           if (projectData.name) dispatch(setDisplayName(projectData.name));
           if (projectData.external_url) dispatch(setWebsite(projectData.external_url));
           if (projectData.short_description) dispatch(setShortDescription(projectData.short_description));
           if (projectData.description) dispatch(setDescription(projectData.description));
           if (projectData.type) dispatch(setType(projectData.type));
           if (projectData.tags) dispatch(setTags(projectData.tags));
-          if (projectData.gallery) setProjectAssets(projectData.gallery);
+
+          if (projectData.image) setCurrentImage(projectData.image);
+          if (projectData.gallery) {
+            projectData.gallery.map((item) => {
+              const galleryItem = {
+                name: item.name,
+                type: item.type,
+                src: item.src,
+              };
+              if (!projectGallery.includes(galleryItem)) {
+                handleGallery.append(galleryItem);
+              }
+            });
+          }
+
+          if (projectData.main_capsule) setMainImage.setState([{
+            src: projectData.main_capsule,
+            type: '',
+            name: projectData.main_capsule,
+          }]);
 
           const members = await valistCtx.getProjectMembers(projectID);
           if (members) dispatch(setMembers(members));
@@ -155,29 +174,18 @@ export default function ManageProject(props: ManageProjectProps) {
     if (!projectID || !valistCtx) return;
     let toastID = '';
     let imgURL = currentImage;
-    let galleryItems:Asset[] = (projectGallery.length !== 0) ? [] : projectAssets;
+    let galleryItems:Asset[] = (projectGallery.length !== 0) ? [] : [...projectAssets];
 
     const uploadToast = notify('text', 'Uploading files...');
     if (projectImage.length > 0) {
-      imgURL = await valistCtx.writeFile({ 
-        path: projectImage[0].path, 
-        content: projectImage[0],
+      imgURL = await valistCtx.writeFile({
+        // @ts-ignore
+        path: projectImage[0].src.path, 
+        content: projectImage[0].src,
       });
     } else {
       imgURL = currentImage;
     }
-
-    for (let i = 0; i < projectGallery.length; i++) {
-      const url = await valistCtx.writeFile({
-        path: projectGallery[i].path,
-        content: projectGallery[i],
-      });
-      galleryItems.push({
-        name: projectGallery[i].name,
-        type: projectGallery[i].type,
-        src: url,
-      });
-    };
 
     if (youtubeUrl) {
       galleryItems.push({
@@ -186,6 +194,29 @@ export default function ManageProject(props: ManageProjectProps) {
         src: youtubeUrl,
       });
     }
+
+    for (let i = 0; i < projectGallery.length; i++) {
+      if (typeof projectGallery[i].src === "object") {
+        const url = await valistCtx.writeFile({
+          // @ts-ignore
+          path: projectGallery[i].src.path,
+          content: projectGallery[i].src,
+        });
+
+        galleryItems.push({
+          name: projectGallery[i].name,
+          type: projectGallery[i].type,
+          src: url,
+        });
+      } else if (typeof projectGallery[i].src === "string") {
+        galleryItems.push({
+          name: projectGallery[i].name,
+          type: projectGallery[i].type,
+          // @ts-ignore
+          src: projectGallery[i].src,
+        });
+      }
+    };
 
     setTimeout(() => {
       // set artificial buffer for if upload is too quick, since react-hot-toast doesn't like when you call dismiss too fast
@@ -410,7 +441,7 @@ export default function ManageProject(props: ManageProjectProps) {
               view={formView}
               setMainImage={setMainImage}
               setImage={setProjectImage}
-              setGallery={setProjectGallery}
+              setGallery={handleGallery}
               addMember={addMember}
               submit={createProject}         
             />
@@ -423,8 +454,8 @@ export default function ManageProject(props: ManageProjectProps) {
             view={formView}
             projectAccount={projectAccount}
             projectDisplayName={projectDisplayName}
-            projectImage={projectImage[0]}
-            mainImage={mainImage[0]}
+            projectImage={(projectImage[0] && typeof projectImage[0].src === 'object') ? projectImage[0].src : null}
+            mainImage={(mainImage[0] && typeof mainImage[0].src === 'object') ? mainImage[0].src : null}
             projectShortDescription={projectShortDescription}
             projectDescription={projectDescription}
             projectWebsite={projectWebsite}

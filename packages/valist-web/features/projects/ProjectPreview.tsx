@@ -9,8 +9,8 @@ import ProjectListCard from "./ProjectListCard";
 import { useEffect, useState } from "react";
 import { FileWithPath } from "file-selector";
 import DicoveryItem from "../discovery/DiscoveryItem";
-import { setYouTubeUrl } from "./projectSlice";
 import { getYouTubeEmbedURL, getYouTubeID } from "../../utils/Youtube";
+import { FileList } from "@/components/Files/FileUpload";
 
 interface ProjectPreviewProps {
   projectAccount: string;
@@ -20,7 +20,7 @@ interface ProjectPreviewProps {
   projectDescription: string;
   projectWebsite: string;
   projectMembers: Member[];
-  projectGallery: FileWithPath[];
+  projectGallery: FileList[];
   projectAssets: Asset[];
   mainImage: FileWithPath | null;
   defaultImage?: string;
@@ -76,16 +76,26 @@ export default function ProjectPreview(props: ProjectPreviewProps) {
 
     props.projectGallery.map((item) => {
       console.log('fileInfo', item);
-      const url = URL.createObjectURL(item);
-      assets.push(
-        {
-          src: url,
-          type: item.type,
-          name: item.name,
-        },
-      );
-    });
 
+      if (typeof item.src === "object") {
+        const url = URL.createObjectURL(item.src);
+        assets.push(
+          {
+            src: url,
+            type: item.src.type,
+            name: item.src.name,
+          },
+        );
+      } else {
+        assets.push(
+          {
+            src: item.src,
+            type: item.type,
+            name: item.name,
+          },
+        );
+      }
+    });
     setGalleryAssets(assets);
   }, [props.projectGallery, props.youtubeUrl, youtubeEmbed]);
 

@@ -122,6 +122,7 @@ export const projectSlice = createSlice({
       state.royaltyAddress = '';
       state.description = defaultReadme;
       state.shortDescription = '';
+      state.youtubeUrl = '';
       state.website = '';
       state.members = [];
       state.type = '';

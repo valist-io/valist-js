@@ -2,14 +2,14 @@ import { generateID } from "@valist/sdk";
 import { BigNumberish } from "ethers";
 import { Fragment, useContext, useEffect, useState } from "react";
 import { useAppDispatch } from "../../app/hooks";
-import FileUpload from "../../components/Files/FileUpload";
+import FileUpload, { FileList } from "../../components/Files/FileUpload";
 import ImageUpload from "../../components/Images/ImageUpload";
 import Tooltip from "../../components/Tooltip";
-import { SetUseState } from "../../utils/Account/types";
 import { versionFilterRegex } from "../../utils/Validation";
 import ValistContext from "../valist/ValistContext";
 import { setDescription, setName, setProject, setTeam } from "./releaseSlice";
-import { FileWithPath } from 'file-selector';
+import { UseListStateHandler } from "@mantine/hooks/lib/use-list-state/use-list-state";
+import { SetUseState } from "@/utils/Account/types";
 
 interface PublishReleaseFormProps {
   teamNames: string[];
@@ -18,9 +18,9 @@ interface PublishReleaseFormProps {
   releaseTeam: string;
   releaseProject: string;
   releaseName: string;
-  releaseFiles: FileWithPath[];
+  releaseFiles: FileList[];
   setImage: SetUseState<File | null>;
-  setFiles: SetUseState<FileWithPath[]>;
+  setFiles: UseListStateHandler<FileList>;
   submit: () => void;
 }
 
@@ -155,7 +155,8 @@ Version tag: ${props.releaseName}
 
       <FileUpload 
         files={props.releaseFiles}
-        setFiles={props.setFiles}
+        setFiles={props.setFiles} 
+        fileView={"none"}     
       />
 
       <span className="w-full inline-flex rounded-md shadow-sm">

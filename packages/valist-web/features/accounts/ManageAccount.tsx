@@ -13,8 +13,9 @@ import Tabs from '../../components/Tabs';
 import { BigNumber } from 'ethers';
 import getConfig from 'next/config';
 import { generateID } from '@valist/sdk';
-import { FileWithPath } from 'file-selector';
 import { setAccount } from '../projects/projectSlice';
+import { FileList } from '@/components/Files/FileUpload';
+import { useListState } from '@mantine/hooks';
 
 type Member = {
   id: string,
@@ -43,7 +44,7 @@ export default function ManageAccount(props: EditAccountProps) {
   const accountMembers = useAppSelector(selectMembers);
 
   const [accountID, setAccountID] = useState<string | null>(null);
-  const [accountImage, setAccountImage] = useState<FileWithPath[]>([]);
+  const [accountImage, setAccountImage] = useListState<FileList>([]);
   const [currentImage, setCurrentImage] = useState<string>('');
   const [accountMembersParsed, setAccountMembersParsed] = useState<Member[]>([]);
   const [membersChanged, setMembersChanged] = useState(0);
@@ -119,9 +120,10 @@ export default function ManageAccount(props: EditAccountProps) {
     let imgURL = "";
 
     if (accountImage.length > 0) {
-      imgURL = await valistCtx.writeFile({ 
-        path: accountImage[0].path,
-        content: accountImage[0], 
+      imgURL = await valistCtx.writeFile({
+        // @ts-ignore
+        path: accountImage[0].src.path,
+        content: accountImage[0].src,
       });
     } else {
       imgURL = currentImage;
@@ -268,7 +270,7 @@ export default function ManageAccount(props: EditAccountProps) {
             accountDescription={accountDescription}
             accountDisplayName={accountDisplayName}
             accountUsername={accountUsername}
-            accountImage={(accountImage.length !== 0) ? accountImage[0] : null}
+            accountImage={(accountImage[0] && typeof accountImage[0].src === 'object') ? accountImage[0].src : null}
             accountMembers={accountMembersParsed}
             defaultImage={currentImage}
             removeMember={removeMember}

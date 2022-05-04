@@ -1,13 +1,13 @@
 import { Fragment, useContext, useEffect, useState } from "react";
 import { useAppDispatch } from "../../app/hooks";
-import FileUpload from "../../components/Files/FileUpload";
+import FileUpload, { FileList } from "../../components/Files/FileUpload";
 import Tooltip from "../../components/Tooltip";
 import { SetUseState } from "../../utils/Account/types";
 import { shortnameFilterRegex } from "../../utils/Validation";
 import ValistContext from "../valist/ValistContext";
 import Web3Context from "../valist/Web3Context";
 import { setDescription, setMembers, setDisplayName, setUsername, setWebsite } from "./teamSlice";
-import { FileWithPath } from 'file-selector';
+import { UseListStateHandler } from "@mantine/hooks/lib/use-list-state/use-list-state";
 
 interface CreateTeamFormProps {
   edit: boolean;
@@ -20,7 +20,7 @@ interface CreateTeamFormProps {
   accountMembers: string[];
   accountDescription: string;
   setView: SetUseState<string>;
-  setImage: SetUseState<FileWithPath[]>;
+  setImage: UseListStateHandler<FileList>;
   addMember: (address: string) => Promise<void>;
   submit: () => void;
 }
@@ -157,7 +157,7 @@ interface BasicInfoProps {
   submitText: string;
   loading: boolean;
   setView: SetUseState<string>;
-  setImage: SetUseState<FileWithPath[]>;
+  setImage: UseListStateHandler<FileList>;
   setCleanName: SetUseState<string>;
   setLoading: SetUseState<boolean>;
   _setName: SetUseState<string>;
@@ -169,7 +169,13 @@ const BasicInfoForm = (props: BasicInfoProps) => {
 
   return (
     <form className="grid grid-cols-1 gap-y-6 sm:gap-x-8" action="#" method="POST">
-      <FileUpload title={'Set Image'} setFiles={props.setImage} files={[]} />
+      <FileUpload 
+        title={'Set Image'} 
+        setFiles={props.setImage} 
+        files={[]} 
+        fileView={"none"}
+        fileNum={1} 
+      />
       {!props.edit && <div>
         <label htmlFor="name" className="block text-sm font-medium text-gray-700">
           Username (Cannot be changed) <span className="float-right"><Tooltip text='Immutable namespace for your account or account.' /></span>

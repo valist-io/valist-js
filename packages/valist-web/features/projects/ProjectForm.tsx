@@ -2,17 +2,17 @@ import { generateID } from "@valist/sdk";
 import { BigNumberish } from "ethers";
 import { Fragment, useContext, useEffect, useState } from "react";
 import { useAppDispatch } from "../../app/hooks";
-import FileUpload from "../../components/Files/FileUpload";
+import FileUpload, { FileList } from "../../components/Files/FileUpload";
 import Tooltip from "../../components/Tooltip";
 import { SetUseState } from "../../utils/Account/types";
-import { shortnameFilterRegex, youtubeRegex } from "../../utils/Validation";
+import { shortnameFilterRegex } from "../../utils/Validation";
 import ValistContext from "../valist/ValistContext";
 import Web3Context from "../valist/Web3Context";
 import { setDescription, setMembers, setDisplayName, setName, setShortDescription, setAccount, setWebsite, setPrice, setLimit, setRoyalty, setRoyaltyAddress, setYouTubeUrl } from "./projectSlice";
 import ProjectTagsInput from "./ProjectTagsInput";
 import ProjectTypeSelect from "./ProjectTypeSelect";
-import { FileWithPath } from "file-selector";
 import { getYouTubeID } from "../../utils/Youtube";
+import { UseListStateHandler } from "@mantine/hooks/lib/use-list-state/use-list-state";
 
 interface ProjectFormProps {
   edit: boolean,
@@ -31,13 +31,13 @@ interface ProjectFormProps {
   projectMembers: string[];
   projectType: string;
   projectTags: string[];
-  projectGallery: FileWithPath[];
+  projectGallery: FileList[];
   youtubeUrl: string;
   userAccounts: string[];
   view: string;
-  setMainImage: SetUseState<FileWithPath[]>;
-  setImage: SetUseState<FileWithPath[]>;
-  setGallery: SetUseState<FileWithPath[]>;
+  setMainImage: UseListStateHandler<FileList>;
+  setImage: UseListStateHandler<FileList>;
+  setGallery: UseListStateHandler<FileList>;
   addMember: (address: string) => Promise<void>;
   submit: () => void;
 }
@@ -173,7 +173,7 @@ export default function ProjectForm(props: ProjectFormProps) {
           royaltyAddress={props.royaltyAddress} 
         />;
       case 'Graphics':
-        return <GraphicsForm   
+        return <GraphicsForm
           galleryFiles={props.projectGallery}
           youtubeUrl={props.youtubeUrl}
           setGallery={props.setGallery}
@@ -212,7 +212,7 @@ interface BasicInfoProps {
   edit: boolean;
   cleanName: string;
   validName: boolean;
-  setImage: SetUseState<FileWithPath[]>;
+  setImage: UseListStateHandler<FileList>;
   setCleanName: SetUseState<string>;
   _setName: SetUseState<string>;
 }
@@ -222,7 +222,13 @@ const BasicInfoForm = (props: BasicInfoProps) => {
 
   return (
     <form className="grid grid-cols-1 gap-y-6 sm:gap-x-8" action="#" method="POST">
-      <FileUpload setFiles={props.setImage} title={"Project Profile Image"} files={[]} />
+      <FileUpload 
+        setFiles={props.setImage} 
+        title={"Project Profile Image"} 
+        files={[]} 
+        fileView={"none"}
+        fileNum={1} 
+      />
       {!props.edit && <div>
         <label htmlFor="projectType" className="block text-sm leading-5 font-medium text-gray-700">
           Account or Team <span className="float-right"><Tooltip text='The team where this project will be published.' /></span>
@@ -311,10 +317,10 @@ const BasicInfoForm = (props: BasicInfoProps) => {
 
 
 interface GraphicFormProps {
-  galleryFiles: FileWithPath[];
+  galleryFiles: FileList[];
   youtubeUrl: string;
-  setMainImage: SetUseState<FileWithPath[]>;
-  setGallery: SetUseState<FileWithPath[]>;
+  setMainImage: UseListStateHandler<FileList>;
+  setGallery: UseListStateHandler<FileList>;
 }
 
 const GraphicsForm = (props: GraphicFormProps) => {
@@ -334,12 +340,15 @@ const GraphicsForm = (props: GraphicFormProps) => {
   return (
     <div>
       <div className="mb-4">
-        <FileUpload setFiles={props.setMainImage} title={"Main Image (recommend 616px x 353px)"} files={[]} />
+        <FileUpload 
+          setFiles={props.setMainImage}
+          title={"Main Image (recommend 616px x 353px)"}
+          files={[]}
+          fileView={"none"}
+          fileNum={1}        
+        />
       </div>
-      <div className="mb-6">
-        <FileUpload setFiles={props.setGallery} title={"Screenshots & Videos (recommend 1280x720 or 1920x1080)"} files={[]} />
-      </div>
-      <div>
+      <div className="mb-2">
         <label htmlFor="youtube" className="block text-sm font-medium text-gray-700">
           YouTube URL<span className="float-right"><Tooltip text='YouTube video.' /></span>
         </label>
@@ -355,6 +364,14 @@ const GraphicsForm = (props: GraphicFormProps) => {
             placeholder="YouTube URL"
           />
         </div>
+      </div>
+      <div className="mb-4">
+        <FileUpload
+          setFiles={props.setGallery}
+          title={"Screenshots & Videos (recommend 1280x720 or 1920x1080)"} 
+          files={props.galleryFiles} 
+          fileView={"ordered"}
+        />
       </div>
     </div>
   );
@@ -461,13 +478,13 @@ const MembersForm = (props: MemebersFormProps) => {
             rounded-l-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-indigo-500 
             focus:border-indigo-500 sm:text-sm"
           />
-      <button
-        type="button"
-        onClick={() => props.addMember(member)}
-        className="-ml-px relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
-      >
-        Add
-      </button>
+          <button
+            type="button"
+            onClick={() => props.addMember(member)}
+            className="-ml-px relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+          >
+            Add
+          </button>
         </div>
       </div>}
     </form>

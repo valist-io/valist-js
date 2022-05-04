@@ -13,9 +13,10 @@ import { selectName, selectDescription, selectProject, selectTeam, setProject, s
 import { getProjectNames } from '../../utils/Apollo/normalization';
 import ReleasePreview from '../../features/releases/ReleasePreview';
 import PublishReleaseForm from '../../features/releases/PublishReleaseForm';
-import { BigNumber, BigNumberish } from 'ethers';
+import { BigNumberish } from 'ethers';
 import getConfig from 'next/config';
-import { FileWithPath } from 'file-selector';
+import { useListState } from '@mantine/hooks';
+import { FileList } from '@/components/Files/FileUpload';
 
 const PublishReleasePage: NextPage = () => {
   // Page State
@@ -35,7 +36,7 @@ const PublishReleasePage: NextPage = () => {
   const description = useAppSelector(selectDescription);
   
   const [projectID, setProjectID] = useState<BigNumberish | null>(null);
-  const [releaseFiles, setReleaseFiles] = useState<FileWithPath[]>([]);
+  const [releaseFiles, setReleaseFiles] = useListState<FileList>([]);
   const [availableProjects, setAvailableProjects] = useState<string[]>([]);
   const [releaseImage, setReleaseImage] = useState<File | null>(null);
 
@@ -103,8 +104,10 @@ const PublishReleasePage: NextPage = () => {
     console.log('files', releaseFiles);
     // map the files to a format IPFS can handle
     const files = releaseFiles.map(file => {
-      return { path: file.path, content: file };
+      // @ts-ignore
+      return { path: file.src.path, content: file };
     });
+    // @ts-ignore
     release.external_url = await valistCtx.writeFolder(files);
     dismiss(uploadToast);
   

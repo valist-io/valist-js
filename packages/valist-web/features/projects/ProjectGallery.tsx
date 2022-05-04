@@ -1,12 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
-
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 export type Asset= {
   name: string,
   src: string,
   type: string,
-  preview?: string,
 }
 
 interface ProjectGalleryProps {
@@ -14,7 +12,15 @@ interface ProjectGalleryProps {
 }
 
 export default function ProjectGallery(props: ProjectGalleryProps):JSX.Element {
-  const [currentAsset, setCurrentAsset] = useState<Asset>(props?.assets[0]);
+  const [currentAsset, setCurrentAsset] = useState<Asset| null>(null);
+
+  useEffect(() => {
+    if (props?.assets.length !== 0) {
+      setCurrentAsset(props?.assets[0]);
+    } else {
+      setCurrentAsset(null);
+    }
+  }, [props?.assets]);
 
   const renderElement = () => {
     if (currentAsset?.type.includes('image')) {
@@ -59,7 +65,7 @@ export default function ProjectGallery(props: ProjectGalleryProps):JSX.Element {
             <img 
               style={{ maxWidth: '100%', maxHeight: '100%' }}
               onClick={() => setCurrentAsset(asset)}
-              src={((asset?.type.includes('video') || asset?.type.includes('youtube')) && '/images/play-video.png/') || (asset.preview || asset.src)} 
+              src={((asset?.type.includes('video') || asset?.type.includes('youtube')) && '/images/play-video.png/') ||  asset.src} 
               alt={asset.name} 
             />
           </Fragment>
