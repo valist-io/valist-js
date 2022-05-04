@@ -21,7 +21,7 @@ describe('valist client', async function() {
 		await license.deployed();
 
 		const ipfs = create({ url: 'https://pin.valist.io' });
-		const valist = new Client(registry, license, ipfs, 'https://gateway-new.valist.io');
+		const valist = new Client(registry, license, ipfs, 'https://gateway.valist.io');
 
 		const address = await signer.getAddress();
 		const members = [address];
