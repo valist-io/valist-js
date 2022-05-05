@@ -51,8 +51,8 @@ export default function ManageProject(props: ManageProjectProps) {
       disabled: false,
     },
     { 
-    text: 'Graphics',
-    disabled: false,
+      text: 'Graphics',
+      disabled: false,
     },
   ]);
 
