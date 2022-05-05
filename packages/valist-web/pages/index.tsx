@@ -93,7 +93,8 @@ const Dashboard: NextPage = () => {
             userAccount={userAccount}
             setView={setView}
           />
-          <DashboardContent 
+          <DashboardContent
+            accountName={currentAccount} 
             userProjects={currentProjects}
             logs={logs}
             address={address}
@@ -105,7 +106,7 @@ const Dashboard: NextPage = () => {
           <div className='rounded-lg bg-white overflow-hidden shadow p-4 overflow-visible'>
             <div className='flex justify-center items-center'>
               <PublishButton account={currentAccount} disabled={isProjects} />
-              <CreateButton transactions={transactionActions}/>
+              <CreateButton accountName={currentAccount} transactions={transactionActions}/>
             </div>
           </div>
           <LogCard logs={logs.length !== 0 ? logs : initialActivity} />

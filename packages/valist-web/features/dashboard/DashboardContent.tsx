@@ -5,6 +5,7 @@ import EmptyProjectList from '../projects/EmptyProjects';
 import EmptyTeams from '../accounts/EmptyAccounts';
 
 interface DashboardContentProps {
+  accountName: string;
   userProjects: Project[]
   logs: Log[];
   address: string,
@@ -17,7 +18,7 @@ export default function DahsboardContent(props: DashboardContentProps): JSX.Elem
       case "EmptyTeams": 
         return <EmptyTeams />;
       case 'EmptyProjects':
-        return <EmptyProjectList />;
+        return <EmptyProjectList accountName={props.accountName} />;
       case 'Projects':
         return <ProjectList linksDisabled={false} projects={props.userProjects} />;
       case 'Activity':
