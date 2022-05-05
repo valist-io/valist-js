@@ -26,10 +26,6 @@ interface FileUploadProps {
 export default function FileUpload(props: FileUploadProps) {
   const theme = useMantineTheme();
 
-  const removeFile = (index: number) => {
-    props.setFiles.remove(index);
-  };
-
   const handleFiles = (files: File[]) => {
     if (props.fileNum === 1) {
       files.map((file) => {
@@ -50,21 +46,28 @@ export default function FileUpload(props: FileUploadProps) {
     }
   };
 
-  const fields = props.files.map((file, index) => (
-    <Draggable key={index} index={index} draggableId={index.toString()}>
-      {(provided) => (
-        <Group ref={provided.innerRef} mt="xs" {...provided.draggableProps}>
-          {(props.fileView === 'ordered') 
-            && <Center {...provided.dragHandleProps}>
-                <GripVertical size={18} />
-              </Center>
-          }
-          <div style={{ maxWidth: 275 }} className="overflow-hidden">{ (typeof file.src === "object") ? file.src.path : file.src }</div>
-          <XIcon onClick={() => removeFile(index)} style={{ strokeWidth: 3 }} height={30} width={30} />
-        </Group>
-      )}
-    </Draggable>
-  ));
+  const FileListView = () => {
+    switch (props.fileView) {
+      case "ordered":
+        return (
+          <OrderedList 
+            files={props.files} 
+            setFiles={props.setFiles} 
+          />
+        );
+      case 'tree':
+        return (
+          <div></div>
+        );
+      default:
+        return (
+          <DefaultList
+            files={props.files} 
+            setFiles={props.setFiles} 
+          />
+      );
+    }
+  };
 
   return (
     <div>
@@ -75,22 +78,8 @@ export default function FileUpload(props: FileUploadProps) {
         <Dropzone onDrop={(files) => handleFiles(files)}>
           {(status) => dropzoneChildren(status, theme)}
         </Dropzone>
-        <DragDropContext
-          onDragEnd={({ destination, source }) =>
-            // @ts-ignore
-            props.setFiles.reorder({ from: source.index, to: destination?.index })
-          }
-        >
-          <Droppable droppableId="dnd-list" direction="vertical">
-            {(provided) => (
-              <div {...provided.droppableProps} ref={provided.innerRef}>
-                {fields}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
       </div>
+      {FileListView()}
     </div>
   );
 }
@@ -104,3 +93,62 @@ export const dropzoneChildren = (status: DropzoneStatus, theme: MantineTheme) =>
     </div>
   </Group>
 );
+
+interface OrderedListProps {
+  files: FileList[];
+  setFiles: UseListStateHandler<FileList>;
+}
+
+const OrderedList = (props: OrderedListProps) => {
+  const fields = props.files.map((file, index) => (
+    <Draggable key={index} index={index} draggableId={index.toString()}>
+      {(provided) => (
+        <Group ref={provided.innerRef} mt="xs" {...provided.draggableProps}>
+          <Center {...provided.dragHandleProps}>
+            <GripVertical size={18} />
+          </Center>
+          <div style={{ maxWidth: 275 }} className="overflow-hidden">{ (typeof file.src === "object") ? file.src.path : file.src }</div>
+          <XIcon onClick={() => props.setFiles.remove(index)} style={{ strokeWidth: 3 }} height={30} width={30} />
+        </Group>
+      )}
+    </Draggable>
+  ));
+
+  return (
+      <DragDropContext
+        onDragEnd={({ destination, source }) =>
+          // @ts-ignore
+          props.setFiles.reorder({ from: source.index, to: destination?.index })
+        }
+      >
+        <Droppable droppableId="dnd-list" direction="vertical">
+          {(provided) => (
+            <div {...provided.droppableProps} ref={provided.innerRef}>
+              {fields}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
+  );
+};
+
+interface DefaultListProps {
+  files: FileList[];
+  setFiles: UseListStateHandler<FileList>;
+}
+
+const DefaultList = (props: DefaultListProps) => {
+  return (
+    <ul className='py-2'>
+      {props.files && props.files.map((file, index) => (
+        <li className="flex justify-between py-1 column-gap-5" key={(typeof file.src === "object") ? file.src.path : file.src}>
+          <div className="overflow-hidden">{ (typeof file.src === "object") ? file.src.path : file.src }</div>
+          <div className="flex align-middle">
+            <XIcon onClick={() => props.setFiles.remove(index)} style={{ strokeWidth: 3 }} height={30} width={30} />
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+};

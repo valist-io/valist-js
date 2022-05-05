@@ -101,13 +101,15 @@ const PublishReleasePage: NextPage = () => {
 		release.description = description;
     
     const uploadToast = notify('text', 'Uploading files...');
-    console.log('files', releaseFiles);
+
     // map the files to a format IPFS can handle
-    const files = releaseFiles.map(file => {
+    const files: { path: string, content: File }[] = [];
+    
+    releaseFiles.map(file => {
       // @ts-ignore
-      return { path: file.src.path, content: file };
+      files.push({ path: file.src.path, content: file.src });
     });
-    // @ts-ignore
+
     release.external_url = await valistCtx.writeFolder(files);
     dismiss(uploadToast);
   
