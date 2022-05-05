@@ -161,7 +161,7 @@ export default function ManageAccount(props: EditAccountProps) {
       await transaction.wait();
 
       // Inject created account/account into global state
-      dispatch(setAccountNames([...accountNames, accountDisplayName]));
+      dispatch(setAccountNames([...accountNames, accountUsername]));
       dispatch(setAccount(accountUsername));
 
       dismiss(toastID);
