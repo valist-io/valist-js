@@ -39,6 +39,7 @@ const PublishReleasePage: NextPage = () => {
   const [releaseFiles, setReleaseFiles] = useListState<FileList>([]);
   const [availableProjects, setAvailableProjects] = useState<string[]>([]);
   const [releaseImage, setReleaseImage] = useState<File | null>(null);
+  const [isDefaults, setIsDefaults] = useState<boolean>(false);
 
   let incomingAccount = (router.query.account as string | undefined);
   let incomingProject = (router.query.project as string | undefined);
@@ -59,14 +60,25 @@ const PublishReleasePage: NextPage = () => {
 
   // On page load set releaseAccount from url or from first item in list of user accounts
   useEffect(() => {
-    dispatch(setTeam(incomingAccount || accountNames[0]));
+    if (incomingAccount && accounts && !isDefaults) {
+      dispatch(setTeam(incomingAccount || accountNames[0]));
+      const projectNames = getProjectNames(accounts, incomingAccount);
 
-    if (incomingAccount) {
-       const projectNames = getProjectNames(accounts, incomingAccount);
-       setAvailableProjects(projectNames);
-       dispatch(setProject(incomingProject || projectNames[0] || ''));
+      console.log('projectNames', projectNames);
+      setAvailableProjects(projectNames);
+      dispatch(setProject(incomingProject || projectNames[0] || ''));
+      setIsDefaults(true);
     }
-  }, []);
+  }, [accounts]);
+  
+  // If the selected releaseAccount changes set the projectNames under that account
+  useEffect(() => {
+    if (account && accounts && isDefaults) {
+      const projectNames = getProjectNames(accounts, account);
+      setAvailableProjects(projectNames);
+      dispatch(setProject(projectNames[0] || ''));
+    }
+  }, [account, accountNames]);
 
   // If projectAccount && projectName, generate account and projectID
   useEffect(() => {
@@ -77,15 +89,6 @@ const PublishReleasePage: NextPage = () => {
       setProjectID(projectID);
     }
   }, [project, publicRuntimeConfig.CHAIN_ID]);
-
-  // If the selected releaseTeam changes set the projectNames under that team
-  useEffect(() => {
-    if (account) {
-      const projectNames = getProjectNames(accounts, account);
-      setAvailableProjects(projectNames);
-      dispatch(setProject(projectNames[0] || ''));
-    }
-  }, [account, accounts, dispatch, incomingAccount]);
 
   const createRelease = async () => {
     if (!projectID || !valistCtx) return;

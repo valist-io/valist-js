@@ -71,6 +71,8 @@ Version tag: ${props.releaseName}
     }
   }, [_name, validName]);
 
+  console.log('props.releaseProject', props.releaseProject);
+
   return (
     <form className="grid grid-cols-1 gap-y-6 sm:gap-x-8" action="#" method="POST">
       <ImageUpload setImage={props.setImage} text={'Set Release Image'} />
@@ -79,17 +81,12 @@ Version tag: ${props.releaseName}
         text-gray-700">
           Team <span className="float-right"><Tooltip text='The team where this release will be published.' /></span>
         </label>
-        <select onChange={(e) => {dispatch(setTeam(e.target.value));} }
+        <select value={props.releaseTeam} onChange={(e) => {dispatch(setTeam(e.target.value));} }
         id="projectType" className="mt-1 form-select block w-full pl-3 pr-10 py-2
         text-base leading-6 border-gray-300 focus:outline-none focus:shadow-outline-blue
         focus:border-blue-300 sm:text-sm sm:leading-5">
           {props.teamNames.map((teamName: string) => (
-            <Fragment key={teamName}>
-              {
-                (teamName === props.releaseTeam) ? 
-                  <option selected={true} value={teamName}>{teamName}</option> : <option value={teamName}>{teamName}</option>
-              }
-            </Fragment>
+            <option key={teamName} value={teamName}>{teamName}</option>
           ))}
         </select>
       </div>
@@ -99,17 +96,12 @@ Version tag: ${props.releaseName}
         text-gray-700">
           Project <span className="float-right"><Tooltip text='The project where this release will be published.' /></span>
         </label>
-        <select onChange={(e) => {dispatch(setProject(e.target.value));}}
+        <select value={props.releaseProject} onChange={(e) => {dispatch(setProject(e.target.value));}}
         id="projectType" className="mt-1 form-select block w-full pl-3 pr-10 py-2
         text-base leading-6 border-gray-300 focus:outline-none focus:shadow-outline-blue
         focus:border-blue-300 sm:text-sm sm:leading-5">
           {props.projectNames.map((name: string) => (
-            <Fragment key={name}>
-              {
-                (name === props.releaseProject) ? 
-                  <option selected={true} value={name}>{name}</option> : <option value={name}>{name}</option>
-              }
-            </Fragment>
+            <option key={name} value={name}>{name}</option>
           ))}
         </select>
       </div>
