@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { Fragment, useEffect, useState } from "react";
+import { getYouTubeEmbedURL, getYouTubeID } from "../../utils/Youtube";
 
 export type Asset= {
   name: string,
@@ -43,7 +44,7 @@ export default function ProjectGallery(props: ProjectGalleryProps):JSX.Element {
       return (
         <iframe
           width="100%"
-          src={currentAsset.src} 
+          src={getYouTubeEmbedURL(getYouTubeID(currentAsset.src) || '')} 
           title="YouTube video player"
           frameBorder="0" 
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 

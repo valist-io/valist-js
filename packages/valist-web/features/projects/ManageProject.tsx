@@ -37,6 +37,24 @@ export default function ManageProject(props: ManageProjectProps) {
   const router = useRouter();
   const [formView, setFormView] = useState('Basic Info');
   const { publicRuntimeConfig } = getConfig();
+  const [tabs, handleTabs] = useListState<{text: string, disabled: boolean}>([
+    { 
+      text: 'Basic Info',
+      disabled: false,
+    },
+    { 
+      text: 'Descriptions',
+      disabled: false,
+    },
+    { 
+      text: 'Members',
+      disabled: false,
+    },
+    { 
+    text: 'Graphics',
+    disabled: false,
+    },
+  ]);
 
   // Project State
   const projectAccount = useAppSelector(selectAccount);
@@ -384,35 +402,11 @@ export default function ManageProject(props: ManageProjectProps) {
       dismiss(toastID);
     }
   };
-
-  // Set page tabs
-  const PageTabs = [        
-    { 
-      text: 'Basic Info',
-      disabled: false,
-    },
-    { 
-      text: 'Descriptions',
-      disabled: false,
-    },
-    { 
-      text: 'Pricing',
-      disabled: false,
-    },
-    { 
-      text: 'Members',
-      disabled: false,
-    },
-    { 
-    text: 'Graphics',
-    disabled: false,
-    },
-  ];
   
   return (
     <div>
       <div className='border-b'>
-        <Tabs setView={setFormView} view={formView} tabs={PageTabs} />
+        <Tabs setView={setFormView} view={formView} tabs={tabs} />
       </div>
       <div className="grid grid-cols-1 gap-4 items-start gap-y-6 lg:grid-cols-12 lg:gap-8">
       {/* Right Column */}
