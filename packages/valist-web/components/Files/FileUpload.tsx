@@ -19,6 +19,7 @@ interface FileUploadProps {
   title?: string;
   size?: number;
   fileNum?: number;
+  multiple?: boolean;
   fileView: 'ordered' | 'tree' | 'none';
   setFiles: UseListStateHandler<FileList>;
 }
@@ -27,7 +28,7 @@ export default function FileUpload(props: FileUploadProps) {
   const theme = useMantineTheme();
 
   const handleFiles = (files: File[]) => {
-    if (props.fileNum === 1) {
+    if (!props.multiple) {
       files.map((file) => {
         props.setFiles.setState([{
           src: file,
@@ -37,11 +38,22 @@ export default function FileUpload(props: FileUploadProps) {
       });
     } else {
       files.map((file) => {
-        props.setFiles.append({
+        const newFile = {
           src: file,
           type: file.type,
           name: file.name,
+        };
+
+        let found = false;
+        props.files.map((current) => {
+          if (current.name === file.name) {
+            found = true;
+          }
         });
+
+        if (!found) {
+          props.setFiles.append(newFile);
+        }
       });
     }
   };
@@ -75,7 +87,7 @@ export default function FileUpload(props: FileUploadProps) {
         {props.title || 'Files'}
       </label>
       <div className="mt-1 sm:mt-0 sm:col-span-2">
-        <Dropzone onDrop={(files) => handleFiles(files)}>
+        <Dropzone multiple={props.multiple} onDrop={(files) => handleFiles(files)}>
           {(status) => dropzoneChildren(status, theme)}
         </Dropzone>
       </div>

@@ -174,7 +174,7 @@ const BasicInfoForm = (props: BasicInfoProps) => {
         setFiles={props.setImage} 
         files={[]} 
         fileView={"none"}
-        fileNum={1} 
+        multiple={false}
       />
       {!props.edit && <div>
         <label htmlFor="name" className="block text-sm font-medium text-gray-700">

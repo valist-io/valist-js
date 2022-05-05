@@ -1,6 +1,6 @@
 import { generateID } from "@valist/sdk";
 import { BigNumberish } from "ethers";
-import { Fragment, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useAppDispatch } from "../../app/hooks";
 import FileUpload, { FileList } from "../../components/Files/FileUpload";
 import ImageUpload from "../../components/Images/ImageUpload";
@@ -148,7 +148,8 @@ Version tag: ${props.releaseName}
       <FileUpload 
         files={props.releaseFiles}
         setFiles={props.setFiles} 
-        fileView={"none"}     
+        fileView={"none"}
+        multiple={true}     
       />
 
       <span className="w-full inline-flex rounded-md shadow-sm">

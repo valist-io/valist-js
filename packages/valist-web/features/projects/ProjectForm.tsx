@@ -227,7 +227,7 @@ const BasicInfoForm = (props: BasicInfoProps) => {
         title={"Project Profile Image"} 
         files={[]} 
         fileView={"none"}
-        fileNum={1} 
+        multiple={false}
       />
       {!props.edit && <div>
         <label htmlFor="projectType" className="block text-sm leading-5 font-medium text-gray-700">
@@ -344,8 +344,8 @@ const GraphicsForm = (props: GraphicFormProps) => {
           setFiles={props.setMainImage}
           title={"Main Image (recommend 616px x 353px)"}
           files={[]}
-          fileView={"none"}
-          fileNum={1}        
+          fileView={"none"} 
+          multiple={false}    
         />
       </div>
       <div className="mb-2">
@@ -371,6 +371,7 @@ const GraphicsForm = (props: GraphicFormProps) => {
           title={"Screenshots & Videos (recommend 1280x720 or 1920x1080)"} 
           files={props.galleryFiles} 
           fileView={"ordered"}
+          multiple={true}
         />
       </div>
     </div>
