@@ -13,11 +13,15 @@ const AppContainer = dynamic(
 
 function ValistApp({ Component, pageProps }: AppProps) {
   return (
+    // @ts-ignore
     <Provider store={store}>
       <ApolloProvider client={client}>
-        <AppContainer>
-          <Component {...pageProps} />
-        </AppContainer>
+        { // @ts-ignore 
+          <AppContainer>
+          { // @ts-ignore
+            <Component {...pageProps} />
+          }
+        </AppContainer>}
       </ApolloProvider>
     </Provider>
   );

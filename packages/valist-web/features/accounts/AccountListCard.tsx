@@ -1,8 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 import React, { useContext, useEffect, useState } from 'react';
 import { notify } from '../../utils/Notifications';
-import { TeamMeta } from '../../utils/Valist/types';
 import AddressIdenticon from '../../components/Identicons/AddressIdenticon';
+import { AccountMeta } from '@valist/sdk';
 
 type TeamListCardProps = {
   text?: string;
@@ -12,7 +12,7 @@ type TeamListCardProps = {
 };
 
 export default function TeamListCard({ text, image, teamName, metaURI }: TeamListCardProps): JSX.Element {
-  let [ meta, setMeta ] = useState<TeamMeta>({
+  let [ meta, setMeta ] = useState<AccountMeta>({
     image: '',
   });
 

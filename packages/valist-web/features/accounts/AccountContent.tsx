@@ -1,6 +1,6 @@
 import { Member, Project } from '../../utils/Apollo/types';
 import ProjectMemberList from '../projects/ProjectMemberList';
-import ProjectList from './TeamProjectList';
+import ProjectList from './AccountProjectList';
 
 interface TeamContentProps {
   view: string,
@@ -15,7 +15,7 @@ export default function TeamContent(props: TeamContentProps): JSX.Element {
       id: "test1",
       name: "project1",
       metaURI: "https://gateway.valist.io/ipfs/QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
-      team: {
+      account: {
         name: props.username,
       },
     },
@@ -23,7 +23,7 @@ export default function TeamContent(props: TeamContentProps): JSX.Element {
       id: "test2",
       name: "project2",
       metaURI: "https://gateway.valist.io/ipfs/QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
-      team: {
+      account: {
         name: props.username,
       },
     },
@@ -31,7 +31,7 @@ export default function TeamContent(props: TeamContentProps): JSX.Element {
       id: "test3",
       name: "project3",
       metaURI: "https://gateway.valist.io/ipfs/QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
-      team: {
+      account: {
         name: props.username,
       },
     },
@@ -39,7 +39,7 @@ export default function TeamContent(props: TeamContentProps): JSX.Element {
       id: "test4",
       name: "project4",
       metaURI: "https://gateway.valist.io/ipfs/QmWgnkpxbyzSA97Kmzdkm87z4XZKMjPwWbwovGz3raVwRt",
-      team: {
+      account: {
         name: props.username,
       },
     },

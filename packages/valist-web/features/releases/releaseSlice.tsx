@@ -36,11 +36,18 @@ export const releaseSlice = createSlice({
     setLicenses: (state, action: PayloadAction<string[]>) => {
       state.licenses = action.payload;
     },
+    clear: (state) => {
+      state.name = '';
+      state.team = '';
+      state.project = '';
+      state.licenses = [];
+      state.description = '';
+    },
   },
 });
 
 export const { 
-  setTeam, setProject, setName, setDescription, setLicenses,
+  setTeam, setProject, setName, setDescription, setLicenses, clear,
 } = releaseSlice.actions;
 export const selectTeam = (state: RootState) => state.release.team;
 export const selectProject = (state: RootState) => state.release.project;

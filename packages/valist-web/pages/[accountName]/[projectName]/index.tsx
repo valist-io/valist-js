@@ -2,14 +2,13 @@ import { useQuery } from "@apollo/client";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import Layout from "../../../components/Layouts/Main";
-import { BigNumberish, ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import ProjectActions from "../../../features/projects/ProjectActions";
 import { PROJECT_PROFILE_QUERY } from "../../../utils/Apollo/queries";
-import { Member, Release } from "../../../utils/Apollo/types";
+import { Log, Member, Release } from "../../../utils/Apollo/types";
 import { ProjectMeta, ReleaseMeta } from "../../../utils/Valist/types";
 import parseError from "../../../utils/Errors";
 import LogCard from "../../../features/logs/LogCard";
-import { getProjectID } from "../../../utils/Valist";
 import { dismiss, notify } from "../../../utils/Notifications";
 import ValistContext from "../../../features/valist/ValistContext";
 import { useAppSelector } from "../../../app/hooks";
@@ -18,24 +17,27 @@ import ProjectProfileCard from "../../../features/projects/ProjectProfileCard";
 import ProjectMetaCard from "../../../features/projects/ProjectMetaCard";
 import ProjectContent from "../../../features/projects/ProjectProfileContent";
 import ProjectProfileCardActions from "../../../features/projects/ProjectProfileCardActions";
+import getConfig from "next/config";
+import { generateID } from "@valist/sdk";
 
 export default function ProjectPage():JSX.Element {
+  const { publicRuntimeConfig } = getConfig();
   const router = useRouter();
-  const teamName = `${router.query.teamName}`;
+  const accountName = `${router.query.accountName}`;
   const projectName = `${router.query.projectName}`;
   const valistCtx = useContext(ValistContext);
   const accounts = useAppSelector(selectAccounts);
   const address = useAppSelector(selectAddress);
   const [projectID, setProjectID] = useState<string>('');
   const { data, loading, error } = useQuery(PROJECT_PROFILE_QUERY, {
-    variables: { project: projectID },
+    variables: { projectID: projectID },
   });
   const [version, setVersion] = useState<string>('');
   const [view, setView] = useState<string>('Readme');
-  const [licensePrice, setLicensePrice] = useState<BigNumberish | null>(null);
+  const [licensePrice, setLicensePrice] = useState<string>('0');
   const [projectMeta, setProjectMeta] = useState<ProjectMeta>({
     image: '',
-    name: 'loading',
+    name: '',
     description: '# Not Found',
     external_url: '',
   });
@@ -67,21 +69,14 @@ export default function ProjectPage():JSX.Element {
     },
   ];
   const [isMember, setIsMember] = useState(false);
+  const [logs, setLogs] = useState<Log[]>([]);
 
   useEffect(() => {
-    const _getProjectID = async () => {
-      if (teamName !== 'undefined') {
-        try {
-          const _projectID = getProjectID(teamName, projectName);
-          setProjectID(_projectID);
-        } catch(err) {
-          notify('error', String(err));
-          console.log("Failed to fetch projectID.", err);
-        }
-      }
-    };
-    _getProjectID();
-  }, [teamName, projectName]);
+    const chainID = BigNumber.from(publicRuntimeConfig.CHAIN_ID);
+    const accountID = generateID(chainID, accountName);
+    const projectID = generateID(accountID, projectName);
+    setProjectID(projectID.toString());
+  }, [publicRuntimeConfig.CHAIN_ID, accountName, projectName]);
 
   useEffect(() => {
     const fetchReleaseMeta = async (release: Release) => {
@@ -92,7 +87,7 @@ export default function ProjectPage():JSX.Element {
           setReleaseMeta(metaJson);
         }
       } catch(err) {
-        notify('error', String(err));
+        notify('error', "Failed to fetch release metadata.");
         console.log("Failed to fetch release metadata.", err);
       }
     };
@@ -102,7 +97,7 @@ export default function ProjectPage():JSX.Element {
         const projectJson = await fetch(metaURI).then(res => res.json());
         setProjectMeta(projectJson);
       } catch(err) {
-        notify('error', String(err));
+        notify('error', "Failed to fetch project metadata.");
         console.log("Failed to fetch project metadata.", err);
       }
     };
@@ -111,6 +106,7 @@ export default function ProjectPage():JSX.Element {
       setMembers(data?.projects[0]?.members);
       setReleases(data?.projects[0]?.releases);
       setVersion(data?.projects[0]?.releases[0]?.name);
+      setLogs(data?.projects[0]?.logs);
       fetchReleaseMeta(data?.projects[0]?.releases[0]);
 
       if (data?.projects[0]?.metaURI !== '') {
@@ -121,25 +117,21 @@ export default function ProjectPage():JSX.Element {
 
   useEffect(() => {
     (async () => {
-      if (releaseMeta.licenses && releaseMeta.licenses[0]) {
-        const licenseName = releaseMeta.licenses[0];
-        const licenseID = await valistCtx.getLicenseID(projectID, licenseName);
-        const price = await valistCtx.getLicensePrice(teamName, projectName, licenseName);
+      if (valistCtx && projectID) {
+        const price = await valistCtx.getProductPrice(projectID);
         setLicensePrice(ethers.utils.formatEther(price));
 
-        // @ts-ignore @TODO expose from SDK interface
-        let balance = await valistCtx.license.balanceOf(
-          address, licenseID,
-        );
-
-        setLicenseBalance(Number(balance));
+        if (address !== '0x0') {
+          let balance = await valistCtx.getProductBalance(address, projectID);
+          setLicenseBalance(Number(balance));
+        }
       }
     })();
-  }, [address, projectID, releaseMeta.licenses]);
+  }, [address, projectID, valistCtx]);
 
   useEffect(() => {
-    if (teamName && projectName) {
-       const profileAccount = accounts[teamName];
+    if (accountName && projectName) {
+       const profileAccount = accounts[accountName];
        
        if (profileAccount) {
         profileAccount.map((project) => {
@@ -147,16 +139,14 @@ export default function ProjectPage():JSX.Element {
         });
        }
     }
-  }, [accounts, projectName, teamName]);
+  }, [accounts, projectName, accountName]);
 
   const mintLicense = async () => {
-    if (releaseMeta.licenses && releaseMeta.licenses[0] && address !== '0x0') {
+    if ( valistCtx && projectID && address !== '0x0') {
       let toastID = '';
       try {
-        const transaction = await valistCtx.mintLicense(
-          teamName,
-          projectName,
-          releaseMeta.licenses[0],
+        const transaction = await valistCtx.purchaseProduct(
+          projectID,
           address,
         );
         toastID = notify('transaction', transaction.hash);
@@ -178,7 +168,7 @@ export default function ProjectPage():JSX.Element {
             view={view}
             setView={setView}
             tabs={tabs}
-            teamName={teamName}
+            teamName={accountName}
             projectName={projectMeta?.name || projectName} 
             projectImg={projectMeta.image ? projectMeta.image : '' }
           />
@@ -188,12 +178,14 @@ export default function ProjectPage():JSX.Element {
             projectMeta={projectMeta}
             releaseMeta={releaseMeta}
             view={view}
-            teamName={teamName}
-            members={members} />
+            teamName={accountName}
+            members={members}
+            logs={logs}
+          />
         </div>
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
           <ProjectActions
-            teamName={teamName}
+            teamName={accountName}
             projectName={projectName}
             showAll={false}
             releases={releases}
@@ -202,16 +194,16 @@ export default function ProjectPage():JSX.Element {
             mintLicense={mintLicense} 
             licenseBalance={licenseBalance}         
           />
-          {isMember && <ProjectProfileCardActions accountName={teamName} projectName={projectName} />}
+          {isMember && <ProjectProfileCardActions accountName={accountName} projectName={projectName} />}
           <ProjectMetaCard
-            version={version} 
-            teamName={teamName}
+            version={version}
+            teamName={accountName}
             donate={() => {}}
             memberCount={members.length}
             projectName={projectName} 
             projectMeta={projectMeta}
           />
-          <LogCard team={teamName} project={projectName} />
+          <LogCard logs={logs} />
         </div>
       </div>
     </Layout>

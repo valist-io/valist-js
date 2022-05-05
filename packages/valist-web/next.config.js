@@ -19,6 +19,7 @@ const nextConfig = {
     if (!options.isServer) {
       // polyfill events on browser. since webpack5, polyfills are not automatically included
       config.resolve.fallback.events = require.resolve('events/');
+      config.resolve.fallback.fs = false;
     }
     config.plugins.push(new options.webpack.IgnorePlugin({ resourceRegExp: /^electron$/ }));
     return config;

@@ -37,7 +37,7 @@ const AddressPage: NextPage = () => {
         {/* Right column */}
         <div className="grid grid-cols-1 gap-4">
           {/* Recent Activity */}
-          <LogCard address={address}/>
+          <LogCard logs={[]} />
         </div>
       </div>
     </Layout>

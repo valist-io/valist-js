@@ -1,7 +1,8 @@
+import { AccountMeta } from '@valist/sdk';
 import React from 'react';
-import { TeamMeta } from '../../utils/Valist/types';
+
 interface TeamMetaCardProps {
-  teamMeta: TeamMeta,
+  teamMeta: AccountMeta,
 }
 
 export default function TeamMetaCard(props: TeamMetaCardProps) {

@@ -1,24 +1,26 @@
-import { Fragment, useContext, useEffect, useState } from "react";
+import { generateID } from "@valist/sdk";
+import { BigNumberish } from "ethers";
+import { useContext, useEffect, useState } from "react";
 import { useAppDispatch } from "../../app/hooks";
-import FileUpload from "../../components/Files/FileUpload";
+import FileUpload, { FileList } from "../../components/Files/FileUpload";
 import ImageUpload from "../../components/Images/ImageUpload";
 import Tooltip from "../../components/Tooltip";
-import { SetUseState } from "../../utils/Account/types";
 import { versionFilterRegex } from "../../utils/Validation";
 import ValistContext from "../valist/ValistContext";
-import { setDescription, setLicenses, setName, setProject, setTeam } from "./releaseSlice";
+import { setDescription, setName, setProject, setTeam } from "./releaseSlice";
+import { UseListStateHandler } from "@mantine/hooks/lib/use-list-state/use-list-state";
+import { SetUseState } from "@/utils/Account/types";
 
 interface PublishReleaseFormProps {
   teamNames: string[];
+  projectID: BigNumberish | null;
   projectNames: string[];
   releaseTeam: string;
   releaseProject: string;
   releaseName: string;
-  releaseLicense: string;
-  releaseLicenses: string[];
-  releaseFiles: File[];
+  releaseFiles: FileList[];
   setImage: SetUseState<File | null>;
-  setFiles: SetUseState<File[]>;
+  setFiles: UseListStateHandler<FileList>;
   submit: () => void;
 }
 
@@ -43,38 +45,22 @@ Confirmation: You are about to publish "${props.releaseName}" with the following
 Team name: ${props.releaseTeam}
 Project name: ${props.releaseProject}
 Version tag: ${props.releaseName}
-${props.releaseLicense && `Release license: ${props.releaseLicense}` || ''}
 `);
       props.submit();
     }
   };
 
-  const handleLicenseList = (text: string) => {
-    const licenses = [];
-    if (text !== '') {
-      licenses.push(text);
-    }
-
-    dispatch(setLicenses(licenses));
-  };
-
   useEffect(() => {
-    const checkReleaseName = async (releaseName: string) => {
-      try {
-        await valistCtx.getReleaseMetaURI(props.releaseTeam, props.releaseProject, releaseName);
-      } catch (err: any) {
-        if (JSON.stringify(err).includes("err-release-not-exist")) {
-          return false;
-        }
-      }
-      return true;
-    };
     (async () => {
-      let isNameTaken = _name?.length > 0 && await checkReleaseName(_name);
-      setValidName(!isNameTaken);
+      if (valistCtx && props.projectID && _name) {
+        const releaseID = generateID(props.projectID, _name);
+        const releaseExists = await valistCtx.releaseExists(releaseID);
+        console.log('Release Exists?', releaseExists);
+        setValidName(!releaseExists);
+      }
       dispatch(setName(_name));
     })();
-  }, [_name, dispatch, props.releaseProject, props.releaseTeam, valistCtx.getReleaseMetaURI]);
+  }, [_name, dispatch, props.projectID]);
 
   // Handle form valid check
   useEffect(() => {
@@ -85,6 +71,8 @@ ${props.releaseLicense && `Release license: ${props.releaseLicense}` || ''}
     }
   }, [_name, validName]);
 
+  console.log('props.releaseProject', props.releaseProject);
+
   return (
     <form className="grid grid-cols-1 gap-y-6 sm:gap-x-8" action="#" method="POST">
       <ImageUpload setImage={props.setImage} text={'Set Release Image'} />
@@ -93,17 +81,12 @@ ${props.releaseLicense && `Release license: ${props.releaseLicense}` || ''}
         text-gray-700">
           Team <span className="float-right"><Tooltip text='The team where this release will be published.' /></span>
         </label>
-        <select onChange={(e) => {dispatch(setTeam(e.target.value));} }
+        <select value={props.releaseTeam} onChange={(e) => {dispatch(setTeam(e.target.value));} }
         id="projectType" className="mt-1 form-select block w-full pl-3 pr-10 py-2
         text-base leading-6 border-gray-300 focus:outline-none focus:shadow-outline-blue
         focus:border-blue-300 sm:text-sm sm:leading-5">
           {props.teamNames.map((teamName: string) => (
-            <Fragment key={teamName}>
-              {
-                (teamName === props.releaseTeam) ? 
-                  <option selected={true} value={teamName}>{teamName}</option> : <option value={teamName}>{teamName}</option>
-              }
-            </Fragment>
+            <option key={teamName} value={teamName}>{teamName}</option>
           ))}
         </select>
       </div>
@@ -113,17 +96,12 @@ ${props.releaseLicense && `Release license: ${props.releaseLicense}` || ''}
         text-gray-700">
           Project <span className="float-right"><Tooltip text='The project where this release will be published.' /></span>
         </label>
-        <select onChange={(e) => {dispatch(setProject(e.target.value));}}
+        <select value={props.releaseProject} onChange={(e) => {dispatch(setProject(e.target.value));}}
         id="projectType" className="mt-1 form-select block w-full pl-3 pr-10 py-2
         text-base leading-6 border-gray-300 focus:outline-none focus:shadow-outline-blue
         focus:border-blue-300 sm:text-sm sm:leading-5">
           {props.projectNames.map((name: string) => (
-            <Fragment key={name}>
-              {
-                (name === props.releaseProject) ? 
-                  <option selected={true} value={name}>{name}</option> : <option value={name}>{name}</option>
-              }
-            </Fragment>
+            <option key={name} value={name}>{name}</option>
           ))}
         </select>
       </div>
@@ -150,21 +128,6 @@ ${props.releaseLicense && `Release license: ${props.releaseLicense}` || ''}
         </div>
       </div>
 
-      {(props.releaseLicenses.length !== 0) && <div>
-        <label htmlFor="projectType" className="block text-sm leading-5 font-medium text-gray-700">
-          License <span className="float-right"><Tooltip text='The associated release license.' /></span>
-        </label>
-        <select onChange={(e) => {handleLicenseList(e.target.value);}}
-        id="license" className="mt-1 form-select block w-full pl-3 pr-10 py-2
-        text-base leading-6 border-gray-300 focus:outline-none focus:shadow-outline-blue
-        focus:border-blue-300 sm:text-sm sm:leading-5" value={props.releaseLicense}>
-          {props.releaseLicenses.map((licenseName: string) => (
-            <option key={licenseName} value={licenseName}>{licenseName}</option>
-          ))}
-          <option value={''}>None</option>
-        </select>
-      </div>}
-
       <div>
         <label htmlFor="description" className="block text-sm font-medium text-gray-700">
           Description <span className="float-right"><Tooltip text='Text describing the changes in this release.' /></span>
@@ -184,7 +147,9 @@ ${props.releaseLicense && `Release license: ${props.releaseLicense}` || ''}
 
       <FileUpload 
         files={props.releaseFiles}
-        setFiles={props.setFiles}
+        setFiles={props.setFiles} 
+        fileView={"none"}
+        multiple={true}     
       />
 
       <span className="w-full inline-flex rounded-md shadow-sm">
@@ -196,7 +161,7 @@ ${props.releaseLicense && `Release license: ${props.releaseLicense}` || ''}
           'bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700' :
           'bg-indigo-200 hover:bg-indigo-200 focus:outline-none focus:shadow-outline-grey cursor-not-allowed'
         }`}>
-            Publish Release
+          Publish Release
         </button>
       </span>
     </form>

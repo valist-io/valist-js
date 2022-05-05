@@ -1,7 +1,8 @@
 import { Fragment } from "react";
 import ProjectMemberList from "../projects/ProjectMemberList";
-import TeamListCard from "./TeamListCard";
-import TeamProfileCard from "./TeamProfileCard";
+import TeamListCard from "./AccountListCard";
+import TeamProfileCard from "./AccountProfileCard";
+import { FileWithPath } from "file-selector";
 
 type AccountMember = {
   id: string;
@@ -11,7 +12,7 @@ interface AccountPreviewProps {
   view: string;
   accountUsername: string;
   accountDisplayName: string;
-  accountImage: File | null;
+  accountImage: FileWithPath | null;
   accountDescription: string;
   defaultImage?: string;
   accountMembers: AccountMember[];
@@ -34,8 +35,8 @@ export default function AccountPreview(props: AccountPreviewProps) {
           view={"Profile"}
           tabs={[{ text: 'Profile', disabled: false }]} 
           setView={() => {}}
-          teamName={displayName} 
-          teamImage={imgUrl || (props.defaultImage ? props.defaultImage : '')}
+          accountName={displayName} 
+          accountImage={imgUrl || (props.defaultImage ? props.defaultImage : '')}
           meta={{
             image: "",
             name: "",

@@ -1,7 +1,11 @@
 import { PlusIcon } from '@heroicons/react/solid';
 import Link from 'next/link';
 
-export default function EmptyProjectList() {
+interface EmptyProjectListProps {
+  accountName: string;
+}
+
+export default function EmptyProjectList(props: EmptyProjectListProps) {
   return (
     <div className="text-center border-2 border-gray-300 border-dashed rounded-lg p-12">
       <svg
@@ -22,7 +26,7 @@ export default function EmptyProjectList() {
       <h3 className="mt-2 text-sm font-medium text-gray-900">No projects</h3>
       <p className="mt-1 text-sm text-gray-500">Create a project to publish your first release.</p>
       <div className="mt-6">
-        <Link href="/create/project">
+        <Link href={`/create/project/?account=${props.accountName}`}>
           <a
             type="button"
             className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -31,7 +35,6 @@ export default function EmptyProjectList() {
             New Project
           </a>
         </Link>
-        
       </div>
     </div>
   );

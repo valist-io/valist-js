@@ -5,6 +5,9 @@ import { ethers } from "ethers";
 import { Magic } from "magic-sdk";
 import { SetUseState, ValistProvider } from '../Account/types';
 import { Client } from '@valist/sdk';
+import getConfig from "next/config";
+
+const { publicRuntimeConfig } = getConfig();
 
 declare global {
   interface Window {
@@ -22,7 +25,7 @@ export const newMagic = () => {
   return new Magic('pk_live_631BA2340BB9ACD8', { network: customNodeOptions });
 };
 
-export const defaultProvider = new ethers.providers.JsonRpcProvider("https://rpc.valist.io/polygon");
+export const defaultProvider = new ethers.providers.JsonRpcProvider(publicRuntimeConfig.WEB3_PROVIDER);
 
 export const addressFromProvider = async (provider: Web3Provider) => {
   const signer = provider.getSigner();
@@ -60,14 +63,14 @@ export const providers:Record<any, any> = {
         await magic.auth.loginWithMagicLink({ email });
       }
     } catch(err){
-      console.log(err)
+      console.log(err);
     }
 
     params.setMagic(magic);
     return magic.rpcProvider;
   },
   readOnly: async () => {
-    return "https://rpc.valist.io/polygon"
+    return publicRuntimeConfig.WEB3_PROVIDER;
   },
 };
 

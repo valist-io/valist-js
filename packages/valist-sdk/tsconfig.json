@@ -11,6 +11,7 @@
     "sourceMap": true,
     "typeRoots": ["node_modules/@types"],
     "rootDir": "src",
+    "skipLibCheck": true,
     "useUnknownInCatchVariables": false,
   },
   "include": ["src"],

@@ -5,11 +5,8 @@ import ManageProject from '../../features/projects/ManageProject';
 
 const EditProjectPage: NextPage = () => {
   const router = useRouter();
-  let { account, project } = router.query;
-  if (Array.isArray(account)) account = account.join('');
-  if (!account) account = '';
-  if (Array.isArray(project)) project = project.join('');
-  if (!project) project = '';
+  let account = (router.query.account as string | undefined);
+  let project = (router.query.project as string | undefined);
 
   return (
     <Layout title={`Valist | Edit Project`}>

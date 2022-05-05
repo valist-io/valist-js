@@ -6,6 +6,7 @@ import Link from 'next/link';
 
 interface CreateButtonProps {
   transactions: string[]
+  accountName: string;
 }
 
 export default function CreateButton(props: CreateButtonProps) {
@@ -32,7 +33,7 @@ export default function CreateButton(props: CreateButtonProps) {
             {props.transactions.map((transaction) => (
               <Menu.Item key={transaction}>
                 {({ active }) => (
-                  <Link href={`/create/${transaction.toLowerCase()}`}>
+                  <Link href={`/create/${transaction.toLowerCase()}` + ((transaction === 'Project') ? `?account=${props.accountName}` : ``)}>
                     <a
                       className={classNames(
                         active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
