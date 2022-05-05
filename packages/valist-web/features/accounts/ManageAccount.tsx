@@ -185,7 +185,9 @@ export default function ManageAccount(props: EditAccountProps) {
     if (accountID && valistCtx) {
       try {
         toastID = notify('pending');
-        transaction = await valistCtx.addAccountMember(accountUsername, address);
+        console.log('accountUsername', accountUsername);
+        console.log('address', address);
+        transaction = await valistCtx.addAccountMember(accountID, address);
         dismiss(toastID);
         toastID = notify('transaction', transaction.hash);
         await transaction.wait();
