@@ -54,6 +54,10 @@ export default function ManageProject(props: ManageProjectProps) {
       text: 'Graphics',
       disabled: false,
     },
+    {
+      text: 'Pricing',
+      disabled: !(props.accountUsername && props.projectName),
+    },
   ]);
 
   // Project State
