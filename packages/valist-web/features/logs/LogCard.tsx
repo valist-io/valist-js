@@ -24,7 +24,7 @@ export default function LogCard(props: LogCardProps) {
                         <LogText log={log} />
                       </div>
                       {log.type && 
-                        <a href={`https://polygonscan.com//tx/${log.id}`} className="text-sm text-gray-500">
+                        <a href={`https://polygonscan.com/tx/${log.id.split('-')[0]}`} className="text-sm text-gray-500">
                           view transaction
                         </a>
                       }
