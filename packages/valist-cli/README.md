@@ -10,11 +10,11 @@ Valist command line interface.
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g valist-cli
+$ npm install -g @valist/cli
 $ valist COMMAND
 running command...
 $ valist (--version)
-valist-cli/0.0.0 darwin-arm64 node-v16.13.0
+@valist/cli/0.0.0 darwin-arm64 node-v16.13.0
 $ valist --help [COMMAND]
 USAGE
   $ valist COMMAND
@@ -41,7 +41,7 @@ ARGUMENTS
   OUTPUT   output path
 
 FLAGS
-  --network=<value>  [default: https://rpc.valist.io/polygon] Blockchain network
+  --network=<value>  [default: https://rpc.valist.io] Blockchain network
 
 DESCRIPTION
   Download a package.
@@ -107,14 +107,14 @@ ARGUMENTS
   FILES    files to publish
 
 FLAGS
-  --network=<value>      [default: https://rpc.valist.io/polygon] Blockchain network
+  --network=<value>      [default: https://rpc.valist.io] Blockchain network
   --private-key=<value>  Account private key
 
 DESCRIPTION
   Publish a release
 
 EXAMPLES
-  $ valist publish ipfs/go-ipfs/v0.12.3 dist/**
+  $ valist publish ipfs/go-ipfs/v0.12.3 src/**
 
   $ valist publish ipfs/go-ipfs/v0.12.3 dist/** docs/**
 ```
