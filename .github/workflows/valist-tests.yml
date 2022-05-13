@@ -17,6 +17,6 @@ jobs:
           node-version: '16'
       - uses: actions/checkout@v2
       - run: |
-        npx lerna bootstrap
-        npx lerna build
-        npx lerna test
+          npx lerna bootstrap
+          npx lerna build
+          npx lerna test
