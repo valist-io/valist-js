@@ -16,4 +16,7 @@ jobs:
         with:
           node-version: '16'
       - uses: actions/checkout@v2
-      - run: make install test
+      - run: |
+        npx lerna bootstrap
+        npx lerna build
+        npx lerna test
