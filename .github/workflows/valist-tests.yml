@@ -18,5 +18,5 @@ jobs:
       - uses: actions/checkout@v2
       - run: |
           npx lerna bootstrap
-          npx lerna build
-          npx lerna test
+          npx lerna run build
+          npx lerna run test
