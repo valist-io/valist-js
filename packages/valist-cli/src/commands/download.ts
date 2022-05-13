@@ -1,5 +1,5 @@
 import { Command, CliUx } from '@oclif/core';
-import { create } from '@valist/sdk';
+import { create, Provider } from '@valist/sdk';
 import { create as createIPFS } from 'ipfs-http-client';
 import { ethers } from 'ethers';
 import * as flags from '../flags';
@@ -7,6 +7,8 @@ import * as path from 'node:path';
 import * as fs from 'node:fs';
 
 export default class Download extends Command {
+  static provider?: Provider
+
   static description = 'Download a package.'
 
   static examples = [
@@ -28,7 +30,13 @@ export default class Download extends Command {
   ]
 
   static flags = {
-    network: flags.network,
+    'meta-tx': flags.metaTx,
+    'network': flags.network,
+  }
+
+  async provider(network: string): Promise<Provider> {
+    if (Download.provider) return Download.provider;
+    return new ethers.providers.JsonRpcProvider(network);
   }
 
   public async run(): Promise<void> {
@@ -39,8 +47,9 @@ export default class Download extends Command {
       this.error('invalid package name');
     }
 
-    const provider = new ethers.providers.JsonRpcProvider(flags.network);
-    const valist = await create(provider, {metaTx: true});
+    const metaTx = flags['meta-tx'];
+    const provider = await this.provider(flags.network);
+    const valist = await create(provider, { metaTx });
     const ipfs = createIPFS({url: 'https://pin.valist.io'});
 
     const {chainId} = await provider.getNetwork();

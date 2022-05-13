@@ -1,23 +1,26 @@
-import { Command, CliUx } from '@oclif/core'
-import { ethers} from 'ethers'
-import { create, ReleaseMeta } from '@valist/sdk'
-import * as flags from '../flags'
-import { select } from '../keys'
-import glob from '../glob'
+import { Command, CliUx } from '@oclif/core';
+import { ethers } from 'ethers';
+import { create, ReleaseMeta, Provider } from '@valist/sdk';
+import * as flags from '../flags';
+import { select } from '../keys';
+import glob from '../glob';
 
-const Web3HttpProvider = require('web3-providers-http')
+const Web3HttpProvider = require('web3-providers-http'); // eslint-disable-line @typescript-eslint/no-var-requires
 
 export default class Publish extends Command {
+  static provider?: Provider
+
   static description = 'Publish a release'
 
   static strict = false
 
   static examples = [
-    '<%= config.bin %> <%= command.id %> ipfs/go-ipfs/v0.12.3 src/**',
+    '<%= config.bin %> <%= command.id %> ipfs/go-ipfs/v0.12.3 README.md',
     '<%= config.bin %> <%= command.id %> ipfs/go-ipfs/v0.12.3 dist/** docs/**',
   ]
 
   static flags = {
+    'meta-tx': flags.metaTx,
     'network': flags.network,
     'private-key': flags.privateKey,
   }
@@ -35,6 +38,12 @@ export default class Publish extends Command {
     },
   ]
 
+  async provider(network: string): Promise<Provider> {
+    if (Publish.provider) return Publish.provider;
+    const provider = new Web3HttpProvider(network);
+    return new ethers.providers.Web3Provider(provider);
+  }
+
   public async run(): Promise<void> {
     const { args, argv, flags } = await this.parse(Publish);
 
@@ -43,18 +52,14 @@ export default class Publish extends Command {
       this.error('invalid package name');
     }
 
-    const web3 = new Web3HttpProvider(flags.network);
-    const provider = new ethers.providers.Web3Provider(web3);
+    const privateKey = flags['private-key'] || await select();
+    const metaTx = flags['meta-tx'];
 
-    let privateKey = flags['private-key'];
-    if (privateKey === '') {
-      privateKey = await select();
-    }
-
+    const provider = await this.provider(flags.network);
     const wallet = new ethers.Wallet(privateKey);
-    const valist = await create(provider, {metaTx: true, wallet});
+    const valist = await create(provider, { metaTx, wallet });
 
-    const {chainId} = await provider.getNetwork();
+    const { chainId } = await provider.getNetwork();
     const accountID = valist.generateID(chainId, parts[0]);
     const projectID = valist.generateID(accountID, parts[1]);
     const releaseID = valist.generateID(projectID, parts[2]);
@@ -84,7 +89,7 @@ export default class Publish extends Command {
     const tx = await valist.createRelease(projectID, parts[2], release);
     CliUx.ux.action.stop();
 
-    CliUx.ux.action.start(`confirming transaction ${tx}`);
+    CliUx.ux.action.start(`confirming transaction ${tx.hash}`);
     await tx.wait();
     CliUx.ux.action.stop();
   }

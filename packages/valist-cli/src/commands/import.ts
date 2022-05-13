@@ -1,12 +1,12 @@
-import { Command } from '@oclif/core'
-import keytar from 'keytar'
-import { ethers } from 'ethers'
+import { Command } from '@oclif/core';
+import keytar from 'keytar';
+import { ethers } from 'ethers';
 
 export default class Import extends Command {
   static description = 'Import a private key'
 
   static examples = [
-    '<%= config.bin %> <%= command.id %> 0xDEADBEEF',
+    '<%= config.bin %> <%= command.id %> 0x0',
   ]
 
   static args = [
