@@ -25,7 +25,7 @@ USAGE
 <!-- commands -->
 * [`valist download PACKAGE [OUTPUT]`](#valist-download-package-output)
 * [`valist help [COMMAND]`](#valist-help-command)
-* [`valist import PRIVATE-KEY`](#valist-import-private-key)
+* [`valist import`](#valist-import)
 * [`valist publish PACKAGE FILES`](#valist-publish-package-files)
 
 ## `valist download PACKAGE [OUTPUT]`
@@ -34,13 +34,14 @@ Download a package.
 
 ```
 USAGE
-  $ valist download [PACKAGE] [OUTPUT] [--network <value>]
+  $ valist download [PACKAGE] [OUTPUT] [--meta-tx] [--network <value>]
 
 ARGUMENTS
   PACKAGE  package name
   OUTPUT   output path
 
 FLAGS
+  --[no-]meta-tx     Enable meta transactions
   --network=<value>  [default: https://rpc.valist.io] Blockchain network
 
 DESCRIPTION
@@ -74,22 +75,19 @@ DESCRIPTION
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.12/src/commands/help.ts)_
 
-## `valist import PRIVATE-KEY`
+## `valist import`
 
-Import a private key
+Import an account
 
 ```
 USAGE
-  $ valist import [PRIVATE-KEY]
-
-ARGUMENTS
-  PRIVATE-KEY  private key
+  $ valist import
 
 DESCRIPTION
-  Import a private key
+  Import an account
 
 EXAMPLES
-  $ valist import 0xDEADBEEF
+  $ valist import
 ```
 
 _See code: [dist/commands/import.ts](https://github.com/valist-io/valist-js/blob/v2.1.0/dist/commands/import.ts)_
@@ -107,7 +105,7 @@ ARGUMENTS
   FILES    files to publish
 
 FLAGS
-  --meta-tx              Enable meta transactions
+  --[no-]meta-tx         Enable meta transactions
   --network=<value>      [default: https://rpc.valist.io] Blockchain network
   --private-key=<value>  Account private key
 
@@ -115,7 +113,7 @@ DESCRIPTION
   Publish a release
 
 EXAMPLES
-  $ valist publish ipfs/go-ipfs/v0.12.3 src/**
+  $ valist publish ipfs/go-ipfs/v0.12.3 README.md
 
   $ valist publish ipfs/go-ipfs/v0.12.3 dist/** docs/**
 ```

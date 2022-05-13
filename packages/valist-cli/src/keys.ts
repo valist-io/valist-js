@@ -7,12 +7,12 @@ export async function select() {
     throw new Error('no accounts found. use import to add an account.')
   }
 
-  const {account} = await inquirer.prompt([{
+  const { account } = await inquirer.prompt([{
     name: 'account',
     message: 'select an account',
     type: 'list',
     choices: credentials.map(c => ({ name: c.account, value: c.password })),
-  }])
+  }]);
 
   return account
 }
