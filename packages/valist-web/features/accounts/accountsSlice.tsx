@@ -16,6 +16,7 @@ export interface AccountState {
   accounts: Record<string, Project[]>;
   accountNames: string[];
   currentAccount: string;
+  loading: boolean;
 };
 
 const initialState: AccountState = {
@@ -26,6 +27,7 @@ const initialState: AccountState = {
   accountNames: [],
   accounts: {},
   currentAccount: '',
+  loading: true,
 };
 
 interface LoginPayload {
@@ -70,6 +72,9 @@ export const accountsSlice = createSlice({
     },
     setCurrentAccount: (state, action: PayloadAction<string>) => {
       state.currentAccount = action.payload;
+    },
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.loading = action.payload;
     },
   },
 });
@@ -120,7 +125,7 @@ export function logout(payload: LogoutPayload): AppThunk {
   };
 };
 
-export const { setLoginType, setLoginTried, setAddress, setMagicAddress, setAccounts, setAccountNames, setCurrentAccount } = accountsSlice.actions;
+export const { setLoginType, setLoginTried, setAddress, setMagicAddress, setAccounts, setAccountNames, setCurrentAccount, setLoading } = accountsSlice.actions;
 export const selectLoginType = (state: RootState) => state.account.loginType;
 export const selectLoginTried = (state: RootState) => state.account.loginTried;
 export const selectAddress = (state: RootState) => state.account.address;
@@ -128,4 +133,5 @@ export const selectMagicAddress = (state: RootState) => state.account.magicAddre
 export const selectAccounts = (state: RootState) => state.account.accounts;
 export const selectAccountNames = (state: RootState) => state.account.accountNames;
 export const selectCurrentAccount = (state: RootState) => state.account.currentAccount;
+export const selectLoading = (state: RootState) => state.account.loading;
 export default accountsSlice.reducer;

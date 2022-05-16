@@ -97,7 +97,7 @@ export default function FileUpload(props: FileUploadProps) {
 }
 
 export const dropzoneChildren = (status: DropzoneStatus, theme: MantineTheme) => (
-  <Group position="center" spacing="xl" style={{ minHeight: 150, pointerEvents: 'none' }}>
+  <Group position="center" spacing="xl" style={{ minHeight: 100, pointerEvents: 'none' }}>
     <div>
       <Text size="xl" inline>
         Drag files here or click to select files.
@@ -152,7 +152,7 @@ interface DefaultListProps {
 
 const DefaultList = (props: DefaultListProps) => {
   return (
-    <ul className='py-2'>
+    <ul className='pt-2'>
       {props.files && props.files.map((file, index) => (
         <li className="flex justify-between py-1 column-gap-5" key={(typeof file.src === "object") ? file.src.path : file.src}>
           <div className="overflow-hidden">{ (typeof file.src === "object") ? file.src.path : file.src }</div>

@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { login, selectAddress, selectLoginType, setAccounts, setCurrentAccount, setMagicAddress } from '../accounts/accountsSlice';
+import { login, selectAddress, selectLoginType, setAccounts, setCurrentAccount, setLoading, setMagicAddress } from '../accounts/accountsSlice';
 import { useEffect, useState } from 'react';
 import { Client, createReadOnly } from '@valist/sdk';
 import { createValistClient } from '../../utils/Account';
@@ -40,6 +40,11 @@ export default function ValistContainer({ children }: any) {
   const { data, loading, error } = useQuery(USER_HOMEPAGE, {
     variables: { address: address.toLowerCase() },
   });
+
+  // Signal to APP Components that user data has been loaded
+  useEffect(() => {
+    dispatch(setLoading(loading));
+  }, [address]);
   
   // Dispatch login to redux on app load
   useEffect(() => {
@@ -88,6 +93,8 @@ export default function ValistContainer({ children }: any) {
         accounts: teams,
         accountNames: teamNames,
       }));
+
+      dispatch(setLoading(loading));
     }
   }, [data]);
 

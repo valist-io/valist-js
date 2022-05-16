@@ -1,9 +1,11 @@
+import { FileWithPath } from "react-dropzone";
+
 /* eslint-disable @next/next/no-img-element */
 interface ReleasePreviewProps {
   releaseTeam: string,
   releaseProject: string,
   releaseName: string,
-  releaseImage: File | null,
+  releaseImage: FileWithPath | null;
   releaseDescription: string,
 }
 

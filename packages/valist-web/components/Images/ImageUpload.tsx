@@ -3,7 +3,7 @@ import { SetUseState } from "../../utils/Account/types";
 
 interface ImageUploadProps {
   text: string
-  setImage: SetUseState<File | null>
+  setImage: (SetUseState<File | null>) | any;
 }
 
 export default function ImageUpload(props: ImageUploadProps) {

@@ -1,32 +1,28 @@
 import Layout from '../../components/Layouts/Main';
 import ValistContext from '../../features/valist/ValistContext';
-import parseError from '../../utils/Errors';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
-import { generateID, ReleaseMeta } from '@valist/sdk';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { selectAccountNames, selectAccounts, selectLoginTried, selectLoginType } from '../../features/accounts/accountsSlice';
+import { selectAccountNames, selectAccounts, selectLoading, selectLoginTried, selectLoginType } from '../../features/accounts/accountsSlice';
 import { showLogin } from '../../features/modal/modalSlice';
-import { dismiss, notify } from '../../utils/Notifications';
 import { selectName, selectDescription, selectProject, selectTeam, setProject, setTeam, clear } from '../../features/releases/releaseSlice';
 import { getProjectNames } from '../../utils/Apollo/normalization';
 import ReleasePreview from '../../features/releases/ReleasePreview';
 import PublishReleaseForm from '../../features/releases/PublishReleaseForm';
-import { BigNumberish } from 'ethers';
-import getConfig from 'next/config';
 import { useListState } from '@mantine/hooks';
 import { FileList } from '@/components/Files/FileUpload';
+import { createRelease } from '@/utils/Valist';
 
 const PublishReleasePage: NextPage = () => {
   // Page State
   const router = useRouter();
-  const { publicRuntimeConfig } = getConfig();
   const valistCtx = useContext(ValistContext);
   const loginType = useAppSelector(selectLoginType);
   const loginTried = useAppSelector(selectLoginTried);
   const accountNames = useAppSelector(selectAccountNames);
-  const accounts =   useAppSelector(selectAccounts);
+  const accounts = useAppSelector(selectAccounts);
+  const loading = useAppSelector(selectLoading);
   const dispatch = useAppDispatch();
 
   // Release State
@@ -35,10 +31,10 @@ const PublishReleasePage: NextPage = () => {
   const name = useAppSelector(selectName);
   const description = useAppSelector(selectDescription);
   
-  const [projectID, setProjectID] = useState<BigNumberish | null>(null);
+  const [projectID, setProjectID] = useState<string | null>(null);
+  const [releaseImage, setReleaseImage] = useListState<FileList>([]);
   const [releaseFiles, setReleaseFiles] = useListState<FileList>([]);
   const [availableProjects, setAvailableProjects] = useState<string[]>([]);
-  const [releaseImage, setReleaseImage] = useState<File | null>(null);
   const [isDefaults, setIsDefaults] = useState<boolean>(false);
 
   let incomingAccount = (router.query.account as string | undefined);
@@ -60,88 +56,40 @@ const PublishReleasePage: NextPage = () => {
 
   // On page load set releaseAccount from url or from first item in list of user accounts
   useEffect(() => {
-    if (incomingAccount && accounts && !isDefaults) {
+    if (incomingAccount && accounts && !loading && !isDefaults) {
       dispatch(setTeam(incomingAccount || accountNames[0]));
       const projectNames = getProjectNames(accounts, incomingAccount);
 
-      console.log('projectNames', projectNames);
       setAvailableProjects(projectNames);
       dispatch(setProject(incomingProject || projectNames[0] || ''));
       setIsDefaults(true);
     }
-  }, [accounts]);
+  }, [accounts, loading]);
   
   // If the selected releaseAccount changes set the projectNames under that account
   useEffect(() => {
     if (account && accounts && isDefaults) {
       const projectNames = getProjectNames(accounts, account);
       setAvailableProjects(projectNames);
-      dispatch(setProject(projectNames[0] || ''));
     }
   }, [account, accountNames]);
 
-  // If projectAccount && projectName, generate account and projectID
-  useEffect(() => {
-    if (project) {
-      const chainID = publicRuntimeConfig.CHAIN_ID;
-      const accountID = generateID(chainID, account);
-      const projectID = generateID(accountID, project);
-      setProjectID(projectID);
-    }
-  }, [project, publicRuntimeConfig.CHAIN_ID]);
+  console.log('loading', loading);
 
-  const createRelease = async () => {
-    if (!projectID || !valistCtx) return;
-    let imgURL = "";
-
-    if (releaseImage) {
-      imgURL = await valistCtx.writeFile(releaseImage);
-    }
-
-    const release = new ReleaseMeta();
-		release.image = imgURL;
-		release.name = name;
-		release.description = description;
-    
-    const uploadToast = notify('text', 'Uploading files...');
-
-    // map the files to a format IPFS can handle
-    const files: { path: string, content: File }[] = [];
-    
-    releaseFiles.map(file => {
-      // @ts-ignore
-      files.push({ path: file.src.path, content: file.src });
-    });
-
-    release.external_url = await valistCtx.writeFolder(files);
-    dismiss(uploadToast);
-  
-    console.log("Release Team", account);
-    console.log("Release Project", project);
-    console.log("Release Name", name);
-    console.log("Meta", release);
-
-    let toastID = '';
-    try {
-      toastID = notify('pending');
-      const transaction = await valistCtx.createRelease(
+  const handleSubmit = () => {
+    if (projectID) {
+      createRelease(
+        account,
+        project,
         projectID,
         name,
-        release,
+        description,
+        releaseImage,
+        releaseFiles,
+        router,
+        valistCtx,
       );
-
-      dismiss(toastID);
-      toastID = notify('transaction', transaction.hash);
-      await transaction.wait();
-      
-      dismiss(toastID);
-      notify('success');
-      router.push('/');
-    } catch(err: any) {
-      console.log('Error', err);
-      dismiss(toastID);
-      notify('error', parseError(err));
-    }
+    };
   };
 
   return (
@@ -150,18 +98,21 @@ const PublishReleasePage: NextPage = () => {
         {/* Right Column */}
         <div className="grid grid-cols-1 gap-x-4 gap-y-6 lg:col-span-5">
             <div className="p-4">
-              <PublishReleaseForm
+              {isDefaults && <PublishReleaseForm
                 teamNames={accountNames}
                 projectID={projectID}
                 projectNames={availableProjects}
                 releaseTeam={account}
                 releaseProject={project}
+                releaseDescription={description} 
                 releaseName={name}
                 releaseFiles={releaseFiles}
+                setProjectID={setProjectID}
+                releaseImage={releaseImage} 
                 setImage={setReleaseImage}
                 setFiles={setReleaseFiles}
-                submit={() => {createRelease();}}
-              />
+                submit={handleSubmit}              
+              />}
             </div>
         </div>
 
@@ -171,7 +122,7 @@ const PublishReleasePage: NextPage = () => {
             releaseTeam={account}
             releaseProject={project}
             releaseName={name} 
-            releaseImage={releaseImage}
+            releaseImage={(releaseImage[0] && typeof releaseImage[0].src === 'object') ? releaseImage[0].src : null}
             releaseDescription={description}            
           />
         </div>
