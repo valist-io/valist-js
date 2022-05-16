@@ -1,4 +1,4 @@
-import Download from '../../src/commands/Download';
+import Download from '../../src/commands/download';
 import { ethers } from 'ethers';
 import { expect } from 'chai';
 import { contracts, create, AccountMeta, ProjectMeta, ReleaseMeta } from '@valist/sdk';

@@ -1,4 +1,4 @@
-import Publish from '../../src/commands/Publish';
+import Publish from '../../src/commands/publish';
 import { ethers } from 'ethers';
 import { expect } from 'chai';
 import { contracts, create, AccountMeta, ProjectMeta, ReleaseMeta } from '@valist/sdk';
