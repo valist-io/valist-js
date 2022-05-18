@@ -35,7 +35,6 @@ export default class Import extends Command {
   }
 
   public async run(): Promise<void> {
-    await CliUx.ux.warn('This operation will replace your existing Valist key');
     const { source } = await inquirer.prompt([{
       name: 'source',
       message: 'Select an import source',

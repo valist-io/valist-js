@@ -62,8 +62,6 @@ export default class Download extends Command {
     const release = await valist.getReleaseMeta(releaseID);
     CliUx.ux.action.stop();
 
-    CliUx.ux.styledJSON(release);
-
     if (!release.external_url) {
       this.error('invalid release url');
     }
@@ -79,6 +77,8 @@ export default class Download extends Command {
       fileStream.write(buffer);
     }
     CliUx.ux.action.stop();
+
+    CliUx.ux.styledJSON(release);
 
     this.log(`package downloaded to ${path.resolve(filePath)}`);
   }
