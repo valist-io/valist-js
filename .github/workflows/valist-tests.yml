@@ -7,7 +7,6 @@ on:
       - main
   pull_request:
 jobs:
-
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
@@ -16,4 +15,12 @@ jobs:
         with:
           node-version: '16'
       - uses: actions/checkout@v2
-      - run: make install test
+      - name: restore lerna
+        uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+      - run: |
+          npx lerna bootstrap
+          npx lerna run build
+          npx lerna run test
