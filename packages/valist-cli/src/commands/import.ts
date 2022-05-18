@@ -16,7 +16,7 @@ export default class Import extends Command {
   ]
 
   async importPrivateKey(): Promise<ethers.Wallet> {
-    const privateKey = await CliUx.ux.prompt('What is the private key?');
+    const privateKey = await CliUx.ux.prompt('What is the private key?', { type: 'hide' });
     return new ethers.Wallet(privateKey);
   }
 
@@ -35,6 +35,7 @@ export default class Import extends Command {
   }
 
   public async run(): Promise<void> {
+    await CliUx.ux.warn('This operation will replace your existing Valist key');
     const { source } = await inquirer.prompt([{
       name: 'source',
       message: 'Select an import source',

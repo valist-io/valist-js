@@ -43,7 +43,8 @@ export default class Download extends Command {
     const { args, flags } = await this.parse(Download);
 
     const parts = args.package.split('/');
-    if (parts.length !== 3) {
+
+    if (parts.length < 2 && parts.length > 3) {
       this.error('invalid package name');
     }
 
@@ -55,11 +56,13 @@ export default class Download extends Command {
     const {chainId} = await provider.getNetwork();
     const accountID = valist.generateID(chainId, parts[0]);
     const projectID = valist.generateID(accountID, parts[1]);
-    const releaseID = valist.generateID(projectID, parts[2]);
+    const releaseID = parts.length === 2 ? await valist.getLatestReleaseID(projectID) : valist.generateID(projectID, parts[2]);
 
     CliUx.ux.action.start('fetching package metadata');
     const release = await valist.getReleaseMeta(releaseID);
     CliUx.ux.action.stop();
+
+    CliUx.ux.styledJSON(release);
 
     if (!release.external_url) {
       this.error('invalid release url');
