@@ -1,3 +1,4 @@
+import { gql } from '@apollo/client';
 import { ethers } from 'ethers';
 import { create as createIPFS } from 'ipfs-http-client';
 import Client from './client';
@@ -51,6 +52,20 @@ export class ReleaseMeta {
 	/** link to the release assets. */
 	public external_url?: string;
 }
+
+// Accepted release types for graphQl queries
+export type Release = {
+	/** release id */
+	id: string,
+	/** full release name */
+	name: string,
+	/** IPFS link to the ReleaseMeta */
+	metaUri: string,
+	/** Parent project of the release */
+   projectID: string
+}
+
+
 
 // providers accepted by the client constructor helpers
 export type Provider = ethers.providers.JsonRpcProvider | ethers.providers.Web3Provider;

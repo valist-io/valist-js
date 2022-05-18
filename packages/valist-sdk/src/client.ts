@@ -3,7 +3,8 @@ import { BigNumber, ethers } from 'ethers';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { IPFS } from 'ipfs-core-types';
 import { ImportCandidate, ImportCandidateStream } from 'ipfs-core-types/src/utils';
-import { AccountMeta, generateID, ProjectMeta, ReleaseMeta } from './index';
+import { AccountMeta, generateID, ProjectMeta, ReleaseMeta, Release } from './index';
+import { RELEASE_QUERY, PROJECT_RELEASE_QUERY, fetchReleases } from './graphql';
 
 // minimal ABI for interacting with erc20 tokens
 const erc20ABI = [
@@ -16,7 +17,7 @@ export default class Client {
 		private license: ethers.Contract,
 		private ipfs: IPFS,
 		private ipfsGateway: string
-	) {}
+	) { }
 
 	async createAccount(name: string, meta: AccountMeta, members: string[]): Promise<TransactionResponse> {
 		const metaURI = await this.writeJSON(JSON.stringify(meta));
@@ -200,6 +201,35 @@ export default class Client {
 
 	async isReleaseSigner(releaseID: ethers.BigNumberish, address: string): Promise<boolean> {
 		return await this.registry.isReleaseSigner(releaseID, address);
+	}
+
+	async listReleases(): Promise<Object> {
+		const requestBody =
+			JSON.stringify({
+				query: RELEASE_QUERY
+			});
+		try {
+		  const response =  await fetchReleases(requestBody);
+		  return await response.releases;
+		} catch {
+			return {};
+		}	
+	}
+
+	async listProjectReleases(projectID: ethers.BigNumberish): Promise<Object> {
+		const requestBody =
+			JSON.stringify({
+				query: PROJECT_RELEASE_QUERY,
+				variables: {
+					projectID: projectID
+				}
+			})
+		try {
+		   const response = await fetchReleases(requestBody);
+		   return await response.project.releases;
+		} catch {
+			return {};
+		}
 	}
 
 	async writeJSON(data: string): Promise<string> {
