@@ -29,15 +29,14 @@ query($projectID: String!){
 `
 export const VALIST_GRAPHQL_URL = 'https://api.thegraph.com/subgraphs/name/valist-io/valist'
 
-export async function fetchReleases(requestBody: BodyInit | null | undefined) : Promise<any> {
+export async function fetchGraphQL(requestBody: BodyInit | null | undefined) : Promise<any> {
     const res = await fetch(VALIST_GRAPHQL_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: requestBody
     });
     
-    const json = await res.json();
-    const releases = await json.data;
-    return await releases;
+    const releases = await res.json();
+    return releases.data;
 }
     

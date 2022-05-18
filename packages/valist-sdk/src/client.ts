@@ -3,8 +3,8 @@ import { BigNumber, ethers } from 'ethers';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { IPFS } from 'ipfs-core-types';
 import { ImportCandidate, ImportCandidateStream } from 'ipfs-core-types/src/utils';
-import { AccountMeta, generateID, ProjectMeta, ReleaseMeta, Release } from './index';
-import { RELEASE_QUERY, PROJECT_RELEASE_QUERY, fetchReleases } from './graphql';
+import { AccountMeta, generateID, ProjectMeta, ReleaseMeta} from './index';
+import { RELEASE_QUERY, PROJECT_RELEASE_QUERY, fetchGraphQL } from './graphql';
 
 // minimal ABI for interacting with erc20 tokens
 const erc20ABI = [
@@ -208,12 +208,9 @@ export default class Client {
 			JSON.stringify({
 				query: RELEASE_QUERY
 			});
-		try {
-		  const response =  await fetchReleases(requestBody);
+		  const response =  await fetchGraphQL(requestBody);
 		  return await response.releases;
-		} catch {
-			return {};
-		}	
+
 	}
 
 	async listProjectReleases(projectID: ethers.BigNumberish): Promise<Object> {
@@ -223,13 +220,10 @@ export default class Client {
 				variables: {
 					projectID: projectID
 				}
-			})
-		try {
-		   const response = await fetchReleases(requestBody);
-		   return await response.project.releases;
-		} catch {
-			return {};
-		}
+			});
+
+		   const response = await fetchGraphQL(requestBody);
+		   return response.project.releases;
 	}
 
 	async writeJSON(data: string): Promise<string> {
