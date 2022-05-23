@@ -6,7 +6,7 @@ import { useContext, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { selectAccountNames, selectAccounts, selectLoading, selectLoginTried, selectLoginType } from '../../features/accounts/accountsSlice';
 import { showLogin } from '../../features/modal/modalSlice';
-import { selectName, selectDescription, selectProject, selectTeam, setProject, setTeam, clear } from '../../features/releases/releaseSlice';
+import { selectName, selectDescription, selectProject, selectTeam, clear } from '../../features/releases/releaseSlice';
 import { getProjectNames } from '../../utils/Apollo/normalization';
 import ReleasePreview from '../../features/releases/ReleasePreview';
 import PublishReleaseForm from '../../features/releases/PublishReleaseForm';
@@ -30,11 +30,15 @@ const PublishReleasePage: NextPage = () => {
   const project = useAppSelector(selectProject);
   const name = useAppSelector(selectName);
   const description = useAppSelector(selectDescription);
-  
+
   const [projectID, setProjectID] = useState<string | null>(null);
   const [releaseImage, setReleaseImage] = useListState<FileList>([]);
   const [releaseFiles, setReleaseFiles] = useListState<FileList>([]);
   const [availableProjects, setAvailableProjects] = useState<string[]>([]);
+  const [initialValues, setInitialValues] = useState<{account: string, project: string}>({
+    account: "",
+    project: "",
+  });
   const [isDefaults, setIsDefaults] = useState<boolean>(false);
 
   let incomingAccount = (router.query.account as string | undefined);
@@ -56,27 +60,27 @@ const PublishReleasePage: NextPage = () => {
 
   // On page load set releaseAccount from url or from first item in list of user accounts
   useEffect(() => {
-    if (incomingAccount && accounts && !loading && !isDefaults) {
-      dispatch(setTeam(incomingAccount || accountNames[0]));
-      const projectNames = getProjectNames(accounts, incomingAccount);
-
+    if (!loading && router.isReady) {
+      const projectNames = getProjectNames(accounts, incomingAccount || accountNames[0]);
+      setInitialValues({
+        account: incomingAccount || accountNames[0],
+        project: incomingProject || projectNames[0] || '',
+      });
       setAvailableProjects(projectNames);
-      dispatch(setProject(incomingProject || projectNames[0] || ''));
       setIsDefaults(true);
     }
-  }, [accounts, loading]);
-  
-  // If the selected releaseAccount changes set the projectNames under that account
-  useEffect(() => {
-    if (account && accounts && isDefaults) {
-      const projectNames = getProjectNames(accounts, account);
-      setAvailableProjects(projectNames);
-    }
-  }, [account, accountNames]);
+  }, [loading, router.isReady, incomingAccount]);
 
-  console.log('loading', loading);
+  const setProjectList = (account: string) => {
+    const projectNames = getProjectNames(accounts, account);
+    setAvailableProjects(projectNames);
+    return projectNames[0] || '';
+  };
 
-  const handleSubmit = () => {
+  const handleSubmit = (projectID: string, name: string) => {
+    console.log('projectID', projectID);
+    console.log('name', name);
+
     if (projectID) {
       createRelease(
         account,
@@ -99,19 +103,20 @@ const PublishReleasePage: NextPage = () => {
         <div className="grid grid-cols-1 gap-x-4 gap-y-6 lg:col-span-5">
             <div className="p-4">
               {isDefaults && <PublishReleaseForm
-                teamNames={accountNames}
+                initialValues={{
+                  account: initialValues.account,
+                  project: initialValues.project,
+                }}
+                accountNames={accountNames}
                 projectID={projectID}
                 projectNames={availableProjects}
-                releaseTeam={account}
-                releaseProject={project}
-                releaseDescription={description} 
-                releaseName={name}
                 releaseFiles={releaseFiles}
                 setProjectID={setProjectID}
-                releaseImage={releaseImage} 
+                releaseImage={releaseImage}
+                setProjectList={setProjectList} 
                 setImage={setReleaseImage}
                 setFiles={setReleaseFiles}
-                submit={handleSubmit}              
+                submit={handleSubmit}     
               />}
             </div>
         </div>

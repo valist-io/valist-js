@@ -1,5 +1,5 @@
 import { generateID } from "@valist/sdk";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useAppDispatch } from "../../app/hooks";
 import FileUpload, { FileList } from "../../components/Files/FileUpload";
 import {  versionRegex } from "../../utils/Validation";
@@ -13,25 +13,24 @@ import { Select, TextInput } from "@mantine/core";
 import { SetUseState } from "@/utils/Account/types";
 
 interface PublishReleaseFormProps {
-  teamNames: string[];
+  initialValues: { account: string, project: string }
+  accountNames: string[];
   projectID: string | null;
   projectNames: string[];
-  releaseTeam: string;
-  releaseProject: string;
-  releaseName: string;
-  releaseDescription: string;
   releaseImage: FileList[];
   releaseFiles: FileList[];
+  setProjectList: (account: string) => string;
   setProjectID: SetUseState<string | null>;
   setImage: UseListStateHandler<FileList>;
   setFiles: UseListStateHandler<FileList>;
-  submit: () => void;
+  submit: (projectID: string, name: string) => void;
 }
 
 export default function PublishReleaseForm(props: PublishReleaseFormProps) {
   const { publicRuntimeConfig } = getConfig();
   const valistCtx = useContext(ValistContext);
   const dispatch = useAppDispatch();
+  const [loaded, setLoaded] = useState<boolean>(false);
 
   const releaseFormSchema = z.object({
     account: z.string(),
@@ -42,11 +41,13 @@ export default function PublishReleaseForm(props: PublishReleaseFormProps) {
     description: z.string(),
   });
 
+  console.log('intial account', props.initialValues.account);
+
   const releaseForm = useForm({
     schema: zodResolver(releaseFormSchema),
     initialValues: {
-      account: props.releaseTeam,
-      project: props.releaseProject,
+      account: props.initialValues.account,
+      project: props.initialValues.project,
       version: '',
       description: '',
     },
@@ -67,28 +68,29 @@ export default function PublishReleaseForm(props: PublishReleaseFormProps) {
         releaseForm.setFieldError('version', 'Version/tag is already in use! 😢');
         return;
       }
-      dispatch(setName(releaseForm.values.version));
+      dispatch(setName(version));
     } else {
       return;
     }
+    
       alert(`
-Confirmation: You are about to publish "${releaseForm.values.version}" with the following details:
+Confirmation: You are about to publish "${version}" with the following details:
 
-Team name: ${props.releaseTeam}
-Project name: ${props.releaseProject}
-Version tag: ${releaseForm.values.version}
+Team name: ${releaseForm.values.account}
+Project name: ${releaseForm.values.project}
+Version tag: ${version}
 `);
 
-   props.submit();
+   props.submit(projectID, version);
   };
-
-  // If props.projectNames changes, update selected project in form.
-  useEffect(() => {
-    releaseForm.setFieldValue('project', props.projectNames[0] || '');
-  }, [props.projectNames]);
 
   useEffect(() => {
     dispatch(setTeam(releaseForm.values.account));
+    if (loaded) {
+      const projectName = props.setProjectList(releaseForm.values.account);
+      releaseForm.setFieldValue('project', projectName);
+    }
+    setLoaded(true);
   }, [dispatch, releaseForm.values.account]);
 
   useEffect(() => {
@@ -111,12 +113,12 @@ Version tag: ${releaseForm.values.version}
     
       <Select
         label="Account"
-        data={props.teamNames}
+        data={props.accountNames}
         {...releaseForm.getInputProps('account')}
       />
 
       <Select
-        label="Projects"
+        label="Project"
         data={props.projectNames}
         {...releaseForm.getInputProps('project')}
       />
@@ -129,7 +131,7 @@ Version tag: ${releaseForm.values.version}
       />
 
       <TextInput
-        label="Desciption"
+        label="Description"
         placeholder="Release description"
         {...releaseForm.getInputProps('description')}
       />
