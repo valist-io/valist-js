@@ -1,6 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import "@testing-library/jest-dom";
-import ProjectGallery from "../features/projects/ProjectGallery";
+import ProjectGallery from "../../../features/projects/ProjectGallery";
 
 describe("ProjectGallery", () => {
   const props = {
@@ -12,7 +11,7 @@ describe("ProjectGallery", () => {
       },
     ],
   };
-  
+
   it("Image is loaded in gallery view", () => {
     render(<ProjectGallery {...props}/>);
     const imgElement = screen.getByAltText('logo.png');

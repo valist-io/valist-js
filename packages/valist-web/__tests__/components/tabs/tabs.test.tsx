@@ -1,6 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import "@testing-library/jest-dom";
-import Tabs from "../components/Tabs";
+import Tabs from "../../../components/Tabs";
 
 describe("Tabs", () => {
   const props = {
