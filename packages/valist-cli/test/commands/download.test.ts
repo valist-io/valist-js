@@ -56,10 +56,9 @@ describe('download', () => {
     await createProjectTx.wait();
 
     const tmp = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'valist-test-'));
-
+    
     Download.provider = provider;
-
-    await Download.run(['valist/cli/v0.0.1', tmp, '--no-meta-tx']);
+    await Download.run(['valist/cli/v0.0.1', tmp]);
 
     try {
       await fs.promises.stat(path.join(tmp, 'cli.tar'));  

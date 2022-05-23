@@ -30,7 +30,6 @@ export default class Download extends Command {
   ]
 
   static flags = {
-    'meta-tx': flags.metaTx,
     'network': flags.network,
   }
 
@@ -43,20 +42,20 @@ export default class Download extends Command {
     const { args, flags } = await this.parse(Download);
 
     const parts = args.package.split('/');
-
     if (parts.length < 2 && parts.length > 3) {
       this.error('invalid package name');
     }
 
-    const metaTx = flags['meta-tx'];
     const provider = await this.provider(flags.network);
-    const valist = await create(provider, { metaTx });
-    const ipfs = createIPFS({url: 'https://pin.valist.io'});
+    const valist = await create(provider, { metaTx: false });
+    const ipfs = createIPFS({ url: 'https://pin.valist.io' });
 
     const {chainId} = await provider.getNetwork();
     const accountID = valist.generateID(chainId, parts[0]);
     const projectID = valist.generateID(accountID, parts[1]);
-    const releaseID = parts.length === 2 ? await valist.getLatestReleaseID(projectID) : valist.generateID(projectID, parts[2]);
+    const releaseID = parts.length === 2 
+      ? await valist.getLatestReleaseID(projectID) 
+      : valist.generateID(projectID, parts[2]);
 
     CliUx.ux.action.start('fetching package metadata');
     const release = await valist.getReleaseMeta(releaseID);
@@ -70,7 +69,7 @@ export default class Download extends Command {
     const ipfsPath = release.external_url.slice(ipfsIndex);
 
     const filePath = path.join(args.output, `${parts[1]}.tar`);
-    const fileStream = fs.createWriteStream(filePath, {flags: 'wx'});
+    const fileStream = fs.createWriteStream(filePath, { flags: 'wx' });
 
     CliUx.ux.action.start('fetching package contents');
     for await (const buffer of ipfs.get(ipfsPath)) {
