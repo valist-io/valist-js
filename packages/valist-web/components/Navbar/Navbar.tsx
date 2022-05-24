@@ -2,6 +2,7 @@
 import { Popover } from '@headlessui/react';
 import { MenuIcon, XIcon } from '@heroicons/react/outline';
 import Link from 'next/link';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { classNames } from '../../utils/Styles';
 import { truncate } from '../../utils/Formatting/truncate';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
@@ -43,9 +44,9 @@ export default function Navbar() {
   }];
 
   const navItems = [
-    { name: 'Discover', href: '/discover' },
-    { name: 'Docs', href: 'https://docs.valist.io/' },
-    { name: 'Discord', href: 'https://valist.io/discord' },
+    // { name: 'Discover', href: '/discover' },
+    // { name: 'Docs', href: 'https://docs.valist.io/' },
+    // { name: 'Discord', href: 'https://valist.io/discord' },
   ];
 
   return (
@@ -99,7 +100,8 @@ export default function Navbar() {
                       </a>
                     </Link>
                   ))}
-                  <NavDropdown loginType={loginType} address={address} actions={dropdownItems} />
+                  <ConnectButton showBalance={false} />
+                  {/*<NavDropdown loginType={loginType} address={address} actions={dropdownItems} />*/}
                 </div>
               </div>
             </div>
