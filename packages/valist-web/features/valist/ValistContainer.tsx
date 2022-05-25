@@ -2,7 +2,7 @@
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { login, selectAddress, selectLoginType, setAccounts, setCurrentAccount, setMagicAddress } from '../accounts/accountsSlice';
 import { useEffect, useState } from 'react';
-import { Client, createReadOnly } from '@valist/sdk';
+import { Client, createReadOnly, USER_HOMEPAGE } from '@valist/sdk';
 import { createValistClient } from '../../utils/Account';
 import { addressFromProvider, defaultProvider, newMagic } from '../../utils/Providers';
 import { LoginType, ValistProvider } from '../../utils/Account/types';
@@ -13,8 +13,8 @@ import Modal from '../modal/Modal';
 import Web3Context, { Web3ContextInstance } from './Web3Context';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { ethers } from 'ethers';
-import { useQuery } from '@apollo/client';
-import { USER_HOMEPAGE } from '../../utils/Apollo/queries';
+import { useQuery, gql } from '@apollo/client';
+
 import { normalizeUserProjects } from '../../utils/Apollo/normalization';
 import { Toaster } from 'react-hot-toast';
 import getConfig from 'next/config';
@@ -37,7 +37,7 @@ export default function ValistContainer({ children }: any) {
   const [mainnet, setMainnet] = useState<JsonRpcProvider>(new ethers.providers.JsonRpcProvider('https://rpc.valist.io/ens'));
   const [magic, setMagic] = useState<Magic>(newMagic());
 
-  const { data, loading, error } = useQuery(USER_HOMEPAGE, {
+  const { data, loading, error } = useQuery(gql(USER_HOMEPAGE), {
     variables: { address: address.toLowerCase() },
   });
   

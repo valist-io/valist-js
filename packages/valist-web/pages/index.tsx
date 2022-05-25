@@ -1,5 +1,5 @@
 // /* eslint-disable react-hooks/exhaustive-deps */
-import { useQuery } from '@apollo/client';
+import { useQuery, gql } from '@apollo/client';
 import type { NextPage } from 'next';
 import { useEffect, useState } from 'react';
 import { useAppSelector } from '../app/hooks';
@@ -11,7 +11,7 @@ import DashboardContent from '../features/dashboard/DashboardContent';
 import HomepageProfileCard from '../features/dashboard/DashboardProfileCard';
 import PublishButton from '../features/dashboard/PublishButton';
 import LogCard from '../features/logs/LogCard';
-import { USER_LOGS_QUERY } from '../utils/Apollo/queries';
+import { USER_LOGS_QUERY } from '@valist/sdk';
 import { Log, Project } from '../utils/Apollo/types';
 import { truncate } from '../utils/Formatting/truncate';
 
@@ -21,7 +21,7 @@ const Dashboard: NextPage = () => {
   const loginTried = useAppSelector(selectLoginTried);
   const accounts = useAppSelector(selectAccounts);
   const accountNames = useAppSelector(selectAccountNames);
-  const { data, loading, error } = useQuery(USER_LOGS_QUERY, {
+  const { data, loading, error } = useQuery(gql(USER_LOGS_QUERY), {
     variables: { address: address.toLowerCase() },
   });
   const [logs, setLogs] = useState<Log[]>([]);

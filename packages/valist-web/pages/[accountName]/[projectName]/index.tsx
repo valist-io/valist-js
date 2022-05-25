@@ -1,10 +1,10 @@
-import { useQuery } from "@apollo/client";
+import { useQuery,gql } from "@apollo/client";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import Layout from "../../../components/Layouts/Main";
 import { BigNumber, ethers } from "ethers";
 import ProjectActions from "../../../features/projects/ProjectActions";
-import { PROJECT_PROFILE_QUERY } from "../../../utils/Apollo/queries";
+import { PROJECT_PROFILE_QUERY } from "@valist/sdk";
 import { Log, Member, Release } from "../../../utils/Apollo/types";
 import { ProjectMeta, ReleaseMeta } from "../../../utils/Valist/types";
 import parseError from "../../../utils/Errors";
@@ -29,7 +29,7 @@ export default function ProjectPage():JSX.Element {
   const accounts = useAppSelector(selectAccounts);
   const address = useAppSelector(selectAddress);
   const [projectID, setProjectID] = useState<string>('');
-  const { data, loading, error } = useQuery(PROJECT_PROFILE_QUERY, {
+  const { data, loading, error } = useQuery(gql(PROJECT_PROFILE_QUERY), {
     variables: { projectID: projectID },
   });
   const [version, setVersion] = useState<string>('');
