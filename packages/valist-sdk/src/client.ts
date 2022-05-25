@@ -1,10 +1,23 @@
+
 import axios from 'axios';
 import { BigNumber, ethers } from 'ethers';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { IPFS } from 'ipfs-core-types';
 import { ImportCandidate, ImportCandidateStream } from 'ipfs-core-types/src/utils';
-import { AccountMeta, generateID, ProjectMeta, ReleaseMeta} from './index';
-import { RELEASE_QUERY, PROJECT_RELEASE_QUERY, fetchGraphQL } from './graphql';
+import {
+	AccountMeta,
+	generateID,
+	ProjectMeta,
+	ReleaseMeta,
+	RELEASE_QUERY,
+	PROJECT_RELEASE_QUERY,
+	USER_ACCOUNTS,
+	PROJECT_PROFILE_QUERY,
+	ACCOUNT_PROFILE_QUERY,
+	USER_PROJECTS
+} from './index';
+
+import { fetchGraphQL } from './graphql';
 
 // minimal ABI for interacting with erc20 tokens
 const erc20ABI = [
@@ -205,26 +218,75 @@ export default class Client {
 
 	async listReleases(): Promise<Object> {
 		const requestBody =
-			JSON.stringify({
-				query: RELEASE_QUERY
-			});
-		  const response =  await fetchGraphQL(requestBody);
-		  return await response.releases;
+		{
+			query: RELEASE_QUERY
+		};
+		const response = await fetchGraphQL(requestBody);
+		return await response.releases;
 
 	}
 
 	async listProjectReleases(projectID: ethers.BigNumberish): Promise<Object> {
 		const requestBody =
-			JSON.stringify({
-				query: PROJECT_RELEASE_QUERY,
-				variables: {
-					projectID: projectID
-				}
-			});
-
-		   const response = await fetchGraphQL(requestBody);
-		   return response.project.releases;
+		{
+			query: PROJECT_RELEASE_QUERY,
+			variables: {
+				projectID: projectID
+			}
+		}
+		const response = await fetchGraphQL(requestBody);
+		return response.project.releases;
 	}
+
+	async listUserAccounts(address: string): Promise<Object> {
+		const requestBody =
+		{
+			query: USER_ACCOUNTS,
+			variables: {
+				address: address
+			}
+		}
+
+		const response = await fetchGraphQL(requestBody);
+		return response.users.accounts;
+	}
+
+	async listUserProjects(address: string): Promise<Object> {
+		const requestBody =
+		{
+			query: USER_PROJECTS,
+			variables: {
+				address: address
+			}
+		}
+		const response = await fetchGraphQL(requestBody);
+		return response.users.accounts.projects;
+	}
+
+	async listAccountLogs(accountID: ethers.BigNumberish): Promise<Object> {
+		const requestBody =
+		{
+			query: ACCOUNT_PROFILE_QUERY,
+			variables: {
+				accountID: accountID
+			}
+		}
+		const response = await fetchGraphQL(requestBody);
+		return response.accounts.logs;
+	}
+
+	async listProjectLogs(projectID: ethers.BigNumberish): Promise<Object> {
+		const requestBody =
+		{
+			query: PROJECT_PROFILE_QUERY,
+			variables: {
+				projectID: projectID
+			}
+		}
+		const response = await fetchGraphQL(requestBody);
+		return response.projects.logs;
+	}
+
 
 	async writeJSON(data: string): Promise<string> {
 		const { cid } = await this.ipfs.add(data);

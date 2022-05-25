@@ -1,42 +1,19 @@
+import axios from 'axios'
+import { VALIST_GRAPHQL_URL } from './index';
 
-// Query for listing all the releases
-export const RELEASE_QUERY = `
-query {
-	releases{
-	  id
-	  name
-	  metaURI
-	  project{
-		id
-	  }
-	}
+export type GraphqlQuery = {
+    query: string,
+    variables?: object,
 }
-`
-// Query for listing releases for a particular project ID
-export const PROJECT_RELEASE_QUERY = `
-query($projectID: String!){
-    project(id: $projectID){
-        releases{
-            id
-            name
-            metaURI
-            project{
-                id
-            }
-        }
-    }
-} 
-`
-export const VALIST_GRAPHQL_URL = 'https://api.thegraph.com/subgraphs/name/valist-io/valist'
 
-export async function fetchGraphQL(requestBody: BodyInit | null | undefined) : Promise<any> {
-    const res = await fetch(VALIST_GRAPHQL_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: requestBody
-    });
-    
-    const releases = await res.json();
-    return releases.data;
+export async function fetchGraphQL(query : GraphqlQuery): Promise<any> {
+  const response = await axios({
+    url: VALIST_GRAPHQL_URL,
+    method: 'post',
+    data: query,
+  });
+  console.log(response.data.data);
 }
+
+
     
