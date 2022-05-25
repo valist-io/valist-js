@@ -90,10 +90,11 @@ export default class Install extends Command {
 
     const installPath = this.getInstallPath(release.install);
     if (!installPath) {
-      this.error('unsupported platform/arch');
+      this.log(`this project supports the following: ${Object.keys(release.install).toString().replace('name,', '')}`);
+      this.error(`unsupported platform/arch: ${process.platform}/${process.arch}`);
     }
 
-    const valistDir = path.join(os.homedir(), 'valist', 'bin');
+    const valistDir = path.join(os.homedir(), '.valist', 'bin');
     await fs.promises.mkdir(valistDir, { recursive: true });
 
     const filePath = path.join(valistDir, release.install.name ?? parts[1]);
