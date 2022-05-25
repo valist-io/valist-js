@@ -108,7 +108,6 @@ const PublishReleasePage: NextPage = () => {
                   project: initialValues.project,
                 }}
                 accountNames={accountNames}
-                projectID={projectID}
                 projectNames={availableProjects}
                 releaseFiles={releaseFiles}
                 setProjectID={setProjectID}

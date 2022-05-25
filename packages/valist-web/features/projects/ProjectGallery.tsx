@@ -67,7 +67,7 @@ export default function ProjectGallery(props: ProjectGalleryProps):JSX.Element {
               style={{ maxWidth: '100%', maxHeight: '100%' }}
               onClick={() => setCurrentAsset(asset)}
               src={((asset?.type.includes('video') || asset?.type.includes('youtube')) && '/images/play-video.png/') ||  asset.src} 
-              alt={asset.name} 
+              alt={`${asset.name}-preview`}
             />
           </Fragment>
         ))}

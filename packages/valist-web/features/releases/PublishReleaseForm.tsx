@@ -15,7 +15,6 @@ import { SetUseState } from "@/utils/Account/types";
 interface PublishReleaseFormProps {
   initialValues: { account: string, project: string }
   accountNames: string[];
-  projectID: string | null;
   projectNames: string[];
   releaseImage: FileList[];
   releaseFiles: FileList[];
