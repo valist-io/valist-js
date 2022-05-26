@@ -21,6 +21,8 @@ export function getSubgraphAddress(chainId: number): string {
       return "https://api.thegraph.com/subgraphs/name/valist-io/valist"
     case 80001:
       return "https://api.thegraph.com/subgraphs/name/valist-io/valistmumbai"
+    case 1337:
+      return "http://localhost:8000/subgraphs/name/valist/dev"
 		default:
 			throw new Error(`unsupported network chainId=${chainId}`);
 	}
