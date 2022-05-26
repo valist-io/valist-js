@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from 'axios';
 import { VALIST_GRAPHQL_URL } from './index';
 
 export type GraphqlQuery = {
@@ -14,6 +14,3 @@ export async function fetchGraphQL(query : GraphqlQuery): Promise<any> {
   });
   console.log(response.data.data);
 }
-
-
-    

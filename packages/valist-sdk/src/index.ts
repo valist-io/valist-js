@@ -1,4 +1,3 @@
-
 import { ethers } from 'ethers';
 import { create as createIPFS } from 'ipfs-http-client';
 import Client from './client';
