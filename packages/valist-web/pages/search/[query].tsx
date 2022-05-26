@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import Layout from '../../components/Layouts/Main';
 import ProjectListCard from '../../features/projects/ProjectListCard';
-import { PROJECT_SEARCH_QUERY } from '@valist/sdk';
+import { PROJECT_SEARCH_QUERY } from '@valist/sdk/dist/graphql';
 import { Project } from '../../utils/Apollo/types';
 
 const SearchPage: NextPage = () => {

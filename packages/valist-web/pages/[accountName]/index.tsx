@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useQuery,gql } from "@apollo/client";
 import Layout from '../../components/Layouts/Main';
-import { ACCOUNT_PROFILE_QUERY } from '@valist/sdk';
+import { ACCOUNT_PROFILE_QUERY } from '@valist/sdk/dist/graphql';
 import { Log, Project } from '../../utils/Apollo/types';
 import { AccountMeta } from '../../utils/Valist/types';
 import LogTable from '../../features/logs/LogTable';

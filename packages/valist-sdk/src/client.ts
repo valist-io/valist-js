@@ -9,15 +9,18 @@ import {
 	generateID,
 	ProjectMeta,
 	ReleaseMeta,
+} from './index';
+import {
 	RELEASE_QUERY,
 	PROJECT_RELEASE_QUERY,
-	USER_ACCOUNTS,
+	USER_ACCOUNTS_QUERY,
 	PROJECT_PROFILE_QUERY,
 	ACCOUNT_PROFILE_QUERY,
-	USER_PROJECTS
-} from './index';
+	USER_PROJECTS_QUERY,
+} from './graphql';
 
 import { fetchGraphQL } from './graphql';
+import { IPFSHTTPClient } from 'ipfs-http-client';
 
 // minimal ABI for interacting with erc20 tokens
 const erc20ABI = [
@@ -28,7 +31,7 @@ export default class Client {
 	constructor(
 		private registry: ethers.Contract,
 		private license: ethers.Contract,
-		private ipfs: IPFS,
+		private ipfs: IPFS | IPFSHTTPClient,
 		private ipfsGateway: string
 	) { }
 
@@ -241,7 +244,7 @@ export default class Client {
 	async listUserAccounts(address: string): Promise<Object> {
 		const requestBody =
 		{
-			query: USER_ACCOUNTS,
+			query: USER_ACCOUNTS_QUERY,
 			variables: {
 				address: address
 			}
@@ -254,7 +257,7 @@ export default class Client {
 	async listUserProjects(address: string): Promise<Object> {
 		const requestBody =
 		{
-			query: USER_PROJECTS,
+			query: USER_PROJECTS_QUERY,
 			variables: {
 				address: address
 			}

@@ -4,7 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import Layout from "../../../components/Layouts/Main";
 import { BigNumber, ethers } from "ethers";
 import ProjectActions from "../../../features/projects/ProjectActions";
-import { PROJECT_PROFILE_QUERY } from "@valist/sdk";
+import { PROJECT_PROFILE_QUERY } from "@valist/sdk/dist/graphql";
 import { Log, Member, Release } from "../../../utils/Apollo/types";
 import { ProjectMeta, ReleaseMeta } from "../../../utils/Valist/types";
 import parseError from "../../../utils/Errors";

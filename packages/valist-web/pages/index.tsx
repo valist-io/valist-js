@@ -11,7 +11,7 @@ import DashboardContent from '../features/dashboard/DashboardContent';
 import HomepageProfileCard from '../features/dashboard/DashboardProfileCard';
 import PublishButton from '../features/dashboard/PublishButton';
 import LogCard from '../features/logs/LogCard';
-import { USER_LOGS_QUERY } from '@valist/sdk';
+import { USER_LOGS_QUERY } from '@valist/sdk/dist/graphql';
 import { Log, Project } from '../utils/Apollo/types';
 import { truncate } from '../utils/Formatting/truncate';
 

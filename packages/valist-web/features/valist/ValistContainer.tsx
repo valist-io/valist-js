@@ -2,7 +2,8 @@
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { login, selectAddress, selectLoginType, setAccounts, setCurrentAccount, setMagicAddress } from '../accounts/accountsSlice';
 import { useEffect, useState } from 'react';
-import { Client, createReadOnly, USER_HOMEPAGE } from '@valist/sdk';
+import { Client, createReadOnly } from '@valist/sdk';
+import { USER_HOMEPAGE_QUERY } from '@valist/sdk/dist/graphql';
 import { createValistClient } from '../../utils/Account';
 import { addressFromProvider, defaultProvider, newMagic } from '../../utils/Providers';
 import { LoginType, ValistProvider } from '../../utils/Account/types';
@@ -37,7 +38,7 @@ export default function ValistContainer({ children }: any) {
   const [mainnet, setMainnet] = useState<JsonRpcProvider>(new ethers.providers.JsonRpcProvider('https://rpc.valist.io/ens'));
   const [magic, setMagic] = useState<Magic>(newMagic());
 
-  const { data, loading, error } = useQuery(gql(USER_HOMEPAGE), {
+  const { data, loading, error } = useQuery(gql(USER_HOMEPAGE_QUERY), {
     variables: { address: address.toLowerCase() },
   });
   
