@@ -3,6 +3,7 @@ import { create as createIPFS } from 'ipfs-http-client';
 import Client from './client';
 import { createRelaySigner } from './metatx';
 import * as contracts from './contracts';
+import { getSubgraphAddress } from './graphql';
 
 
 // Valist Types
@@ -166,6 +167,7 @@ export interface Options {
   wallet: ethers.Wallet;
   registryAddress: string;
   licenseAddress: string;
+  subgraphAddress: string;
 }
 
 /**
@@ -177,12 +179,7 @@ export interface Options {
 export function createReadOnly(provider: Provider, options: Partial<Options>): Client {
   const chainId = options.chainId || 137;
 
-  switch (chainId) {
-    case 137: // Polygon mainnet
-      VALIST_GRAPHQL_URL = "https://api.thegraph.com/subgraphs/name/valist-io/valist"
-    case 80001: // Mumbai testnet
-      VALIST_GRAPHQL_URL = "https://api.thegraph.com/subgraphs/name/valist-io/valistmumbai"
-  } 
+  VALIST_GRAPHQL_URL = options.subgraphAddress || getSubgraphAddress(chainId);
 
   const registryAddress = options.registryAddress || contracts.getRegistryAddress(chainId);
   const licenseAddress = options.licenseAddress || contracts.getLicenseAddress(chainId);
@@ -210,12 +207,7 @@ export async function create(provider: Provider, options: Partial<Options>): Pro
     options.chainId = network.chainId;
   }
 
-  switch (options.chainId) {
-    case 137: // Polygon mainnet
-      VALIST_GRAPHQL_URL = "https://api.thegraph.com/subgraphs/name/valist-io/valist"
-    case 80001: // Mumbai testnet
-      VALIST_GRAPHQL_URL = "https://api.thegraph.com/subgraphs/name/valist-io/valistmumbai"
-  } 
+  VALIST_GRAPHQL_URL = options.subgraphAddress || getSubgraphAddress(options.chainId);
 
   const registryAddress = options.registryAddress || contracts.getRegistryAddress(options.chainId);
   const licenseAddress = options.licenseAddress || contracts.getLicenseAddress(options.chainId);

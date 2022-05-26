@@ -15,6 +15,17 @@ export async function fetchGraphQL(query : GraphqlQuery): Promise<any> {
   console.log(response.data.data);
 }
 
+export function getSubgraphAddress(chainId: number): string {
+	switch (chainId) {
+    case 137:
+      return "https://api.thegraph.com/subgraphs/name/valist-io/valist"
+    case 80001:
+      return "https://api.thegraph.com/subgraphs/name/valist-io/valistmumbai"
+		default:
+			throw new Error(`unsupported network chainId=${chainId}`);
+	}
+}
+
 // Valist GraphQL Queries
 export const RELEASE_QUERY = `
 query {
