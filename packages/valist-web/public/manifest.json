@@ -16,7 +16,7 @@
     "type": "image/png"
   }],
   "protocol_handlers": [{
-    "protocol": "valist",
+    "protocol": "web+valist",
     "url": "/%s"
   }]
 }
