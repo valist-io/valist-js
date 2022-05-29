@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+
+const withPWA = require('next-pwa');
+
+module.exports = withPWA({
   reactStrictMode: true,
   assetPrefix: process.env.IPFS_BUILD ? './' : undefined,
   images: {
@@ -25,5 +28,8 @@ const nextConfig = {
     return config;
   },
   // trailingSlash: true,
-};
-module.exports = nextConfig;
+  pwa: {
+    dest: 'public',
+    disable: process.env.NODE_ENV === 'development',
+  }
+});
