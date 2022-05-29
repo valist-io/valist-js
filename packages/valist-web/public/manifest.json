@@ -1,6 +1,7 @@
 {
   "name": "Valist",
   "short_name": "Valist",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#581fb4",
@@ -29,9 +30,13 @@
     "src": "images/logo.png",
     "sizes": "192x192",
     "type": "image/png"
+  }, {
+    "src": "images/logo.png",
+    "sizes": "512x512",
+    "type": "image/png"
   }],
   "protocol_handlers": [{
     "protocol": "valist",
-    "url": "./%s"
+    "url": "/%s"
   }]
 }
