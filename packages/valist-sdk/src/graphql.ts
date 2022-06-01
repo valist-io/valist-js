@@ -1,6 +1,64 @@
-import { gql } from "@apollo/client";
+import axios from 'axios';
+import { VALIST_GRAPHQL_URL } from './index';
 
-export const USER_LOGS_QUERY = gql`
+export type GraphqlQuery = {
+    query: string,
+    variables?: object,
+}
+
+export async function fetchGraphQL(query : GraphqlQuery): Promise<any> {
+  const response = await axios({
+    url: VALIST_GRAPHQL_URL,
+    method: 'post',
+    data: query,
+  });
+  console.log(response.data.data);
+}
+
+export function getSubgraphAddress(chainId: number): string {
+	switch (chainId) {
+    case 137:
+      return "https://api.thegraph.com/subgraphs/name/valist-io/valist"
+    case 80001:
+      return "https://api.thegraph.com/subgraphs/name/valist-io/valistmumbai"
+    case 1337:
+      return "http://localhost:8000/subgraphs/name/valist/dev"
+		default:
+			throw new Error(`unsupported network chainId=${chainId}`);
+	}
+}
+
+// Valist GraphQL Queries
+export const RELEASE_QUERY = `
+query {
+	releases{
+	  id
+	  name
+	  metaURI
+	  project{
+		id
+	  }
+	}
+}
+`
+
+// Query for listing releases for a particular project ID
+export const PROJECT_RELEASE_QUERY = `
+query($projectID: String!){
+    project(id: $projectID){
+        releases{
+            id
+            name
+            metaURI
+            project{
+                id
+            }
+        }
+    }
+} 
+`
+
+export const USER_LOGS_QUERY = `
   query UserLogs($address: String, $count: Int){
     logs (where: {sender: $address}, orderBy: blockTime, orderDirection: "desc", first: $count){
       id
@@ -26,7 +84,7 @@ export const USER_LOGS_QUERY = gql`
   }
 `;
 
-export const ACCOUNT_LOGS_QUERY = gql`
+export const ACCOUNT_LOGS_QUERY = `
   query TeamLogs($account: String, $count: Int){
     logs (where: {account: $account}, first: $count){
       id
@@ -39,7 +97,7 @@ export const ACCOUNT_LOGS_QUERY = gql`
   }
 `;
 
-export const PROJECT_LOGS_QUERY = gql`
+export const PROJECT_LOGS_QUERY = `
   query ProjectLogs($account: String, $project: String, $count: Int){
     logs (where: {account: $account, project: $project}, first: $count){
       id
@@ -52,7 +110,7 @@ export const PROJECT_LOGS_QUERY = gql`
   }
 `;
 
-export const USER_ACCOUNTS = gql`
+export const USER_ACCOUNTS_QUERY = `
   query Projects($address: String){
     users(where: {id: $address}) {
       id
@@ -66,7 +124,7 @@ export const USER_ACCOUNTS = gql`
   }
 `;
 
-export const USER_PROJECTS = gql`
+export const USER_PROJECTS_QUERY = `
   query Projects($address: String){
     users(where: {id: $address}) {
       id
@@ -88,7 +146,7 @@ export const USER_PROJECTS = gql`
   }
 `;
 
-export const USER_HOMEPAGE = gql`
+export const USER_HOMEPAGE_QUERY = `
   query Homepage($address: String){
     users(where: {id: $address}) {
       id
@@ -119,7 +177,7 @@ export const USER_HOMEPAGE = gql`
   }
 `;
 
-export const ACCOUNT_PROFILE_QUERY = gql`
+export const ACCOUNT_PROFILE_QUERY = `
   query Account($account: String) {
     accounts(where: { name: $account} ){
       id
@@ -162,7 +220,7 @@ export const ACCOUNT_PROFILE_QUERY = gql`
 `;
 
 
-export const PROJECT_SEARCH_QUERY = gql`
+export const PROJECT_SEARCH_QUERY = `
   query Project($search: String){
     projects(where:{name_contains: $search}){
       id
@@ -172,10 +230,11 @@ export const PROJECT_SEARCH_QUERY = gql`
         name
       }
     }
+	
   }
 `;
 
-export const PROJECT_PROFILE_QUERY = gql`
+export const PROJECT_PROFILE_QUERY = `
   query ProjectProfile($projectID: String){
     projects(where: {id: $projectID}){
       id
@@ -217,7 +276,7 @@ export const PROJECT_PROFILE_QUERY = gql`
   }
 `;
 
-export const ADDR_PROFILE_QUERY =  gql`
+export const ADDR_PROFILE_QUERY = `
   query AddrProfile($address: String){
     keys (where: { address: $address} ){
       id

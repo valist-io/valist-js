@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import Layout from '../../components/Layouts/Main';
 import ValistContext from '../../features/valist/ValistContext';
 import parseError from '../../utils/Errors';

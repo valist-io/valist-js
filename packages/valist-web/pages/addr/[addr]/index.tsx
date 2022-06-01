@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Layout from "../../../components/Layouts/Main";
 import { NextPage } from "next";
-import { useQuery } from "@apollo/client";
-import { USER_PROJECTS } from "../../../utils/Apollo/queries";
+import { useQuery,gql } from "@apollo/client";
+import { USER_PROJECTS_QUERY } from "@valist/sdk/dist/graphql";
 import { Project } from "../../../utils/Apollo/types";
 import ProjectList from "../../../features/projects/ProjectList";
 import LogCard from "../../../features/logs/LogCard";
@@ -14,7 +14,7 @@ const AddressPage: NextPage = () => {
   const address = router.query.addr?.toString() || '0x0';
   const [view, setView] = useState("Projects");
   const [userProjects, setUserProjects] = useState<Project[]>([]);
-  const { data, loading, error } = useQuery(USER_PROJECTS, {
+  const { data, loading, error } = useQuery(gql(USER_PROJECTS_QUERY), {
     variables: { address: address.toLowerCase() },
   });
 

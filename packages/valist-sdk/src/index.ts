@@ -3,16 +3,19 @@ import { create as createIPFS, urlSource } from 'ipfs-http-client';
 import Client from './client';
 import { createRelaySigner } from './metatx';
 import * as contracts from './contracts';
+import { getSubgraphAddress } from './graphql';
 
+
+// Valist Types
 export class AccountMeta {
-	/** account image */
-	public image?: string;
-	/** account friendly name. */
-	public name?: string;
-	/** short description of the account. */
-	public description?: string;
-	/** link to the account website. */
-	public external_url?: string;
+  /** account image */
+  public image?: string;
+  /** account friendly name. */
+  public name?: string;
+  /** short description of the account. */
+  public description?: string;
+  /** link to the account website. */
+  public external_url?: string;
 }
 
 export class ProjectMeta {
@@ -79,18 +82,118 @@ export class InstallMeta {
 	public windows_amd64?: string;
 }
 
+export type Account = {
+  id: string,
+  name?: string,
+  metaURI?: string,
+
+  members?: string[],
+  projects?: Project[],
+  logs?: Log[],
+
+  blockTime?: number,
+  blockNumber?: number,
+  logIndex?: number
+}
+
+
+type Project = {
+  id: string,
+  name?: string,
+  metaURI?: string,
+
+  account?: string,
+  product?: string,
+  members?: Account[], //list of accounts
+  releases?: Release[]
+  logs?: Log[]
+
+  blockTime?: number
+  blockNumber?: number
+  logIndex?: number
+}
+
+type Release = {
+  id: string,
+  name?: string,
+  metaURI?: string,
+
+  project?: Project,
+  signers?: string[],
+  logs?: Log[],
+
+  blockTime?: number,
+  blockNumber?: number,
+  logIndex?: number
+}
+
+type Product = {
+  id: string,
+  limit?: number,
+  supply?: number,
+
+  royaltyAmount?: number,
+  royaltyRecipient?: string,
+
+  project?: Project,
+  currencies?: Currency[],
+  purchases?: Purchase[],
+}
+
+type Currency = {
+  id: string,
+  token?: string,
+  product?: Product,
+  price?: number,
+  balance?: number
+}
+
+type Purchase = {
+  id: string,
+  recipient?: string,
+  product?: Product
+  price?: number,
+  blockTime?: number
+  blockNumber?: number
+  logIndex?: number
+}
+
+type User = {
+  id: string,
+  accounts?: Account[],
+  projects?: Project[]
+}
+
+type Log = {
+  id: string,
+  type?: string,
+
+  sender?: string,
+  member?: string,
+
+  account?: Account,
+  project?: Project,
+  release?: Release,
+
+  blockTime?: number,
+  blockNumber?: number,
+  logIndex?: number,
+}
+
 // providers accepted by the client constructor helpers
 export type Provider = ethers.providers.JsonRpcProvider | ethers.providers.Web3Provider;
-
+// set by the client constructor
+export let VALIST_GRAPHQL_URL: string;
 // additional options for configuring the client
 export interface Options {
-	chainId: number;
-	ipfsHost: string;
-	ipfsGateway: string;
-	metaTx: boolean;
-	wallet: ethers.Wallet;
-	registryAddress: string;
-	licenseAddress: string;
+  chainId: number;
+  ipfsHost: string;
+  ipfsGateway: string;
+  metaTx: boolean;
+  wallet: ethers.Wallet;
+  registryAddress: string;
+  licenseAddress: string;
+  subgraphAddress: string;
 }
 
 /**
@@ -99,19 +202,23 @@ export interface Options {
  * @param provider Provider to use for transactions
  * @param options Additional client options
  */
- export function createReadOnly(provider: Provider, options: Partial<Options>): Client {
-	const chainId = options.chainId || 137;
-	const registryAddress = options.registryAddress || contracts.getRegistryAddress(chainId);
-	const licenseAddress = options.licenseAddress || contracts.getLicenseAddress(chainId);
+export function createReadOnly(provider: Provider, options: Partial<Options>): Client {
+  const chainId = options.chainId || 137;
 
-	const registry = new ethers.Contract(registryAddress, contracts.registryABI, provider);
-	const license = new ethers.Contract(licenseAddress, contracts.licenseABI, provider);	
+  VALIST_GRAPHQL_URL = options.subgraphAddress || getSubgraphAddress(chainId);
 
-	const ipfsHost = options.ipfsHost || 'https://pin.valist.io';
-	const ipfsGateway = options.ipfsGateway || 'https://gateway.valist.io';
-	const ipfs = createIPFS({ url: ipfsHost });
+  const registryAddress = options.registryAddress || contracts.getRegistryAddress(chainId);
+  const licenseAddress = options.licenseAddress || contracts.getLicenseAddress(chainId);
 
-	return new Client(registry, license, ipfs, ipfsGateway);
+  const registry = new ethers.Contract(registryAddress, contracts.registryABI, provider);
+  const license = new ethers.Contract(licenseAddress, contracts.licenseABI, provider);
+  
+
+  const ipfsHost = options.ipfsHost || 'https://pin.valist.io';
+  const ipfsGateway = options.ipfsGateway || 'https://gateway.valist.io';
+  const ipfs = createIPFS({ url: ipfsHost });
+
+  return new Client(registry, license, ipfs, ipfsGateway);
 }
 
 /**
@@ -121,44 +228,46 @@ export interface Options {
  * @param options Additional client options
  */
 export async function create(provider: Provider, options: Partial<Options>): Promise<Client> {
-	if (!options.chainId) {
-		const network = await provider.getNetwork();
-		options.chainId = network.chainId;
-	}
+  if (!options.chainId) {
+    const network = await provider.getNetwork();
+    options.chainId = network.chainId;
+  }
 
-	const registryAddress = options.registryAddress || contracts.getRegistryAddress(options.chainId);
-	const licenseAddress = options.licenseAddress || contracts.getLicenseAddress(options.chainId);
+  VALIST_GRAPHQL_URL = options.subgraphAddress || getSubgraphAddress(options.chainId);
 
-	let registry: ethers.Contract;
-	let license: ethers.Contract;
+  const registryAddress = options.registryAddress || contracts.getRegistryAddress(options.chainId);
+  const licenseAddress = options.licenseAddress || contracts.getLicenseAddress(options.chainId);
 
-	if ((provider as ethers.providers.Web3Provider).provider) {
-		const web3Provider = provider as ethers.providers.Web3Provider;
-		const web3Signer = web3Provider.getSigner();
+  let registry: ethers.Contract;
+  let license: ethers.Contract;
 
-		// if meta transactions enabled setup opengsn relay signer
-		let metaSigner: ethers.providers.JsonRpcSigner;
+  if ((provider as ethers.providers.Web3Provider).provider) {
+    const web3Provider = provider as ethers.providers.Web3Provider;
+    const web3Signer = web3Provider.getSigner();
 
-		if (options.metaTx && contracts.chainIds.includes(options.chainId)) {
-			metaSigner = await createRelaySigner(web3Provider, options);
-			console.log('Meta-transactions enabled');
-		} else {
-			console.log('Meta-transactions disabled');
-			metaSigner = web3Signer;
-		}
-		
-		registry = new ethers.Contract(registryAddress, contracts.registryABI, metaSigner);
-		license = new ethers.Contract(licenseAddress, contracts.licenseABI, web3Signer);
-	} else {
-		registry = new ethers.Contract(registryAddress, contracts.registryABI, provider);
-		license = new ethers.Contract(licenseAddress, contracts.licenseABI, provider);	
-	}
+    // if meta transactions enabled setup opengsn relay signer
+    let metaSigner: ethers.providers.JsonRpcSigner;
 
-	const ipfsHost = options.ipfsHost || 'https://pin.valist.io';
-	const ipfsGateway = options.ipfsGateway || 'https://gateway.valist.io';
-	const ipfs = createIPFS({ url: ipfsHost });
+    if (options.metaTx && contracts.chainIds.includes(options.chainId)) {
+      metaSigner = await createRelaySigner(web3Provider, options);
+      console.log('Meta-transactions enabled');
+    } else {
+      console.log('Meta-transactions disabled');
+      metaSigner = web3Signer;
+    }
 
-	return new Client(registry, license, ipfs, ipfsGateway);
+    registry = new ethers.Contract(registryAddress, contracts.registryABI, metaSigner);
+    license = new ethers.Contract(licenseAddress, contracts.licenseABI, web3Signer);
+  } else {
+    registry = new ethers.Contract(registryAddress, contracts.registryABI, provider);
+    license = new ethers.Contract(licenseAddress, contracts.licenseABI, provider);
+  }
+
+  const ipfsHost = options.ipfsHost || 'https://pin.valist.io';
+  const ipfsGateway = options.ipfsGateway || 'https://gateway.valist.io';
+  const ipfs = createIPFS({ url: ipfsHost });
+
+  return new Client(registry, license, ipfs, ipfsGateway);
 }
 
 /**
@@ -168,9 +277,9 @@ export async function create(provider: Provider, options: Partial<Options>): Pro
  * @param name Name of the account, project, or rlease.
  */
 export function generateID(parentID: ethers.BigNumberish, name: string): string {
-	const nameBytes = ethers.utils.toUtf8Bytes(name);
-	const nameHash = ethers.utils.keccak256(nameBytes);
-	return ethers.utils.solidityKeccak256([ "uint256", "bytes32" ], [ parentID, nameHash ]);
+  const nameBytes = ethers.utils.toUtf8Bytes(name);
+  const nameHash = ethers.utils.keccak256(nameBytes);
+  return ethers.utils.solidityKeccak256(["uint256", "bytes32"], [parentID, nameHash]);
 }
 
 /**

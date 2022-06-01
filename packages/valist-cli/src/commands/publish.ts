@@ -113,5 +113,8 @@ export default class Publish extends Command {
     CliUx.ux.action.start(`confirming transaction ${tx.hash}`);
     await tx.wait();
     CliUx.ux.action.stop();
+
+    CliUx.ux.log(`successfully published ${args.package}!`);
+    CliUx.ux.log(`view the release at: https://app.valist.io/${args.package}`);
   }
 }
