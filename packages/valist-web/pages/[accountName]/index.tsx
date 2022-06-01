@@ -18,15 +18,13 @@ type AccountMember = {
   id: string
 }
 
-export default function TeamProfilePage() {
+export default function AccountProfilePage() {
   const router = useRouter();
   const accountName = `${router.query.accountName}`;
   const accountNames = useAppSelector(selectAccountNames);
   const { data, loading, error } = useQuery(ACCOUNT_PROFILE_QUERY, {
     variables: { account: accountName },
   });
-
-  console.log("account profile data", data);
 
   const [view, setView] = useState<string>('Projects');
   const [meta, setMeta] = useState<AccountMeta>({
