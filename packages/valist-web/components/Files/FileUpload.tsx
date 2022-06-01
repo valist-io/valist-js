@@ -83,10 +83,10 @@ export default function FileUpload(props: FileUploadProps) {
 
   return (
     <div>
-      <label htmlFor="cover-photo" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 mb-2">
+      <label htmlFor="cover-photo">
         {props.title || 'Files'}
       </label>
-      <div className="mt-1 sm:mt-0 sm:col-span-2">
+      <div style={{ marginTop: 4 }}>
         <Dropzone multiple={props.multiple} onDrop={(files) => handleFiles(files)}>
           {(status) => dropzoneChildren(status, theme)}
         </Dropzone>
@@ -119,7 +119,7 @@ const OrderedList = (props: OrderedListProps) => {
           <Center {...provided.dragHandleProps}>
             <GripVertical size={18} />
           </Center>
-          <div style={{ maxWidth: 275 }} className="overflow-hidden">{ (typeof file.src === "object") ? file.src.path : file.src }</div>
+          <div style={{ maxWidth: 275, overflow: 'hidden' }}>{ (typeof file.src === "object") ? file.src.path : file.src }</div>
           <XIcon onClick={() => props.setFiles.remove(index)} style={{ strokeWidth: 3 }} height={30} width={30} />
         </Group>
       )}
@@ -155,7 +155,7 @@ const DefaultList = (props: DefaultListProps) => {
     <ul className='pt-2'>
       {props.files && props.files.map((file, index) => (
         <li className="flex justify-between py-1 column-gap-5" key={(typeof file.src === "object") ? file.src.path : file.src}>
-          <div className="overflow-hidden">{ (typeof file.src === "object") ? file.src.path : file.src }</div>
+          <div style={{ overflow: "hidden" }}>{ (typeof file.src === "object") ? file.src.path : file.src }</div>
           <div className="flex align-middle">
             <XIcon onClick={() => props.setFiles.remove(index)} style={{ strokeWidth: 3 }} height={30} width={30} />
           </div>
