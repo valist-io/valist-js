@@ -1,4 +1,4 @@
-import { TextInput, Tooltip as MantineTooltip } from "@mantine/core";
+import { Select, TextInput, Tooltip as MantineTooltip } from "@mantine/core";
 import { AlertCircle as AlertCircleIcon } from 'tabler-icons-react';
 import ProjectTagsInput from "../ProjectTagsInput";
 import ProjectTypeSelect from "../ProjectTypeSelect";
@@ -29,9 +29,9 @@ interface BasicInfoProps {
 
 export const BasicInfoForm = (props: BasicInfoProps) => {
     const dispatch = useAppDispatch();
-    const rightSectionTooltip =  (text:string) => {
+    const rightSectionTooltip = (text:string) => {
       return (
-        <MantineTooltip label= { text } >
+        <MantineTooltip label={ text } >
           <AlertCircleIcon size={16} style={{ display: 'block', opacity: 0.5 }} />
        </MantineTooltip>
       );
@@ -47,15 +47,14 @@ export const BasicInfoForm = (props: BasicInfoProps) => {
           multiple={false}
         />
         {!props.edit && <div>
-          <TextInput
+          <Select
            label = "Account or Team"
-           rightSection = {rightSectionTooltip("The team where this project will be published.")}
-           onChange={(e) => dispatch(setAccount(e.target.value))}
+           data={props.accountNames}
+           value={props.projectTeam}
+           rightSection = {rightSectionTooltip("The account where this project will be published.")}
+           onChange={(value) => dispatch(setAccount(value || ""))}
           >
-            {props.accountNames?.map((accountName) => (
-              <option key={accountName} value={accountName} selected={accountName == props.projectTeam}>{accountName}</option>
-            ))}
-          </TextInput>
+          </Select>
         </div>}
   
         {!props.edit && <div>
