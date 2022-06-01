@@ -19,6 +19,8 @@ import { projectMetaChanged } from '../../utils/Validation';
 import { useListState } from '@mantine/hooks';
 import { FileList } from '@/components/Files/FileUpload';
 
+
+
 type Member = {
   id: string,
 }
@@ -84,6 +86,9 @@ export default function ManageProject(props: ManageProjectProps) {
   const [membersChanged, setMembersChanged] = useState(0);
 
   console.log('projectAccount', projectAccount);
+
+
+
 
   // Check if user is authenticated, prompt them to login if not logged in
   useEffect(() => {

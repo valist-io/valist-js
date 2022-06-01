@@ -5,13 +5,17 @@ import { useAppDispatch } from "../../app/hooks";
 import { FileList } from "../../components/Files/FileUpload";
 import ValistContext from "../valist/ValistContext";
 import Web3Context from "../valist/Web3Context";
-import { setMembers, setName } from "./projectSlice";
+import { setAccount, setDescription, setDisplayName, setLimit, setMembers, setName, setPrice, setRoyalty, setRoyaltyAddress, setShortDescription, setWebsite, setYouTubeUrl } from "./projectSlice";
 import { UseListStateHandler } from "@mantine/hooks/lib/use-list-state/use-list-state";
 import { BasicInfoForm } from "./forms/BasicInfoForm";
 import { GraphicsForm } from "./forms/GraphicsForm";
 import { DescriptionsForm } from "./forms/DescriptionsForm";
 import { MembersForm } from "./forms/MembersForm";
 import { PriceForm } from "./forms/PriceForm";
+import { z } from 'zod';
+import { useForm } from '@mantine/form';
+import { shortnameFilterRegex } from "@/utils/Validation";
+
 
 
 interface ProjectFormProps {
@@ -57,6 +61,40 @@ export default function ProjectForm(props: ProjectFormProps) {
   const [formValid, setFormValid] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const projectSettingsFormSchema = z.object({
+    account: z.string(),
+    projectName: z.string(),
+    displayName: z.string(),
+    website: z.string(),
+    shortDescription: z.string(),
+    description: z.string(),
+    youtube: z.string(),
+    newMembers: z.string(),
+    price: z.string(),
+    limit: z.string(),
+    royalty: z.string(),
+    royaltyAddress: z.string(),
+  });
+
+  const projectSettingsForm = useForm({
+    schema: projectSettingsFormSchema,
+    initialValues: {
+        account: props.accountUsername,
+        projectName: props.projectName,
+        displayName: props.projectDisplayName,
+        website: props.projectWebsite,
+        shortDescription: props.shortDescription,
+        description: props.projectDescription,
+        youtube: props.youtubeUrl,
+        newMembers: '',
+        price: props.price,
+        limit: props.limit,
+        royalty: props.royalty,
+        royaltyAddress: props.royaltyAddress,
+    },
+  });
+ 
+
   // Handle submit/confirm
   const handleSubmit = () => {
     if (formValid && !loading) {
@@ -81,6 +119,7 @@ export default function ProjectForm(props: ProjectFormProps) {
       if (valistCtx && props.accountID && _name) {
         const projectID = generateID(props.accountID, _name);
         const projectExists = await valistCtx.projectExists(projectID);
+        
         setValidName(!projectExists);
       } else {
         setValidName(true);
@@ -90,12 +129,55 @@ export default function ProjectForm(props: ProjectFormProps) {
     })();
   }, [_name, dispatch, props.accountID, props.accountUsername, valistCtx?.projectExists]);
 
+  // Set Values onChange for Redux
+  useEffect(() => {
+  dispatch(setAccount(projectSettingsForm.values.account));
+  }, [ dispatch, projectSettingsForm.values.account]);
 
+  useEffect(() => {
+    setCleanName(projectSettingsForm.values.projectName.toLowerCase().replace(shortnameFilterRegex, ''));
+  }, [ projectSettingsForm.values.projectName]);
+
+  useEffect(() => {
+    dispatch(setDisplayName(projectSettingsForm.values.displayName));
+  }, [ dispatch, projectSettingsForm.values.displayName]);
+
+  useEffect(() => {
+    dispatch(setWebsite(projectSettingsForm.values.website));
+  }, [ dispatch, projectSettingsForm.values.website]);
+
+  useEffect(() => {
+    dispatch(setShortDescription(projectSettingsForm.values.shortDescription));
+  }, [ dispatch, projectSettingsForm.values.shortDescription]);
+
+  useEffect(() => {
+    dispatch(setDescription(projectSettingsForm.values.description));
+  }, [ dispatch, projectSettingsForm.values.description]);
+
+  useEffect(() => {
+    dispatch(setYouTubeUrl(projectSettingsForm.values.youtube));
+  } , [ dispatch, projectSettingsForm.values.youtube]);
+  
+  useEffect(() => {
+    dispatch(setPrice(projectSettingsForm.values.price));
+  }, [ dispatch, projectSettingsForm.values.price]);
+
+  useEffect(() => {
+    dispatch(setLimit(projectSettingsForm.values.limit));
+  }, [ dispatch, projectSettingsForm.values.limit]);
+  
+  useEffect(() => {
+    dispatch(setRoyalty(projectSettingsForm.values.royalty));
+  } , [ dispatch, projectSettingsForm.values.royalty]);
+
+  useEffect(() => {
+    dispatch(setRoyaltyAddress(projectSettingsForm.values.royaltyAddress));
+  } , [ dispatch, projectSettingsForm.values.royaltyAddress]);
 
   // Handle member list change
   useEffect(() => {
     (async () => {
-      const membersList = memberText.split('\n');
+      const membersList = projectSettingsForm.values.newMembers.split('\n');
       let members: string[] = [];
 
       for (const member of membersList) {
@@ -116,7 +198,7 @@ export default function ProjectForm(props: ProjectFormProps) {
 
       setLoading(false);
     })();
-  }, [dispatch, memberText, web3Ctx.isValidAddress]);
+  }, [dispatch, projectSettingsForm.values.newMembers, web3Ctx.isValidAddress]);
 
   // Handle form valid check
   useEffect(() => {
@@ -159,11 +241,13 @@ export default function ProjectForm(props: ProjectFormProps) {
           setImage={props.setImage}
           setCleanName={setCleanName}
           _setName={_setName}
+          mantineValidation={projectSettingsForm}
         />;
       case 'Descriptions':
         return <DescriptionsForm
           shortDescription={props.shortDescription}
           projectDescription={props.projectDescription}
+          mantineValidation={projectSettingsForm}
         />;
       case 'Pricing':
         return <PriceForm
@@ -171,6 +255,7 @@ export default function ProjectForm(props: ProjectFormProps) {
           limit={props.limit}
           royalty={props.royalty}
           royaltyAddress={props.royaltyAddress}
+          mantineValidation={projectSettingsForm}
         />;
       case 'Graphics':
         return <GraphicsForm
@@ -178,6 +263,7 @@ export default function ProjectForm(props: ProjectFormProps) {
           youtubeUrl={props.youtubeUrl}
           setGallery={props.setGallery}
           setMainImage={props.setMainImage}
+          mantineValidation={projectSettingsForm}
         />;
       case 'Members':
         return <MembersForm
@@ -188,6 +274,8 @@ export default function ProjectForm(props: ProjectFormProps) {
           setMemberText={setMemberText}
           addMember={props.addMember}
           edit={props.edit}
+          mantineValidation={projectSettingsForm}
+          
         />;
       default:
         return <Fragment />;
