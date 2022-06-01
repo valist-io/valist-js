@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useQuery } from "@apollo/client";
+import { useQuery, gql } from "@apollo/client";
 import Layout from '../../components/Layouts/Main';
-import { ACCOUNT_PROFILE_QUERY } from '../../utils/Apollo/queries';
+import { ACCOUNT_PROFILE_QUERY } from '@valist/sdk/dist/graphql';
 import { Log, Project } from '../../utils/Apollo/types';
 import { AccountMeta } from '../../utils/Valist/types';
 import LogTable from '../logs/LogTable';
@@ -22,7 +22,7 @@ export default function TeamProfilePage() {
   const router = useRouter();
   const accountName = `${router.query.accountName}`;
   const accountNames = useAppSelector(selectAccountNames);
-  const { data, loading, error } = useQuery(ACCOUNT_PROFILE_QUERY, {
+  const { data, loading, error } = useQuery(gql(ACCOUNT_PROFILE_QUERY), {
     variables: { account: accountName },
   });
 

@@ -1,12 +1,20 @@
+import React, { useState, useEffect } from 'react' ;
 import { NextPage } from "next";
 import Layout from "../components/Layouts/Main";
 
 const Discover: NextPage = () => {
+  const [releases, setReleases] = useState<any>([]);
+
+  useEffect(() => {
+    window.valist?.listReleases().then((r) => {
+     console.log(r);
+    });
+  }, []);
   return (
     <Layout title="Valist | Discover">
       <div className="flex mt-20 lg:mt-32">
         <div className="m-auto">
-           <h2 className="text-center text-3xl leading-8 font-extrabold tracking-tight text-indigo-500 sm:text-7xl">
+          <h2 className="text-center text-3xl leading-8 font-extrabold tracking-tight text-indigo-500 sm:text-7xl">
             Coming Soon!
           </h2>
           <p className="mt-4 max-w-3xl mx-auto text-center text-xl text-gray-500">

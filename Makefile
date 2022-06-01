@@ -15,6 +15,9 @@ web:
 
 frontend: sdk web
 
+serve-frontend: sdk
+	npm run start --prefix ./packages/valist-web
+
 dev-sdk:
 	npm run dev --prefix ./packages/valist-sdk
 

@@ -15,7 +15,7 @@ export default function LogTable(props: LogTableProps) {
       </td>
 
       <td>
-        <a href={`https://polygonscan.com//tx/${log.id}`}>
+        <a href={`https://polygonscan.com/tx/${log.id.split('-')[0]}`}>
           view transaction
         </a>
       </td>

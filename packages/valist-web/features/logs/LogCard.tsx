@@ -27,7 +27,7 @@ export default function LogCard(props: LogCardProps) {
                         <LogText log={log} />
                       </div>
                       {log.type && 
-                        <Anchor color={colorScheme === 'dark' ? 'indigo' : 'black'} href={`https://polygonscan.com//tx/${log.id}`} className="text-sm">
+                        <Anchor color={colorScheme === 'dark' ? 'indigo' : 'black'} href={`https://polygonscan.com/tx/${log.id.split('-')[0]}`} className="text-sm">
                           view transaction
                         </Anchor>
                       }
