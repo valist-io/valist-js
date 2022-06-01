@@ -1,17 +1,17 @@
-import { useQuery } from '@apollo/client';
+import { useQuery, gql } from '@apollo/client';
 import { NextPage } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import Layout from '../../components/Layouts/Main';
 import ProjectListCard from '../../features/projects/ProjectListCard';
-import { PROJECT_SEARCH_QUERY } from '../../utils/Apollo/queries';
+import { PROJECT_SEARCH_QUERY } from '@valist/sdk/dist/graphql';
 import { Project } from '../../utils/Apollo/types';
 
 const SearchPage: NextPage = () => {
   const router = useRouter();
   const search = `${router.query.query}`;
-  const { data, loading, error } = useQuery(PROJECT_SEARCH_QUERY, {
+  const { data, loading, error } = useQuery(gql(PROJECT_SEARCH_QUERY), {
     variables: { search: search },
   });
   const [ list, setProjects ] = useState<Project[]>([]);
