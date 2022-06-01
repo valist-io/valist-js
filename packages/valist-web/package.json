@@ -22,6 +22,7 @@
     "@tailwindcss/forms": "^0.4.0",
     "@valist/sdk": "^2.1.0",
     "@walletconnect/web3-provider": "^1.7.1",
+    "cookies-next": "^2.0.4",
     "ethers": "^5.5.3",
     "graphql": "^16.3.0",
     "ipfs-http-client": "^56.0.0",
