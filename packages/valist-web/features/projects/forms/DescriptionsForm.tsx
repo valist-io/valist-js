@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useAppDispatch } from "../../../app/hooks"
+import { useAppDispatch } from "../../../app/hooks";
 import { TextInput, Tooltip as MantineTooltip, Textarea } from "@mantine/core";
 import { AlertCircle as AlertCircleIcon } from 'tabler-icons-react';
 import { setDescription, setShortDescription } from '../projectSlice';
@@ -12,7 +12,7 @@ interface DescriptionsFormProps {
 
 export const DescriptionsForm = (props: DescriptionsFormProps) => {
     const dispatch = useAppDispatch();
-    const rightSectionTooltip = (text: string) => {
+    const rightSectionTooltip = (text: string) => { 
         return (
             <MantineTooltip label={text} >
                 <AlertCircleIcon size={16} style={{ display: 'block', opacity: 0.5 }} />

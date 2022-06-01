@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react' ;
+import React, { useState } from 'react' ;
 import { TextInput, Tooltip as MantineTooltip } from "@mantine/core";
 import { AlertCircle as AlertCircleIcon } from 'tabler-icons-react';
 
@@ -7,8 +7,6 @@ import { getYouTubeID } from "../../../utils/Youtube";
 import { UseListStateHandler } from "@mantine/hooks/lib/use-list-state/use-list-state";
 import { useAppDispatch } from "../../../app/hooks";
 import FileUpload, { FileList } from "../../../components/Files/FileUpload";
-
-
 
 
 interface GraphicFormProps {

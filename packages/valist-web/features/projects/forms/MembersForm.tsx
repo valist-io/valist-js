@@ -12,9 +12,9 @@ interface MembersFormProps {
     setLoading: SetUseState<boolean>;
     setMemberText: SetUseState<string>;
     addMember: (address: string) => Promise<void>;
-  }
+}
 
-  
+
 export const MembersForm = (props: MembersFormProps) => {
     const [member, setMember] = useState('');
     const rightSectionTooltip = (text: string) => {
@@ -24,6 +24,20 @@ export const MembersForm = (props: MembersFormProps) => {
             </MantineTooltip>
         );
     };
+
+    const addButton = () => {
+        return (
+            <Button
+                color='blue'
+                className='mt-2'
+                type="button"
+                loading={props.loading}
+                loaderPosition="left"
+                onClick={() => props.addMember(member)}
+            >Add</Button>
+        );
+    };
+
     return (
         <form className="grid grid-cols-1 gap-y-6 sm:gap-x-8" action="#" method="POST">
             <div>
@@ -44,7 +58,7 @@ export const MembersForm = (props: MembersFormProps) => {
                     <TextInput
                         id="new-member"
                         label="New Member"
-                        rightSection={rightSectionTooltip("A new member address to be added to the account.")}
+                        rightSection={rightSectionTooltip("A list of project members seperated by new-line.")}
                         name="new-member"
                         type="text"
                         onChange={(e) => setMember(e.target.value)}
@@ -53,7 +67,11 @@ export const MembersForm = (props: MembersFormProps) => {
                     >
                     </TextInput>
                     <Button
+                        color='blue'
+                        className='mt-2 bg-indigo-300'
                         type="button"
+                        loading={props.loading}
+                        loaderPosition="left"
                         onClick={() => props.addMember(member)}
                     >Add</Button>
                 </div>}

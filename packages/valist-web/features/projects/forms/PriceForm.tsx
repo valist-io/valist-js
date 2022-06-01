@@ -4,7 +4,6 @@ import { useAppDispatch } from "../../../app/hooks";
 import { setPrice, setLimit , setRoyalty , setRoyaltyAddress } from '../projectSlice';
 import { AlertCircle as AlertCircleIcon } from 'tabler-icons-react';
 
-
 interface PriceFormProps {
     price: string;
     limit: string;

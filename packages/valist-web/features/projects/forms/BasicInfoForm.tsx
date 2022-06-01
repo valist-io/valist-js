@@ -75,7 +75,7 @@ export const BasicInfoForm = (props: BasicInfoProps) => {
         <div>
           <div className="mt-1">
             <TextInput
-              label = "Project Website"
+              label = "Display Name"
               rightSection = {rightSectionTooltip('Editable display name on the project profile.')}
               id="displayName"
               name="displayName"
@@ -102,7 +102,6 @@ export const BasicInfoForm = (props: BasicInfoProps) => {
           </div>
   
         </div>
-  
         <ProjectTypeSelect selectedType={props.projectType} />
         <ProjectTagsInput tags={props.projectTags} />
       </form>

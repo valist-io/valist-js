@@ -7,7 +7,7 @@ import ValistContext from "../valist/ValistContext";
 import Web3Context from "../valist/Web3Context";
 import { setMembers, setName } from "./projectSlice";
 import { UseListStateHandler } from "@mantine/hooks/lib/use-list-state/use-list-state";
-import{ BasicInfoForm }from "./forms/BasicInfoForm";
+import { BasicInfoForm } from "./forms/BasicInfoForm";
 import { GraphicsForm } from "./forms/GraphicsForm";
 import { DescriptionsForm } from "./forms/DescriptionsForm";
 import { MembersForm } from "./forms/MembersForm";
@@ -56,7 +56,7 @@ export default function ProjectForm(props: ProjectFormProps) {
   const [validMemberList, setValidMemberList] = useState(false);
   const [formValid, setFormValid] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+
   // Handle submit/confirm
   const handleSubmit = () => {
     if (formValid && !loading) {
@@ -90,6 +90,8 @@ export default function ProjectForm(props: ProjectFormProps) {
     })();
   }, [_name, dispatch, props.accountID, props.accountUsername, valistCtx?.projectExists]);
 
+
+
   // Handle member list change
   useEffect(() => {
     (async () => {
@@ -102,7 +104,7 @@ export default function ProjectForm(props: ProjectFormProps) {
       }
 
       console.log('resolved addresses', members);
-      
+
       if (members.length > 0) {
         setValidMemberList(true);
         dispatch(setMembers(members));
@@ -125,17 +127,17 @@ export default function ProjectForm(props: ProjectFormProps) {
     }
   }, [_name, validName, validMemberList, props.edit]);
 
-  const SubmitButton = () => { 
+  const SubmitButton = () => {
     return (
       <span className="w-full inline-flex rounded-md shadow-sm mt-6">
-        <button onClick={handleSubmit} value="Submit" type="button"         
+        <button onClick={handleSubmit} value="Submit" type="button"
           className={`w-full inline-flex items-center justify-center px-6 py-3 border border-transparent
           text-base leading-6 font-medium rounded-md text-white transition ease-in-out duration-150
           ${formValid && !loading ?
-            'bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700' :
-            'bg-indigo-200 hover:bg-indigo-200 focus:outline-none focus:shadow-outline-grey cursor-not-allowed'
-          }`}>
-            {props.submitText}
+              'bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700' :
+              'bg-indigo-200 hover:bg-indigo-200 focus:outline-none focus:shadow-outline-grey cursor-not-allowed'
+            }`}>
+          {props.submitText}
         </button>
       </span>
     );
@@ -147,51 +149,51 @@ export default function ProjectForm(props: ProjectFormProps) {
         return <BasicInfoForm
           accountNames={props.userAccounts}
           projectTeam={props.accountUsername}
-          projectDisplayName={props.projectDisplayName} 
+          projectDisplayName={props.projectDisplayName}
           projectWebsite={props.projectWebsite}
-          projectType={props.projectType} 
+          projectType={props.projectType}
           projectTags={props.projectTags}
-          edit={props.edit} 
-          cleanName={cleanName} 
-          validName={validName} 
-          setImage={props.setImage} 
-          setCleanName={setCleanName} 
+          edit={props.edit}
+          cleanName={cleanName}
+          validName={validName}
+          setImage={props.setImage}
+          setCleanName={setCleanName}
           _setName={_setName}
         />;
       case 'Descriptions':
-        return <DescriptionsForm 
-          shortDescription={props.shortDescription} 
-          projectDescription={props.projectDescription} 
+        return <DescriptionsForm
+          shortDescription={props.shortDescription}
+          projectDescription={props.projectDescription}
         />;
       case 'Pricing':
-        return <PriceForm 
+        return <PriceForm
           price={props.price}
           limit={props.limit}
           royalty={props.royalty}
-          royaltyAddress={props.royaltyAddress} 
+          royaltyAddress={props.royaltyAddress}
         />;
       case 'Graphics':
         return <GraphicsForm
           galleryFiles={props.projectGallery}
           youtubeUrl={props.youtubeUrl}
           setGallery={props.setGallery}
-          setMainImage={props.setMainImage}        
+          setMainImage={props.setMainImage}
         />;
       case 'Members':
-        return <MembersForm 
+        return <MembersForm
           memberText={memberText}
           validMemberList={validMemberList}
           loading={loading}
           setLoading={setLoading}
           setMemberText={setMemberText}
-          addMember={props.addMember} 
-          edit={props.edit}        
+          addMember={props.addMember}
+          edit={props.edit}
         />;
       default:
         return <Fragment />;
     }
   };
-  
+
   return (
     <div>
       {ProjectFormContent()}
