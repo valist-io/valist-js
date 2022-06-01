@@ -21,7 +21,7 @@ export default function MobileMenu(props: MobileMenuProps):JSX.Element {
           <a
             key={item.name}
             href={item.href}
-            className='hover:bg-gray-200 block rounded-md py-2 px-3 text-base font-medium'
+            className='hover:bg-gray-200 block rounded-md py-2 px-3 text-base'
           >
             {item.name}
           </a>

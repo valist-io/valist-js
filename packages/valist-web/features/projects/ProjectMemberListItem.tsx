@@ -6,7 +6,7 @@ import { TrashIcon } from '@heroicons/react/outline';
 
 interface ProjectMemberListItemProps {
   address: string
-  removeMember?: (address: string) => Promise<void>;
+  removeMember?: (address: string) => void;
 }
 
 export default function ProjectMemberListItem(props: ProjectMemberListItemProps): JSX.Element {
@@ -30,10 +30,10 @@ export default function ProjectMemberListItem(props: ProjectMemberListItemProps)
   
   return (
     <tr key={props.address}>
-      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+      <td>
         <AddressIdenticon address={props.address} height={32} width={32} />
       </td>
-      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500 flex justify-between">
+      <td>
         <Link href={`/addr/${props.address}`}>
           <a className="cursor-pointer hover:text-indigo-500">
             {ens || props.address} 
@@ -42,7 +42,6 @@ export default function ProjectMemberListItem(props: ProjectMemberListItemProps)
         {props.removeMember && 
           <TrashIcon
             height={20} width={20} 
-            className='text-black iline-flex' 
             onClick={() => {props.removeMember && props.removeMember(props.address);}} 
           />
         }

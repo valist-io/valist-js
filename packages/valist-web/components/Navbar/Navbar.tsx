@@ -1,8 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { Popover } from '@headlessui/react';
-import { MenuIcon, XIcon } from '@heroicons/react/outline';
 import Link from 'next/link';
-import { classNames } from '../../utils/Styles';
 import { truncate } from '../../utils/Formatting/truncate';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { logout, selectAddress, selectLoginType } from '../../features/accounts/accountsSlice';
@@ -12,12 +9,20 @@ import Web3Context from '../../features/valist/Web3Context';
 import NavDropdown from './NavDropdown';
 import MobileMenu from './MobileMenu';
 import SearchBar from './Searchbar';
+import ThemeButton from '../Theme/ThemeButton';
+import { Navbar, Text, useMantineTheme } from '@mantine/core';
+import { NextLink } from '@mantine/next';
 
-export default function Navbar() {
+export default function Nav() {
   const address = useAppSelector(selectAddress);
   const loginType = useAppSelector(selectLoginType);
   const webCtx = useContext(Web3Context);
   const dispatch = useAppDispatch();
+
+  const theme = useMantineTheme();
+  const navColor = theme.colorScheme === 'dark' ? theme.colors.dark[9] : "";
+  const borderColor = theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.colors.gray[4];
+  const linkColor = theme.colorScheme === 'dark' ? theme.white : theme.black;
 
   const dropdownItems = [
     {
@@ -49,64 +54,35 @@ export default function Navbar() {
   ];
 
   return (
-    <>
-      <Popover
-        as="header"
-        className={({ open }) =>
-          classNames(
-            open ? 'fixed inset-0 z-40 overflow-y-auto' : '',
-            'bg-white shadow-md lg:sticky lg:overflow-y-visible top-0 z-50',
-          )
-        }
-      >
-        {({ open }) => (
-          <>
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 sticky top-0 z-50">
-              <div className="relative flex justify-between xl:grid xl:grid-cols-12 lg:gap-8">
-                <div className="flex md:absolute md:left-0 md:inset-y-0 lg:static xl:col-span-2">
-                  <div className="flex-shrink-0 flex items-center">
-                    <Link href="/" >
-                      <a>
-                        <img
-                          className="block h-8 w-auto"
-                          src="/images/logo.png"
-                          alt="Valist"
-                        />
-                      </a>
-                    </Link>
-                  </div>
-                </div>
-
-                <SearchBar />
-
-                <div className="flex items-center md:absolute md:right-0 md:inset-y-0 lg:hidden">
-                  {/* Mobile menu button */}
-                  <Popover.Button className="-mx-2 rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
-                    <span className="sr-only">Open menu</span>
-                    {open ? (
-                      <XIcon className="block h-6 w-6" aria-hidden="true" />
-                    ) : (
-                      <MenuIcon className="block h-6 w-6" aria-hidden="true" />
-                    )}
-                  </Popover.Button>
-                </div>
-
-                <div className="hidden lg:flex lg:items-center lg:justify-end xl:col-span-4">
-                  {navItems.map((item) => (
-                    <Link key={item.name} href={item.href}>
-                      <a className="ml-5 font-bold flex-shrink-0 bg-white rounded-full p-1 text-gray-600 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        {item.name}
-                      </a>
-                    </Link>
-                  ))}
-                  <NavDropdown loginType={loginType} address={address} actions={dropdownItems} />
-                </div>
+      <nav style={{ width: "100vw", position: "fixed", background: navColor, borderRight: "none", borderBottom: `1px solid ${borderColor}` }}>
+        <div className="max-w-3xl mx-auto py-1 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
+          <div className="relative flex justify-between xl:grid xl:grid-cols-12 lg:gap-8">
+            <div className="flex md:absolute md:left-0 md:inset-y-0 lg:static xl:col-span-2">
+              <div className="flex-shrink-0 flex items-center">
+                <Link href="/" >
+                  <a>
+                    <img
+                      className="block h-8 w-auto"
+                      src="/images/logo.png"
+                      alt="Valist"
+                    />
+                  </a>
+                </Link>
               </div>
             </div>
-            <MobileMenu loginType={loginType} actions={dropdownItems} navigation={navItems} address={address} />
-          </>
-        )}
-      </Popover>
-    </>
+            <SearchBar />
+            <div className="hidden lg:flex lg:items-center lg:justify-end xl:col-span-4">
+              <ThemeButton />
+              {navItems.map((item) => (
+                <Text key={item.name} size="sm" variant="link" component={NextLink} weight={700}  href={item.href} style={{ fontWeight: 100, textDecoration: "none", color: linkColor }} className="ml-5 flex-shrink-0 p-1">
+                  {item.name}
+                </Text>
+              ))}
+              <NavDropdown loginType={loginType} address={address} actions={dropdownItems} />
+            </div>
+          </div>
+        </div>
+        {/* <MobileMenu loginType={loginType} actions={dropdownItems} navigation={navItems} address={address} /> */}
+      </nav>
   );
 }

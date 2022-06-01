@@ -1,3 +1,5 @@
+import { Anchor, Paper } from '@mantine/core';
+import { useColorScheme } from '@mantine/hooks';
 import React, { Fragment } from 'react';
 import { Log } from '../../utils/Apollo/types';
 import LogText from "./LogText";
@@ -7,11 +9,12 @@ interface LogCardProps {
 }
 
 export default function LogCard(props: LogCardProps) {
+  const colorScheme = useColorScheme();
+  
   return (
     <section aria-labelledby="announcements-title">
-      <div className="rounded-lg bg-white overflow-hidden shadow">
-        <div className="px-6 pt-6 pb-2">
-          <h2 className="text-base font-medium text-gray-900" id="announcements-title">
+      <Paper shadow="xs" p="xl" radius="md" withBorder>
+          <h2 style={{ fontWeight: 700 }}>
             Recent Activity
           </h2>
           <div className="flow-root">
@@ -24,9 +27,9 @@ export default function LogCard(props: LogCardProps) {
                         <LogText log={log} />
                       </div>
                       {log.type && 
-                        <a href={`https://polygonscan.com//tx/${log.id}`} className="text-sm text-gray-500">
+                        <Anchor color={colorScheme === 'dark' ? 'indigo' : 'black'} href={`https://polygonscan.com//tx/${log.id}`} className="text-sm">
                           view transaction
-                        </a>
+                        </Anchor>
                       }
                     </div>
                   </li>
@@ -34,8 +37,7 @@ export default function LogCard(props: LogCardProps) {
               </Fragment>
             </ul>
           </div>
-        </div>
-      </div>
+      </Paper>
     </section>
   );
 };

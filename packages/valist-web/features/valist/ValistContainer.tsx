@@ -26,7 +26,6 @@ export default function ValistContainer({ children }: any) {
   const dispatch = useAppDispatch();
   const { publicRuntimeConfig } = getConfig();
   const [provider, setProvider] = useState<ValistProvider>(defaultProvider);
-
   const [valistClient, setValistClient] = useState<Client>(
     createReadOnly(provider,
     {

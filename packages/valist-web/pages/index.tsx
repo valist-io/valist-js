@@ -1,5 +1,6 @@
 // /* eslint-disable react-hooks/exhaustive-deps */
 import { useQuery } from '@apollo/client';
+import { Grid, Paper } from '@mantine/core';
 import type { NextPage } from 'next';
 import { useEffect, useState } from 'react';
 import { useAppSelector } from '../app/hooks';
@@ -82,10 +83,10 @@ const Dashboard: NextPage = () => {
   
   return (
     <Layout title="Valist | Dashboard">
-      {<div className="grid grid-cols-1 gap-4 items-start lg:grid-cols-3 lg:gap-8">
+      <Grid gutter="xl">
         {/* Left column */}
-        <div className="grid grid-cols-1 gap-4 lg:col-span-2">
-          <HomepageProfileCard 
+        <Grid.Col xs={12} lg={8}>
+          <HomepageProfileCard
             isProjects={isProjects}
             isAccounts={isAccounts}
             view={view}
@@ -100,18 +101,18 @@ const Dashboard: NextPage = () => {
             address={address}
             view={view}
           />
-        </div>
-       {/* Right column */}
-       <div className="grid grid-cols-1 gap-4">
-          <div className='rounded-lg bg-white overflow-hidden shadow p-4 overflow-visible'>
-            <div className='flex justify-center items-center'>
+        </Grid.Col>
+        {/* Right column */}
+        <Grid.Col xs={12} lg={4}>
+          <Paper style={{ marginBottom: 15 }} shadow="xs" p="xl" radius={"md"} withBorder>
+            <div className='grid grid-cols-2 gap-4'>
               <PublishButton account={currentAccount} disabled={isProjects} />
               <CreateButton accountName={currentAccount} transactions={transactionActions}/>
             </div>
-          </div>
+          </Paper>
           <LogCard logs={logs.length !== 0 ? logs : initialActivity} />
-        </div>
-      </div>}
+        </Grid.Col>
+      </Grid>
     </Layout>
   );
 };

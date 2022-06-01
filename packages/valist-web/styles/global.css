@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Aktiv Grotesk Corp';
+  font-style: normal;
+  src: url(/fonts/AktivGroteskCorp-Medium.woff);
+  line-height: 32px;
+}
+
+a {
+  text-decoration: none,
+}
+
 .tooltip {
   @apply invisible absolute;
 }

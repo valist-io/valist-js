@@ -1,3 +1,4 @@
+import { Paper } from "@mantine/core";
 import Link from "next/link";
 
 interface ProjectProfileActionsProps {
@@ -7,22 +8,24 @@ interface ProjectProfileActionsProps {
 
 export default function ProjectProfileCardActions(props: ProjectProfileActionsProps) {
   return (
-    <div className='rounded-lg bg-white overflow-hidden shadow p-4 overflow-visible'>
+    <Paper shadow="xs" p="md" radius={"md"} withBorder>
       <Link href={`/create/release?account=${props.accountName}&project=${props.projectName}`}>
         <a className="flex justify-center items-center px-4 py-2 border
-        border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700
-        bg-white hover:bg-gray-50 mb-1">
+        border-gray-300 rounded-md mb-1">
           Publish
         </a>
       </Link>
 
+      {/* <Link href={`/create/release?account=${props.accountName}&project=${props.projectName}`} passHref>
+        <Button component="a">Next link button</Button>
+      </Link> */}
+
       <Link href={`/edit/project/?account=${props.accountName}&project=${props.projectName}`}>
         <a className="flex justify-center items-center px-4 py-2 border
-        border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700
-        bg-white hover:bg-gray-50">
-          Edit
+        border-gray-300 shadow-sm rounded-md">
+          Settings
         </a>
       </Link>
-    </div>
+    </Paper>
   );
 }
