@@ -1,8 +1,15 @@
-import { Client, AccountMeta, ProjectMeta, ReleaseMeta, generateID } from '../src/index';
 import { ethers } from 'ethers';
 import { create } from 'ipfs-http-client';
 import { expect } from 'chai';
 import { describe, beforeEach, it } from 'mocha';
+
+import { 
+	Client, 
+	AccountMeta, 
+	ProjectMeta, 
+	ReleaseMeta, 
+	generateID 
+} from '../src/index';
 import * as contracts from '../src/contracts';
 
 const ganache = require("ganache");
@@ -21,7 +28,9 @@ describe('valist client', async function() {
 		await license.deployed();
 
 		const ipfs = create({ url: 'https://pin.valist.io' });
-		const valist = new Client(registry, license, ipfs, 'https://gateway.valist.io');
+		const ipfsGateway = 'https://gateway.valist.io';
+		const subgraphAddress = 'https://api.thegraph.com/subgraphs/name/valist-io/valistmumbai';
+		const valist = new Client(registry, license, ipfs, ipfsGateway, subgraphAddress);
 
 		const address = await signer.getAddress();
 		const members = [address];
@@ -65,5 +74,26 @@ describe('valist client', async function() {
 
 		const otherRelease = await valist.getReleaseMeta(releaseID);
 		expect(otherRelease).to.deep.equal(release);
+
+		const accounts = await valist.listAccounts();
+		expect(accounts).to.be.an('array');
+
+		const projects = await valist.listProjects();
+		expect(projects).to.be.an('array');
+
+		const releases = await valist.listReleases();
+		expect(releases).to.be.an('array');
+
+		const accountProjects = await valist.listAccountProjects('0x936b6ef8e862c038230e8b4d88e776d01dce42e7f15affd8d80c58eedfc4edf9');
+		expect(accountProjects).to.be.an('array');
+
+		const projectReleases = await valist.listProjectReleases('0x9c7907db127f86ca8a18110f1fc7b4858a6cbf58507be326c860e88e4600bd09');
+		expect(projectReleases).to.be.an('array');
+
+		const userAccounts = await valist.listUserAccounts('0xd50daa26f556538562ba308dc0ed45cface885fe');
+		expect(userAccounts).to.be.an('array');
+
+		const userProjects = await valist.listUserProjects('0x2917104d828ccd4cbdf4177a2e4c8a754a9e166c');
+		expect(userProjects).to.be.an('array');
 	});
 });
