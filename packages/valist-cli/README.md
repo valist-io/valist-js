@@ -14,7 +14,7 @@ $ npm install -g @valist/cli
 $ valist COMMAND
 running command...
 $ valist (--version)
-@valist/cli/2.1.0 darwin-arm64 node-v16.13.0
+@valist/cli/2.2.0 darwin-arm64 node-v16.13.0
 $ valist --help [COMMAND]
 USAGE
   $ valist COMMAND
@@ -26,7 +26,8 @@ USAGE
 * [`valist download PACKAGE [OUTPUT]`](#valist-download-package-output)
 * [`valist help [COMMAND]`](#valist-help-command)
 * [`valist import`](#valist-import)
-* [`valist publish PACKAGE FILES`](#valist-publish-package-files)
+* [`valist install PACKAGE`](#valist-install-package)
+* [`valist publish [PACKAGE] [FILES]`](#valist-publish-package-files)
 
 ## `valist download PACKAGE [OUTPUT]`
 
@@ -34,14 +35,13 @@ Download a package.
 
 ```
 USAGE
-  $ valist download [PACKAGE] [OUTPUT] [--meta-tx] [--network <value>]
+  $ valist download [PACKAGE] [OUTPUT] [--network <value>]
 
 ARGUMENTS
   PACKAGE  package name
   OUTPUT   output path
 
 FLAGS
-  --[no-]meta-tx     Enable meta transactions
   --network=<value>  [default: https://rpc.valist.io] Blockchain network
 
 DESCRIPTION
@@ -53,7 +53,7 @@ EXAMPLES
   $ valist download ipfs/go-ipfs/v0.12.2 ~/Downloads/
 ```
 
-_See code: [dist/commands/download.ts](https://github.com/valist-io/valist-js/blob/v2.1.0/dist/commands/download.ts)_
+_See code: [dist/commands/download.ts](https://github.com/valist-io/valist-js/blob/v2.2.0/dist/commands/download.ts)_
 
 ## `valist help [COMMAND]`
 
@@ -90,9 +90,32 @@ EXAMPLES
   $ valist import
 ```
 
-_See code: [dist/commands/import.ts](https://github.com/valist-io/valist-js/blob/v2.1.0/dist/commands/import.ts)_
+_See code: [dist/commands/import.ts](https://github.com/valist-io/valist-js/blob/v2.2.0/dist/commands/import.ts)_
 
-## `valist publish PACKAGE FILES`
+## `valist install PACKAGE`
+
+Install a package
+
+```
+USAGE
+  $ valist install [PACKAGE] [--network <value>]
+
+ARGUMENTS
+  PACKAGE  package name
+
+FLAGS
+  --network=<value>  [default: https://rpc.valist.io] Blockchain network
+
+DESCRIPTION
+  Install a package
+
+EXAMPLES
+  $ valist install ipfs/go-ipfs/v0.12.2
+```
+
+_See code: [dist/commands/install.ts](https://github.com/valist-io/valist-js/blob/v2.2.0/dist/commands/install.ts)_
+
+## `valist publish [PACKAGE] [FILES]`
 
 Publish a release
 
@@ -118,5 +141,5 @@ EXAMPLES
   $ valist publish ipfs/go-ipfs/v0.12.3 dist/** docs/**
 ```
 
-_See code: [dist/commands/publish.ts](https://github.com/valist-io/valist-js/blob/v2.1.0/dist/commands/publish.ts)_
+_See code: [dist/commands/publish.ts](https://github.com/valist-io/valist-js/blob/v2.2.0/dist/commands/publish.ts)_
 <!-- commandsstop -->
