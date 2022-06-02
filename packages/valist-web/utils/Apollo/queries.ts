@@ -93,6 +93,7 @@ export const USER_HOMEPAGE = gql`
     users(where: {id: $address}) {
       id
       accounts {
+        id
         name
         projects{
           id
