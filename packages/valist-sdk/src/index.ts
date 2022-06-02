@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { create as createIPFS } from 'ipfs-http-client';
+import { create as createIPFS, urlSource } from 'ipfs-http-client';
 import Client from './client';
 import { createRelaySigner } from './metatx';
 import * as contracts from './contracts';
@@ -19,42 +19,68 @@ export class AccountMeta {
 }
 
 export class ProjectMeta {
-  /** project image used for profile pic */
-  public image?: string;
-  /** main project image used for discovery */
-  public main_capsule?: string;
-  /** project friendly name */
-  public name?: string;
-  /** short description of the project. */
-  public short_description?: string;
-  /** extended description of the project. */
-  public description?: string;
-  /** link to the project website. */
-  public external_url?: string;
-  /** type used by clients to handle project */
-  public type?: string;
-  /** tags used for searching and categorization */
-  public tags?: string[];
-  /** videos and graphics of the project */
-  public gallery?: {
-    name: string,
-    src: string,
-    type: string,
-    preview?: string,
-  }[];
+	/** project image used for profile pic */
+	public image?: string;
+	/** main project image used for discovery */
+	public main_capsule?: string;
+	/** project friendly name */
+	public name?: string;
+	/** short description of the project. */
+	public short_description?: string;
+	/** extended description of the project. */
+	public description?: string;
+	/** link to the project website. */
+	public external_url?: string;
+	/** type used by clients to handle project */
+	public type?: string;
+	/** tags used for searching and categorization */
+	public tags?: string[];
+	/** videos and graphics of the project */
+	public gallery?: GalleryMeta[];
+}
+
+export class GalleryMeta {
+	public name: string = '';
+	public src: string = '';
+	public type: string = '';
+	public preview?: string;
 }
 
 export class ReleaseMeta {
-  /** project image */
-  public image?: string;
-  /** full release name. */
-  public name?: string;
-  /** short description of the release. */
-  public description?: string;
-  /** link to the release assets. */
-  public external_url?: string;
+	/** project image */
+	public image?: string;
+	/** full release name. */
+	public name?: string;
+	/** short description of the release. */
+	public description?: string;
+	/** link to the release assets. */
+	public external_url?: string;
+	/** source code snapshot */
+	public source?: string;
+	/** installable binaries */
+	public install?: InstallMeta;
 }
 
+export class InstallMeta {
+	/** binary name */
+	public name?: string;
+	/** darwin/amd64 path */
+	public darwin_amd64?: string;
+	/** darwin/arm64 path */
+	public darwin_arm64?: string;
+	/** linux/386 path */
+	public linux_386?: string;
+	/** linux/amd64 path */
+	public linux_amd64?: string;
+	/** linux/arm path */
+	public linux_arm?: string;
+	/** linux/arm64 path */
+	public linux_arm64?: string;
+	/** windows/386 path */
+	public windows_386?: string;
+	/** windows/amd64 path */
+	public windows_amd64?: string;
+}
 
 export type Account = {
   id: string,
@@ -254,6 +280,28 @@ export function generateID(parentID: ethers.BigNumberish, name: string): string 
   const nameBytes = ethers.utils.toUtf8Bytes(name);
   const nameHash = ethers.utils.keccak256(nameBytes);
   return ethers.utils.solidityKeccak256(["uint256", "bytes32"], [parentID, nameHash]);
+}
+
+/**
+ * Import a source archive from an external URL.
+ * 
+ * @param source URL with the following format:
+ * - github.com/<owner>/<repo>/<ref>
+ * - gitlab.com/<owner>/<repo>/<ref>
+ */
+export function archiveSource(source: string) {
+	const [site, owner, repo, ...refs] = source.split('/');
+	switch (site) {
+		case 'github.com':
+			const ref = refs.join('/');
+			return urlSource(`https://api.github.com/repos/${owner}/${repo}/tarball/${ref}`);
+		case 'gitlab.com':
+			const id = encodeURIComponent(`${owner}/${repo}`);
+			const sha = encodeURIComponent(refs.join('/'));
+			return urlSource(`https://gitlab.com/api/v4/projects/${id}/repository/archive?sha=${sha}`);
+		default:
+			throw new Error('invalid source url');
+	}
 }
 
 export { Client, contracts };

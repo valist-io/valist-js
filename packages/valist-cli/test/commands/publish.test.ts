@@ -45,7 +45,6 @@ describe('publish', () => {
     await createProjectTx.wait();
 
     Publish.provider = provider;
-
     await Publish.run([
       'valist/cli/v0.0.1', 
       'README.md',
