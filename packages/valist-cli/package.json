@@ -1,6 +1,6 @@
 {
   "name": "@valist/cli",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Valist CLI",
   "author": "Valist, Inc.",
   "bin": {
@@ -19,7 +19,7 @@
   "dependencies": {
     "@oclif/core": "^1.8.0",
     "@oclif/plugin-help": "^5",
-    "@valist/sdk": "^2.1.0",
+    "@valist/sdk": "^2.2.0",
     "ethers": "^5.5.4",
     "globby": "^11",
     "inquirer": "^8.2.4",
