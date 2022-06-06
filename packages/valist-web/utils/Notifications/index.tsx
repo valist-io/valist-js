@@ -1,5 +1,6 @@
 import getConfig from "next/config";
 import toast from "react-hot-toast";
+import { getBlockExplorer } from "../Valist";
 
 export const notify = (type: string, text?: string): string => {
   const { publicRuntimeConfig } = getConfig();
@@ -18,7 +19,7 @@ export const notify = (type: string, text?: string): string => {
             className="text-indigo-500 cursor-pointer" 
             target="_blank" 
             rel="noreferrer"
-            href={`https://${blockExplorer}/tx/${text}`}>
+            href={`${getBlockExplorer(publicRuntimeConfig.CHAIN_ID)}/tx/${text}`}>
               view on block explorer 
           </a>
         </div>

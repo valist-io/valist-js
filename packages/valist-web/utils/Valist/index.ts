@@ -5,19 +5,16 @@ import parseError from "../Errors";
 import { dismiss, notify } from "../Notifications";
 import { FileList } from '@/components/Files/FileUpload';
 import { NextRouter } from "next/router";
-import { useAppDispatch } from "app/hooks";
-import { setAccountNames } from "@/features/accounts/accountsSlice";
-import { setAccount } from "@/features/projects/projectSlice";
 
-export function getTeamID(teamName: string) {
+export const getTeamID = (teamName: string) => {
   const nameBytes = utils.toUtf8Bytes(teamName);
   const nameHash = utils.keccak256(nameBytes);
   return utils.keccak256(
     utils.solidityPack(["uint256", "address"], [0x89, nameHash]),
   );
-}
+};
 
-export function getProjectID(teamName: string, projectName: string) {
+export const getProjectID = (teamName: string, projectName: string) => {
   const teamID = getTeamID(teamName);
   const nameBytes = utils.toUtf8Bytes(projectName);
   const nameHash = utils.keccak256(nameBytes);
@@ -25,7 +22,7 @@ export function getProjectID(teamName: string, projectName: string) {
   return utils.keccak256(
     utils.solidityPack(["uint256", "address"], [teamID, nameHash]),
   );
-}
+};
 
 // Wrap Valist Sdk call for create or update account
 export const createOrUpdateAccount = async (
@@ -219,5 +216,18 @@ export const removeMember = async (
     }
 
     dismiss(toastID);
+  }
+};
+
+export const getBlockExplorer = (chainID: string) => {
+  switch(chainID) {
+    case '137':
+      return 'https://polygonscan.com';
+    case '80001':
+      return 'https://mumbai.polygonscan.com';
+    case '1':
+      return 'https://etherscan.com';
+    default:
+      return 'https://polygonscan.com';
   }
 };
