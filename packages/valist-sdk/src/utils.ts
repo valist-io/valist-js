@@ -21,21 +21,21 @@ export function generateID(parentID: ethers.BigNumberish, name: string): string 
  * - gitlab.com/<owner>/<repo>/<ref>
  */
 export function archiveSource(source: string) {
-	const [site, owner, repo, ...refs] = source.split('/');
-	const ref = refs.join('/');
+  const [site, owner, repo, ...refs] = source.split('/');
+  const ref = refs.join('/');
 
-	let url: string | undefined;
-	if (site === 'github.com') {
-		url = `https://api.github.com/repos/${owner}/${repo}/tarball/${ref}`;
-	} else if (site === 'gitlab.com') {
-		const id = encodeURIComponent(`${owner}/${repo}`);
-		const sha = encodeURIComponent(ref);
-		url = `https://gitlab.com/api/v4/projects/${id}/repository/archive?sha=${sha}`;
-	}
+  let url: string | undefined;
+  if (site === 'github.com') {
+    url = `https://api.github.com/repos/${owner}/${repo}/tarball/${ref}`;
+  } else if (site === 'gitlab.com') {
+    const id = encodeURIComponent(`${owner}/${repo}`);
+    const sha = encodeURIComponent(ref);
+    url = `https://gitlab.com/api/v4/projects/${id}/repository/archive?sha=${sha}`;
+  }
 
-	if (!url) {
-		throw new Error('invalid source url');
-	}
+  if (!url) {
+    throw new Error('invalid source url');
+  }
 
-	return urlSource(url);
+  return urlSource(url);
 }
