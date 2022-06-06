@@ -14,6 +14,7 @@ import ValistContext from "@/features/valist/ValistContext";
 import { setMembers, setUsername } from "../teamSlice";
 import { useAppDispatch } from "app/hooks";
 import Web3Context from "@/features/valist/Web3Context";
+import { addMember } from "@/utils/Valist";
 
 interface AccountFormProps {
   initialValues: {
@@ -34,7 +35,6 @@ interface AccountFormProps {
   setView: SetUseState<string>;
   setAccountID: SetUseState<string>;
   setImage: UseListStateHandler<FileList>;
-  addMember: (address: string) => void;
   submit: (accountId: string, members: string[]) => void;
 }
 
@@ -45,6 +45,24 @@ export default function AccountForm(props: AccountFormProps) {
   const [validMemberList, setValidMemberList] = useState(false);
   const dispatch = useAppDispatch();
   const { publicRuntimeConfig } = getConfig();
+
+  const handleAddMember = async (address: string) => {
+    console.log('hello world');
+    const resolved = await web3Ctx.isValidAddress(address);
+
+    console.log("resolved", resolved);
+    console.log('accountID', props.accountID);
+    if (resolved && props.accountID) {
+      await addMember(
+        resolved,
+        props.accountUsername,
+        props.accountID,
+        valistCtx,
+      );
+    } else {
+      accountForm.setFieldError('newMember', 'Invalid address or ENS name');
+    }
+  };
 
   const handleSubmit = async () => {
       let validUsername = false;
@@ -145,7 +163,7 @@ ${members.join('\n')}
           validName={validName}
           validMemberList={validMemberList}
           submitText={props.submitText}
-          addMember={props.addMember}
+          addMember={handleAddMember}
           setValidMemberList={setValidMemberList}
           handleSubmit={handleSubmit}  
         />;

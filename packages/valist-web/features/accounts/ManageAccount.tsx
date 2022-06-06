@@ -14,6 +14,8 @@ import { useListState } from '@mantine/hooks';
 import { addMember, createOrUpdateAccount, removeMember } from '@/utils/Valist';
 import { setAccount } from '../projects/projectSlice';
 import { generateID } from '@valist/sdk';
+import Web3Context from '../valist/Web3Context';
+import { BigNumber } from 'ethers';
 
 type Member = {
   id: string,
@@ -33,6 +35,7 @@ export default function ManageAccount(props: EditAccountProps) {
   const router = useRouter();
   const [formView, setFormView] = useState('Basic Info');
   const { publicRuntimeConfig } = getConfig();
+  const web3Ctx = useContext(Web3Context);
 
   // Account State
   const accountUsername = useAppSelector(selectUsername);
@@ -70,9 +73,10 @@ export default function ManageAccount(props: EditAccountProps) {
 
   // On initial page load, if in edit mode, set projectAccount
   useEffect(() => {
-    console.log('props.accountsUsername', props.accountUsername);
     if (props.accountUsername) {
       dispatch(setUsername(props.accountUsername));
+      const chainID = BigNumber.from(publicRuntimeConfig.CHAIN_ID);
+      setAccountID(generateID(chainID, props.accountUsername));
     }
   }, [props.accountUsername, accountNames, dispatch]);
 
@@ -151,19 +155,6 @@ export default function ManageAccount(props: EditAccountProps) {
     }
   };
 
-  const handleAddMember = async (address: string) => {
-    if (address && accountID) {
-      await addMember(
-        address,
-        accountUsername,
-        accountID,
-        valistCtx,
-      );
-
-      setMembersChanged(membersChanged + 1);
-    }
-  };
-
   const handleRemoveMember = (address: string) => {
     if (address && accountID) {
       removeMember(
@@ -200,7 +191,6 @@ export default function ManageAccount(props: EditAccountProps) {
               setAccountID={setAccountID} 
               setView={setFormView} 
               setImage={setAccountImage}
-              addMember={handleAddMember}
               submit={handleSubmit}   
             />}
           </div>

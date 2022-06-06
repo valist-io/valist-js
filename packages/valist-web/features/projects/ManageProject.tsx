@@ -409,7 +409,7 @@ export default function ManageProject(props: ManageProjectProps) {
   
   return (
     <div>
-      <div className='border-b'>
+      <div>
         <Tabs setView={setFormView} view={formView} tabs={tabs} />
       </div>
       <div className="grid grid-cols-1 gap-4 items-start gap-y-6 lg:grid-cols-12 lg:gap-8">

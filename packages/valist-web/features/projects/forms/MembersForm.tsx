@@ -3,7 +3,6 @@ import { Button, TextInput, Textarea, Tooltip as MantineTooltip } from "@mantine
 import { AlertCircle as AlertCircleIcon } from 'tabler-icons-react';
 import { SetUseState } from "../../../utils/Account/types";
 
-
 interface MembersFormProps {
     memberText: string;
     validMemberList: boolean;
@@ -22,19 +21,6 @@ export const MembersForm = (props: MembersFormProps) => {
             <MantineTooltip label={text} >
                 <AlertCircleIcon size={16} style={{ display: 'block', opacity: 0.5 }} />
             </MantineTooltip>
-        );
-    };
-
-    const addButton = () => {
-        return (
-            <Button
-                color='blue'
-                className='mt-2'
-                type="button"
-                loading={props.loading}
-                loaderPosition="left"
-                onClick={() => props.addMember(member)}
-            >Add</Button>
         );
     };
 
@@ -72,8 +58,9 @@ export const MembersForm = (props: MembersFormProps) => {
                         type="button"
                         loading={props.loading}
                         loaderPosition="left"
-                        onClick={() => props.addMember(member)}
-                    >Add</Button>
+                        onClick={() => props.addMember(member)}>
+                        Add
+                    </Button>
                 </div>}
             </div>
         </form>
