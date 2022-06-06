@@ -1,12 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ethers } from 'ethers';
+import { Client } from '@valist/sdk';
 import { Magic } from 'magic-sdk';
-import { AppThunk, RootState } from '../../app/store';
 import { LoginType, SetUseState, ValistProvider } from '../../utils/Account/types';
 import { Project } from '../../utils/Apollo/types';
 import { isBrowser } from '../../utils/Browser';
-import { addressFromProvider, defaultProvider, providers } from '../../utils/Providers';
-import { ProviderParams } from '../../utils/Providers/types';
 
 export interface AccountState {
   loginType: LoginType;
@@ -78,52 +75,6 @@ export const accountsSlice = createSlice({
     },
   },
 });
-
-export function login(payload: LoginPayload): AppThunk {
-  return async (dispatch) => {
-    try {
-      let account: string;
-      let params: ProviderParams = {};
-
-      if (payload.loginType === 'magic') {
-        params = { 
-          email: payload.email,
-          setMagic: payload.setMagic,
-        };
-      }
-       
-      const providerURL = await providers[payload.loginType](params);
-
-      if (payload.loginType !== 'readOnly') {
-        const provider = new ethers.providers.Web3Provider(
-          providerURL,
-        );
-        account = await addressFromProvider(provider);
-        window.localStorage.setItem('loginType', payload.loginType);
-
-        dispatch(setAddress(account));
-        dispatch(setLoginType(payload.loginType));
-        payload.setProvider(provider);
-      }
-      dispatch(setLoginTried(true));
-    } catch (err) {
-      console.log('error', err);
-    }
-  };
-};
-
-export function logout(payload: LogoutPayload): AppThunk {
-  return async (dispatch) => {
-    window.localStorage.setItem('loginType', 'readOnly');
-    if (payload?.magic?.user) {
-      await payload.magic.user.logout();
-    }
-    dispatch(setAddress('0x0'));
-    dispatch(setLoginType('readOnly'));
-    dispatch(setMagicAddress(null));
-    payload.setProvider(defaultProvider);
-  };
-};
 
 export const { setLoginType, setLoginTried, setAddress, setMagicAddress, setAccounts, setAccountNames, setCurrentAccount, setLoading } = accountsSlice.actions;
 export const selectLoginType = (state: RootState) => state.account.loginType;

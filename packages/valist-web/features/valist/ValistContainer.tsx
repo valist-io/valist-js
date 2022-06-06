@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { login, selectAddress, selectLoginType, setAccounts, setAddress, setCurrentAccount, setLoading, setMagicAddress } from '../accounts/accountsSlice';
+import { setAccounts, setAddress, setCurrentAccount, setLoading, setMagicAddress } from '../accounts/accountsSlice';
 import { useEffect, useState } from 'react';
 import { Client, createReadOnly } from '@valist/sdk';
 import { USER_HOMEPAGE_QUERY } from '@valist/sdk/dist/graphql';
 import { createValistClient } from '../../utils/Account';
-import { addressFromProvider, defaultProvider, newMagic } from '../../utils/Providers';
-import { LoginType, ValistProvider } from '../../utils/Account/types';
+import { defaultProvider } from '../../utils/Providers';
+import { ValistProvider } from '../../utils/Account/types';
 import ValistContext from '../valist/ValistContext';
 import { Magic } from 'magic-sdk';
 import { selectIsOpen } from '../modal/modalSlice';
@@ -20,6 +20,12 @@ import { normalizeUserProjects } from '../../utils/Apollo/normalization';
 import { Toaster } from 'react-hot-toast';
 import getConfig from 'next/config';
 import { useAccount, useSigner } from 'wagmi';
+
+declare global {
+  interface Window {
+    valist?: Client;
+  }
+}
 
 export default function ValistContainer({ children }: any) {
   const isModal = useAppSelector(selectIsOpen);
@@ -38,7 +44,6 @@ export default function ValistContainer({ children }: any) {
   ));
 
   const [mainnet, setMainnet] = useState<JsonRpcProvider>(new ethers.providers.JsonRpcProvider('https://rpc.valist.io/ens'));
-  const [magic, setMagic] = useState<Magic>(newMagic());
 
   const { data, loading, error } = useQuery(gql(USER_HOMEPAGE_QUERY), {
     variables: { address: account?.address?.toLowerCase() },
@@ -94,12 +99,8 @@ export default function ValistContainer({ children }: any) {
     }, [account?.address, dispatch]);
 
   const web3Ctx: Web3ContextInstance = new Web3ContextInstance(
-    provider,
     mainnet,
-    magic,
-    setProvider,
     setMainnet,
-    setMagic,
   );
 
   return (
