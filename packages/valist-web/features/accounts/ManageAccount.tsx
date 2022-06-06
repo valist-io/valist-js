@@ -4,7 +4,7 @@ import ValistContext from '../valist/ValistContext';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { selectAccountNames, selectLoginTried, selectLoginType, setAccountNames } from '../accounts/accountsSlice';
 import { showLogin } from '../modal/modalSlice';
-import { selectDescription, selectWebsite, selectMembers, setWebsite, setDescription, setDisplayName, clear, selectUsername, setUsername, selectDisplayName, setMembers } from './teamSlice';
+import { selectDescription, selectWebsite, selectMembers, clear, selectUsername, setUsername, selectDisplayName, setMembers } from './teamSlice';
 import AccountPreview from './AccountPreview';
 import CreateAccountForm from './forms/AccountFormContent';
 import Tabs from '../../components/Tabs';
@@ -86,16 +86,13 @@ export default function ManageAccount(props: EditAccountProps) {
 
           accountData = await valistCtx.getAccountMeta(_accountID);
           if (accountData.image) setCurrentImage(accountData.image);
-          console.log("accountData", accountData);
+
           setInitialValues({
             username: props.accountUsername,
             displayName: accountData.name ? accountData.name : "",
             website: accountData.external_url ? accountData.external_url : "",
             description: accountData.description ? accountData.description : "",
           });
-          // if (accountData.name) dispatch(setDisplayName(accountData.name));
-          // if (accountData.external_url) dispatch(setWebsite(accountData.external_url));
-          // if (accountData.description) dispatch(setDescription(accountData.description));
 
           const members = await valistCtx.getAccountMembers(_accountID);
           if (members) dispatch(setMembers(members));
@@ -103,6 +100,8 @@ export default function ManageAccount(props: EditAccountProps) {
         } catch (err) {
           console.log('err', err);
         }
+      } else if (router.isReady) {
+        setIsDefaults(true);
       }
     })();
   }, [accountID, dispatch, membersChanged]);
@@ -129,16 +128,16 @@ export default function ManageAccount(props: EditAccountProps) {
     },
   ];
 
-  const handleSubmit = () => {
-    if (accountID) {
+  const handleSubmit = (accountId: string, members: string[]) => {
+    if (accountId) {
       createOrUpdateAccount(
         props.accountUsername ? false: true,
         accountUsername,
-        accountID,
+        accountId,
         accountDisplayName,
         accountDescription,
         accountWebsite,
-        accountMembers,
+        members,
         accountImage,
         currentImage,
         router,
@@ -187,7 +186,7 @@ export default function ManageAccount(props: EditAccountProps) {
         {/* Left Column */}
         <div className="grid grid-cols-1 gap-x-4 gap-y-6 lg:col-span-5">
           <div className="p-4">
-            {!props.accountUsername || isDefaults && <CreateAccountForm
+            {(!props.accountUsername || isDefaults) && <CreateAccountForm
               initialValues={initialValues}
               edit={props.accountUsername ? true : false}
               submitText={props.accountUsername ? 'Save changes' : 'Create account'}

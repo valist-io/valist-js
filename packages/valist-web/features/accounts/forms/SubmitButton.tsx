@@ -8,7 +8,7 @@ interface SubmitButtonProps {
 export default function SubmitButton(props: SubmitButtonProps) {
   return (
     <span className="w-full inline-flex rounded-md shadow-sm">
-    <button onClick={() => props.handleSubmit()} value="Submit" type="submit"
+    <button value="Submit" type="submit"
       className={`w-full inline-flex items-center justify-center px-6 py-3 border border-transparent
       text-base leading-6 font-medium rounded-md text-white transition ease-in-out duration-150
       ${(props.formValid) || props.navigation ?

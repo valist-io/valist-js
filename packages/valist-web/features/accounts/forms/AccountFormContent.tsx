@@ -35,7 +35,7 @@ interface AccountFormProps {
   setAccountID: SetUseState<string>;
   setImage: UseListStateHandler<FileList>;
   addMember: (address: string) => void;
-  submit: () => void;
+  submit: (accountId: string, members: string[]) => void;
 }
 
 export default function AccountForm(props: AccountFormProps) {
@@ -47,53 +47,55 @@ export default function AccountForm(props: AccountFormProps) {
   const { publicRuntimeConfig } = getConfig();
 
   const handleSubmit = async () => {
-    if (props.edit || validName && validMemberList) {
+      let validUsername = false;
       const username = (accountForm.values.username && !props.edit) ? accountForm.values.username : props.accountUsername;
       let accountID = "";
+      let members: string[] = [];
   
       if (username) {
         const chainID = BigNumber.from(publicRuntimeConfig.CHAIN_ID);
         accountID = generateID(chainID, accountForm.values.username);
-      }
+      } else { return false; }
 
-      const membersList = accountForm.values.members.split('\n');
-      let members: string[] = [];
-  
-      for (const member of membersList) {
-        let address = await web3Ctx.isValidAddress(member);
-        if (address) { 
-          members.push(address);
-        } else {
-          accountForm.setFieldError('members', "Member's list contains invalid address");
-          setValidMemberList(false);
-        }
-      }
-  
-      setValidMemberList(true);
-      dispatch(setMembers(members));
-  
       if (!props.edit) {
         if (await valistCtx.accountExists(accountID)) {
           accountForm.setFieldError('username', 'Username taken! 😢');
-          return;
+          return false;
+        } else {
+          validUsername = true;
         }
-  
+
         setValidName(true);
         dispatch(setUsername(accountForm.values.username));
-      }
 
-      if (!props.edit) {
+        const membersList = accountForm.values.members.split('\n');
+        for (const member of membersList) {
+          let address = await web3Ctx.isValidAddress(member);
+          if (address) { 
+            members.push(address);
+          } else {
+            accountForm.setFieldError('members', "Member's list contains invalid address");
+            setValidMemberList(false);
+          }
+        }
+
+        if (!validMemberList && validUsername) {
+          props.setView('Members');
+          return false;
+        }
+
+        dispatch(setMembers(members));
+
         alert(`
-Confirmation: You are about to create "${props.accountUsername}" with the following details:
-Account username: ${props.accountUsername}
+Confirmation: You are about to create "${username}" with the following details:
+Account username: ${username}
 Account display name: ${props.accountDisplayName}
 Members (admins):
-${props.accountMembers.join('\n')}
-`);
+${members.join('\n')}
+        `);
       }
 
-      props.submit();
-    }
+      props.submit(accountID, members);
   };
 
  const accountFormSchema = z.object({

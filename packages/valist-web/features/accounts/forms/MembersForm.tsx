@@ -1,10 +1,7 @@
-import Tooltip from "@/components/Tooltip";
 import Web3Context from "@/features/valist/Web3Context";
 import { SetUseState } from "@/utils/Account/types";
 import { Button, Textarea, TextInput } from "@mantine/core";
-import { useAppDispatch } from "app/hooks";
-import { useContext, useState } from "react";
-import { setMembers } from "../teamSlice";
+import { useContext } from "react";
 import SubmitButton from "./SubmitButton";
 
 export interface UseMembersForm{
@@ -68,7 +65,7 @@ export default function MembersForm(props: MembersFormProps) {
             
       {!props.edit && <SubmitButton 
         handleSubmit={props.handleSubmit}
-        formValid={props.validMemberList} 
+        formValid={true} 
         submitText={props.submitText} 
       />}
     </form>
