@@ -151,6 +151,7 @@ export const USER_HOMEPAGE_QUERY = `
     users(where: {id: $address}) {
       id
       accounts {
+        id
         name
         projects{
           id
