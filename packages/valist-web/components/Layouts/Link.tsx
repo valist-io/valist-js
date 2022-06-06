@@ -5,6 +5,8 @@ import { useMantineTheme, Text } from '@mantine/core';
 interface LinkProps {
   href: string,
   children?: ReactNode,
+  ml: string,
+  target?: string,
 }
 
 export default function Link(props: LinkProps) {
@@ -17,6 +19,7 @@ export default function Link(props: LinkProps) {
       {...rest}
       variant="link"
       component={NextLink}
+      target={props.target}
       weight={700}
       href={props.href}
       style={{ fontWeight: 100, textDecoration: "none", color }}

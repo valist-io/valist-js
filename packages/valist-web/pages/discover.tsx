@@ -1,15 +1,8 @@
-import React, { useState, useEffect } from 'react' ;
+import React from 'react' ;
 import { NextPage } from "next";
 import Layout from "../components/Layouts/Main";
 
 const Discover: NextPage = () => {
-  const [releases, setReleases] = useState<any>([]);
-
-  useEffect(() => {
-    window.valist?.listReleases().then((r) => {
-     console.log(r);
-    });
-  }, []);
   return (
     <Layout title="Valist | Discover">
       <div className="flex mt-20 lg:mt-32">

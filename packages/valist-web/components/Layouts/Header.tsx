@@ -7,7 +7,7 @@ import {
   Container,
   Title,
   TextInput,
-  useMantineTheme 
+  useMantineTheme, 
 } from '@mantine/core';
 import { NextLink } from '@mantine/next';
 import { useRouter } from 'next/router';
@@ -20,7 +20,7 @@ interface Props {
   onBurger: () => {};
 }
 
-export default function(props: Props): JSX.Element {
+export default function Nav(props: Props): JSX.Element {
   const router = useRouter();
   const theme = useMantineTheme();
 
@@ -44,7 +44,7 @@ export default function(props: Props): JSX.Element {
             <Title order={2}>alist</Title>
           </Group>
         </NextLink>
-        <Container>
+        <Container size="xl">
           <TextInput
             placeholder="Search"
             variant="filled"
@@ -58,4 +58,4 @@ export default function(props: Props): JSX.Element {
       </div>
     </Header>
   );
-}
+};

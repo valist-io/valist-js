@@ -83,7 +83,6 @@ export default function Nav() {
             </div>
           </div>
         </div>
-        {/* <MobileMenu loginType={loginType} actions={dropdownItems} navigation={navItems} address={address} /> */}
       </nav>
   );
 }
