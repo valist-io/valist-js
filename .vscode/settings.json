@@ -1,6 +1,7 @@
 {
   "cSpell.words": [
-    "Filecoin"
+    "Filecoin",
+    "Valist"
   ],
   "solidity.packageDefaultDependenciesDirectory": "packages/evm-contracts/node_modules"
 }
