@@ -12,6 +12,7 @@ import SearchBar from './Searchbar';
 import ThemeButton from '../Theme/ThemeButton';
 import { Navbar, Text, useMantineTheme } from '@mantine/core';
 import { NextLink } from '@mantine/next';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 export default function Nav() {
   const address = useAppSelector(selectAddress);
@@ -78,7 +79,7 @@ export default function Nav() {
                   {item.name}
                 </Text>
               ))}
-              <NavDropdown loginType={loginType} address={address} actions={dropdownItems} />
+              <div style={{ marginLeft: 20 }}><ConnectButton showBalance={false} /></div>
             </div>
           </div>
         </div>

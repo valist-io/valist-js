@@ -15,7 +15,7 @@ interface MobileMenuProps {
 
 export default function MobileMenu(props: MobileMenuProps):JSX.Element {
   return (
-    <Popover.Panel as="nav" className="lg:hidden" aria-label="Global">
+    <div className="lg:hidden" aria-label="Global">
       <div className="max-w-3xl mx-auto px-2 pt-2 pb-3 space-y-1 sm:px-4">
         {props.navigation.map((item: NavItem) => (
           <a
@@ -70,6 +70,6 @@ export default function MobileMenu(props: MobileMenuProps):JSX.Element {
           ))}
         </div>
       </div>
-    </Popover.Panel>
+    </div>
   );
 };

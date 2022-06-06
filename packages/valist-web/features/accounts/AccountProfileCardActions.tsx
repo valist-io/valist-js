@@ -20,7 +20,7 @@ export default function TeamProfileCardActions(props: TeamProfileActionsProps) {
         <a className="bg-transparent flex justify-center items-center px-4 py-2 border
         border-gray-300 shadow-sm text-sm font-medium rounded-md
         bg-white">
-          Edit
+          Settings
         </a>
       </Link>
     </Paper>

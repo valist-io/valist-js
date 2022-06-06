@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { login, selectAddress, selectLoginType, setAccounts, setCurrentAccount, setLoading, setMagicAddress } from '../accounts/accountsSlice';
+import { login, selectAddress, selectLoginType, setAccounts, setAddress, setCurrentAccount, setLoading, setMagicAddress } from '../accounts/accountsSlice';
 import { useEffect, useState } from 'react';
 import { Client, createReadOnly } from '@valist/sdk';
 import { USER_HOMEPAGE_QUERY } from '@valist/sdk/dist/graphql';
@@ -19,14 +19,17 @@ import { useQuery, gql } from '@apollo/client';
 import { normalizeUserProjects } from '../../utils/Apollo/normalization';
 import { Toaster } from 'react-hot-toast';
 import getConfig from 'next/config';
+import { useAccount, useSigner } from 'wagmi';
 
 export default function ValistContainer({ children }: any) {
-  const loginType = useAppSelector(selectLoginType);
   const isModal = useAppSelector(selectIsOpen);
-  const address = useAppSelector(selectAddress);
+
   const dispatch = useAppDispatch();
   const { publicRuntimeConfig } = getConfig();
   const [provider, setProvider] = useState<ValistProvider>(defaultProvider);
+  const { data: account } = useAccount();
+  const { data: signer, isError, isLoading } = useSigner();
+
   const [valistClient, setValistClient] = useState<Client>(
     createReadOnly(provider,
     {
@@ -38,40 +41,24 @@ export default function ValistContainer({ children }: any) {
   const [magic, setMagic] = useState<Magic>(newMagic());
 
   const { data, loading, error } = useQuery(gql(USER_HOMEPAGE_QUERY), {
-    variables: { address: address.toLowerCase() },
+    variables: { address: account?.address?.toLowerCase() },
   });
 
   // Signal to APP Components that user data has been loaded
   useEffect(() => {
     dispatch(setLoading(loading));
-  }, [address]);
-  
-  // Dispatch login to redux on app load
-  useEffect(() => {
-    dispatch(
-      login({
-        loginType, setProvider, setMagic,
-      }),
-    );
-
-    // Listen for account or network change
-    if (loginType === 'metaMask') {
-      ['accountsChanged', 'chainChanged'].forEach((event) => {
-        window.ethereum.on(event, () => {
-          const loginType = (localStorage.getItem('loginType') as LoginType);
-          if (loginType === 'metaMask') dispatch(login({ loginType, setProvider }));
-        });
-      });
-    }
-  }, []);
+  }, [account?.address]);
   
   // Set Valist client on provider change.
   useEffect(() => {
     (async () => {
-      const client = await createValistClient(provider);
-      if (client) setValistClient(client);
+      if (signer?.provider && !isLoading) {
+        const client = await createValistClient(signer.provider as any);
+        dispatch(setAddress(await signer?.getAddress()));
+        if (client) setValistClient(client);
+      }
     })();
-  }, [provider]);
+  }, [signer, isLoading]);
 
   // Add Valist client to window
   useEffect(() => {
@@ -79,7 +66,7 @@ export default function ValistContainer({ children }: any) {
   }, [valistClient]);
 
   // Log current address
-  useEffect(() => console.log("Address:", address), [address]);
+  useEffect(() => console.log("Address:", account?.address), [account?.address]);
 
   // Set User's teams and associated projects
   useEffect(() => {
@@ -98,25 +85,13 @@ export default function ValistContainer({ children }: any) {
     }
   }, [data]);
 
-  // Load and set currentAccount if saved in local storage
-  useEffect(() => {
-    const savedAccounts = JSON.parse(localStorage.getItem('currentAccount') || '[]');
-    dispatch(setCurrentAccount(savedAccounts[address]));
-  }, [address, dispatch]);
-
-  // Check if magic session is active
-  useEffect(() => {
-    (async () => {
-      const isLoggedIn = await magic.user.isLoggedIn();
-
-      if (isLoggedIn) {
-        // @ts-ignore
-        const provider = new ethers.providers.Web3Provider(magic.rpcProvider);
-        const address = await addressFromProvider(provider);
-        dispatch(setMagicAddress(address));
+    // Load and set currentAccount if saved in local storage
+    useEffect(() => {
+      if (account?.address) {
+        const savedAccounts = JSON.parse(localStorage.getItem('currentAccount') || '[]');
+        dispatch(setCurrentAccount(savedAccounts[account?.address]));
       }
-    })();
-  }, [magic]);
+    }, [account?.address, dispatch]);
 
   const web3Ctx: Web3ContextInstance = new Web3ContextInstance(
     provider,
