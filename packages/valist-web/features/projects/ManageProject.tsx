@@ -4,7 +4,6 @@ import { ProjectMeta } from '@valist/sdk';
 import ValistContext from '../../features/valist/ValistContext';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { selectAccountNames, selectLoginTried, selectLoginType } from '../../features/accounts/accountsSlice';
-import { showLogin } from '../../features/modal/modalSlice';
 import { dismiss, notify } from '../../utils/Notifications';
 import parseError from '../../utils/Errors';
 import { clear, selectAccount, selectDescription, selectDisplayName, selectLimit, selectMembers, selectName, selectPrice, selectRoyalty, selectRoyaltyAddress, selectShortDescription, selectTags, selectType, selectWebsite, selectYouTubeUrl, setDescription, setDisplayName, setLimit, setMembers, setName, setPrice, setRoyalty, setRoyaltyAddress, setShortDescription, setTags, setAccount, setType, setWebsite } from '../../features/projects/projectSlice';
@@ -86,17 +85,6 @@ export default function ManageProject(props: ManageProjectProps) {
   const [projectAssets, setProjectAssets] = useState<Asset[]>([]);
   const youtubeUrl = useAppSelector(selectYouTubeUrl);
   const [membersChanged, setMembersChanged] = useState(0);
-
-  console.log('projectAccount', projectAccount);
-
-  // Check if user is authenticated, prompt them to login if not logged in
-  useEffect(() => {
-    (async () => {
-      if (loginType === 'readOnly' && loginTried) {
-        dispatch(showLogin());
-      }
-    })();
-  }, [dispatch, loginTried, loginType]);
 
   // On page load, clear any input from previous pages/sessions
   useEffect(() => {

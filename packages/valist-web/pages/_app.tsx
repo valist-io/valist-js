@@ -6,11 +6,10 @@ import { Provider } from 'react-redux';
 import dynamic from 'next/dynamic';
 import { ApolloProvider } from '@apollo/client';
 import client from '../utils/Apollo/client';
-import { chain, createClient, WagmiProvider } from 'wagmi';
+import { chain, createClient, WagmiConfig, configureChains } from 'wagmi';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import { magic } from '../utils/Providers/magic';
 import {
-  configureChains,
   connectorsForWallets,
   RainbowKitProvider,
   wallet,
@@ -29,8 +28,10 @@ const AppContainer = dynamic(
   { ssr: false },
 );
 
-const defaultProvider = jsonRpcProvider({ 
-  rpc: () => ({ http: publicRuntimeConfig.WEB3_PROVIDER }),
+const defaultProvider = jsonRpcProvider({
+  rpc: chain => ({
+    http: publicRuntimeConfig.WEB3_PROVIDER,
+  }),
 });
 
 const { chains, provider } = configureChains([chain.polygonMumbai], [defaultProvider]);
@@ -68,9 +69,9 @@ function ValistApp(props: AppProps & { colorScheme: ColorScheme }) {
 
   return (
     <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
-      <MantineProvider theme={{ ...theme, colorScheme }} withGlobalStyles withNormalizeCSS>
+      <MantineProvider theme={{ ...theme, colorScheme } as any} withGlobalStyles withNormalizeCSS>
         <Provider store={store}>
-          <WagmiProvider client={wagmiClient}>
+        <WagmiConfig client={wagmiClient}>
             <RainbowKitProvider chains={chains}>
               <ApolloProvider client={client}>
                 <AppContainer>
@@ -78,7 +79,7 @@ function ValistApp(props: AppProps & { colorScheme: ColorScheme }) {
                 </AppContainer>
               </ApolloProvider>
             </RainbowKitProvider>
-          </WagmiProvider>
+          </WagmiConfig>
         </Provider>
       </MantineProvider>
     </ColorSchemeProvider>

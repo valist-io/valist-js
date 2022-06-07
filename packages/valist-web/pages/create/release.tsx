@@ -6,7 +6,6 @@ import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { selectAccountNames, selectAccounts, selectLoading, selectLoginTried, selectLoginType } from '../../features/accounts/accountsSlice';
-import { showLogin } from '../../features/modal/modalSlice';
 import { selectName, selectDescription, selectProject, selectTeam, clear } from '../../features/releases/releaseSlice';
 import { getProjectNames } from '../../utils/Apollo/normalization';
 import ReleasePreview from '../../features/releases/ReleasePreview';
@@ -44,15 +43,6 @@ const PublishReleasePage: NextPage = () => {
 
   let incomingAccount = (router.query.account as string | undefined);
   let incomingProject = (router.query.project as string | undefined);
-
-  // Check if user is authenticated, prompt them to login if not logged in
-  useEffect(() => {
-    (async () => {
-      if (loginType === 'readOnly' && loginTried) {
-        dispatch(showLogin());
-      }
-    })();
-  }, [dispatch, loginTried, loginType]);
 
   // On page load, clear any input from previous pages/sessions
   useEffect(() => {

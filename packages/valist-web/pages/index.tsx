@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react';
 import { useAppSelector } from '../app/hooks';
 import Layout from '../components/Layouts/Main';
 import { selectAccountNames, selectAccounts, selectAddress, selectCurrentAccount, selectLoginTried } from '../features/accounts/accountsSlice';
-import LoginForm from '../features/accounts/LoginForm';
 import CreateButton from '../features/dashboard/CreateButton';
 import DashboardContent from '../features/dashboard/DashboardContent';
 import HomepageProfileCard from '../features/dashboard/DashboardProfileCard';
@@ -15,6 +14,7 @@ import LogCard from '../features/logs/LogCard';
 import { USER_LOGS_QUERY } from '@valist/sdk/dist/graphql';
 import { Log, Project } from '../utils/Apollo/types';
 import { truncate } from '../utils/Formatting/truncate';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const Dashboard: NextPage = () => {
   const address = useAppSelector(selectAddress);
@@ -74,7 +74,7 @@ const Dashboard: NextPage = () => {
       <Layout title="Valist | Login">
         <div className="flex justify-center items-center">
           <div className="mt-40 m-auto bg-white border rounded-lg flex items-center flex-col max-w-lg">
-            <LoginForm />
+            <ConnectButton />
           </div>
         </div>
       </Layout>

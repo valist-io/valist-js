@@ -3,7 +3,6 @@ import { useContext, useEffect, useState } from 'react';
 import ValistContext from '../valist/ValistContext';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { selectAccountNames, selectLoginTried, selectLoginType, setAccountNames } from '../accounts/accountsSlice';
-import { showLogin } from '../modal/modalSlice';
 import { selectDescription, selectWebsite, selectMembers, clear, selectUsername, setUsername, selectDisplayName, setMembers } from './teamSlice';
 import AccountPreview from './AccountPreview';
 import CreateAccountForm from './forms/AccountFormContent';
@@ -56,15 +55,6 @@ export default function ManageAccount(props: EditAccountProps) {
     description: "",
     website: "",
   });
-
-  // Check if user is authenticated, prompt them to login if not logged in
-  useEffect(() => {
-    (async () => {
-      if (loginType === 'readOnly' && loginTried) {
-        dispatch(showLogin());
-      }
-    })();
-  }, [dispatch, loginTried, loginType]);
 
   // On page load, clear any input from previous pages/sessions
   useEffect(() => {

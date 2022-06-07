@@ -8,9 +8,6 @@ import { createValistClient } from '../../utils/Account';
 import { defaultProvider } from '../../utils/Providers';
 import { ValistProvider } from '../../utils/Account/types';
 import ValistContext from '../valist/ValistContext';
-import { Magic } from 'magic-sdk';
-import { selectIsOpen } from '../modal/modalSlice';
-import Modal from '../modal/Modal';
 import Web3Context, { Web3ContextInstance } from './Web3Context';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { ethers } from 'ethers';
@@ -28,8 +25,6 @@ declare global {
 }
 
 export default function ValistContainer({ children }: any) {
-  const isModal = useAppSelector(selectIsOpen);
-
   const dispatch = useAppDispatch();
   const { publicRuntimeConfig } = getConfig();
   const [provider, setProvider] = useState<ValistProvider>(defaultProvider);
@@ -107,7 +102,6 @@ export default function ValistContainer({ children }: any) {
     <Web3Context.Provider value={web3Ctx}>
       <ValistContext.Provider value={valistClient}>
         <Toaster />
-        {isModal && <Modal />}
         {children}
       </ValistContext.Provider>
     </Web3Context.Provider>
