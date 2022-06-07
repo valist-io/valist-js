@@ -90,13 +90,9 @@ export default function AccountForm(props: AccountFormProps) {
           } else {
             accountForm.setFieldError('members', "Member's list contains invalid address");
             setValidMemberList(false);
-            return;
+            props.setView('Members');
+            return false;
           }
-        }
-
-        if (!validUsername) {
-          props.setView('Members');
-          return false;
         }
 
         dispatch(setMembers(members));

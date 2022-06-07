@@ -28,13 +28,10 @@ export default function ManageAccount(props: EditAccountProps) {
   // Page State
   const valistCtx = useContext(ValistContext);
   const accountNames = useAppSelector(selectAccountNames);
-  const loginType = useAppSelector(selectLoginType);
-  const loginTried = useAppSelector(selectLoginTried);
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [formView, setFormView] = useState('Basic Info');
   const { publicRuntimeConfig } = getConfig();
-  const web3Ctx = useContext(Web3Context);
 
   // Account State
   const accountUsername = useAppSelector(selectUsername);
