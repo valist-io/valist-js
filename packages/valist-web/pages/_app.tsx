@@ -34,7 +34,12 @@ const defaultProvider = jsonRpcProvider({
   }),
 });
 
-const { chains, provider } = configureChains([chain.polygonMumbai], [defaultProvider]);
+let currentChain = chain.polygonMumbai;
+if (publicRuntimeConfig.CHAIN_ID === '137') {
+  currentChain = chain.polygon;
+}
+
+const { chains, provider } = configureChains([currentChain], [defaultProvider]);
 
 const connectors = connectorsForWallets([
   {
