@@ -11,12 +11,14 @@ import {
 } from '@mantine/core';
 import { NextLink } from '@mantine/next';
 import { useRouter } from 'next/router';
+import { MouseEventHandler } from 'react';
 import { Search } from 'tabler-icons-react';
 import ThemeButton from '../Theme/ThemeButton';
+import Link from './Link';
 
 interface Props {
   opened: boolean;
-  onBurger: () => {};
+  onBurger: MouseEventHandler<HTMLButtonElement>;
 }
 
 export default function Nav(props: Props): JSX.Element {
@@ -48,7 +50,7 @@ export default function Nav(props: Props): JSX.Element {
             placeholder="Search"
             variant="filled"
             icon={<Search size={18} strokeWidth={3} />}
-            onKeyPress={(e) => e.key === 'Enter' && router.push(`/search/${e.target.value}`)}
+            onKeyPress={(e) => e.key === 'Enter' && router.push(`/search/${(e.target as HTMLTextAreaElement).value}`)}
           />
         </Container>
         <Group>

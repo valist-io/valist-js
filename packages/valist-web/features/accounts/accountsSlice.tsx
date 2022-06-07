@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Client } from '@valist/sdk';
+import { RootState } from 'app/store';
 import { Magic } from 'magic-sdk';
 import { LoginType, SetUseState, ValistProvider } from '../../utils/Account/types';
 import { Project } from '../../utils/Apollo/types';
