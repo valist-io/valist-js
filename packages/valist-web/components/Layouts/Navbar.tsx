@@ -26,9 +26,10 @@ export default function SideNav(props: Props): JSX.Element {
 			<Navbar.Section grow component={ScrollArea}>
 				<Stack>
 					<ConnectButton showBalance={false} />
+					<Link href="/" ml="sm">Dashboard</Link>
 					<Link href="/discover" ml="sm">Discover</Link>
-          <Link href="https://valist.io/discord" target="_blank" ml="sm">Discord</Link>
-          <Link href="https://docs.valist.io/" target="_blank" ml="sm">Docs</Link>
+          			<Link href="https://valist.io/discord" target="_blank" ml="sm">Discord</Link>
+          			<Link href="https://docs.valist.io/" target="_blank" ml="sm">Docs</Link>
 				</Stack>
       </Navbar.Section>
     </Navbar>
