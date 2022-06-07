@@ -49,8 +49,6 @@ const connectors = connectorsForWallets([
     groupName: 'Mobile',
     wallets: [
       wallet.rainbow({ chains }),
-      wallet.argent({ chains }),
-      wallet.trust({ chains }),
       wallet.walletConnect({ chains }),
     ],
   },
