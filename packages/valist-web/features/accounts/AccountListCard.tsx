@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { notify } from '../../utils/Notifications';
 import AddressIdenticon from '../../components/Identicons/AddressIdenticon';
 import { AccountMeta } from '@valist/sdk';
+import { Paper } from '@mantine/core';
 
 type TeamListCardProps = {
   text?: string;
@@ -36,7 +37,7 @@ export default function TeamListCard({ text, image, teamName, metaURI }: TeamLis
   }, [metaURI, text]);
 
   return (
-    <div style={{ height: '116px' }} className="bg-white rounded-lg shadow px-6 py-6 mb-2 border-2 hover:border-indigo-500 cursor-pointer">
+    <Paper style={{ height: '116px' }} shadow="xs" p="md" radius="md" withBorder>
       <div className='flex mb-3'>
         <div className="flex-shrink-0 mr-5">
           {(image || meta.image) ?
@@ -57,6 +58,6 @@ export default function TeamListCard({ text, image, teamName, metaURI }: TeamLis
           </p>
         </div>
       </div>
-    </div>
+    </Paper>
   );
 };

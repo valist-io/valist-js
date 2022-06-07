@@ -1,3 +1,4 @@
+import { Paper } from '@mantine/core';
 import Markdown from '../../components/Markdown';
 
 interface ProjectReadmeProps {
@@ -6,8 +7,8 @@ interface ProjectReadmeProps {
 
 export default function ProjectReadme(props: ProjectReadmeProps): JSX.Element {
   return (
-    <div className="px-8 pt-7 pb-5 bg-white">
+    <Paper shadow="xs" p="md" radius={"md"} withBorder>
       <Markdown markdown={props.repoReadme} />
-    </div>
+    </Paper>
   );
 };

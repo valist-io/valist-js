@@ -1,3 +1,4 @@
+import { Paper } from '@mantine/core';
 import { useContext, useEffect, useState } from 'react';
 import AddressIdenticon from '../../components/Identicons/AddressIdenticon';
 import Web3Context from '../valist/Web3Context';
@@ -31,7 +32,7 @@ function TeamMemberListItem(props: TeamMemberListItemProps): JSX.Element {
           <AddressIdenticon address={props.id} height={32} width={32} />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-gray-900 truncate">
+          <p className="truncate">
             {ens || props.id}
           </p>
         </div>
@@ -51,17 +52,17 @@ interface TeamMemberListProps {
 
 export default function TeamMemberList(props: TeamMemberListProps): JSX.Element {
   return (
-    <section aria-labelledby="recent-hires-title">
-      <div className="rounded-lg bg-white overflow-hidden shadow">
-        <div className="p-6">
-          <h2 className="text-base font-medium text-gray-900" id="recent-hires-title">Members</h2>
+    <section>
+      <Paper shadow="xs" p="md" radius="md" withBorder>
+        <div>
+          <h2>Members</h2>
           <div className="flow-root mt-6">
             <ul className="-my-5 divide-y divide-gray-200">
               { props.accountMembers.map((member: TeamMember) => <TeamMemberListItem key={member.id} id={member.id} />)}
             </ul>
           </div>
         </div>
-      </div>
+      </Paper>
     </section>
   );
 }

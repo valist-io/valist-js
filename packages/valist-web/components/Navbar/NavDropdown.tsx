@@ -16,7 +16,7 @@ export default function NavDropdown(props: NavDropdownProps): JSX.Element {
   return (
     <Menu as="div" className="flex-shrink-0 relative ml-5">
       <div>
-        <Menu.Button className="bg-white rounded-full flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        <Menu.Button className="rounded-full flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
           <AddressIdenticon height={36} width={36} address={props.address} />
         </Menu.Button>
       </div>

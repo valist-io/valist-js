@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Aktiv Grotesk Corp';
+  font-style: normal;
+  src: url(/fonts/AktivGroteskCorp-Medium.woff);
+  line-height: 32px;
+}
+
+a {
+  text-decoration: none,
+}
+
 .tooltip {
   @apply invisible absolute;
 }
@@ -12,6 +23,9 @@
 
 .toast {
   @apply flex flex-row items-center justify-between w-96 bg-gray-900 px-4 py-6 text-white shadow-2xl hover:shadow-none transform-gpu translate-y-0 hover:translate-y-1 rounded-xl relative transition-all duration-500 ease-in-out;
+}
+.button {
+  @apply w-full inline-flex items-center justify-center px-6 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500;
 }
 
 .markdown > *:first-child {

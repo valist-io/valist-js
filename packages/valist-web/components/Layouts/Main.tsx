@@ -1,6 +1,8 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState } from 'react';
 import Head from 'next/head';
-import Navbar from "../Navbar/Navbar";
+import { AppShell, useMantineTheme } from '@mantine/core';
+import Navbar from './Navbar';
+import Header from './Header';
 
 interface LayoutProps {
   children?: ReactNode,
@@ -8,20 +10,28 @@ interface LayoutProps {
 };
 
 export default function Layout(props: LayoutProps): JSX.Element {
+  const theme = useMantineTheme();
+  const [opened, setOpened] = useState(false);
+
+  const backgroundColor = theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[1];
+
   return (
-    <div>
+    <React.Fragment>
       <Head>
         <title>{props.title}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="min-h-screen bg-gray-100">
-        <Navbar />
-        <main className="pt-4 pb-8">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8">
-            {props.children}  
-          </div>
-        </main>
-      </div>
-    </div>
+      <AppShell
+        fixed
+        navbarOffsetBreakpoint="sm"
+        asideOffsetBreakpoint="sm"
+        padding="md"
+        navbar={<Navbar opened={opened} />}
+        header={<Header opened={opened} onBurger={() => setOpened(!opened)} />}
+        styles={(theme) => ({ main: { backgroundColor } })}
+      >
+        { props.children }
+      </AppShell>
+    </React.Fragment>
   );
 };

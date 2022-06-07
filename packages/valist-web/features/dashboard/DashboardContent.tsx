@@ -22,7 +22,7 @@ export default function DahsboardContent(props: DashboardContentProps): JSX.Elem
       case 'Projects':
         return <ProjectList linksDisabled={false} projects={props.userProjects} />;
       case 'Activity':
-        return <LogTable logs={props.logs} />;
+        return <div style={{ marginTop: "1rem" }}><LogTable logs={props.logs} /></div>;
       default:
         return <EmptyTeams />;
     }

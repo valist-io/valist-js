@@ -1,34 +1,20 @@
 import React from 'react';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { ethers } from 'ethers';
-import { Magic } from 'magic-sdk';
-import { SetUseState, ValistProvider } from '../../utils/Account/types';
+import { SetUseState } from '../../utils/Account/types';
 import { store } from '../../app/store';
 import { setName } from '../ens/ensSlice';
-import { defaultProvider } from '../../utils/Providers';
 
-export class Web3ContextInstance {
-  public valist: ValistProvider;                                                                                                              
+export class Web3ContextInstance {                                                                                                         
   public mainnet: JsonRpcProvider;
-  public magic: Magic | null;
-  public setValist: SetUseState<ValistProvider>;
   public setMainnet: SetUseState<JsonRpcProvider>;
-  public setMagic: SetUseState<Magic>;
 
   constructor(
-    valist:  ValistProvider,
     mainnet: JsonRpcProvider,
-    magic: Magic | null,
-    setValist: SetUseState<JsonRpcProvider>,
     setMainnet: SetUseState<JsonRpcProvider>,
-    setMagic: SetUseState<Magic>,
   ) {
-    this.valist = valist;
 		this.mainnet = mainnet;
-    this.magic = magic;
-    this.setValist = setValist;
     this.setMainnet = setMainnet;
-    this.setMagic = setMagic;
 	}
 
   async reverseEns (address: string) {
@@ -83,10 +69,6 @@ export class Web3ContextInstance {
 };
 
 export default React.createContext<Web3ContextInstance>(new Web3ContextInstance(
-  defaultProvider,
   new ethers.providers.JsonRpcProvider('https://rpc.valist.io/ens'),
-  null,
-  () => {},
-  () => {},
   () => {},
 ));

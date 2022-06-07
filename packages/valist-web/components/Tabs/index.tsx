@@ -19,8 +19,8 @@ export default function Tabs(props: TabsProps): JSX.Element {
   return (
     <div className="flex flex-col sm:flex-row ml-2">
       {props.tabs.map((tab: Tab) => (
-        <div key={tab.text} onClick={() =>  handleTabClick(tab)}
-          className={`${tab.disabled ? 'cursor-not-allowed ' : 'cursor-pointer '}tab text-gray-600 text-center py-4 px-6 block hover:text-indigo-500 focus:outline-none  `  + ((props.view === tab.text) ? "text-indigo-500 border-indigo-500 border-b-2 font-medium" : "")}
+        <div key={tab.text} onClick={() => handleTabClick(tab)}
+          className={`${tab.disabled ? 'cursor-not-allowed ' : 'cursor-pointer '}tab text-center py-4 px-6 block hover:text-indigo-500 focus:outline-none  `  + ((props.view === tab.text) ? "text-white-500 border-indigo-500 border-b-4 font-medium" : "")}
           data-content={tab.text}>
           {tab.text}
         </div>

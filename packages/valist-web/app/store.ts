@@ -1,7 +1,6 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import accountReducer from '../features/accounts/accountsSlice';
 import ensReducer from '../features/ens/ensSlice';
-import modalReducer from '../features/modal/modalSlice';
 import projectsReducer from '../features/projects/projectSlice';
 import releaseReducer from '../features/releases/releaseSlice';
 import teamsReducer from '../features/accounts/teamSlice';
@@ -13,7 +12,6 @@ export const store = configureStore({
     project: projectsReducer,
     release: releaseReducer,
     ens: ensReducer,
-    modal: modalReducer,
   },
 });
 

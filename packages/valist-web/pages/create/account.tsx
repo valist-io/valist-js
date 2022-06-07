@@ -1,11 +1,11 @@
 import type { NextPage } from 'next';
 import Layout from '../../components/Layouts/Main';
-import ManageTeam from '../../features/accounts/ManageAccount';
+import ManageAccount from '@/features/accounts/ManageAccount';
 
 const CreateAccountPage: NextPage = () => {
   return (
-    <Layout title={`Valist | Create team`}>
-      <ManageTeam />
+    <Layout title={`Valist | Create account`}>
+      <ManageAccount />
     </Layout>
   );
 };

@@ -19,13 +19,10 @@ export default function ProjectTypeSelect(props: ProjectTypeSelectProps) {
 
   return (
     <div>
-      <h2 className="block text-sm font-medium text-gray-700 mb-2">
-        Project Type <span className="float-right"><Tooltip text="Type associated with this project." /></span>
-      </h2>
-
       <Select
         data={defaultTypes}
         placeholder="Select type"
+        label="Project Type"
         nothingFound="Nothing found"
         searchable
         creatable
