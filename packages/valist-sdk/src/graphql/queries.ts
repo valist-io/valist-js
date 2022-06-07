@@ -1,50 +1,58 @@
-import axios from 'axios';
-import { VALIST_GRAPHQL_URL } from './index';
-
-export type GraphqlQuery = {
-    query: string,
-    variables?: object,
-}
-
-export async function fetchGraphQL(query : GraphqlQuery): Promise<any> {
-  const response = await axios({
-    url: VALIST_GRAPHQL_URL,
-    method: 'post',
-    data: query,
-  });
-  console.log(response.data.data);
-}
-
-export function getSubgraphAddress(chainId: number): string {
-	switch (chainId) {
-    case 137:
-      return "https://api.thegraph.com/subgraphs/name/valist-io/valist"
-    case 80001:
-      return "https://api.thegraph.com/subgraphs/name/valist-io/valistmumbai"
-    case 1337:
-      return "http://localhost:8000/subgraphs/name/valist/dev"
-		default:
-			throw new Error(`unsupported network chainId=${chainId}`);
-	}
-}
-
 // Valist GraphQL Queries
+
+export const ACCOUNT_QUERY = `
+  query Accounts{
+    accounts {
+      id
+      name
+      metaURI
+    }
+  }
+`;
+
+export const PROJECT_QUERY = `
+  query Projects{
+    projects {
+      id
+      name
+      metaURI
+      account {
+        id
+        name
+      }
+    }
+  }
+`;
+
 export const RELEASE_QUERY = `
-query {
-	releases{
-	  id
-	  name
-	  metaURI
-	  project{
-		id
-	  }
-	}
-}
-`
+  query Releases{
+  	releases{
+  	  id
+  	  name
+  	  metaURI
+  	  project{
+  		  id
+        name
+  	  }
+  	}
+  }
+`;
+
+export const ACCOUNT_PROJECT_QUERY = `
+  query AccountProjects($accountID: String!){
+    account(id: $accountID){
+        projects{
+            id
+            name
+            metaURI
+        }
+    }
+  } 
+`;
 
 // Query for listing releases for a particular project ID
 export const PROJECT_RELEASE_QUERY = `
-query($projectID: String!){
+  query ProjectReleases($projectID: String!){
     project(id: $projectID){
         releases{
             id
@@ -55,8 +63,8 @@ query($projectID: String!){
             }
         }
     }
-} 
-`
+  } 
+`;
 
 export const USER_LOGS_QUERY = `
   query UserLogs($address: String, $count: Int){
@@ -85,7 +93,7 @@ export const USER_LOGS_QUERY = `
 `;
 
 export const ACCOUNT_LOGS_QUERY = `
-  query TeamLogs($account: String, $count: Int){
+  query AccountLogs($account: String, $count: Int){
     logs (where: {account: $account}, first: $count){
       id
       type
@@ -111,34 +119,28 @@ export const PROJECT_LOGS_QUERY = `
 `;
 
 export const USER_ACCOUNTS_QUERY = `
-  query Projects($address: String){
-    users(where: {id: $address}) {
+  query UserAccounts($address: String!){
+    user(id: $address) {
       id
       accounts {
+        id
         name
-        projects{
-          name
-        }
+        metaURI
       }
     }
   }
 `;
 
 export const USER_PROJECTS_QUERY = `
-  query Projects($address: String){
-    users(where: {id: $address}) {
+  query UserProjects($address: String!){
+    user(id: $address) {
       id
-      accounts {
-        name
-        projects{
-          name
-        }
-      }
       projects {
         id
         name
         metaURI
         account {
+          id
           name
         }
       }
@@ -179,7 +181,7 @@ export const USER_HOMEPAGE_QUERY = `
 `;
 
 export const ACCOUNT_PROFILE_QUERY = `
-  query Account($account: String) {
+  query AccountProfile($account: String) {
     accounts(where: { name: $account} ){
       id
       name
@@ -222,7 +224,7 @@ export const ACCOUNT_PROFILE_QUERY = `
 
 
 export const PROJECT_SEARCH_QUERY = `
-  query Project($search: String){
+  query ProjectSearch($search: String){
     projects(where:{name_contains: $search}){
       id
       name

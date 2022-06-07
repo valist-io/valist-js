@@ -22,5 +22,5 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
       - run: |
           npx lerna bootstrap
-          npx lerna run build
+          npx lerna run build --ignore @valist/relay
           npx lerna run test
