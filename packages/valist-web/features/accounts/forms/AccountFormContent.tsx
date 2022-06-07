@@ -47,11 +47,7 @@ export default function AccountForm(props: AccountFormProps) {
   const { publicRuntimeConfig } = getConfig();
 
   const handleAddMember = async (address: string) => {
-    console.log('hello world');
     const resolved = await web3Ctx.isValidAddress(address);
-
-    console.log("resolved", resolved);
-    console.log('accountID', props.accountID);
     if (resolved && props.accountID) {
       await addMember(
         resolved,
@@ -94,10 +90,11 @@ export default function AccountForm(props: AccountFormProps) {
           } else {
             accountForm.setFieldError('members', "Member's list contains invalid address");
             setValidMemberList(false);
+            return;
           }
         }
 
-        if (!validMemberList && validUsername) {
+        if (!validUsername) {
           props.setView('Members');
           return false;
         }
@@ -113,6 +110,7 @@ ${members.join('\n')}
         `);
       }
 
+      dispatch(setMembers(members));
       props.submit(accountID, members);
   };
 

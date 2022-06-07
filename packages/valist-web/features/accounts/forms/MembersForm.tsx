@@ -25,7 +25,7 @@ export default function MembersForm(props: MembersFormProps) {
   const { form, setValidMemberList } = props;
 
   const handleSubmit = async () => {
-    if (props.validName && props.validMemberList && !props.edit) props.handleSubmit();
+    props.handleSubmit();
   };
 
   const handleAddMember = async () => {
