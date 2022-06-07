@@ -13,7 +13,6 @@ import { NextLink } from '@mantine/next';
 import { useRouter } from 'next/router';
 import { Search } from 'tabler-icons-react';
 import ThemeButton from '../Theme/ThemeButton';
-import Link from './Link';
 
 interface Props {
   opened: boolean;

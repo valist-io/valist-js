@@ -11,7 +11,7 @@ import Tabs from '../../components/Tabs';
 import getConfig from 'next/config';
 import { FileList } from '@/components/Files/FileUpload';
 import { useListState } from '@mantine/hooks';
-import { addMember, createOrUpdateAccount, removeMember } from '@/utils/Valist';
+import { createOrUpdateAccount, removeMember } from '@/utils/Valist';
 import { setAccount } from '../projects/projectSlice';
 import { generateID } from '@valist/sdk';
 import Web3Context from '../valist/Web3Context';
