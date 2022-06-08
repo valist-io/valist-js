@@ -2,6 +2,7 @@
 import Tabs, { Tab } from '../../components/Tabs';
 import { SetUseState } from '../../utils/Account/types';
 import AddressIdenticon from '../../components/Identicons/AddressIdenticon';
+import { Paper } from '@mantine/core';
 
 interface ProjectProfileCardProps {
   teamName: string,
@@ -15,7 +16,7 @@ interface ProjectProfileCardProps {
 export default function ProjectProfileCard(props: ProjectProfileCardProps): JSX.Element {
   return (
     <section aria-labelledby="profile-overview-title">
-      <div className="rounded-lg bg-white pt-6 px-6 overflow-hidden shadow">
+      <Paper style={{ paddingBottom: 0 }} shadow="xs" p="md" radius={"md"} withBorder>
         <div className="sm:flex sm:items-center sm:justify-between">
           <div className="sm:flex sm:space-x-5 px-6">
             {props.projectImg && props.projectImg !== '' ? 
@@ -26,7 +27,7 @@ export default function ProjectProfileCard(props: ProjectProfileCardProps): JSX.
               <AddressIdenticon address={`${props.teamName}/${props.projectName}`} height={40} width={40} />
             }
             <div>
-              <p className={`lg:text-3xl text-gray-900 sm:text-2xl font-medium`}>
+              <p className={`lg:text-3xl sm:text-2xl`}>
                 {props.projectName}
               </p>
             </div>
@@ -38,7 +39,7 @@ export default function ProjectProfileCard(props: ProjectProfileCardProps): JSX.
           view={props.view}
           tabs={props.tabs}
         />
-      </div>
+      </Paper>
     </section>
   );
 }

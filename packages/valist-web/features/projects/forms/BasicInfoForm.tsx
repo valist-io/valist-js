@@ -1,8 +1,8 @@
-import { TextInput, Tooltip as MantineTooltip } from "@mantine/core";
+import { Select, TextInput, Tooltip as MantineTooltip } from "@mantine/core";
 import { AlertCircle as AlertCircleIcon } from 'tabler-icons-react';
 import ProjectTagsInput from "../ProjectTagsInput";
 import ProjectTypeSelect from "../ProjectTypeSelect";
-import {  setDisplayName,  setWebsite } from "../projectSlice";
+import {  setAccount, setDisplayName,  setWebsite } from "../projectSlice";
 import { UseListStateHandler } from "@mantine/hooks/lib/use-list-state/use-list-state";
 import { SetUseState } from "@/utils/Account/types";
 import { useAppDispatch } from "../../../app/hooks";
@@ -32,9 +32,9 @@ interface BasicInfoProps {
 
 export const BasicInfoForm = (props: BasicInfoProps) => {
     const dispatch = useAppDispatch();
-    const rightSectionTooltip =  (text:string) => {
+    const rightSectionTooltip = (text:string) => {
       return (
-        <MantineTooltip label= { text } >
+        <MantineTooltip label={ text } >
           <AlertCircleIcon size={16} style={{ display: 'block', opacity: 0.5 }} />
        </MantineTooltip>
       );
@@ -50,15 +50,14 @@ export const BasicInfoForm = (props: BasicInfoProps) => {
           multiple={false}
         />
         {!props.edit && <div>
-          <TextInput
+          <Select
            label = "Account or Team"
-           rightSection = {rightSectionTooltip("The team where this project will be published.")}
-           {...props.mantineValidation.getInputProps('account')}
+           data={props.accountNames}
+           value={props.projectTeam}
+           rightSection = {rightSectionTooltip("The account where this project will be published.")}
+           onChange={(value) => dispatch(setAccount(value || ""))}
           >
-            {props.accountNames?.map((accountName) => (
-              <option key={accountName} value={accountName} selected={accountName == props.projectTeam}>{accountName}</option>
-            ))}
-          </TextInput>
+          </Select>
         </div>}
   
         {!props.edit && <div>

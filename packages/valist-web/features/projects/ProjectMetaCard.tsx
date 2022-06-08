@@ -1,3 +1,4 @@
+import { Paper } from '@mantine/core';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { SetUseState } from '../../utils/Account/types';
@@ -32,42 +33,42 @@ const ProjectMetaCard = (props: RepoMetaCardProps) => {
   }, [projectName, teamName]);
 
   return (
-    <div className="rounded-lg bg-white shadow p-6">
+    <Paper shadow="xs" p="md" radius="md" withBorder>
       {projectMeta.external_url && 
         <div className="pb-3">
-          <h3 className="text-lg text-gray-900  mb-1">Website</h3>
-          <a className="text-gray-600 hover:text-indigo-500" href={projectMeta.external_url}>
+          <h3 className="text-lg mb-1">Website</h3>
+          <a className="hover:text-indigo-500" href={projectMeta.external_url}>
             {projectMeta.external_url}
           </a>
         </div>}
 
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <h3 className="text-lg text-gray-900 mb-1">Downloads</h3>
-          <div className="text-gray-600">{downloads}</div>
+          <h3 className="text-lg mb-1">Downloads</h3>
+          <div>{downloads}</div>
         </div>
 
         <div>
-          <h3 className="text-lg text-gray-900 mb-1">Members</h3>
-          <div className="text-gray-600">
+          <h3 className="text-lg mb-1">Members</h3>
+          <div>
             {props.memberCount || 0}
           </div>
         </div>
         
         {props.version &&
           <div>
-            <h3 className="text-lg text-gray-900 mb-1">Version</h3>
-            <div className="text-gray-600">{props.version}</div>
+            <h3 className="text-lg mb-1">Version</h3>
+            <div>{props.version}</div>
           </div>}
 
         <div>
-          <h3 className="text-lg text-gray-900 mb-1">Published by</h3>
+          <h3 className="text-lg mb-1">Published by</h3>
           <Link href={`/${teamName}`}>
-            <a className="text-gray-600 hover:text-indigo-500">{teamName}</a>
+            <a className="hover:text-indigo-500">{teamName}</a>
           </Link>
         </div>
       </div>
-    </div>
+    </Paper>
   );
 };
 

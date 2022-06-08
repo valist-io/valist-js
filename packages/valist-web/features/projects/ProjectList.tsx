@@ -2,6 +2,7 @@ import { Fragment } from "react";
 import ProjectListCard from "./ProjectListCard";
 import Link from "next/link";
 import { Project } from '../../utils/Apollo/types';
+import { Grid } from "@mantine/core";
 
 interface ProjectListProps {
   projects: Project[],
@@ -11,9 +12,9 @@ interface ProjectListProps {
 export default function ProjectList(props: ProjectListProps) {
   return (
     <div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+      <Grid gutter="md">
         {props.projects?.map((project: Project) => (
-          <Fragment key={project.id}>
+          <Grid.Col style={{ marginTop: "1rem" }} xs={12} lg={6} key={project.id}>
             {props.linksDisabled ? 
               <ProjectListCard
                 teamName={project.account.name} 
@@ -29,9 +30,9 @@ export default function ProjectList(props: ProjectListProps) {
                 </a>
               </Link>
             }
-          </Fragment>
+          </Grid.Col>
         ))}
+        </Grid>
       </div>
-    </div>
   );
 }

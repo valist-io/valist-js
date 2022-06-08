@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { notify } from '../../utils/Notifications';
 import { ProjectMeta } from '../../utils/Valist/types';
 import AddressIdenticon from '../../components/Identicons/AddressIdenticon';
+import { Paper, Text } from '@mantine/core';
 
 type ProjectCardProps = {
   teamName: string,
@@ -34,7 +35,7 @@ export default function ProjectListCard({ text, image, teamName, projectName, me
   }, [metaURI, text]);
 
   return (
-    <div className="bg-white rounded-lg shadow px-6 py-6 mb-2 border-2 hover:border-indigo-500 cursor-pointer">
+    <Paper radius="md" shadow="xs" p="xl" withBorder className="hover:border-indigo-500 cursor-pointer">
       <div className='flex mb-3'>
         <div className="flex-shrink-0 mr-5">
           {meta.image ?
@@ -47,23 +48,22 @@ export default function ProjectListCard({ text, image, teamName, projectName, me
         </div>
 
         <div>
-          <h3 className="text-xl">
+          <h3 style={{ fontWeight: 700 }}>
             {projectName}
           </h3>
-          <div>Published by: 
-            <span className="ml-1 cursor-pointer text-gray-900 py-1">
-              <span style={{ marginBottom: "-4px" }} className='inline-block'></span>
-                {teamName}
-              </span>
-          </div>
+          <Text size="sm">Published by: 
+            <span className="ml-1 cursor-pointer py-1">
+              {teamName}
+            </span>
+          </Text>
         </div>
       </div>
      
       <div>
-        <p style={{ height: 48, maxHeight: 48, overflow: 'hidden' }}>
+        <Text style={{ height: 48, maxHeight: 48, overflow: 'hidden' }}>
           {text || meta.short_description}
-        </p>
+        </Text>
       </div>
-    </div>
+    </Paper>
   );
 };

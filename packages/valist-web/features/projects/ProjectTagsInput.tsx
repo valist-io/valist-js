@@ -28,12 +28,9 @@ export default function ProjectTagsInput(props: ProjectTagsInputProps) {
 
   return (
     <div>
-      <h2 className="block text-sm font-medium text-gray-700 mb-2">
-        Project Tags <span className="float-right"><Tooltip text="Tags associated with this project." /></span>
-      </h2>
-
       <MultiSelect
         data={defaultTags}
+        label="Project Tags"
         placeholder="Select tags"
         searchable
         creatable

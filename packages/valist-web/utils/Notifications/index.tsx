@@ -1,11 +1,27 @@
+import getConfig from "next/config";
 import toast from "react-hot-toast";
+import { getBlockExplorer } from "../Valist";
 
 export const notify = (type: string, text?: string): string => {
+  const { publicRuntimeConfig } = getConfig();
+
+  let blockExplorer = 'polygonscan.com';
+  if (publicRuntimeConfig.CHAIN_ID === '80001') {
+    blockExplorer = 'mumbai.polygonscan.com';
+  }
+  
   switch (type) {
     case 'transaction':
       return toast.custom(() => (
         <div className='toast'>
-         Transaction pending: <a className="text-indigo-500 cursor-pointer" target="_blank" rel="noreferrer" href={`https://polygonscan.com/tx/${text}`}>view on block explorer </a>
+         Transaction pending: 
+          <a
+            className="text-indigo-500 cursor-pointer" 
+            target="_blank" 
+            rel="noreferrer"
+            href={`${getBlockExplorer(publicRuntimeConfig.CHAIN_ID)}/tx/${text}`}>
+              view on block explorer 
+          </a>
         </div>
       ), {
         position: 'top-right',

@@ -16,7 +16,7 @@ interface AccountPreviewProps {
   accountDescription: string;
   defaultImage?: string;
   accountMembers: AccountMember[];
-  removeMember?: (address:string) => Promise<void>;
+  removeMember?: (address:string) => void;
 }
 
 export default function AccountPreview(props: AccountPreviewProps) {

@@ -14,28 +14,6 @@ For the TypeScript API documentation, please see the following link:
 npm install --save @valist/sdk
 ```
 
-## Usage
-
-```typescript
-import { Client, Contract, Storage } from '@valist/sdk';
-import { ethers } from 'ethers';
-
-// read-only
-const provider = new ethers.providers.Web3Provider(window.ethereum);
-const contract = new Contract.EVM('<valist-address>', provider);
-
-// read-write
-const signer = provider.getSigner();
-const contract = new Contract.EVM('<valist-address>', signer)
-
-const storage = Storage.createIPFS();
-const valist = new Client(contract, storage);
-
-const team = await valist.getTeam('valist');
-const project = await valist.getProject('valist', 'sdk');
-const release = await valist.getRelease('valist', 'sdk', 'latest');
-```
-
 ## Building
 
 ```shell

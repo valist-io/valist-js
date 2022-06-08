@@ -19,8 +19,8 @@ const AddressPage: NextPage = () => {
   });
 
   useEffect(() => {
-    if (data?.users[0]) {
-      setUserProjects(data.users[0].projects);
+    if (data?.user) {
+      setUserProjects(data.user.projects);
     } else if (data) {
       setUserProjects([]);
     }

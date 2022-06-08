@@ -1,6 +1,6 @@
 {
   "name": "@valist/sdk",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Web3-native software distribution.",
   "author": "Valist, Inc.",
   "contributors": [
@@ -25,7 +25,7 @@
     "build": "tsc",
     "dev": "tsc -w",
     "docs": "typedoc ./src --theme minimal --out ../../site/sdk --readme none",
-    "test": "mocha -r ts-node/register 'tests/**/*.ts'",
+    "test": "mocha -r ts-node/register 'tests/**/*.ts' --timeout=30000",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix"
   },

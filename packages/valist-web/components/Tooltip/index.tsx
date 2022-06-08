@@ -1,15 +1,13 @@
-import { InformationCircleIcon } from '@heroicons/react/solid';
-
+import { AlertCircle as AlertCircleIcon } from 'tabler-icons-react';
+import { Tooltip as MantineTooltip } from "@mantine/core";
 interface TooltipProps {
-  text: string
+  text: string;
 }
 
 export default function Tooltip(props: TooltipProps): JSX.Element {
   return (
-    <div>
-      <div className='has-tooltip'>
-        <span className='tooltip rounded shadow-lg bg-gray-700 border text-white p-2 -ml-10 -mt-10'>{props.text}</span>
-        <InformationCircleIcon height={18} />
-      </div>
-    </div>);
-}
+    <MantineTooltip label={ props.text } >
+      <AlertCircleIcon size={16} style={{ display: 'block', opacity: 0.5 }} />
+    </MantineTooltip>
+  );
+};

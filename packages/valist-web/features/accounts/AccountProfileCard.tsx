@@ -2,6 +2,7 @@
 import Tabs, { Tab } from '../../components/Tabs';
 import { AccountMeta } from '../../utils/Valist/types';
 import AddressIdenticon from '../../components/Identicons/AddressIdenticon';
+import { Paper } from '@mantine/core';
 
 interface TeamProfileCardProps {
   view: string,
@@ -15,7 +16,7 @@ interface TeamProfileCardProps {
 export default function AccountProfileCard(props: TeamProfileCardProps): JSX.Element {
   return (
     <section aria-labelledby="profile-overview-title">
-      <div className="rounded-lg bg-white pt-6 px-6 overflow-hidden shadow">
+      <Paper style={{ paddingBottom: 0 }} shadow="xs" p="md" radius={"md"} withBorder>
         <div className="sm:flex sm:items-center sm:justify-between">
           <div className="sm:flex sm:space-x-5">
             <div className="flex-shrink-0">
@@ -30,7 +31,7 @@ export default function AccountProfileCard(props: TeamProfileCardProps): JSX.Ele
               }
             </div>
             <div>
-              <p className={`lg:text-3xl text-gray-900 sm:text-2xl font-medium`}>
+              <p className={`lg:text-3xl sm:text-2xl font-medium`}>
                 {props.accountName}
               </p>
               <p>
@@ -39,12 +40,12 @@ export default function AccountProfileCard(props: TeamProfileCardProps): JSX.Ele
             </div> 
           </div>
         </div>
-        <Tabs 
+        <Tabs
           setView={props.setView}
           view={props.view}
           tabs={props.tabs}
         />
-      </div>
+      </Paper>
     </section>
   );
 }
