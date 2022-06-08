@@ -12,10 +12,9 @@ import { GraphicsForm } from "./forms/GraphicsForm";
 import { DescriptionsForm } from "./forms/DescriptionsForm";
 import { MembersForm } from "./forms/MembersForm";
 import { PriceForm } from "./forms/PriceForm";
-import { z } from 'zod';
-import { useForm } from '@mantine/form';
+import { useForm,zodResolver } from '@mantine/form';
 import { shortnameFilterRegex } from "@/utils/Validation";
-
+import { projectSettingsFormSchema } from "@valist/sdk/dist/formSchema";
 
 
 interface ProjectFormProps {
@@ -61,23 +60,9 @@ export default function ProjectForm(props: ProjectFormProps) {
   const [formValid, setFormValid] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const projectSettingsFormSchema = z.object({
-    account: z.string(),
-    projectName: z.string(),
-    displayName: z.string(),
-    website: z.string(),
-    shortDescription: z.string(),
-    description: z.string(),
-    youtube: z.string(),
-    newMembers: z.string(),
-    price: z.string(),
-    limit: z.string(),
-    royalty: z.string(),
-    royaltyAddress: z.string(),
-  });
 
   const projectSettingsForm = useForm({
-    schema: projectSettingsFormSchema,
+    schema: zodResolver(projectSettingsFormSchema),
     initialValues: {
         account: props.accountUsername,
         projectName: props.projectName,
