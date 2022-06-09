@@ -7,6 +7,9 @@ import Header from './Header';
 interface LayoutProps {
   children?: ReactNode,
   title?: string,
+  description: string,
+  graphic: string,
+  url: string,
 };
 
 export default function Layout(props: LayoutProps): JSX.Element {
@@ -20,8 +23,27 @@ export default function Layout(props: LayoutProps): JSX.Element {
       <Head>
         <title>{props.title}</title>
         <link rel="icon" href="/favicon.ico" />
+
+        {/* Basic Tags */}
         <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="title" content={props.title} />
+        <meta name="description" content={props.description} />
+
+        {/* Twitter Tags */}
+        <meta property="twitter:card" content="summary" />
+        <meta property="twitter:domain" content='valist.io' />
+        <meta property="twitter:url" content={`https://${props.url}`} />
+        <meta property="twitter:title" content={props.title} />
+        <meta property="twitter:description" content={props.description} />
+        <meta property="twitter:image" content={props.graphic} />
+
+        {/* Open Graph Tags */}
+        <meta property="og:title" content={props.title} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`https://${props.url}`} />
+        <meta property="og:image" content={props.graphic} />
+        <meta property="og:description" content={props.description} />
       </Head>
       <AppShell
         fixed

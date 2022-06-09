@@ -1,7 +1,7 @@
 import { useQuery,gql } from "@apollo/client";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
-import Layout from "../../../components/Layouts/Main";
+import Layout from "../../../components/Layouts/Project";
 import { BigNumber, ethers } from "ethers";
 import ProjectActions from "../../../features/projects/ProjectActions";
 import { PROJECT_PROFILE_QUERY } from "@valist/sdk/dist/graphql";
@@ -19,19 +19,37 @@ import ProjectContent from "../../../features/projects/ProjectProfileContent";
 import ProjectProfileCardActions from "../../../features/projects/ProjectProfileCardActions";
 import getConfig from "next/config";
 import { generateID } from "@valist/sdk";
+import client from "@/utils/Apollo/client";
 
-export default function ProjectPage():JSX.Element {
+export const getServerSideProps = async ({ params }: any) => {
   const { publicRuntimeConfig } = getConfig();
+
+  const chainID = BigNumber.from(publicRuntimeConfig.CHAIN_ID);
+  const accountID = generateID(chainID, params.accountName);
+  const projectID = generateID(accountID, params.projectName);
+
+  const { data } = await client.query({
+    query: gql(PROJECT_PROFILE_QUERY),
+    variables: { projectID: projectID },
+  });
+
+  return {
+    props: {
+      data,
+      projectID,
+      accountName: params.accountName,
+      projectName: params.projectName,
+    },
+  };
+};
+
+export default function ProjectPage(props: any):JSX.Element {
   const router = useRouter();
   const accountName = `${router.query.accountName}`;
   const projectName = `${router.query.projectName}`;
   const valistCtx = useContext(ValistContext);
   const accounts = useAppSelector(selectAccounts);
   const address = useAppSelector(selectAddress);
-  const [projectID, setProjectID] = useState<string>('');
-  const { data, loading, error } = useQuery(gql(PROJECT_PROFILE_QUERY), {
-    variables: { projectID: projectID },
-  });
   const [version, setVersion] = useState<string>('');
   const [view, setView] = useState<string>('Readme');
   const [licensePrice, setLicensePrice] = useState<string>('0');
@@ -71,12 +89,7 @@ export default function ProjectPage():JSX.Element {
   const [isMember, setIsMember] = useState(false);
   const [logs, setLogs] = useState<Log[]>([]);
 
-  useEffect(() => {
-    const chainID = BigNumber.from(publicRuntimeConfig.CHAIN_ID);
-    const accountID = generateID(chainID, accountName);
-    const projectID = generateID(accountID, projectName);
-    setProjectID(projectID.toString());
-  }, [publicRuntimeConfig.CHAIN_ID, accountName, projectName]);
+  console.log('props.data', props.data);
 
   useEffect(() => {
     const fetchReleaseMeta = async (release: Release) => {
@@ -102,39 +115,39 @@ export default function ProjectPage():JSX.Element {
       }
     };
 
-    if (data?.projects[0]) {
-      setMembers(data?.projects[0]?.members);
-      setReleases(data?.projects[0]?.releases);
-      setVersion(data?.projects[0]?.releases[0]?.name);
-      setLogs(data?.projects[0]?.logs);
-      fetchReleaseMeta(data?.projects[0]?.releases[0]);
+    if (props.data?.projects[0]) {
+      setMembers(props.data?.projects[0]?.members);
+      setReleases(props.data?.projects[0]?.releases);
+      setVersion(props.data?.projects[0]?.releases[0]?.name);
+      setLogs(props.data?.projects[0]?.logs);
+      fetchReleaseMeta(props.data?.projects[0]?.releases[0]);
 
-      if (data?.projects[0]?.metaURI !== '') {
-        fetchProjectMeta(data?.projects[0]?.metaURI);
+      if (props.data?.projects[0]?.metaURI !== '') {
+        fetchProjectMeta(props.data?.projects[0]?.metaURI);
       }
     }
-  }, [data]);
+  }, [props.data]);
 
   useEffect(() => {
     (async () => {
-      if (valistCtx && projectID) {
-        const price = await valistCtx.getProductPrice(projectID);
+      if (valistCtx && props.projectID) {
+        const price = await valistCtx.getProductPrice(props.projectID);
         setLicensePrice(ethers.utils.formatEther(price));
 
         if (address !== '0x0') {
-          let balance = await valistCtx.getProductBalance(address, projectID);
+          let balance = await valistCtx.getProductBalance(address, props.projectID);
           setLicenseBalance(Number(balance));
         }
       }
     })();
-  }, [address, projectID, valistCtx]);
+  }, [address, props.projectID, valistCtx]);
 
   useEffect(() => {
     if (accountName && projectName) {
        const profileAccount = accounts[accountName];
        
        if (profileAccount) {
-        profileAccount.map((project) => {
+        profileAccount.map((project: { name: string; }) => {
            if (project.name === projectName) setIsMember(true);
         });
        }
@@ -142,11 +155,11 @@ export default function ProjectPage():JSX.Element {
   }, [accounts, projectName, accountName]);
 
   const mintLicense = async () => {
-    if ( valistCtx && projectID && address !== '0x0') {
+    if ( valistCtx && props.projectID && address !== '0x0') {
       let toastID = '';
       try {
         const transaction = await valistCtx.purchaseProduct(
-          projectID,
+          props.projectID,
           address,
         );
         toastID = notify('transaction', transaction.hash);
@@ -161,7 +174,7 @@ export default function ProjectPage():JSX.Element {
   };
  
   return (
-    <Layout title="Valist | Project">
+    <Layout title="Valist | Project" description={projectMeta.description || ''} graphic={projectMeta.image || ""} url={`valist.io/${props.accountName}/${props.projectName}`}>
       <div className="grid grid-cols-1 gap-4 items-start lg:grid-cols-6 lg:gap-8">
         <div className="grid grid-cols-1 gap-4 lg:col-span-4">
           <ProjectProfileCard
