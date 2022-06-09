@@ -33,12 +33,33 @@ export const getServerSideProps = async ({ params }: any) => {
     variables: { projectID: projectID },
   });
 
+  let projectMeta;
+  try {
+    if (data?.projects[0]?.metaURI !== '') {
+      projectMeta = await fetch(data?.projects[0]?.metaURI).then(res => res.json());
+    }
+  } catch(err) {
+    console.log("Failed to fetch project metadata.", err);
+  }
+
+  let releaseMeta;
+  try {
+    if (data?.projects[0]?.releases[0] && data?.projects[0]?.releases[0]?.metaURI !== '') {
+      releaseMeta = await fetch(data?.projects[0]?.releases[0]?.metaURI).then(res => res.json());
+    }
+
+  } catch(err) {
+    console.log("Failed to fetch release metadata.", err);
+  }
+
   return {
     props: {
       data,
       projectID,
       accountName: params.accountName,
       projectName: params.projectName,
+      projectMeta,
+      releaseMeta,
     },
   };
 };
@@ -89,44 +110,42 @@ export default function ProjectPage(props: any):JSX.Element {
   const [isMember, setIsMember] = useState(false);
   const [logs, setLogs] = useState<Log[]>([]);
 
-  console.log('props.data', props.data);
+  console.log('props.data', props);
 
   useEffect(() => {
-    const fetchReleaseMeta = async (release: Release) => {
-      try {
-        if (release?.metaURI && release?.metaURI !== '') {
-          const metaJson = await fetch(release.metaURI).then(res => res.json());
+    // const fetchReleaseMeta = async (release: Release) => {
+    //   try {
+    //     if (release?.metaURI && release?.metaURI !== '') {
+    //       const metaJson = await fetch(release.metaURI).then(res => res.json());
 
-          setReleaseMeta(metaJson);
-        }
-      } catch(err) {
-        notify('error', "Failed to fetch release metadata.");
-        console.log("Failed to fetch release metadata.", err);
-      }
-    };
-  
-    const fetchProjectMeta = async (metaURI: string) => {
-      try {
-        const projectJson = await fetch(metaURI).then(res => res.json());
-        setProjectMeta(projectJson);
-      } catch(err) {
-        notify('error', "Failed to fetch project metadata.");
-        console.log("Failed to fetch project metadata.", err);
-      }
-    };
+    //       setReleaseMeta(metaJson);
+    //     }
+    //   } catch(err) {
+    //     notify('error', "Failed to fetch release metadata.");
+    //     console.log("Failed to fetch release metadata.", err);
+    //   }
+    // };
+    
+    // const fetchProjectMeta = async (metaURI: string) => {
+    //   try {
+    //     const projectJson = await fetch(metaURI).then(res => res.json());
+    //     setProjectMeta(projectJson);
+    //   } catch(err) {
+    //     notify('error', "Failed to fetch project metadata.");
+    //     console.log("Failed to fetch project metadata.", err);
+    //   }
+    // };
 
     if (props.data?.projects[0]) {
       setMembers(props.data?.projects[0]?.members);
       setReleases(props.data?.projects[0]?.releases);
       setVersion(props.data?.projects[0]?.releases[0]?.name);
       setLogs(props.data?.projects[0]?.logs);
-      fetchReleaseMeta(props.data?.projects[0]?.releases[0]);
-
-      if (props.data?.projects[0]?.metaURI !== '') {
-        fetchProjectMeta(props.data?.projects[0]?.metaURI);
-      }
+      
+      setProjectMeta(props.projectMeta);
+      setReleaseMeta(props.releaseMeta);
     }
-  }, [props.data]);
+  }, [props.data, props.projectMeta, props.releaseMeta]);
 
   useEffect(() => {
     (async () => {
