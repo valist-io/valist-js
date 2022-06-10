@@ -170,7 +170,12 @@ export default function ProjectPage(props: any):JSX.Element {
   };
  
   return (
-    <Layout title="Valist | Project" description={projectMeta.short_description || ''} graphic={projectMeta.image || ""} url={`valist.io/${props.accountName}/${props.projectName}`}>
+    <Layout 
+      title={`Valist | ${props.accountName}/${props.projectName}`} 
+      description={props?.projectMeta?.short_description}
+      graphic={props?.projectMeta?.image || ""} 
+      url={`valist.io/${props.accountName}/${props.projectName}`}
+    >
       <div className="grid grid-cols-1 gap-4 items-start lg:grid-cols-6 lg:gap-8">
         <div className="grid grid-cols-1 gap-4 lg:col-span-4">
           <ProjectProfileCard
