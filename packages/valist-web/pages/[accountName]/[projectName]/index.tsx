@@ -113,29 +113,6 @@ export default function ProjectPage(props: any):JSX.Element {
   console.log('props.data', props);
 
   useEffect(() => {
-    // const fetchReleaseMeta = async (release: Release) => {
-    //   try {
-    //     if (release?.metaURI && release?.metaURI !== '') {
-    //       const metaJson = await fetch(release.metaURI).then(res => res.json());
-
-    //       setReleaseMeta(metaJson);
-    //     }
-    //   } catch(err) {
-    //     notify('error', "Failed to fetch release metadata.");
-    //     console.log("Failed to fetch release metadata.", err);
-    //   }
-    // };
-    
-    // const fetchProjectMeta = async (metaURI: string) => {
-    //   try {
-    //     const projectJson = await fetch(metaURI).then(res => res.json());
-    //     setProjectMeta(projectJson);
-    //   } catch(err) {
-    //     notify('error', "Failed to fetch project metadata.");
-    //     console.log("Failed to fetch project metadata.", err);
-    //   }
-    // };
-
     if (props.data?.projects[0]) {
       setMembers(props.data?.projects[0]?.members);
       setReleases(props.data?.projects[0]?.releases);

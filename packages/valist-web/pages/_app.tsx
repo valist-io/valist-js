@@ -20,13 +20,9 @@ import { getCookie, setCookies } from 'cookies-next';
 import { GetServerSidePropsContext } from 'next';
 import { theme } from '@/utils/Theme';
 import getConfig from 'next/config';
+import AppContainer from '../features/valist/ValistContainer';
 
 const { publicRuntimeConfig } = getConfig();
-
-const AppContainer = dynamic(
-  () => import('../features/valist/ValistContainer'),
-  { ssr: false },
-);
 
 const defaultProvider = jsonRpcProvider({
   rpc: chain => ({
