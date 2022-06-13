@@ -114,7 +114,8 @@ ${members.join('\n')}
     username: z.string()
       .min(3, { message: 'Username should have at least 3 letters' })
       .max(24, { message: 'Username should not be longer than 24 letters' })
-      .regex(shortnameRegex, { message: 'Username can only contain, letters, numbers and dashes' }),
+      .regex(shortnameRegex, { message: 'Username can only contain, letters, numbers and dashes' })
+      .refine((val) => val.toLocaleLowerCase() === val, { message: 'Username can only contain, lowercase letters' }),
     displayName: z.string(),
     website: z.string(),
     description: z.string(),
