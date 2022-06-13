@@ -5,7 +5,7 @@ import { UseListStateHandler } from "@mantine/hooks/lib/use-list-state/use-list-
 import BasicInfoForm from "./BasicInfoForm";
 import MembersForm from "./MembersForm";
 import { useForm, zodResolver } from '@mantine/form';
-import { shortnameRegex, uppercaseRegex } from "@/utils/Validation";
+import { shortnameRegex } from "@/utils/Validation";
 import { z } from 'zod';
 import { BigNumber } from "ethers";
 import { generateID } from "@valist/sdk";
