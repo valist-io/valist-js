@@ -18,8 +18,6 @@ export default function Layout(props: LayoutProps): JSX.Element {
 
   const backgroundColor = theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[1];
 
-  console.log('props', props);
-
   return (
     <React.Fragment> 
       <Head>

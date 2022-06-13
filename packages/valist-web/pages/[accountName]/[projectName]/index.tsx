@@ -1,4 +1,4 @@
-import { useQuery,gql } from "@apollo/client";
+import { gql } from "@apollo/client";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import Layout from "../../../components/Layouts/Project";
@@ -110,8 +110,6 @@ export default function ProjectPage(props: any):JSX.Element {
   const [isMember, setIsMember] = useState(false);
   const [logs, setLogs] = useState<Log[]>([]);
 
-  console.log('props.data', props);
-
   useEffect(() => {
     if (props.data?.projects[0]) {
       setMembers(props.data?.projects[0]?.members);
@@ -171,7 +169,7 @@ export default function ProjectPage(props: any):JSX.Element {
  
   return (
     <Layout 
-      title={`Valist | ${props.accountName}/${props.projectName}`} 
+      title={`${props.accountName}/${props.projectName}`} 
       description={props?.projectMeta?.short_description}
       graphic={props?.projectMeta?.image || ""} 
       url={`valist.io/${props.accountName}/${props.projectName}`}
