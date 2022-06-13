@@ -63,7 +63,7 @@ export default function AccountProfilePage() {
 
   useEffect(() => {
     if (accountName) {
-      accountNames.map((name) => {
+      accountNames.map((name: string) => {
         if (accountName === name) setIsMember(true);
       });
     }

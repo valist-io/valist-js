@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import ValistContext from '../valist/ValistContext';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { selectAccountNames, selectLoginTried, selectLoginType, setAccountNames } from '../accounts/accountsSlice';
+import { selectAccountNames, setAccountNames } from '../accounts/accountsSlice';
 import { selectDescription, selectWebsite, selectMembers, clear, selectUsername, setUsername, selectDisplayName, setMembers } from './teamSlice';
 import AccountPreview from './AccountPreview';
 import CreateAccountForm from './forms/AccountFormContent';
@@ -13,7 +13,6 @@ import { useListState } from '@mantine/hooks';
 import { createOrUpdateAccount, removeMember } from '@/utils/Valist';
 import { setAccount } from '../projects/projectSlice';
 import { generateID } from '@valist/sdk';
-import Web3Context from '../valist/Web3Context';
 import { BigNumber } from 'ethers';
 
 type Member = {
