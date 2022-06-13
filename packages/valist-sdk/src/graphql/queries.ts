@@ -303,3 +303,28 @@ export const ADDR_PROFILE_QUERY = `
     }
   }
 `;
+
+export const OPTIMISTIC_PROJECT_QUERY = `
+   query ($projectID: String! $minblock: Int!){
+    project (block:{number_gte: $minblock} id: $projectID)) {
+      name
+    } 
+    _meta{ 
+      block{ 
+       number
+      }
+    }
+   }
+`
+export const OPTIMISTIC_RELEASE_QUERY = `
+    query ($releaseID: String! $minblock: Int!){
+      release (block:{number_gte: $minblock} id: $releaseID)) {
+        name
+      }
+      _meta{
+        block{
+          number
+        }
+      }
+    }
+`

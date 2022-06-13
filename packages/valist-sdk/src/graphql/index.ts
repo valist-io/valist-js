@@ -29,3 +29,4 @@ export function getSubgraphUrl(chainId: number): string {
 			throw new Error(`unsupported network chainId=${chainId}`);
 	}
 }
+

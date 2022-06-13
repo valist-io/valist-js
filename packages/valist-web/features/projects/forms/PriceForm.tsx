@@ -3,12 +3,13 @@ import { TextInput, Tooltip as MantineTooltip } from '@mantine/core';
 import { useAppDispatch } from "../../../app/hooks";
 import { setPrice, setLimit , setRoyalty , setRoyaltyAddress } from '../projectSlice';
 import { AlertCircle as AlertCircleIcon } from 'tabler-icons-react';
-
+import { UseFormReturnType } from "@mantine/form/lib/use-form";
 interface PriceFormProps {
     price: string;
     limit: string;
     royalty: string;
     royaltyAddress: string;
+    mantineValidation: UseFormReturnType<any>;
   }
   
 export const PriceForm = (props: PriceFormProps) => {
@@ -30,8 +31,8 @@ export const PriceForm = (props: PriceFormProps) => {
                rightSection={rightSectionTooltip("The price to mint/purchase the license in MATIC. ERC-20 payments coming soon!")}
                type="number"
                min="0"
-               onChange={(e) => dispatch(setPrice(e.target.value))}
-               value={props.price}
+        
+               {...props.mantineValidation.getInputProps('price')}
           ></TextInput>
         </div>
         <div>
@@ -41,9 +42,9 @@ export const PriceForm = (props: PriceFormProps) => {
             label="Limit"
             rightSection={rightSectionTooltip("The maximum number of licenses that can be created.")}
             min="0"
-            onChange={(e) => dispatch(setLimit(e.target.value))}
-            value={props.limit}
+        
             placeholder="0.00"
+            {...props.mantineValidation.getInputProps('limit')}
           ></TextInput>
         </div>
         <div>
@@ -52,11 +53,11 @@ export const PriceForm = (props: PriceFormProps) => {
            name="royalty"
            type="number"
            min="0"
-           onChange={(e) => dispatch(setRoyalty(e.target.value))}
-           value={props.royalty}
+        
            placeholder="0"
            label="Royalty Percent"
             rightSection={rightSectionTooltip("The percentage given to the project on re-sales.")}
+            {...props.mantineValidation.getInputProps('royalty')}
           ></TextInput>
         </div>
         <div>
@@ -66,10 +67,10 @@ export const PriceForm = (props: PriceFormProps) => {
             rightSection={rightSectionTooltip("Editable display name on the project profile.")}
             name="royaltyAddress"
             type="text"
-            onChange={(e) => dispatch(setRoyaltyAddress(e.target.value))}
-            value={props.royaltyAddress}
+         
             required
             placeholder="0x00000000"
+            {...props.mantineValidation.getInputProps('royaltyAddress')}
           >
           </TextInput>
         </div>
