@@ -93,7 +93,6 @@ export default function ManageProject(props: ManageProjectProps) {
 
   // On initial page load, if in edit mode, set projectAccount & projectName
   useEffect(() => {
-    console.log('accountUsername', props.accountUsername);
     dispatch(setAccount(props.accountUsername || accountNames[0]));
 
     if (props.projectName) {

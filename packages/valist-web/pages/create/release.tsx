@@ -69,9 +69,6 @@ const PublishReleasePage: NextPage = () => {
   };
 
   const handleSubmit = (projectID: string, name: string) => {
-    console.log('projectID', projectID);
-    console.log('name', name);
-
     if (projectID) {
       createRelease(
         account,

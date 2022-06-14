@@ -25,7 +25,6 @@ export default function TeamListCard({ text, image, teamName, metaURI }: TeamLis
           setMeta(teamJson);
         } catch (err) {
           console.log("Failed to fetch team metadata.", err);
-          console.log(metaURI);
           notify('error', String(err));
         }
       }

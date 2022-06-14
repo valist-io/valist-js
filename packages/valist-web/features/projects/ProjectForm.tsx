@@ -103,8 +103,6 @@ export default function ProjectForm(props: ProjectFormProps) {
         if (address) members.push(address);
       }
 
-      console.log('resolved addresses', members);
-
       if (members.length > 0) {
         setValidMemberList(true);
         dispatch(setMembers(members));

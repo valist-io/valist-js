@@ -51,12 +51,10 @@ export default function ProjectPreview(props: ProjectPreviewProps) {
   }, [props.mainImage]);
 
   useEffect(() => {
-    console.log('props.youtubeUrl', props.youtubeUrl);
     if (props.youtubeUrl) {
       const id = getYouTubeID(props.youtubeUrl);
       if (id) {
         const youtubeUrl = getYouTubeEmbedURL(id);
-        console.log('Youtube Url', youtubeUrl);
         setYotubeEmbed(youtubeUrl);
       }
     }
@@ -64,7 +62,6 @@ export default function ProjectPreview(props: ProjectPreviewProps) {
 
   useEffect(() => {
     const assets: Asset[] = [];
-    console.log('youtube url', props.youtubeUrl);
 
     if (props.youtubeUrl && youtubeEmbed) {
       assets.push({
@@ -75,8 +72,6 @@ export default function ProjectPreview(props: ProjectPreviewProps) {
     }
 
     props.projectGallery.map((item) => {
-      console.log('fileInfo', item);
-
       if (typeof item.src === "object") {
         const url = URL.createObjectURL(item.src);
         assets.push(
