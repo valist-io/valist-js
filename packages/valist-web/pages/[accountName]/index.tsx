@@ -37,6 +37,7 @@ export const getServerSideProps = async ({ params }: any) => {
       accountMeta,
       accountName: params.accountName,
     },
+    revalidate: 1,
   };
 };
 

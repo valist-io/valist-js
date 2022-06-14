@@ -60,6 +60,7 @@ export const getServerSideProps = async ({ params }: any) => {
       projectMeta: projectMeta,
       releaseMeta: releaseMeta,
     },
+    revalidate: 1,
   };
 };
 
