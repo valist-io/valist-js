@@ -18,7 +18,7 @@ type AccountMember = {
   id: string
 }
 
-export const getServerSideProps = async ({ params }: any) => {
+export const getServerSideProps = async ({ params, res }: any) => {
   const { data } = await client.query({
     query: gql(ACCOUNT_PROFILE_QUERY),
     variables: { account: params.accountName },
@@ -31,13 +31,17 @@ export const getServerSideProps = async ({ params }: any) => {
     } catch(err) { /* TODO HANDLE */ }
   }
 
+  res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=10, stale-while-revalidate=11',
+  );
+
   return {
     props: {
       data,
       accountMeta,
       accountName: params.accountName,
     },
-    revalidate: 1,
   };
 };
 

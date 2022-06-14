@@ -21,7 +21,7 @@ import getConfig from "next/config";
 import { generateID } from "@valist/sdk";
 import client from "@/utils/Apollo/client";
 
-export const getServerSideProps = async ({ params }: any) => {
+export const getServerSideProps = async ({ params, res }: any) => {
   const { publicRuntimeConfig } = getConfig();
 
   const chainID = BigNumber.from(publicRuntimeConfig.CHAIN_ID);
@@ -51,6 +51,11 @@ export const getServerSideProps = async ({ params }: any) => {
     console.log("Failed to fetch release metadata.", err);
   }
 
+  res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=10, stale-while-revalidate=11',
+  );
+
   return {
     props: {
       data,
@@ -60,7 +65,6 @@ export const getServerSideProps = async ({ params }: any) => {
       projectMeta: projectMeta,
       releaseMeta: releaseMeta,
     },
-    revalidate: 1,
   };
 };
 

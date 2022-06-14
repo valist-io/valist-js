@@ -8,18 +8,22 @@ import { PROJECT_SEARCH_QUERY } from '@valist/sdk/dist/graphql';
 import { Project } from '../../utils/Apollo/types';
 import client from "@/utils/Apollo/client";
 
-export const getServerSideProps = async ({ params }: any) => {
+export const getServerSideProps = async ({ params, res }: any) => {
   const search = params.query;
   const { data } = await client.query({
     variables: { search: search },
     query: gql(PROJECT_SEARCH_QUERY),
   });
 
+  res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=10, stale-while-revalidate=11',
+  );
+
   return {
     props: {
       data,
     },
-    revalidate: 1,
   };
 };
 
