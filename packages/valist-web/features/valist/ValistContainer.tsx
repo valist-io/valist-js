@@ -1,6 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { 
+  setAccounts, 
+  setAddress, 
+  setCurrentAccount, 
+  setLoading,
+  selectAccountNames,
+  selectCurrentAccount,
+} from '../accounts/accountsSlice';
+
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { setAccounts, setAddress, setCurrentAccount, setLoading, setMagicAddress } from '../accounts/accountsSlice';
 import { useEffect, useState } from 'react';
 import { Client, createReadOnly } from '@valist/sdk';
 import { USER_HOMEPAGE_QUERY } from '@valist/sdk/dist/graphql';
@@ -26,6 +34,9 @@ declare global {
 
 export default function ValistContainer({ children }: any) {
   const dispatch = useAppDispatch();
+  const currentAccount = useAppSelector(selectCurrentAccount);
+  const accountNames = useAppSelector(selectAccountNames);
+
   const { publicRuntimeConfig } = getConfig();
   const [provider, setProvider] = useState<ValistProvider>(defaultProvider);
   const { data: account } = useAccount();
@@ -47,17 +58,16 @@ export default function ValistContainer({ children }: any) {
   // Signal to APP Components that user data has been loaded
   useEffect(() => {
     dispatch(setLoading(loading));
-  }, [account?.address]);
+    dispatch(setAddress(account?.address || ''));
+  }, [account]);
   
   // Set Valist client on provider change.
   useEffect(() => {
-    (async () => {
-      if (signer?.provider && !isLoading) {
-        const client = await createValistClient(signer.provider as any);
-        dispatch(setAddress(await signer?.getAddress()));
+    if (signer?.provider && !isLoading) {
+      createValistClient(signer.provider as any).then((client) => {
         if (client) setValistClient(client);
-      }
-    })();
+      });
+    }
   }, [signer, isLoading]);
 
   // Add Valist client to window
@@ -76,22 +86,21 @@ export default function ValistContainer({ children }: any) {
         data.users[0].projects,
       );
 
-      dispatch(setAccounts({
-        accounts: teams,
-        accountNames: teamNames,
-      }));
-
+      dispatch(setAccounts({ accounts: teams, accountNames: teamNames }));
       dispatch(setLoading(loading));
+    } else {
+      dispatch(setAccounts({ accounts: {}, accountNames: [] }));
     }
   }, [data]);
 
-    // Load and set currentAccount if saved in local storage
-    useEffect(() => {
-      if (account?.address) {
-        const savedAccounts = JSON.parse(localStorage.getItem('currentAccount') || '[]');
-        dispatch(setCurrentAccount(savedAccounts[account?.address]));
-      }
-    }, [account?.address, dispatch]);
+  // Set user account from accountNames or local storage
+  useEffect(() => {
+    if (accountNames.length !== 0) {
+      dispatch(setCurrentAccount(currentAccount || accountNames[0]));
+    } else {
+      dispatch(setCurrentAccount(''));
+    }
+  }, [dispatch, accountNames, currentAccount]);
 
   const web3Ctx: Web3ContextInstance = new Web3ContextInstance(
     mainnet,

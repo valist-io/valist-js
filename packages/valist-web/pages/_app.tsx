@@ -10,6 +10,8 @@ import { chain, createClient, WagmiConfig, configureChains } from 'wagmi';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import { magic } from '../utils/Providers/magic';
 import {
+  lightTheme,
+  darkTheme,
   connectorsForWallets,
   RainbowKitProvider,
   wallet,
@@ -64,6 +66,8 @@ const wagmiClient = createClient({ autoConnect: true, connectors, provider });
 function ValistApp(props: AppProps & { colorScheme: ColorScheme }) {
   const { Component, pageProps } = props;
   const [colorScheme, setColorScheme] = useState<ColorScheme>(props.colorScheme);
+  const rainbowTheme = colorScheme === 'dark' ? darkTheme() : lightTheme();
+
   const toggleColorScheme = (value?: ColorScheme) => {
     const nextColorScheme = value || (colorScheme === 'dark' ? 'light' : 'dark');
     setColorScheme(nextColorScheme);
@@ -74,8 +78,8 @@ function ValistApp(props: AppProps & { colorScheme: ColorScheme }) {
     <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
       <MantineProvider theme={{ ...theme, colorScheme } as any} withGlobalStyles withNormalizeCSS>
         <Provider store={store}>
-        <WagmiConfig client={wagmiClient}>
-            <RainbowKitProvider chains={chains}>
+          <WagmiConfig client={wagmiClient}>
+            <RainbowKitProvider chains={chains} theme={rainbowTheme}>
               <ApolloProvider client={client}>
                 <AppContainer>
                     <Component {...pageProps} />
