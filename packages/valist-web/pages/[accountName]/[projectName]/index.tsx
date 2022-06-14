@@ -33,16 +33,16 @@ export const getServerSideProps = async ({ params }: any) => {
     variables: { projectID: projectID },
   });
 
-  let projectMeta;
+  let projectMeta = {};
   try {
     if (data?.projects[0]?.metaURI !== '') {
-      projectMeta = await fetch(data?.projects[0]?.metaURI).then(res => res.json());
+      projectMeta = (await fetch(data?.projects[0]?.metaURI).then(res => res.json())) || {};
     }
   } catch(err) {
     console.log("Failed to fetch project metadata.", err);
   }
 
-  let releaseMeta;
+  let releaseMeta = {};
   try {
     if (data?.projects[0]?.releases[0] && data?.projects[0]?.releases[0]?.metaURI !== '') {
       releaseMeta = (await fetch(data?.projects[0]?.releases[0]?.metaURI).then(res => res.json())) || {};
@@ -51,16 +51,14 @@ export const getServerSideProps = async ({ params }: any) => {
     console.log("Failed to fetch release metadata.", err);
   }
 
-  if (!releaseMeta) releaseMeta = {};
-
   return {
     props: {
       data,
       projectID,
       accountName: params.accountName,
       projectName: params.projectName,
-      projectMeta: projectMeta || {},
-      releaseMeta: releaseMeta || {},
+      projectMeta: projectMeta,
+      releaseMeta: releaseMeta,
     },
   };
 };
@@ -167,18 +165,31 @@ export default function ProjectPage(props: any):JSX.Element {
       }
     }
   };
- 
+
+  const findGraphicType = (type: string, graphics: { src: string; type: string; }[]): string | undefined => {
+    if (graphics && graphics.length === 0) return;
+    for (const graphic of graphics) {
+      if (type === 'video' && graphic.type && (graphic.type.includes('video') || graphic.type.includes('youtube'))) {
+        return graphic.src;
+      };
+      
+      if (type === 'image' && graphic.type && graphic.type.includes('image')) {
+        return graphic.src;
+      };
+    };
+    return;
+  };
+
   return (
     <Layout
       title={`${props.accountName}/${props.projectName}`} 
       description={props?.projectMeta?.short_description}
-      graphics={[
-        { 
-          src: props?.projectMeta?.image,
-          type: 'image',
-        }] ||
-        props.projectMeta?.gallery
+      image={
+        (props?.projectMeta?.gallery.length !== 0 ) && findGraphicType('image', props?.projectMeta?.gallery) || 
+        props?.projectMeta?.image || 
+        '/images/valist.png'
       }
+      video={findGraphicType('video', props?.projectMeta?.gallery)}
       url={`valist.io/${props.accountName}/${props.projectName}`}
     >
       <div className="grid grid-cols-1 gap-4 items-start lg:grid-cols-6 lg:gap-8">
