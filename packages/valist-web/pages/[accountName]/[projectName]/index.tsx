@@ -45,12 +45,13 @@ export const getServerSideProps = async ({ params }: any) => {
   let releaseMeta;
   try {
     if (data?.projects[0]?.releases[0] && data?.projects[0]?.releases[0]?.metaURI !== '') {
-      releaseMeta = await fetch(data?.projects[0]?.releases[0]?.metaURI).then(res => res.json());
+      releaseMeta = (await fetch(data?.projects[0]?.releases[0]?.metaURI).then(res => res.json())) || {};
     }
-
   } catch(err) {
     console.log("Failed to fetch release metadata.", err);
   }
+
+  if (!releaseMeta) releaseMeta = {};
 
   return {
     props: {
@@ -58,8 +59,8 @@ export const getServerSideProps = async ({ params }: any) => {
       projectID,
       accountName: params.accountName,
       projectName: params.projectName,
-      projectMeta,
-      releaseMeta,
+      projectMeta: projectMeta || {},
+      releaseMeta: releaseMeta || {},
     },
   };
 };
@@ -168,10 +169,16 @@ export default function ProjectPage(props: any):JSX.Element {
   };
  
   return (
-    <Layout 
+    <Layout
       title={`${props.accountName}/${props.projectName}`} 
       description={props?.projectMeta?.short_description}
-      graphic={props?.projectMeta?.image || ""} 
+      graphics={[
+        { 
+          src: props?.projectMeta?.image,
+          type: 'image',
+        }] ||
+        props.projectMeta?.gallery
+      }
       url={`valist.io/${props.accountName}/${props.projectName}`}
     >
       <div className="grid grid-cols-1 gap-4 items-start lg:grid-cols-6 lg:gap-8">

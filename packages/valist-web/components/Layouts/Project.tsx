@@ -8,8 +8,23 @@ interface LayoutProps {
   children?: ReactNode,
   title?: string,
   description: string,
-  graphic: string,
+  graphics: { src: string; type: string; }[]
   url: string,
+};
+
+const VIDEO = 'video';
+const IMAGE = 'image';
+
+const getMediaType = (graphics: { src: string; type: string; }[]): string[] => {
+  if (graphics.length === 0) return [IMAGE, '/images/valist.png'];
+
+  graphics.forEach((graphic) => {
+    if (graphic.type.includes('video')) {
+      return [VIDEO, graphic.src];
+    }
+  });
+
+  return [IMAGE, graphics[0].src];
 };
 
 export default function Layout(props: LayoutProps): JSX.Element {
@@ -17,6 +32,7 @@ export default function Layout(props: LayoutProps): JSX.Element {
   const [opened, setOpened] = useState(false);
 
   const backgroundColor = theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[1];
+  const [mediaType, media] = getMediaType(props.graphics);
 
   return (
     <React.Fragment> 
@@ -36,13 +52,13 @@ export default function Layout(props: LayoutProps): JSX.Element {
         <meta property="twitter:url" content={`https://${props.url}`} />
         <meta property="twitter:title" content={props.title} />
         <meta property="twitter:description" content={props.description} />
-        <meta property="twitter:image" content={props.graphic} />
+        <meta property="twitter:image" content={props?.graphics[0].src || '/images/valist.png'} />
 
         {/* Open Graph Tags */}
         <meta property="og:title" content={props.title} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`https://${props.url}`} />
-        <meta property="og:image" content={props.graphic} />
+        <meta property={mediaType === "image" ? "og:video" : "og:video"} content={media} />
         <meta property="og:description" content={props.description} />
       </Head>
       <AppShell

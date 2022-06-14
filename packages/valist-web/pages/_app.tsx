@@ -3,7 +3,6 @@ import '@rainbow-me/rainbowkit/styles.css';
 import type { AppProps } from 'next/app';
 import { store } from '../app/store';
 import { Provider } from 'react-redux';
-import dynamic from 'next/dynamic';
 import { ApolloProvider } from '@apollo/client';
 import client from '../utils/Apollo/client';
 import { chain, createClient, WagmiConfig, configureChains } from 'wagmi';

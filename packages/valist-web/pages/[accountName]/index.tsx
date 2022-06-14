@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { useQuery,gql } from "@apollo/client";
+import { gql } from "@apollo/client";
 import Layout from '../../components/Layouts/Main';
 import { ACCOUNT_PROFILE_QUERY } from '@valist/sdk/dist/graphql';
 import { Log, Project } from '../../utils/Apollo/types';
@@ -13,19 +12,36 @@ import TeamMemberList from '../../features/accounts/AccountMemberList';
 import TeamProfileCardActions from '../../features/accounts/AccountProfileCardActions';
 import { useAppSelector } from '../../app/hooks';
 import { selectAccountNames } from '../../features/accounts/accountsSlice';
+import client from '@/utils/Apollo/client';
 
 type AccountMember = {
   id: string
 }
 
-export default function AccountProfilePage() {
-  const router = useRouter();
-  const accountName = `${router.query.accountName}`;
-  const accountNames = useAppSelector(selectAccountNames);
-  const { data, loading, error } = useQuery(gql(ACCOUNT_PROFILE_QUERY), {
-    variables: { account: accountName },
+export const getServerSideProps = async ({ params }: any) => {
+  const { data } = await client.query({
+    query: gql(ACCOUNT_PROFILE_QUERY),
+    variables: { account: params.accountName },
   });
 
+  let accountMeta;
+  if (data && data.accounts && data.accounts[0] && data.accounts[0].metaURI) {
+    try {
+      accountMeta = await fetch(data.accounts[0].metaURI).then(res => res.json());
+    } catch(err) { /* TODO HANDLE */ }
+  }
+
+  return {
+    props: {
+      data,
+      accountMeta,
+      accountName: params.accountName,
+    },
+  };
+};
+
+export default function AccountProfilePage(props: any) {
+  const accountNames = useAppSelector(selectAccountNames);
   const [view, setView] = useState<string>('Projects');
   const [meta, setMeta] = useState<AccountMeta>({
     image: '',
@@ -46,28 +62,19 @@ export default function AccountProfilePage() {
   const [isMember, setIsMember] = useState(false);
 
   useEffect(() => {
-    const fetchMeta = async (metaURI: string) => {
-      try {
-        const accountMeta = await fetch(metaURI).then(res => res.json());
-        setMeta(accountMeta);
-      } catch(err) { /* TODO HANDLE */ }
-    };
-
-    if (data && data.accounts && data.accounts[0] && data.accounts[0].metaURI) {
-      fetchMeta(data.accounts[0].metaURI);
-      setaProjects(data.accounts[0].projects);
-      setMembers(data.accounts[0].members);
-      setLogs(data.accounts[0].logs);
-    }
-  }, [data, loading, error, setMeta]);
+    setMeta(props.accountMeta);
+    setaProjects(props.data.accounts[0].projects);
+    setMembers(props.data.accounts[0].members);
+    setLogs(props.data.accounts[0].logs);
+  }, [props.accountMeta, props.data, setMeta]);
 
   useEffect(() => {
-    if (accountName) {
-      accountNames.map((name) => {
-        if (accountName === name) setIsMember(true);
+    if (props.accountName) {
+      accountNames.map((name: string) => {
+        if (props.accountName === name) setIsMember(true);
       });
     }
-  }, [accountNames, accountName]);
+  }, [accountNames, props.accountName]);
 
   return (
     <Layout title='Valist | Team'>
@@ -76,7 +83,7 @@ export default function AccountProfilePage() {
           <TeamProfileCard
             view={view}
             setView={setView}
-            accountName={accountName}
+            accountName={props.accountName}
             accountImage={meta.image ? meta.image : ''}
             meta={meta}
             tabs={tabs}          
@@ -85,10 +92,10 @@ export default function AccountProfilePage() {
           {view === 'Activity' && <LogTable logs={logs} />}
         </div>
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
-          {isMember && <TeamProfileCardActions accountName={accountName} />}
+          {isMember && <TeamProfileCardActions accountName={props.accountName} />}
           <TeamMemberList
             accountMembers={members} 
-            accountName={accountName}          
+            accountName={props.accountName}          
           />
           <LogCard logs={logs} />
         </div>
