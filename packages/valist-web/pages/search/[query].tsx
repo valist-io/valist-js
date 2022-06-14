@@ -1,26 +1,35 @@
-import { useQuery, gql } from '@apollo/client';
+import { gql } from '@apollo/client';
 import { NextPage } from 'next';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import Layout from '../../components/Layouts/Main';
 import ProjectListCard from '../../features/projects/ProjectListCard';
 import { PROJECT_SEARCH_QUERY } from '@valist/sdk/dist/graphql';
 import { Project } from '../../utils/Apollo/types';
+import client from "@/utils/Apollo/client";
 
-const SearchPage: NextPage = () => {
-  const router = useRouter();
-  const search = `${router.query.query}`;
-  const { data, loading, error } = useQuery(gql(PROJECT_SEARCH_QUERY), {
+export const getServerSideProps = async ({ params }: any) => {
+  const search = params.query;
+  const { data } = await client.query({
     variables: { search: search },
+    query: gql(PROJECT_SEARCH_QUERY),
   });
+
+  return {
+    props: {
+      data,
+    },
+  };
+};
+
+const SearchPage: NextPage = (props: any) => {
   const [ list, setProjects ] = useState<Project[]>([]);
 
   useEffect(() => {
-    if (data && data.projects){
-      setProjects(data.projects);
+    if (props.data && props.data.projects){
+      setProjects(props.data.projects);
     }
-  }, [data, loading, error]);
+  }, [props.data]);
 
   return (
     <Layout title="Valist | Search">
