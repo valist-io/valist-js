@@ -103,7 +103,8 @@ export default function ProjectPage():JSX.Element {
     };
 
     if (data?.projects[0]) {
-      setMembers(data?.projects[0]?.members);
+      const membersList = [...data?.projects[0].account.members, ...data?.projects[0]?.members];
+      setMembers(membersList);
       setReleases(data?.projects[0]?.releases);
       setVersion(data?.projects[0]?.releases[0]?.name);
       setLogs(data?.projects[0]?.logs);
@@ -134,7 +135,7 @@ export default function ProjectPage():JSX.Element {
        const profileAccount = accounts[accountName];
        
        if (profileAccount) {
-        profileAccount.map((project) => {
+        profileAccount.map((project: { name: string; }) => {
            if (project.name === projectName) setIsMember(true);
         });
        }
