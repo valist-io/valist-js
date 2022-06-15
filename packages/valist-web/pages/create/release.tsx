@@ -5,7 +5,7 @@ import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { selectAccountNames, selectAccounts, selectLoading, selectLoginTried, selectLoginType } from '../../features/accounts/accountsSlice';
+import { selectAccountNames, selectAccounts, selectLoading } from '../../features/accounts/accountsSlice';
 import { selectName, selectDescription, selectProject, selectTeam, clear } from '../../features/releases/releaseSlice';
 import { getProjectNames } from '../../utils/Apollo/normalization';
 import ReleasePreview from '../../features/releases/ReleasePreview';
@@ -18,11 +18,9 @@ const PublishReleasePage: NextPage = () => {
   // Page State
   const router = useRouter();
   const valistCtx = useContext(ValistContext);
-  const loginType = useAppSelector(selectLoginType);
-  const loginTried = useAppSelector(selectLoginTried);
   const accountNames = useAppSelector(selectAccountNames);
   const accounts = useAppSelector(selectAccounts);
-  const loading = useAppSelector(selectLoading);
+  const accountLoading = useAppSelector(selectLoading);
   const dispatch = useAppDispatch();
 
   // Release State
@@ -31,7 +29,7 @@ const PublishReleasePage: NextPage = () => {
   const name = useAppSelector(selectName);
   const description = useAppSelector(selectDescription);
 
-  const [projectID, setProjectID] = useState<string | null>(null);
+  const [latestVersion, setLatestVersion] = useState<string>('0.0.0');
   const [releaseImage, setReleaseImage] = useListState<FileList>([]);
   const [releaseFiles, setReleaseFiles] = useListState<FileList>([]);
   const [availableProjects, setAvailableProjects] = useState<string[]>([]);
@@ -51,7 +49,7 @@ const PublishReleasePage: NextPage = () => {
 
   // On page load set releaseAccount from url or from first item in list of user accounts
   useEffect(() => {
-    if (!loading && router.isReady) {
+    if (!accountLoading && router.isReady) {
       const projectNames = getProjectNames(accounts, incomingAccount || accountNames[0]);
       setInitialValues({
         account: incomingAccount || accountNames[0],
@@ -60,7 +58,21 @@ const PublishReleasePage: NextPage = () => {
       setAvailableProjects(projectNames);
       setIsDefaults(true);
     }
-  }, [loading, router.isReady, incomingAccount]);
+  }, [accountLoading, router.isReady, incomingAccount]);
+
+  useEffect(() => {
+    if (account && project) {
+      for (const p of accounts[account]) {
+        if (p.releases[0] && p.name === project) {
+          setLatestVersion(p.releases[0].name);
+        } else {
+          setLatestVersion('0.0.0');
+        }
+      }
+    } else { 
+      setLatestVersion('0.0.0');
+    }
+  }, [account, project]);
 
   const setProjectList = (account: string) => {
     const projectNames = getProjectNames(accounts, account);
@@ -101,8 +113,8 @@ const PublishReleasePage: NextPage = () => {
                 accountNames={accountNames}
                 projectNames={availableProjects}
                 releaseFiles={releaseFiles}
-                setProjectID={setProjectID}
                 releaseImage={releaseImage}
+                latestVersion={latestVersion}
                 setProjectList={setProjectList} 
                 setImage={setReleaseImage}
                 setFiles={setReleaseFiles}

@@ -10,7 +10,6 @@ import { useForm, zodResolver } from '@mantine/form';
 import getConfig from 'next/config';
 import { z } from 'zod';
 import { Select, TextInput } from "@mantine/core";
-import { SetUseState } from "@/utils/Account/types";
 
 interface PublishReleaseFormProps {
   initialValues: { account: string, project: string }
@@ -18,8 +17,8 @@ interface PublishReleaseFormProps {
   projectNames: string[];
   releaseImage: FileList[];
   releaseFiles: FileList[];
+  latestVersion: string;
   setProjectList: (account: string) => string;
-  setProjectID: SetUseState<string | null>;
   setImage: UseListStateHandler<FileList>;
   setFiles: UseListStateHandler<FileList>;
   submit: (projectID: string, name: string) => void;
@@ -39,8 +38,6 @@ export default function PublishReleaseForm(props: PublishReleaseFormProps) {
       .regex(versionRegex, { message: 'Versions cannot contain [!@#$%^&*()[]] or spaces!' }),
     description: z.string(),
   });
-
-  console.log('intial account', props.initialValues.account);
 
   const releaseForm = useForm({
     schema: zodResolver(releaseFormSchema),
@@ -125,7 +122,7 @@ Version tag: ${version}
       <TextInput
         required
         label="Version"
-        placeholder="1.0.3"
+        placeholder={`Latest version - ${props.latestVersion}`}
         {...releaseForm.getInputProps('version')}
       />
 
