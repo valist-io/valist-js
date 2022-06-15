@@ -25,9 +25,6 @@ export default function TeamProfilePage() {
   const { data, loading, error } = useQuery(gql(ACCOUNT_PROFILE_QUERY), {
     variables: { account: accountName },
   });
-
-  console.log("account profile data", data);
-
   const [view, setView] = useState<string>('Projects');
   const [meta, setMeta] = useState<AccountMeta>({
     image: '',
