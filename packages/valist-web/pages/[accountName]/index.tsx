@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useQuery,gql } from "@apollo/client";
 import Layout from '../../components/Layouts/Main';
 import { ACCOUNT_PROFILE_QUERY } from '@valist/sdk/dist/graphql';
-import { Log, Project } from '../../utils/Apollo/types';
+import { Log, Project, Member } from '../../utils/Apollo/types';
 import { AccountMeta } from '../../utils/Valist/types';
 import LogTable from '../../features/logs/LogTable';
 import LogCard from '../../features/logs/LogCard';
@@ -14,14 +14,9 @@ import TeamProfileCardActions from '../../features/accounts/AccountProfileCardAc
 import { useAppSelector } from '../../app/hooks';
 import { selectAccountNames } from '../../features/accounts/accountsSlice';
 
-type AccountMember = {
-  id: string
-}
-
 export default function AccountProfilePage() {
   const router = useRouter();
   const accountName = `${router.query.accountName}`;
-  const accountNames = useAppSelector(selectAccountNames);
   const { data, loading, error } = useQuery(gql(ACCOUNT_PROFILE_QUERY), {
     variables: { account: accountName },
   });
@@ -30,9 +25,13 @@ export default function AccountProfilePage() {
   const [meta, setMeta] = useState<AccountMeta>({
     image: '',
   });
-  const [members, setMembers] = useState<AccountMember[]>([]);
+  const [members, setMembers] = useState<Member[]>([]);
   const [logs, setLogs] = useState<Log[]>([]);
-  const [projects, setaProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+
+  const accountNames = useAppSelector(selectAccountNames);
+  const isMember = accountNames.includes(accountName);
+
   const tabs = [
     {
       text: 'Projects',
@@ -43,31 +42,17 @@ export default function AccountProfilePage() {
       disabled: false,
     },
   ];
-  const [isMember, setIsMember] = useState(false);
 
   useEffect(() => {
-    const fetchMeta = async (metaURI: string) => {
-      try {
-        const accountMeta = await fetch(metaURI).then(res => res.json());
-        setMeta(accountMeta);
-      } catch(err) { /* TODO HANDLE */ }
-    };
-
     if (data && data.accounts && data.accounts[0] && data.accounts[0].metaURI) {
-      fetchMeta(data.accounts[0].metaURI);
-      setaProjects(data.accounts[0].projects);
+      fetch(data.accounts[0].metaURI)
+        .then(res => res.json())
+        .then(setMeta);
+      setProjects(data.accounts[0].projects);
       setMembers(data.accounts[0].members);
       setLogs(data.accounts[0].logs);
     }
   }, [data, loading, error, setMeta]);
-
-  useEffect(() => {
-    if (accountName) {
-      accountNames.map((name: string) => {
-        if (accountName === name) setIsMember(true);
-      });
-    }
-  }, [accountNames, accountName]);
 
   return (
     <Layout title='Valist | Team'>

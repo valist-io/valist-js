@@ -1,39 +1,82 @@
-import { Select } from '@mantine/core';
-import { useColorScheme } from '@mantine/hooks';
+import {
+  Avatar,
+  Group,
+  Stack,
+  Text,
+  Modal,
+  Button,
+  UnstyledButton,
+} from '@mantine/core';
+
+import React, { useState } from 'react';
+import { NextLink } from '@mantine/next';
+import * as Icons from 'tabler-icons-react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { selectAddress, setCurrentAccount } from './accountsSlice';
+import { selectCurrentAccount, setCurrentAccount } from './accountsSlice';
 
 interface AccountPickerProps {
   accountNames: string[];
-  initialValue: string;
 }
 
 export default function AccountPicker(props: AccountPickerProps) {
-  const address = useAppSelector(selectAddress);
   const dispatch = useAppDispatch();
-  const colorScheme = useColorScheme();
-
-  const handleAccountChange = (name: string) => {
-    const accountsString = localStorage.getItem('currentAccount');
-    let accountByAddress: Record<string, string> = {};
-
-    if (accountsString) {
-      accountByAddress = JSON.parse(accountsString);
-    }
-
-    accountByAddress[address] = name;
-    localStorage.setItem('currentAccount', JSON.stringify(accountByAddress));
+  const [opened, setOpened] = useState(false);
+  const account = useAppSelector(selectCurrentAccount);
+  
+  const changeAccount = (name: string) => {
     dispatch(setCurrentAccount(name));
+    setOpened(false);
   };
 
   return (
-    <Select
-      data={props.accountNames}
-      onChange={(value) => handleAccountChange(value || "")}
-      defaultValue={props.initialValue}
-      style={{ width:120, borderRadius: '8px', border: `1px solid ${colorScheme === 'dark' ? 'white' : '' }` }} 
-      radius="md"
-      size="md"
-    />
+    <React.Fragment>
+      {/* Button */}
+      <UnstyledButton onClick={() => setOpened(true)}>
+        <Group>
+          <Avatar size="md" radius="xl" color="indigo" />
+          <Stack spacing={0}>
+            <Group>
+              <Text
+                size="sm"
+                style={{ maxWidth: 100, overflow: 'hidden', whiteSpace: 'nowrap' }}
+              >
+                {account}
+              </Text>
+              <Icons.CaretDown size={12} fill="true" />
+            </Group>
+            <Text size="xs" color="dimmed">
+              Change Account
+            </Text>
+          </Stack>
+        </Group>
+      </UnstyledButton>
+      {/* Modal */}
+      <Modal
+        opened={opened}
+        onClose={() => setOpened(false)}
+        title="Change Account"
+        overflow="inside"
+        centered
+      >
+        <Stack>
+          {props.accountNames.map(name =>
+            <UnstyledButton key={name} onClick={() => changeAccount(name)}>
+              <Group>
+                <Avatar size="md" radius="xl" color="indigo" />
+                <Text>{name}</Text>
+              </Group>
+            </UnstyledButton>
+          )}
+          <Button 
+            color="green" 
+            variant="outline" 
+            component={NextLink} 
+            href="/create/account"
+          >
+            Create Account
+          </Button>
+        </Stack>
+      </Modal>
+    </React.Fragment>
   );
-};
+}
