@@ -162,6 +162,11 @@ export const USER_HOMEPAGE_QUERY = `
           account {
             name
           }
+          releases(orderBy: blockTime, orderDirection: "desc") {
+            name
+            metaURI
+            blockTime
+          }
         }
         metaURI
       }
@@ -172,7 +177,12 @@ export const USER_HOMEPAGE_QUERY = `
         account {
           name
         }
-         product {
+        releases(orderBy: blockTime, orderDirection: "desc") {
+          name
+          metaURI
+          blockTime
+        }
+        product {
           id
         }
       }
@@ -233,7 +243,6 @@ export const PROJECT_SEARCH_QUERY = `
         name
       }
     }
-	
   }
 `;
 

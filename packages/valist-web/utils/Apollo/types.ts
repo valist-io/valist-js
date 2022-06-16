@@ -18,6 +18,7 @@ export type Project = {
   product?: {
     id: string,
   }
+  releases: { blockTime: string, metaURI: string, name: string }[]
 };
 
 export type Log = {

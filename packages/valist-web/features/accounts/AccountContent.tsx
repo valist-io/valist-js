@@ -18,6 +18,7 @@ export default function TeamContent(props: TeamContentProps): JSX.Element {
       account: {
         name: props.username,
       },
+      releases:[],
     },
     {
       id: "test2",
@@ -26,6 +27,7 @@ export default function TeamContent(props: TeamContentProps): JSX.Element {
       account: {
         name: props.username,
       },
+      releases:[],
     },
     {
       id: "test3",
@@ -34,6 +36,7 @@ export default function TeamContent(props: TeamContentProps): JSX.Element {
       account: {
         name: props.username,
       },
+      releases:[],
     },
     {
       id: "test4",
@@ -42,6 +45,7 @@ export default function TeamContent(props: TeamContentProps): JSX.Element {
       account: {
         name: props.username,
       },
+      releases:[],
     },
   ];
 
