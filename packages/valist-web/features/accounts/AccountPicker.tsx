@@ -12,7 +12,7 @@ import React, { useState } from 'react';
 import { NextLink } from '@mantine/next';
 import * as Icons from 'tabler-icons-react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { selectCurrentAccount, setCurrentAccount } from './accountsSlice';
+import { selectAddress, selectCurrentAccount, setCurrentAccount } from './accountsSlice';
 
 interface AccountPickerProps {
   accountNames: string[];
@@ -22,8 +22,14 @@ export default function AccountPicker(props: AccountPickerProps) {
   const dispatch = useAppDispatch();
   const [opened, setOpened] = useState(false);
   const account = useAppSelector(selectCurrentAccount);
-  
+  const address = useAppSelector(selectAddress);
+
   const changeAccount = (name: string) => {
+    const accountsString = localStorage.getItem('currentAccount');
+    let accountByAddress: Record<string, string> = (accountsString) ? JSON.parse(accountsString) : {};
+    accountByAddress[address] = name;
+
+    localStorage.setItem('currentAccount', JSON.stringify(accountByAddress));
     dispatch(setCurrentAccount(name));
     setOpened(false);
   };
@@ -65,7 +71,7 @@ export default function AccountPicker(props: AccountPickerProps) {
                 <Avatar size="md" radius="xl" color="indigo" />
                 <Text>{name}</Text>
               </Group>
-            </UnstyledButton>
+            </UnstyledButton>,
           )}
           <Button 
             color="green" 
