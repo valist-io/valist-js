@@ -4,6 +4,7 @@ import { useAppDispatch } from "../../../app/hooks";
 import { setPrice, setLimit , setRoyalty , setRoyaltyAddress } from '../projectSlice';
 import { AlertCircle as AlertCircleIcon } from 'tabler-icons-react';
 import CopyButton from '@/components/CopyButton';
+import { BigNumber } from 'ethers';
 
 interface PriceFormProps {
     price: string;
@@ -17,6 +18,8 @@ export const PriceForm = (props: PriceFormProps) => {
   const dispatch = useAppDispatch();
   const theme = useMantineTheme();
 	const borderColor = theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[4];
+  const backgroundColor = theme.colorScheme === 'dark' ? theme.colors.dark[0] : 'white !important';
+  const color = theme.colorScheme === 'dark' ? 'white !important' : 'black !important';
   
   const rightSectionTooltip = (text: string) => {
       return (
@@ -31,11 +34,13 @@ export const PriceForm = (props: PriceFormProps) => {
       <TextInput
         id="projectID"
         name="projectID"
-        label="ProjectID (Immutable)"
-        rightSection={<CopyButton value={props.projectID} />}
-        value={props.projectID}
+        label="ProjectID (Decimal)"
+        rightSection={<CopyButton value={BigNumber.from((props.projectID)).toBigInt().toString()} />}
+        value={BigNumber.from((props.projectID)).toBigInt().toString()}
         styles={{
-          disabled: { 
+          disabled: {
+            color,
+            backgroundColor,
             borderColor,
           },
         }}
@@ -50,7 +55,7 @@ export const PriceForm = (props: PriceFormProps) => {
         type="number"
         min="0"
         onChange={(e) => dispatch(setPrice(e.target.value))}
-        value={props.price}
+        value={parseInt(props.price)}
       />
 
       <TextInput
