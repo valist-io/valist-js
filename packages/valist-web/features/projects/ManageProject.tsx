@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from 'react';
 import { ProjectMeta } from '@valist/sdk';
 import ValistContext from '../../features/valist/ValistContext';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { selectAccountNames, selectLoginTried, selectLoginType } from '../../features/accounts/accountsSlice';
+import { selectAccountNames } from '../../features/accounts/accountsSlice';
 import { dismiss, notify } from '../../utils/Notifications';
 import parseError from '../../utils/Errors';
 import { clear, selectAccount, selectDescription, selectDisplayName, selectLimit, selectMembers, selectName, selectPrice, selectRoyalty, selectRoyaltyAddress, selectShortDescription, selectTags, selectType, selectWebsite, selectYouTubeUrl, setDescription, setDisplayName, setLimit, setMembers, setName, setPrice, setRoyalty, setRoyaltyAddress, setShortDescription, setTags, setAccount, setType, setWebsite } from '../../features/projects/projectSlice';
@@ -30,8 +30,6 @@ export default function ManageProject(props: ManageProjectProps) {
   // Page State
   const valistCtx = useContext(ValistContext);
   const accountNames = useAppSelector(selectAccountNames);
-  const loginType = useAppSelector(selectLoginType);
-  const loginTried = useAppSelector(selectLoginTried);
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [formView, setFormView] = useState('Basic Info');

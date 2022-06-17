@@ -6,24 +6,6 @@ import { dismiss, notify } from "../Notifications";
 import { FileList } from '@/components/Files/FileUpload';
 import { NextRouter } from "next/router";
 
-export const getTeamID = (teamName: string) => {
-  const nameBytes = utils.toUtf8Bytes(teamName);
-  const nameHash = utils.keccak256(nameBytes);
-  return utils.keccak256(
-    utils.solidityPack(["uint256", "address"], [0x89, nameHash]),
-  );
-};
-
-export const getProjectID = (teamName: string, projectName: string) => {
-  const teamID = getTeamID(teamName);
-  const nameBytes = utils.toUtf8Bytes(projectName);
-  const nameHash = utils.keccak256(nameBytes);
-
-  return utils.keccak256(
-    utils.solidityPack(["uint256", "address"], [teamID, nameHash]),
-  );
-};
-
 // Wrap Valist Sdk call for create or update account
 export const createOrUpdateAccount = async (
   create: boolean,

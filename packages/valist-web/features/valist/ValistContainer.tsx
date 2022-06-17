@@ -93,14 +93,15 @@ export default function ValistContainer({ children }: any) {
     }
   }, [data]);
 
-  // Set user account from accountNames or local storage
+  // Set user account from local storage or accountNames
   useEffect(() => {
-    if (accountNames.length !== 0) {
-      dispatch(setCurrentAccount(currentAccount || accountNames[0]));
+    if (accountNames.length !== 0 && account?.address) {
+      const savedAccounts = JSON.parse(localStorage.getItem('currentAccount') || '[]');
+      dispatch(setCurrentAccount(savedAccounts[account?.address] || accountNames[0]));
     } else {
       dispatch(setCurrentAccount(''));
     }
-  }, [dispatch, accountNames, currentAccount]);
+  }, [dispatch, accountNames, account?.address]);
 
   const web3Ctx: Web3ContextInstance = new Web3ContextInstance(
     mainnet,
