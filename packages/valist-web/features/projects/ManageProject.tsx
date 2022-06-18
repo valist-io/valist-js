@@ -408,6 +408,7 @@ export default function ManageProject(props: ManageProjectProps) {
               userAccounts={accountNames}
               accountUsername={projectAccount}
               accountID={accountID}
+              projectID={projectID}
               projectName={projectName}
               projectDisplayName={projectDisplayName}
               price={projectPrice}
