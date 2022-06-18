@@ -55,7 +55,7 @@ export const PriceForm = (props: PriceFormProps) => {
         type="number"
         min="0"
         onChange={(e) => dispatch(setPrice(e.target.value))}
-        value={parseInt(props.price)}
+        value={Number(props.price)}
       />
 
       <TextInput
