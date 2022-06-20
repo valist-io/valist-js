@@ -31,6 +31,8 @@ export default function ProjectPage():JSX.Element {
   const [projectID, setProjectID] = useState<string>('');
   const { data, loading, error } = useQuery(gql(PROJECT_PROFILE_QUERY), {
     variables: { projectID: projectID },
+    pollInterval: 10000,
+   
   });
   const [version, setVersion] = useState<string>('');
   const [view, setView] = useState<string>('Readme');

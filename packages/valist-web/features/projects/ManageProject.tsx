@@ -6,17 +6,18 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { selectAccountNames, selectLoginTried, selectLoginType } from '../../features/accounts/accountsSlice';
 import { dismiss, notify } from '../../utils/Notifications';
 import parseError from '../../utils/Errors';
-import { clear, selectAccount, selectDescription, selectDisplayName, selectLimit, selectMembers, selectName, selectPrice, selectRoyalty, selectRoyaltyAddress, selectShortDescription, selectTags, selectType, selectWebsite, selectYouTubeUrl, setDescription, setDisplayName, setLimit, setMembers, setName, setPrice, setRoyalty, setRoyaltyAddress, setShortDescription, setTags, setAccount, setType, setWebsite } from '../../features/projects/projectSlice';
+import { clear, selectAccount, selectDescription, selectDisplayName, selectLimit, selectMembers, selectName, selectPrice, selectRoyalty, selectRoyaltyAddress, selectShortDescription, selectTags, selectType, selectWebsite, selectYouTubeUrl, setDescription, setDisplayName, setLimit, setMembers, setName, setPrice, setRoyalty, setRoyaltyAddress, setShortDescription, setTags, setAccount, setType, setWebsite, setPendingProjectID } from '../../features/projects/projectSlice';
 import ProjectPreview from '../../features/projects/ProjectPreview';
 import ProjectForm from './ProjectForm';
 import Tabs from '../../components/Tabs';
 import { Asset } from './ProjectGallery';
 import { generateID } from '@valist/sdk';
 import getConfig from 'next/config';
-import { BigNumber, ethers } from 'ethers';
+import { BigNumber, ethers, providers } from 'ethers';
 import { projectMetaChanged } from '../../utils/Validation';
 import { useListState } from '@mantine/hooks';
 import { FileList } from '@/components/Files/FileUpload';
+
 
 type Member = {
   id: string,
@@ -36,20 +37,20 @@ export default function ManageProject(props: ManageProjectProps) {
   const router = useRouter();
   const [formView, setFormView] = useState('Basic Info');
   const { publicRuntimeConfig } = getConfig();
-  const [tabs, handleTabs] = useListState<{text: string, disabled: boolean}>([
-    { 
+  const [tabs, handleTabs] = useListState<{ text: string, disabled: boolean }>([
+    {
       text: 'Basic Info',
       disabled: false,
     },
-    { 
+    {
       text: 'Descriptions',
       disabled: false,
     },
-    { 
+    {
       text: 'Members',
       disabled: false,
     },
-    { 
+    {
       text: 'Graphics',
       disabled: false,
     },
@@ -101,23 +102,25 @@ export default function ManageProject(props: ManageProjectProps) {
     }
   }, []);
 
+
+  
   // If projectAccount && projectName, generate account and projectID
   useEffect(() => {
     if (projectAccount && projectName) {
       const chainID = publicRuntimeConfig.CHAIN_ID;
       const accountID = generateID(chainID, projectAccount);
       setAccountID(accountID);
-      
+
       const projectID = generateID(accountID, projectName);
       setProjectID(projectID);
     }
   }, [projectAccount, projectName, publicRuntimeConfig.CHAIN_ID]);
-  
+
   // If in edit mode & projectID && valistCtx, render current values in form
   useEffect(() => {
     (async () => {
       let projectData: ProjectMeta;
-      
+
       if (props.accountUsername && props.projectName && projectID && valistCtx && valistCtx.getProjectMeta) {
         try {
           projectData = await valistCtx.getProjectMeta(projectID);
@@ -171,7 +174,7 @@ export default function ManageProject(props: ManageProjectProps) {
 
   // Normalize projectMember data for ProjectPreview component
   useEffect(() => {
-    const members:Member[] = [];
+    const members: Member[] = [];
     for (const projectMember of projectMembers) {
       members.push({
         id: projectMember,
@@ -184,13 +187,13 @@ export default function ManageProject(props: ManageProjectProps) {
     if (!projectID || !valistCtx) return;
     let toastID = '';
     let imgURL = currentImage;
-    let galleryItems:Asset[] = (projectGallery.length !== 0) ? [] : [...projectAssets];
+    let galleryItems: Asset[] = (projectGallery.length !== 0) ? [] : [...projectAssets];
 
     const uploadToast = notify('text', 'Uploading files...');
     if (projectImage.length > 0) {
       imgURL = await valistCtx.writeFile({
         // @ts-ignore
-        path: projectImage[0].src.path, 
+        path: projectImage[0].src.path,
         content: projectImage[0].src,
       });
     } else {
@@ -248,7 +251,7 @@ export default function ManageProject(props: ManageProjectProps) {
     console.log("Project Display Name", projectDisplayName);
     console.log("Project Members", projectMembers);
     console.log("Meta", project);
- 
+
     try {
       const metaChanged = projectMetaChanged(previousMeta, project);
 
@@ -274,12 +277,17 @@ export default function ManageProject(props: ManageProjectProps) {
           accountID,
           projectName,
           project,
-          projectMembers,
+         projectMembers, 
         );
-
+        dispatch(setPendingProjectID(projectID));
         dismiss(toastID);
         toastID = notify('transaction', transaction.hash);
         await transaction.wait();
+        dismiss(toastID);
+        notify('success');
+
+        // Sets the pending project to the project ID
+       
       }
 
       const previousPrice = await valistCtx.getProductPrice(projectID) || 0;
@@ -294,7 +302,7 @@ export default function ManageProject(props: ManageProjectProps) {
         dismiss(toastID);
         toastID = notify('transaction', transaction.hash);
         await transaction.wait();
-  
+
         dismiss(toastID);
         notify('success');
       }
@@ -311,7 +319,6 @@ export default function ManageProject(props: ManageProjectProps) {
         dismiss(toastID);
         toastID = notify('transaction', transaction.hash);
         await transaction.wait();
-  
         dismiss(toastID);
         notify('success');
       }
@@ -330,15 +337,14 @@ export default function ManageProject(props: ManageProjectProps) {
         dismiss(toastID);
         toastID = notify('transaction', transaction.hash);
         await transaction.wait();
-  
         dismiss(toastID);
         notify('success');
       }
-
+       
       if (!(props.accountUsername && props.projectName) && metaChanged) {
         router.push('/');
       }
-    } catch(err) {
+    } catch (err) {
       console.log('Error', err);
       dismiss(toastID);
       notify('error', parseError(err));
@@ -362,16 +368,16 @@ export default function ManageProject(props: ManageProjectProps) {
         dismiss(toastID);
         notify('success');
         setMembersChanged(membersChanged + 1);
-      } catch(err) {
+      } catch (err) {
         dismiss(toastID);
         notify('error', parseError(err));
       }
-  
+
       dismiss(toastID);
     }
   };
 
-  const removeMember = async (address: string) =>  {
+  const removeMember = async (address: string) => {
     if (projectID && props.projectName && valistCtx) {
       console.log(`Removing ${address} from ${projectAccount}/${props.projectName}`);
       let toastID = '';
@@ -386,7 +392,7 @@ export default function ManageProject(props: ManageProjectProps) {
         dismiss(toastID);
         notify('success');
         setMembersChanged(membersChanged + 1);
-      } catch(err) {
+      } catch (err) {
         dismiss(toastID);
         notify('error', parseError(err));
       }
@@ -394,14 +400,14 @@ export default function ManageProject(props: ManageProjectProps) {
       dismiss(toastID);
     }
   };
-  
+
   return (
     <div>
       <div>
         <Tabs setView={setFormView} view={formView} tabs={tabs} />
       </div>
       <div className="grid grid-cols-1 gap-4 items-start gap-y-6 lg:grid-cols-12 lg:gap-8">
-      {/* Right Column */}
+        {/* Right Column */}
         <div className="grid grid-cols-1 gap-x-4 gap-y-6 lg:col-span-5">
           <div className="p-4">
             <ProjectForm
@@ -429,7 +435,7 @@ export default function ManageProject(props: ManageProjectProps) {
               setImage={setProjectImage}
               setGallery={handleGallery}
               addMember={addMember}
-              submit={createProject}         
+              submit={createProject}
             />
           </div>
         </div>

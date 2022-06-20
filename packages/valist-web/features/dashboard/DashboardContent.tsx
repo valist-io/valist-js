@@ -8,11 +8,12 @@ interface DashboardContentProps {
   accountName: string;
   userProjects: Project[]
   logs: Log[];
+  pendingLog: boolean;
   address: string,
   view: string,
 }
 
-export default function DahsboardContent(props: DashboardContentProps): JSX.Element {
+export default function DashboardContent(props: DashboardContentProps): JSX.Element {
   const getHomepageView = (view: string) => {
     switch (view) {
       case "EmptyTeams": 
@@ -20,14 +21,14 @@ export default function DahsboardContent(props: DashboardContentProps): JSX.Elem
       case 'EmptyProjects':
         return <EmptyProjectList accountName={props.accountName} />;
       case 'Projects':
-        return <ProjectList linksDisabled={false} projects={props.userProjects} />;
+        return <ProjectList linksDisabled={false} projects={props.userProjects}/>; 
       case 'Activity':
-        return <div style={{ marginTop: "1rem" }}><LogTable logs={props.logs} /></div>;
+        return <div style={{ marginTop: "1rem" }}><LogTable logs={props.logs} pending={props.pendingLog}  /></div>;
       default:
         return <EmptyTeams />;
     }
   };
-
+ 
   return (
     <section>
       {getHomepageView(props.view)}

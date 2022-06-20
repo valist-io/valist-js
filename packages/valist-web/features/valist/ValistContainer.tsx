@@ -42,6 +42,7 @@ export default function ValistContainer({ children }: any) {
 
   const { data, loading, error } = useQuery(gql(USER_HOMEPAGE_QUERY), {
     variables: { address: account?.address?.toLowerCase() },
+    pollInterval: 10000,
   });
 
   // Signal to APP Components that user data has been loaded

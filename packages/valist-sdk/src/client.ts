@@ -260,6 +260,7 @@ export default class Client {
 		return data.user ? data.user.projects : [];
 	}
 
+
 	async writeJSON(data: string): Promise<string> {
 		const { cid } = await this.ipfs.add(data);
 		return `${this.ipfsGateway}/ipfs/${cid.toString()}`;

@@ -7,6 +7,7 @@ export interface ReleaseState {
   name: string;
   description: string;
   licenses: string[];
+  pendingReleaseID: string | null;
 };
 
 const initialState: ReleaseState = {
@@ -15,6 +16,7 @@ const initialState: ReleaseState = {
   name: '',
   description: '',
   licenses: [],
+  pendingReleaseID: null,
 };
 
 export const releaseSlice = createSlice({
@@ -23,6 +25,9 @@ export const releaseSlice = createSlice({
   reducers: {
     setTeam: (state, action: PayloadAction<string>) => {
       state.team = action.payload;
+    },
+    setPendingReleaseID: (state, action: PayloadAction<string | null>) => {
+      state.pendingReleaseID = action.payload;
     },
     setProject: (state, action: PayloadAction<string>) => {
       state.project = action.payload;
@@ -33,6 +38,7 @@ export const releaseSlice = createSlice({
     setDescription: (state, action: PayloadAction<string>) => {
       state.description = action.payload;
     },
+  
     setLicenses: (state, action: PayloadAction<string[]>) => {
       state.licenses = action.payload;
     },
@@ -47,11 +53,12 @@ export const releaseSlice = createSlice({
 });
 
 export const { 
-  setTeam, setProject, setName, setDescription, setLicenses, clear,
+  setTeam, setProject, setName, setDescription, setLicenses, clear,setPendingReleaseID,
 } = releaseSlice.actions;
 export const selectTeam = (state: RootState) => state.release.team;
 export const selectProject = (state: RootState) => state.release.project;
 export const selectName = (state: RootState) => state.release.name;
 export const selectDescription = (state: RootState) => state.release.description;
 export const selectLicenses = (state: RootState) => state.release.licenses;
+export const selectPendingReleaseID = (state: RootState) => state.release.pendingReleaseID;
 export default releaseSlice.reducer;

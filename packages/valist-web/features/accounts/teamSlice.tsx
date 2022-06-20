@@ -8,6 +8,7 @@ export interface TeamsState {
   website: string;
   beneficiary: string;
   members: string[];
+  pendingTeamID: string | null;
 };
 
 interface TeamPayload {
@@ -17,6 +18,7 @@ interface TeamPayload {
   website: '';
   beneficiary: '';
   members: [];
+  pendingTeamID: string | null;
 }
 
 const initialState: TeamsState = {
@@ -26,6 +28,7 @@ const initialState: TeamsState = {
   website: '',
   beneficiary: '',
   members: [],
+  pendingTeamID: null,
 };
 
 export const createTeamSlice = createSlice({
@@ -34,6 +37,9 @@ export const createTeamSlice = createSlice({
   reducers: {
     setUsername: (state, action: PayloadAction<string>) => {
       state.username = action.payload;
+    },
+    setPendingTeamID: (state, action: PayloadAction<string | null>) => {
+      state.pendingTeamID = action.payload;
     },
     setDisplayName: (state, action: PayloadAction<string>) => {
       state.displayName = action.payload;
@@ -70,7 +76,7 @@ export const createTeamSlice = createSlice({
 });
 
 export const { 
-  setUsername, setDisplayName, setDescription, setWebsite, setBeneficiary, setMembers, clear,
+  setUsername, setDisplayName, setDescription, setWebsite, setBeneficiary, setMembers, clear,setPendingTeamID,
 } = createTeamSlice.actions;
 export const selectUsername = (state: RootState) => state.team.username;
 export const selectDisplayName = (state: RootState) => state.team.displayName;
@@ -78,4 +84,5 @@ export const selectDescription = (state: RootState) => state.team.description;
 export const selectWebsite = (state: RootState) => state.team.website;
 export const selectBeneficiary = (state: RootState) => state.team.beneficiary;
 export const selectMembers = (state: RootState) => state.team.members;
+export const selectPendingTeamID = (state: RootState) => state.team.pendingTeamID;
 export default createTeamSlice.reducer;

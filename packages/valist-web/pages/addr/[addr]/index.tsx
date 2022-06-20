@@ -16,6 +16,7 @@ const AddressPage: NextPage = () => {
   const [userProjects, setUserProjects] = useState<Project[]>([]);
   const { data, loading, error } = useQuery(gql(USER_PROJECTS_QUERY), {
     variables: { address: address.toLowerCase() },
+    pollInterval: 10000,
   });
 
   useEffect(() => {
