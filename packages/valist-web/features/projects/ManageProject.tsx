@@ -17,8 +17,8 @@ import { BigNumber, ethers, providers } from 'ethers';
 import { projectMetaChanged } from '../../utils/Validation';
 import { useListState } from '@mantine/hooks';
 import { FileList } from '@/components/Files/FileUpload';
-
-
+import * as appolloClient from '../../utils/Apollo/client';
+import { gql } from '@apollo/client';
 type Member = {
   id: string,
 }
@@ -103,7 +103,7 @@ export default function ManageProject(props: ManageProjectProps) {
   }, []);
 
 
-  
+
   // If projectAccount && projectName, generate account and projectID
   useEffect(() => {
     if (projectAccount && projectName) {
@@ -277,9 +277,23 @@ export default function ManageProject(props: ManageProjectProps) {
           accountID,
           projectName,
           project,
-         projectMembers, 
+          projectMembers,
         );
+        
         dispatch(setPendingProjectID(projectID));
+        appolloClient.default.writeFragment({
+          id: "Pending:1",
+          fragment: gql`
+                fragment Pending on Pending {
+                  id
+                  name
+                }`,
+          data: {
+            id: projectID,
+            name: projectName,
+          },
+        });
+
         dismiss(toastID);
         toastID = notify('transaction', transaction.hash);
         await transaction.wait();
@@ -287,7 +301,7 @@ export default function ManageProject(props: ManageProjectProps) {
         notify('success');
 
         // Sets the pending project to the project ID
-       
+
       }
 
       const previousPrice = await valistCtx.getProductPrice(projectID) || 0;
@@ -340,7 +354,7 @@ export default function ManageProject(props: ManageProjectProps) {
         dismiss(toastID);
         notify('success');
       }
-       
+
       if (!(props.accountUsername && props.projectName) && metaChanged) {
         router.push('/');
       }
