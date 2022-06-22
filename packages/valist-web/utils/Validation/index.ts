@@ -1,6 +1,5 @@
 import { ProjectMeta } from "@valist/sdk";
 
-
 export const shortnameRegex = /^[\w-]+$/g;
 export const versionRegex = /^[\w-.]+$/g;
 export const tagRegex = /^[a-z-]+$/g;

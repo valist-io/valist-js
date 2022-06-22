@@ -22,6 +22,7 @@ interface ProjectFormProps {
   submitText: string,
   accountUsername: string;
   accountID: BigNumberish | null;
+  projectID: string;
   projectName: string;
   projectDisplayName: string;
   price: string;
@@ -236,6 +237,7 @@ export default function ProjectForm(props: ProjectFormProps) {
         />;
       case 'Pricing':
         return <PriceForm
+          projectID={props.projectID}
           price={props.price}
           limit={props.limit}
           royalty={props.royalty}

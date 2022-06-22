@@ -19,7 +19,6 @@ interface PublishReleaseFormProps {
   releaseImage: FileList[];
   releaseFiles: FileList[];
   setProjectList: (account: string) => string;
-  setProjectID: SetUseState<string | null>;
   setImage: UseListStateHandler<FileList>;
   setFiles: UseListStateHandler<FileList>;
   submit: (projectID: string, name: string) => void;

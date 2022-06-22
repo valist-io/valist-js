@@ -1,11 +1,14 @@
 import React from 'react';
-import { TextInput, Tooltip as MantineTooltip } from '@mantine/core';
+import { TextInput, Tooltip as MantineTooltip, useMantineTheme } from '@mantine/core';
 import { useAppDispatch } from "../../../app/hooks";
 import { setPrice, setLimit , setRoyalty , setRoyaltyAddress } from '../projectSlice';
 import { AlertCircle as AlertCircleIcon } from 'tabler-icons-react';
-import { UseFormReturnType } from "@mantine/form/lib/use-form";
+import CopyButton from '@/components/CopyButton';
+import { BigNumber } from 'ethers';
+
 interface PriceFormProps {
     price: string;
+    projectID: string;
     limit: string;
     royalty: string;
     royaltyAddress: string;
@@ -13,8 +16,13 @@ interface PriceFormProps {
   }
   
 export const PriceForm = (props: PriceFormProps) => {
-    const dispatch = useAppDispatch();
-    const rightSectionTooltip = (text: string) => {
+  const dispatch = useAppDispatch();
+  const theme = useMantineTheme();
+	const borderColor = theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[4];
+  const backgroundColor = theme.colorScheme === 'dark' ? theme.colors.dark[0] : 'white !important';
+  const color = theme.colorScheme === 'dark' ? 'white !important' : 'black !important';
+  
+  const rightSectionTooltip = (text: string) => {
       return (
           <MantineTooltip label={text} >
               <AlertCircleIcon size={16} style={{ display: 'block', opacity: 0.5 }} />

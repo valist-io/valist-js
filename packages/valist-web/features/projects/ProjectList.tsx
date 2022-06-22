@@ -32,8 +32,8 @@ export default function ProjectList(props: ProjectListProps) {
           </Grid.Col>
         }
         {props.projects?.map((project: Project) => (
-          <Grid.Col style={{ marginTop: "1rem" }} xs={12} lg={6} key={project.id}>
-            {props.linksDisabled ?
+          <Grid.Col style={{ marginTop: "1rem" }} xs={12} md={6} lg={4} key={project.id}>
+            {props.linksDisabled ? 
               <ProjectListCard
                 teamName={project.account.name}
                 projectName={project.name}
