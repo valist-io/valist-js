@@ -23,7 +23,7 @@ export default function DashboardContent(props: DashboardContentProps): JSX.Elem
       case 'Projects':
         return <ProjectList linksDisabled={false} projects={props.userProjects}/>; 
       case 'Activity':
-        return <div style={{ marginTop: "1rem" }}><LogTable logs={props.logs} pending={props.pendingLog}  /></div>;
+        return <div style={{ marginTop: "1rem" }}><LogTable logs={props.logs} /></div>;
       default:
         return <EmptyTeams />;
     }
