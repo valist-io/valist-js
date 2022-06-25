@@ -93,7 +93,7 @@ a {
 
 .markdown pre {
   padding: 15px;
-  background-color: #f6f8fa;
+  background-color: currentColor;
   border-radius: 6px;
   margin-bottom: 16px;
 }

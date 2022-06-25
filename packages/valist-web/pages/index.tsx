@@ -1,6 +1,5 @@
 import { 
   selectCurrentAccount,
-  selectAccountNames, 
 } from '@/features/accounts/accountsSlice';
 
 import { useState, useEffect } from 'react';

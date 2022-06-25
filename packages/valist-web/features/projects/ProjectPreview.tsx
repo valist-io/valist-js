@@ -8,7 +8,7 @@ import ProjectMemberList from "./ProjectMemberList";
 import ProjectListCard from "./ProjectListCard";
 import { useEffect, useState } from "react";
 import { FileWithPath } from "file-selector";
-import DicoveryItem from "../discovery/DiscoveryItem";
+import DicoveryItem from "../../components/Discovery/DiscoveryItem";
 import { getYouTubeEmbedURL, getYouTubeID } from "../../utils/Youtube";
 import { FileList } from "@/components/Files/FileUpload";
 
