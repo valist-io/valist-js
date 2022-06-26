@@ -8,7 +8,7 @@ import { ApolloProvider } from '@apollo/client';
 import client from '../utils/Apollo/client';
 import { chain, createClient, WagmiConfig, configureChains } from 'wagmi';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
-import { magic } from '../utils/Providers/magic';
+
 import {
   lightTheme,
   darkTheme,
@@ -49,7 +49,6 @@ const connectors = connectorsForWallets([
     wallets: [
       wallet.coinbase({ appName: 'Valist', chains }),
       wallet.metaMask({ chains }),
-      magic(),
     ],
   },
   {
