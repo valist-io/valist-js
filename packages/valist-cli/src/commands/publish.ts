@@ -47,24 +47,6 @@ export default class Publish extends Command {
     return new ethers.providers.Web3Provider(provider);
   }
 
-  async getFiles(path: string, hidden: boolean) {
-    const stat = await fs.promises.stat(path);
-    if (stat.isDirectory()) {
-      return globSource(path, '**/*', { hidden });
-    }
-
-    if (!stat.isFile()) {
-      throw new Error('invalid file path');
-    }
-
-    return [{
-      path: path,
-      content: fs.createReadStream(path),
-      mode: stat.mode,
-      mtime: stat.mtime,
-    }];
-  }
-
   public async run(): Promise<void> {
     const { args, flags } = await this.parse(Publish);
 
@@ -81,6 +63,7 @@ export default class Publish extends Command {
     if (!config.account) this.error('invalid account name');
     if (!config.project) this.error('invalid project name');
     if (!config.release) this.error('invalid release name');
+    if (!config.path) this.error('invalid file path');
 
     const privateKey = flags['private-key'] || await select();
     const metaTx = flags['meta-tx'];
@@ -113,13 +96,21 @@ export default class Publish extends Command {
 
     CliUx.ux.action.start('uploading files');
     // upload release assets
-    const files = await this.getFiles(args.path, hidden);
-    release.external_url = await valist.writeFolder(files);
+    const stat = await fs.promises.stat(config.path);
+    if (stat.isDirectory()) { 
+      const artifact = globSource(config.path, '**/*', { hidden });
+      release.external_url = await valist.writeFolder(artifact);
+    } else {
+      const artifact = fs.createReadStream(config.path);
+      release.external_url = await valist.writeFile(artifact);
+    }
+    
     // upload release image
     if (config.image) {
       const imageFile = fs.createReadStream(config.image);
       release.image = await valist.writeFile(imageFile);
     }
+    
     // upload source snapshot
     if (config.source) {
       const archiveURL = archiveSource(config.source);
