@@ -19,11 +19,13 @@ const ProjectActions = (props: ProjectActionsProps) => {
   const renderButton =  () => {
     if (Number(props.licensePrice) === 0 || props.licenseBalance !== 0) {
       return (
-        <Link href={`/${props.teamName}/${props.projectName}/${props.releases[0].name}`}>
-          <div className="flex justify-center py-2 px-4 border border-transparent rounded-md 
-           shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 cursor-pointer">
-            Launch
-          </div>
+        <Link href={props.releaseMeta.external_url || ''} passHref>
+          <a target="_blank" rel="noopener noreferrer">
+            <div className="flex justify-center py-2 px-4 border border-transparent rounded-md 
+            shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 cursor-pointer">
+              Launch
+            </div>
+          </a>
         </Link>
       );
     } else if (props.licensePrice && props.licenseBalance === 0) {
