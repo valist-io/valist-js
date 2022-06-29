@@ -19,6 +19,7 @@ export default function AccountProfilePage() {
   const accountName = `${router.query.accountName}`;
   const { data, loading, error } = useQuery(gql(ACCOUNT_PROFILE_QUERY), {
     variables: { account: accountName },
+    pollInterval: 10000,
   });
 
   const [view, setView] = useState<string>('Projects');
@@ -67,7 +68,7 @@ export default function AccountProfilePage() {
             tabs={tabs}          
           />
           {view === 'Projects' && <TeamProjectList projects={projects} linksDisabled={false} />}
-          {view === 'Activity' && <LogTable logs={logs} />}
+          {view === 'Activity' && <LogTable logs={logs}/>}
         </div>
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
           {isMember && <TeamProfileCardActions accountName={accountName} />}

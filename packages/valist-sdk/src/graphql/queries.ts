@@ -12,7 +12,7 @@ export const ACCOUNT_QUERY = `
 
 export const PROJECT_QUERY = `
   query Projects{
-    projects {
+    projects(orderBy: blockNumber, orderDirection: desc) {
       id
       name
       metaURI
@@ -41,7 +41,7 @@ export const RELEASE_QUERY = `
 export const ACCOUNT_PROJECT_QUERY = `
   query AccountProjects($accountID: String!){
     account(id: $accountID){
-        projects{
+        projects(orderBy: blockNumber, orderDirection: desc) {
             id
             name
             metaURI
@@ -135,7 +135,7 @@ export const USER_PROJECTS_QUERY = `
   query UserProjects($address: String!){
     user(id: $address) {
       id
-      projects {
+      projects(orderBy: blockNumber, orderDirection: desc) {
         id
         name
         metaURI
@@ -155,7 +155,7 @@ export const USER_HOMEPAGE_QUERY = `
       accounts {
         id
         name
-        projects{
+        projects(orderBy: blockNumber, orderDirection: desc){
           id
           name
           metaURI
@@ -165,7 +165,7 @@ export const USER_HOMEPAGE_QUERY = `
         }
         metaURI
       }
-      projects {
+      projects(orderBy: blockNumber, orderDirection: desc) {
         id
         name
         metaURI
@@ -189,7 +189,7 @@ export const ACCOUNT_PROFILE_QUERY = `
       members{
         id
       }
-      projects {
+      projects(orderBy: blockNumber, orderDirection: desc) {
         id
         name
         metaURI
@@ -201,7 +201,7 @@ export const ACCOUNT_PROFILE_QUERY = `
         id
         type
         blockTime
-        account {
+        account { 
           id
           name
         }
@@ -239,7 +239,7 @@ export const PROJECT_SEARCH_QUERY = `
 
 export const PROJECT_PROFILE_QUERY = `
   query ProjectProfile($projectID: String){
-    projects(where: {id: $projectID}){
+    projects(where: {id: $projectID}, orderBy: blockNumber){
       id
       name
       metaURI
@@ -303,3 +303,28 @@ export const ADDR_PROFILE_QUERY = `
     }
   }
 `;
+
+export const OPTIMISTIC_PROJECT_QUERY = `
+   query ($minblock: Int!){
+    projects(block:{number_gte: $minblock})) {
+      name
+    } 
+    _meta{ 
+      block{ 
+       number
+      }
+    }
+   }
+`
+export const OPTIMISTIC_RELEASE_QUERY = `
+    query ($releaseID: String! $minblock: Int!){
+      release (block:{number_gte: $minblock} id: $releaseID)) {
+        name
+      }
+      _meta{
+        block{
+          number
+        }
+      }
+    }
+`

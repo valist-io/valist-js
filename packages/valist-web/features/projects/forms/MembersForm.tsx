@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button, TextInput, Textarea, Tooltip as MantineTooltip } from "@mantine/core";
 import { AlertCircle as AlertCircleIcon } from 'tabler-icons-react';
 import { SetUseState } from "../../../utils/Account/types";
+import { UseFormReturnType } from '@mantine/form/lib/use-form';
 
 interface MembersFormProps {
     memberText: string;
@@ -11,6 +12,7 @@ interface MembersFormProps {
     setLoading: SetUseState<boolean>;
     setMemberText: SetUseState<string>;
     addMember: (address: string) => Promise<void>;
+    mantineValidation:  UseFormReturnType<any>;
 }
 
 
@@ -47,9 +49,9 @@ export const MembersForm = (props: MembersFormProps) => {
                         rightSection={rightSectionTooltip("A list of project members seperated by new-line.")}
                         name="new-member"
                         type="text"
-                        onChange={(e) => setMember(e.target.value)}
                         placeholder='Member address'
                         required
+                        {...props.mantineValidation.getInputProps('newMembers')}
                     >
                     </TextInput>
                     <Button

@@ -1,7 +1,7 @@
 import React, { useState } from 'react' ;
 import { TextInput, Tooltip as MantineTooltip } from "@mantine/core";
 import { AlertCircle as AlertCircleIcon } from 'tabler-icons-react';
-
+import { UseFormReturnType } from "@mantine/form/lib/use-form";
 import { setYouTubeUrl } from "../projectSlice";
 import { getYouTubeID } from "../../../utils/Youtube";
 import { UseListStateHandler } from "@mantine/hooks/lib/use-list-state/use-list-state";
@@ -14,6 +14,7 @@ interface GraphicFormProps {
     youtubeUrl: string;
     setMainImage: UseListStateHandler<FileList>;
     setGallery: UseListStateHandler<FileList>;
+    mantineValidation:  UseFormReturnType<any>;
   }
   
  export const GraphicsForm = (props: GraphicFormProps) => {
@@ -52,12 +53,11 @@ interface GraphicFormProps {
             <TextInput
                id="youtube"
                name="youtube"
-               onChange={(e) => setYoutubeUrl(e.target.value)}
-               value={props.youtubeUrl}
                placeholder="YouTube URL"
                label= "YouTube URL"
                error={!validYouTube && "Invalid YouTube URL"}
                rightSection={rightSectionTooltip("Youtube Video")}
+                {...props.mantineValidation.getInputProps('youtube')}
             />
           </div>
         </div>

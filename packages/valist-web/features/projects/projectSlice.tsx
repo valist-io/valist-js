@@ -20,6 +20,8 @@ export interface ProjectState {
   type: string;
   tags: string[],
   members: string[];
+  pendingProjectID: string | null;
+  pendingMemberChanged : string | null;
 };
 
 interface ProjectPayload {
@@ -37,6 +39,8 @@ interface ProjectPayload {
   type: string;
   tags: string[],
   members: string[];
+  pendingProjectID: string | null;
+  pendingMemberChanged : string | null;
 }
 
 const initialState: ProjectState = {
@@ -54,6 +58,8 @@ const initialState: ProjectState = {
   type: '',
   tags: [],
   members: [],
+  pendingProjectID: null ,
+  pendingMemberChanged: null,
 };
 
 export const projectSlice = createSlice({
@@ -62,6 +68,12 @@ export const projectSlice = createSlice({
   reducers: {
     setAccount: (state, action: PayloadAction<string>) => {
       state.account = action.payload;
+    },
+    setPendingProjectID: (state, action: PayloadAction<string | null>) => {
+      state.pendingProjectID = action.payload;
+    },
+    setPendingMemberChanged: (state, action: PayloadAction<string | null>) => {
+      state.pendingMemberChanged = action.payload;
     },
     setDisplayName: (state, action: PayloadAction<string>) => {
       state.displayName = action.payload;
@@ -132,7 +144,7 @@ export const projectSlice = createSlice({
 });
 
 export const { 
-  setAccount, setDisplayName, setName, setPrice, setLimit, setRoyalty, setRoyaltyAddress, setDescription, setShortDescription, setWebsite, setMembers, setYouTubeUrl, setType, setTags, addTag, removeTag, setAll, clear,
+  setAccount, setPendingProjectID,setPendingMemberChanged,setDisplayName, setName, setPrice, setLimit, setRoyalty, setRoyaltyAddress, setDescription, setShortDescription, setWebsite, setMembers, setYouTubeUrl, setType, setTags, addTag, removeTag, setAll, clear,
 } = projectSlice.actions;
 export const selectAccount = (state: RootState) => state.project.account;
 export const selectDisplayName = (state: RootState) => state.project.displayName;
@@ -148,4 +160,6 @@ export const selectMembers = (state: RootState) => state.project.members;
 export const selectYouTubeUrl = (state: RootState) => state.project.youtubeUrl;
 export const selectType = (state: RootState) => state.project.type;
 export const selectTags = (state: RootState) => state.project.tags;
+export const selectPendingProjectID = (state: RootState) => state.project.pendingProjectID;
+export const selectPendingMemberChanged = (state: RootState) => state.project.pendingMemberChanged;
 export default projectSlice.reducer;

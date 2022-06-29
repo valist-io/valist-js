@@ -47,7 +47,7 @@ export default function ProjectContent(props: ProjectContentProps): JSX.Element 
           projectReleases={props.projectReleases}
           teamName={props.teamName}
           projectName={props.projectName}
-        />);
+        />); 
       case 'ReleaseSteps':
         return <PublishReleaseSteps />;
       case 'Activity':

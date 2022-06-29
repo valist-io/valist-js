@@ -4,10 +4,12 @@ import { useAppDispatch } from "../../../app/hooks";
 import { TextInput, Tooltip as MantineTooltip, Textarea } from "@mantine/core";
 import { AlertCircle as AlertCircleIcon } from 'tabler-icons-react';
 import { setDescription, setShortDescription } from '../projectSlice';
+import { UseFormReturnType } from "@mantine/form/lib/use-form";
 
 interface DescriptionsFormProps {
     shortDescription: string;
     projectDescription: string;
+    mantineValidation:  UseFormReturnType<any>;
 }
 
 export const DescriptionsForm = (props: DescriptionsFormProps) => {
@@ -28,10 +30,9 @@ export const DescriptionsForm = (props: DescriptionsFormProps) => {
                     id="shortDescription"
                     name="shortDescription"
                     type="text"
-                    onChange={(e) => dispatch(setShortDescription(e.target.value))}
-                    value={props.shortDescription}
                     placeholder='A short description'
                     required
+                 {...props.mantineValidation.getInputProps('shortDescription')}
                 ></TextInput>
                 </div>
                 <div className="mt-1">
@@ -40,10 +41,9 @@ export const DescriptionsForm = (props: DescriptionsFormProps) => {
                     rightSection={rightSectionTooltip("A short description shown on searchs and previews of your project.")}
                     id= "description"
                     name= "description"
-                    onChange={(e) => dispatch(setDescription(e.target.value))}
-                    value={props.projectDescription}
                     rows={8}
                     placeholder="An extended description"
+                    {...props.mantineValidation.getInputProps('description')}
                     >
                     </Textarea>
                 </div>
