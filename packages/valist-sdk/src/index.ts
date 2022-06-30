@@ -59,7 +59,6 @@ export async function createRelaySigner({ provider }: ethers.providers.Web3Provi
   // fix for wallet connect provider not returning standard responses
   // replace this once opengsn is able to handle an ethers wrapped signer
   if ((provider as WalletConnectProvider).isWalletConnect) {
-    console.log('yooooooo this is wallet connect!!!')
     const walletConnectProvider = provider as WalletConnectProvider;
     walletConnectProvider.send = async (args: any, callback: any) => {
       walletConnectProvider.request(args)
@@ -71,8 +70,6 @@ export async function createRelaySigner({ provider }: ethers.providers.Web3Provi
         .then((result: any) => callback(null, { result }))
         .catch((error: any) => callback(error, undefined));
     }
-  } else {
-    console.log('yooooooo this is not wallet connect!!!')
   }
 
 	// @ts-ignore
