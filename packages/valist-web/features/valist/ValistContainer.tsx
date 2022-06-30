@@ -39,7 +39,7 @@ export default function ValistContainer({ children }: any) {
 
   const { publicRuntimeConfig } = getConfig();
   const [provider, setProvider] = useState<ValistProvider>(defaultProvider);
-  const { data: account } = useAccount();
+  const { address } = useAccount();
   const { data: signer, isError, isLoading } = useSigner();
 
   const [valistClient, setValistClient] = useState<Client>(
@@ -52,14 +52,14 @@ export default function ValistContainer({ children }: any) {
   const [mainnet, setMainnet] = useState<JsonRpcProvider>(new ethers.providers.JsonRpcProvider('https://rpc.valist.io/ens'));
 
   const { data, loading, error } = useQuery(gql(USER_HOMEPAGE_QUERY), {
-    variables: { address: account?.address?.toLowerCase() },
+    variables: { address: address?.toLowerCase() },
   });
 
   // Signal to APP Components that user data has been loaded
   useEffect(() => {
     dispatch(setLoading(loading));
-    dispatch(setAddress(account?.address || ''));
-  }, [account]);
+    dispatch(setAddress(address || ''));
+  }, [address]);
   
   // Set Valist client on provider change.
   useEffect(() => {
@@ -76,7 +76,7 @@ export default function ValistContainer({ children }: any) {
   }, [valistClient]);
 
   // Log current address
-  useEffect(() => console.log("Address:", account?.address), [account?.address]);
+  useEffect(() => console.log("Address:", address), [address]);
 
   // Set User's teams and associated projects
   useEffect(() => {
@@ -95,13 +95,13 @@ export default function ValistContainer({ children }: any) {
 
   // Set user account from local storage or accountNames
   useEffect(() => {
-    if (accountNames.length !== 0 && account?.address) {
+    if (accountNames.length !== 0 && address) {
       const savedAccounts = JSON.parse(localStorage.getItem('currentAccount') || '[]');
-      dispatch(setCurrentAccount(savedAccounts[account?.address] || accountNames[0]));
+      dispatch(setCurrentAccount(savedAccounts[address] || accountNames[0]));
     } else {
       dispatch(setCurrentAccount(''));
     }
-  }, [dispatch, accountNames, account?.address]);
+  }, [dispatch, accountNames, address]);
 
   const web3Ctx: Web3ContextInstance = new Web3ContextInstance(
     mainnet,
