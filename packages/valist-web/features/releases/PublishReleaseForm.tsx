@@ -135,6 +135,7 @@ Version tag: ${version}
       />
 
       <FileUpload
+        title="Files (Will be wrapped if folder is dropped)"
         files={props.releaseFiles}
         setFiles={props.setFiles} 
         fileView={"none"}

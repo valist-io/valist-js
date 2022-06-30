@@ -5,7 +5,6 @@ import {
   setCurrentAccount, 
   setLoading,
   selectAccountNames,
-  selectCurrentAccount,
 } from '../accounts/accountsSlice';
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
@@ -34,7 +33,6 @@ declare global {
 
 export default function ValistContainer({ children }: any) {
   const dispatch = useAppDispatch();
-  const currentAccount = useAppSelector(selectCurrentAccount);
   const accountNames = useAppSelector(selectAccountNames);
 
   const { publicRuntimeConfig } = getConfig();
@@ -64,6 +62,7 @@ export default function ValistContainer({ children }: any) {
   // Set Valist client on provider change.
   useEffect(() => {
     if (signer?.provider && !isLoading) {
+      console.log('signer.provider', signer?.provider);
       createValistClient(signer.provider as any).then((client) => {
         if (client) setValistClient(client);
       });

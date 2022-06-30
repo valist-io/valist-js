@@ -10,7 +10,7 @@ import Tabs from '../../components/Tabs';
 import getConfig from 'next/config';
 import { FileList } from '@/components/Files/FileUpload';
 import { useListState } from '@mantine/hooks';
-import { createOrUpdateAccount, removeMember } from '@/utils/Valist';
+import { createOrUpdateAccount, removeAccountMember } from '@/utils/Valist';
 import { setAccount } from '../projects/projectSlice';
 import { generateID } from '@valist/sdk';
 import { BigNumber } from 'ethers';
@@ -143,7 +143,7 @@ export default function ManageAccount(props: EditAccountProps) {
 
   const handleRemoveMember = (address: string) => {
     if (address && accountID) {
-      removeMember(
+      removeAccountMember(
         address,
         accountUsername,
         accountID,

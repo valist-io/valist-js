@@ -14,7 +14,7 @@ import ValistContext from "@/features/valist/ValistContext";
 import { setMembers, setUsername } from "../teamSlice";
 import { useAppDispatch } from "app/hooks";
 import Web3Context from "@/features/valist/Web3Context";
-import { addMember } from "@/utils/Valist";
+import { addAccountMember } from "@/utils/Valist";
 
 interface AccountFormProps {
   initialValues: {
@@ -49,7 +49,7 @@ export default function AccountForm(props: AccountFormProps) {
   const handleAddMember = async (address: string) => {
     const resolved = await web3Ctx.isValidAddress(address);
     if (resolved && props.accountID) {
-      await addMember(
+      await addAccountMember(
         resolved,
         props.accountUsername,
         props.accountID,
