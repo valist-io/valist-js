@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.5.10",
+    "@everipedia/wagmi-magic-connector": "^0.6.0",
     "@headlessui/react": "^1.4.3",
     "@heroicons/react": "^1.0.5",
     "@mantine/core": "^4.1.3",
