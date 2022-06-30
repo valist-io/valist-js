@@ -109,20 +109,21 @@ export default function ProjectPreview(props: ProjectPreviewProps) {
           image={imgUrl || props.defaultImage}
           text={props.projectShortDescription || 'Example Description'} 
         />
-
-        <ProjectContent 
-          view={'Readme'}
-          teamName={props.projectAccount}
-          projectMeta={{
-            name: name,
-            description,
-          }}
-          members={props.projectMembers}
-          projectName={name}
-          projectReleases={[]}
-          releaseMeta={{}} 
-          logs={[]}        
-        />
+        <div className="mt-2">
+            <ProjectContent 
+              view={'Readme'}
+              teamName={props.projectAccount}
+              projectMeta={{
+                name: name,
+                description,
+              }}
+              members={props.projectMembers}
+              projectName={name}
+              projectReleases={[]}
+              releaseMeta={{}} 
+              logs={[]}        
+            />
+        </div>
       </div>
     );
   };
