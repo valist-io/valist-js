@@ -3,7 +3,7 @@ import { TextInput, Tooltip as MantineTooltip } from "@mantine/core";
 import Tooltip from "@/components/Tooltip";
 import { AlertCircle as AlertCircleIcon } from 'tabler-icons-react';
 import { SetUseState } from "@/utils/Account/types";
-import { UseListStateHandler } from "@mantine/hooks/lib/use-list-state/use-list-state";
+import { UseListStateHandlers } from "@mantine/hooks/lib/use-list-state/use-list-state";
 import { useAppDispatch } from "app/hooks";
 import { useEffect } from "react";
 import { setDescription, setDisplayName, setWebsite } from "../teamSlice";
@@ -18,7 +18,7 @@ interface BasicInfoProps {
   submitText: string;
   setView: SetUseState<string>;
   setValidName: SetUseState<boolean>;
-  setImage: UseListStateHandler<FileList>;
+  setImage: UseListStateHandlers<FileList>;
   handleSubmit: () => void;
 }
 

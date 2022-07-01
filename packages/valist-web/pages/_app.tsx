@@ -21,6 +21,7 @@ import { getCookie, setCookies } from 'cookies-next';
 import { GetServerSidePropsContext } from 'next';
 import { theme } from '@/utils/Theme';
 import getConfig from 'next/config';
+import { magic } from '@/utils/Providers/magic';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -46,17 +47,19 @@ const connectors = connectorsForWallets([
   {
     groupName: 'Popular',
     wallets: [
-      wallet.coinbase({ appName: 'Valist', chains }),
-      wallet.metaMask({ chains }),
-    ],
-  },
-  {
-    groupName: 'Mobile',
-    wallets: [
       wallet.rainbow({ chains }),
+      wallet.metaMask({ chains }),
+      magic(),
       wallet.walletConnect({ chains }),
     ],
   },
+  // {
+  //   groupName: 'Mobile',
+  //   wallets: [
+  //     wallet.rainbow({ chains }),
+  //     wallet.walletConnect({ chains }),
+  //   ],
+  // },
 ]);
 
 const wagmiClient = createClient({ autoConnect: true, connectors, provider });

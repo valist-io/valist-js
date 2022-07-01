@@ -4,7 +4,7 @@ import { AlertCircle as AlertCircleIcon } from 'tabler-icons-react';
 
 import { setYouTubeUrl } from "../projectSlice";
 import { getYouTubeID } from "../../../utils/Youtube";
-import { UseListStateHandler } from "@mantine/hooks/lib/use-list-state/use-list-state";
+import { UseListStateHandlers } from "@mantine/hooks/lib/use-list-state/use-list-state";
 import { useAppDispatch } from "../../../app/hooks";
 import FileUpload, { FileList } from "../../../components/Files/FileUpload";
 
@@ -12,8 +12,8 @@ import FileUpload, { FileList } from "../../../components/Files/FileUpload";
 interface GraphicFormProps {
     galleryFiles: FileList[];
     youtubeUrl: string;
-    setMainImage: UseListStateHandler<FileList>;
-    setGallery: UseListStateHandler<FileList>;
+    setMainImage: UseListStateHandlers<FileList>;
+    setGallery: UseListStateHandlers<FileList>;
   }
   
  export const GraphicsForm = (props: GraphicFormProps) => {
