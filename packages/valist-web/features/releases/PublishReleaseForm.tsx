@@ -5,7 +5,7 @@ import FileUpload, { FileList } from "../../components/Files/FileUpload";
 import {  versionRegex } from "../../utils/Validation";
 import ValistContext from "../valist/ValistContext";
 import { setDescription, setName, setProject, setTeam } from "./releaseSlice";
-import { UseListStateHandler } from "@mantine/hooks/lib/use-list-state/use-list-state";
+import { UseListStateHandlers } from "@mantine/hooks/lib/use-list-state/use-list-state";
 import { useForm, zodResolver } from '@mantine/form';
 import getConfig from 'next/config';
 import { z } from 'zod';
@@ -19,8 +19,8 @@ interface PublishReleaseFormProps {
   releaseImage: FileList[];
   releaseFiles: FileList[];
   setProjectList: (account: string) => string;
-  setImage: UseListStateHandler<FileList>;
-  setFiles: UseListStateHandler<FileList>;
+  setImage: UseListStateHandlers<FileList>;
+  setFiles: UseListStateHandlers<FileList>;
   submit: (projectID: string, name: string) => void;
 }
 
