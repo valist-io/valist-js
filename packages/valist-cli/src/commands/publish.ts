@@ -1,11 +1,11 @@
-import { Command, CliUx } from '@oclif/core';
+import { Command, CliUx, Flags } from '@oclif/core';
 import { ethers } from 'ethers';
+import globSource from 'ipfs-utils/src/files/glob-source.js';
 import { create, ReleaseMeta, Provider, archiveSource } from '@valist/sdk';
 import YAML from 'yaml';
 import * as fs from 'node:fs';
 import * as flags from '../flags';
 import { select } from '../keys';
-import glob from '../glob';
 import Config from '../config';
 
 const Web3HttpProvider = require('web3-providers-http'); // eslint-disable-line @typescript-eslint/no-var-requires
@@ -14,8 +14,6 @@ export default class Publish extends Command {
   static provider?: Provider
 
   static description = 'Publish a release'
-
-  static strict = false
 
   static examples = [
     '<%= config.bin %> <%= command.id %> ipfs/go-ipfs/v0.12.3 README.md',
@@ -26,6 +24,10 @@ export default class Publish extends Command {
     'meta-tx': flags.metaTx,
     'network': flags.network,
     'private-key': flags.privateKey,
+    'include-dot-files': Flags.boolean({
+      description: 'Include hidden dot files',
+      default: false,
+    }),
   }
 
   static args = [
@@ -34,8 +36,8 @@ export default class Publish extends Command {
       description: 'package name',
     },
     {
-      name: 'files',
-      description: 'files to publish',
+      name: 'path',
+      description: 'path to artifact file or directory',
     },
   ]
 
@@ -46,13 +48,13 @@ export default class Publish extends Command {
   }
 
   public async run(): Promise<void> {
-    const { args, argv, flags } = await this.parse(Publish);
+    const { args, flags } = await this.parse(Publish);
 
     let config: Config;
     if (args.package) {
       const parts = args.package.split('/');
       if (parts.length !== 3) this.error('invalid package name');
-      config = new Config(parts[0], parts[1], parts[2], argv.slice(1));
+      config = new Config(parts[0], parts[1], parts[2], args.path);
     } else {
       const data = fs.readFileSync('valist.yml', 'utf8');
       config = YAML.parse(data);
@@ -61,10 +63,11 @@ export default class Publish extends Command {
     if (!config.account) this.error('invalid account name');
     if (!config.project) this.error('invalid project name');
     if (!config.release) this.error('invalid release name');
-    if (!config.files) this.error('no files to publish');
+    if (!config.path) this.error('invalid file path');
 
     const privateKey = flags['private-key'] || await select();
     const metaTx = flags['meta-tx'];
+    const hidden = flags['include-dot-files'];
 
     const provider = await this.provider(flags.network);
     const wallet = new ethers.Wallet(privateKey);
@@ -92,18 +95,27 @@ export default class Publish extends Command {
     release.install = config.install;
 
     CliUx.ux.action.start('uploading files');
+    // upload release assets
+    const stat = await fs.promises.stat(config.path);
+    if (stat.isDirectory()) { 
+      const artifact = globSource(config.path, '**/*', { hidden });
+      release.external_url = await valist.writeFolder(artifact);
+    } else {
+      const artifact = fs.createReadStream(config.path);
+      release.external_url = await valist.writeFile(artifact);
+    }
+    
     // upload release image
     if (config.image) {
       const imageFile = fs.createReadStream(config.image);
       release.image = await valist.writeFile(imageFile);
     }
+    
     // upload source snapshot
     if (config.source) {
       const archiveURL = archiveSource(config.source);
       release.source = await valist.writeFile(archiveURL);
     }
-    // upload release assets
-    release.external_url = await valist.writeFolder(glob(config.files));
     CliUx.ux.action.stop();
 
     CliUx.ux.action.start('publishing release');
