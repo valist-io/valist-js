@@ -19,6 +19,10 @@ export const metaTx = Flags.boolean({
   default: true,
 });
 
+export const channel = Flags.string({
+  description: 'Release channel',
+});
+
 async function parseNetwork(network: string) {
   switch (network) {
   case 'polygon':

@@ -1,7 +1,7 @@
 import { Command, CliUx } from '@oclif/core';
 import { create, Provider, InstallMeta } from '@valist/sdk';
 import { create as createIPFS } from 'ipfs-http-client';
-import { ethers } from 'ethers';
+import { ethers, BigNumberish } from 'ethers';
 import * as flags from '../flags';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
@@ -18,6 +18,7 @@ export default class Install extends Command {
 
   static flags = {
     'network': flags.network,
+    'channel': flags.channel,
   }
 
   static args = [
@@ -70,9 +71,20 @@ export default class Install extends Command {
     const {chainId} = await provider.getNetwork();
     const accountID = valist.generateID(chainId, parts[0]);
     const projectID = valist.generateID(accountID, parts[1]);
-    const releaseID = parts.length === 2
-      ? await valist.getLatestReleaseID(projectID) 
-      : valist.generateID(projectID, parts[2]);
+    
+    let releaseID: BigNumberish | undefined;
+    if (flags.channel) {
+      const project = await valist.getProjectMeta(projectID);
+      releaseID = project.channels ? project.channels[flags.channel] : undefined;
+    } else if (parts.length === 2) {
+      releaseID = await valist.getLatestReleaseID(projectID);
+    } else {
+      releaseID = valist.generateID(projectID, parts[2]);
+    }
+
+    if (!releaseID) {
+      this.error('release does not exist');
+    }
 
     CliUx.ux.action.start('fetching package metadata');
     const release = await valist.getReleaseMeta(releaseID);
