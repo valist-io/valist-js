@@ -1,5 +1,6 @@
-import { Grid } from "@mantine/core";
-import DiscoveryItem from "./DiscoveryItem";
+import { useState } from "react";
+import { ChevronLeft, ChevronRight } from "tabler-icons-react";
+import CarouselItem from "./CarouselItem";
 
 export type Item = {
   img: string,
@@ -13,23 +14,47 @@ interface CarouselProps {
   items: Item[],
 }
 
+export function spliceCircular<T>(array: T[], offset: number, length: number = 4): T[] {
+  const start = offset;
+  const end = start + length;
+  const n = array.length;
+
+  const carouselItems = [];
+  for (let i = start; i < end; i++) {
+    carouselItems.push(array[(i % n + n) % n]);
+  }
+  return carouselItems;
+}
+
 export default function Carousel(props: CarouselProps): JSX.Element {
+  const [offset, setOffset] = useState(0);
+  const carouselItems = spliceCircular(props.items, offset);
+
+  const goLeft = () => setOffset(offset + 1);
+  const goRight = () => setOffset(offset - 1);
+
   return (
-    <div>
-       <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 20 }}>Popular Software</h2>
-        <Grid gutter="sm">
-          {props.items.map((item) => (
-            <Grid.Col key={item.description} md={6} lg={3}>
-              <DiscoveryItem
-                img={item.img}
-                name={item.name} 
-                description={item.description}
-                link={item.link}
-                type={item.type} 
-              />
-            </Grid.Col>
-          ))}
-        </Grid>
+    <div style={{ marginBottom: 25 }}>
+      <div style={{ marginBottom: 20, display: 'flex', position: 'relative' }}>
+        <h2 style={{ fontSize: 20, fontWeight: 800, marginLeft: 15 }}>Popular Software</h2>
+        <div style={{ display: 'flex', position: 'absolute', right: 20 }}>
+          <ChevronLeft onClick={goLeft}/>
+          <ChevronRight onClick={goRight}/>
+        </div>
+      </div>
+      
+      <div style={{ display: 'flex', flexDirection: 'row', overflowX: 'scroll' }}>
+        {carouselItems.map((item: Item, index ) => (
+          <CarouselItem
+            key={index}
+            img={item.img}
+            name={item.name}
+            description={item.description}
+            link={item.link}
+            type={item.type} 
+          />
+        ))}
+      </div>
     </div>
   );
 }

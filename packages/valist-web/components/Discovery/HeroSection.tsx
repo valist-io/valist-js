@@ -28,11 +28,11 @@ export default function HeroSection(props: HeroSectionProps): JSX.Element {
         justifyContent: "center",
       }}>
         <div>
-          <Center><Text style={{ fontSize: "30px", fontWeight: 900 }} size="xl">{props.title}</Text></Center>
-          <Center><Text>{props.tagline}</Text></Center>
+          <Center><Text style={{ fontSize: "30px", fontWeight: 900, color: 'white' }} size="xl">{props.title}</Text></Center>
+          <Center><Text style={{ color: 'white' }}>{props.tagline}</Text></Center>
           <Center>
             <Link href={props.link} passHref>
-              <Button style={{ marginTop: 30 }} className="bg-indigo-500">
+              <Button style={{ marginTop: 30, background: '#5850EC' }}>
                 View Game
               </Button>
             </Link>

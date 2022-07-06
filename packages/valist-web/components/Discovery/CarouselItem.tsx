@@ -13,7 +13,11 @@ export default function DiscoveryItem(props: DiscoveryItemProps) {
   return (
     <div style={{ width: 340, margin: 'auto' }}>
       <Link href={props.link} passHref>
-        <Card shadow="sm" p="lg">
+        <Card shadow="sm" p="lg" sx={() => ({
+          '&:hover': {
+            border: '2px solid indigo',
+          },
+        })}>
           <Image src={props.img} height={160} alt={props.name} />
           <div>
             <Text style={{ marginTop: 15 }} weight={500}>{props.name}</Text>

@@ -146,3 +146,16 @@ a {
   height: 0;
   visibility: hidden;
 }
+
+.carouselTrack {
+  display: 'flex'; 
+  flex-direction: 'row'; 
+  overflow-x: 'scroll';
+}
+
+.promoBg {
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  background-image: url(/images/discovery/publish_bg.png);
+}
