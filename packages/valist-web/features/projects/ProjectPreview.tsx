@@ -149,14 +149,6 @@ export default function ProjectPreview(props: ProjectPreviewProps) {
       case 'Graphics':
         return (
           <div>
-            {mainImgUrl &&
-              <div className="mb-2"> 
-                <DicoveryItem 
-                  text={'main-image'} 
-                  image={mainImgUrl}             
-                />
-              </div>
-            }
             <ProjectGallery assets={_gallery} />
           </div>
         );
