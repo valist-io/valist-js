@@ -1,7 +1,5 @@
 import React, { ReactNode, useState } from 'react';
 import { AppShell, useMantineTheme } from '@mantine/core';
-import { useMediaQuery } from '@mantine/hooks';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 import Head from 'next/head';
 import Header from './Header';
