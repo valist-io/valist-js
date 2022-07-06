@@ -1,4 +1,5 @@
 import { Button, Grid, Text, Image, useMantineTheme } from "@mantine/core";
+import Link from "next/link";
 
 export default function PublishPromo(): JSX.Element {
   const theme = useMantineTheme();
@@ -15,7 +16,9 @@ export default function PublishPromo(): JSX.Element {
             <Text style={{ color: 'white', margin: '10px 0 25px 0' }}>
               Have your software, webapp, or game hosted on valist to be truly decentralized!
             </Text>
-            <Button style={{ background: btnColor }}>Publish Now</Button>
+            <Link href="/create/release" passHref>
+              <Button style={{ background: btnColor }}>Publish Now</Button>
+            </Link>
           </div>
         </div>
       </Grid.Col>
