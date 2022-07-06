@@ -28,7 +28,6 @@ export default function Layout(props: LayoutProps): JSX.Element {
         navbarOffsetBreakpoint="sm"
         asideOffsetBreakpoint="sm"
         padding="md"
-        footer={<Footer/>}
         header={<Header opened={opened} onBurger={() => setOpened(!opened)} />}
         styles={(theme) => ({ main: { backgroundColor } })}
       >
