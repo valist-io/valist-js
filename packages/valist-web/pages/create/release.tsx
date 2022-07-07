@@ -5,7 +5,7 @@ import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { selectAccountNames, selectAccounts, selectLoading, selectLoginTried, selectLoginType } from '../../features/accounts/accountsSlice';
+import { selectAccountNames, selectAccounts, selectLoading, selectLoginTried } from '../../features/accounts/accountsSlice';
 import { selectName, selectDescription, selectProject, selectTeam, clear } from '../../features/releases/releaseSlice';
 import { getProjectNames } from '../../utils/Apollo/normalization';
 import ReleasePreview from '../../features/releases/ReleasePreview';
@@ -18,8 +18,6 @@ const PublishReleasePage: NextPage = () => {
   // Page State
   const router = useRouter();
   const valistCtx = useContext(ValistContext);
-  const loginType = useAppSelector(selectLoginType);
-  const loginTried = useAppSelector(selectLoginTried);
   const accountNames = useAppSelector(selectAccountNames);
   const accounts = useAppSelector(selectAccounts);
   const loading = useAppSelector(selectLoading);
@@ -101,7 +99,6 @@ const PublishReleasePage: NextPage = () => {
                 accountNames={accountNames}
                 projectNames={availableProjects}
                 releaseFiles={releaseFiles}
-                setProjectID={setProjectID}
                 releaseImage={releaseImage}
                 setProjectList={setProjectList} 
                 setImage={setReleaseImage}

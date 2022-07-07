@@ -21,6 +21,6 @@ jobs:
           path: '**/node_modules'
           key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
       - run: |
-          npx lerna bootstrap
+          npx lerna bootstrap -- --legacy-peer-deps
           npx lerna run build --ignore @valist/relay
           npx lerna run test

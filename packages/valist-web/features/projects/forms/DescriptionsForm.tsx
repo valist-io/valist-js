@@ -21,32 +21,29 @@ export const DescriptionsForm = (props: DescriptionsFormProps) => {
     };
     return (
         <form className="grid grid-cols-1 gap-y-6 sm:gap-x-8" action="#" method="POST">
-            <div>
             <TextInput
-                    label="Short description"
-                    rightSection={rightSectionTooltip("A short description shown on searchs and previews of your project.")}
-                    id="shortDescription"
-                    name="shortDescription"
-                    type="text"
-                    onChange={(e) => dispatch(setShortDescription(e.target.value))}
-                    value={props.shortDescription}
-                    placeholder='A short description'
-                    required
-                ></TextInput>
-                </div>
-                <div className="mt-1">
-                    <Textarea
+                label="Short description"
+                rightSection={rightSectionTooltip("A short description shown on searchs and previews of your project.")}
+                id="shortDescription"
+                name="shortDescription"
+                type="text"
+                onChange={(e) => dispatch(setShortDescription(e.target.value))}
+                value={props.shortDescription}
+                placeholder='A short description'
+                required
+            />
+            <div className="mt-1">
+                <Textarea
                     label="Description"
                     rightSection={rightSectionTooltip("A short description shown on searchs and previews of your project.")}
                     id= "description"
                     name= "description"
                     onChange={(e) => dispatch(setDescription(e.target.value))}
                     value={props.projectDescription}
-                    rows={8}
+                    minRows={8}
                     placeholder="An extended description"
-                    >
-                    </Textarea>
-                </div>
+                />
+            </div>
         </form >
     );
 };

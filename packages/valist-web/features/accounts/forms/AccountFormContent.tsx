@@ -1,7 +1,7 @@
 import { Fragment, useContext, useState } from "react";
 import { FileList } from "../../../components/Files/FileUpload";
 import { SetUseState } from "../../../utils/Account/types";
-import { UseListStateHandler } from "@mantine/hooks/lib/use-list-state/use-list-state";
+import { UseListStateHandlers } from "@mantine/hooks/lib/use-list-state/use-list-state";
 import BasicInfoForm from "./BasicInfoForm";
 import MembersForm from "./MembersForm";
 import { useForm, zodResolver } from '@mantine/form';
@@ -14,7 +14,7 @@ import ValistContext from "@/features/valist/ValistContext";
 import { setMembers, setUsername } from "../teamSlice";
 import { useAppDispatch } from "app/hooks";
 import Web3Context from "@/features/valist/Web3Context";
-import { addMember } from "@/utils/Valist";
+import { addAccountMember } from "@/utils/Valist";
 
 interface AccountFormProps {
   initialValues: {
@@ -34,7 +34,7 @@ interface AccountFormProps {
   accountDescription: string;
   setView: SetUseState<string>;
   setAccountID: SetUseState<string>;
-  setImage: UseListStateHandler<FileList>;
+  setImage: UseListStateHandlers<FileList>;
   submit: (accountId: string, members: string[]) => void;
 }
 
@@ -49,7 +49,7 @@ export default function AccountForm(props: AccountFormProps) {
   const handleAddMember = async (address: string) => {
     const resolved = await web3Ctx.isValidAddress(address);
     if (resolved && props.accountID) {
-      await addMember(
+      await addAccountMember(
         resolved,
         props.accountUsername,
         props.accountID,

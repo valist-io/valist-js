@@ -1,28 +1,12 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { Client, ReleaseMeta } from "@valist/sdk";
-import { utils } from "ethers";
+import { Client, ProjectMeta, ReleaseMeta } from "@valist/sdk";
+import { BigNumber, ethers, utils } from "ethers";
 import parseError from "../Errors";
 import { dismiss, notify } from "../Notifications";
 import { FileList } from '@/components/Files/FileUpload';
 import { NextRouter } from "next/router";
-
-export const getTeamID = (teamName: string) => {
-  const nameBytes = utils.toUtf8Bytes(teamName);
-  const nameHash = utils.keccak256(nameBytes);
-  return utils.keccak256(
-    utils.solidityPack(["uint256", "address"], [0x89, nameHash]),
-  );
-};
-
-export const getProjectID = (teamName: string, projectName: string) => {
-  const teamID = getTeamID(teamName);
-  const nameBytes = utils.toUtf8Bytes(projectName);
-  const nameHash = utils.keccak256(nameBytes);
-
-  return utils.keccak256(
-    utils.solidityPack(["uint256", "address"], [teamID, nameHash]),
-  );
-};
+import { Asset } from "@/features/projects/ProjectGallery";
+import { projectMetaChanged } from "../Validation";
 
 // Wrap Valist Sdk call for create or update account
 export const createOrUpdateAccount = async (
@@ -161,7 +145,200 @@ export const createRelease = async (
   }
 };
 
-export const addMember = async (
+export const createOrUpdateProject = async (
+  create: boolean,
+  accountID: string,
+  projectID: string,
+  projectAccount: string,
+  projectName: string,
+  projectDisplayName: string,
+  projectDescription: string,
+  projectShortDescription: string,
+  projectWebsite: string,
+  projectMembers: string[],
+  projectImage: FileList[],
+  projectGallery: FileList[],
+  projectType: string,
+  projectTags: string[],
+  projectPrice: string,
+  projectRoyalty: string,
+  projectRoyaltyAddress: string,
+  projectLimit: string,
+  projectAssets: Asset[],
+  currentImage: string,
+  previousMeta: ProjectMeta,
+  youtubeUrl: string | null,
+  router: NextRouter,
+  valistCtx: Client,
+) => {
+  if (!projectID || !valistCtx) return;
+  let toastID = '';
+  let imgURL = currentImage;
+  let galleryItems:Asset[] = (projectGallery.length !== 0) ? [] : [...projectAssets];
+
+  const uploadToast = notify('text', 'Uploading files...');
+  if (projectImage.length > 0) {
+    imgURL = await valistCtx.writeFile({
+      // @ts-ignore
+      path: projectImage[0].src.path, 
+      content: projectImage[0].src,
+    });
+  } else {
+    imgURL = currentImage;
+  }
+
+  if (youtubeUrl) {
+    galleryItems.push({
+      name: youtubeUrl,
+      type: 'youtube',
+      src: youtubeUrl,
+    });
+  }
+
+  for (let i = 0; i < projectGallery.length; i++) {
+    if (typeof projectGallery[i].src === "object") {
+      const url = await valistCtx.writeFile({
+        // @ts-ignore
+        path: projectGallery[i].src.path,
+        content: projectGallery[i].src,
+      });
+
+      galleryItems.push({
+        name: projectGallery[i].name,
+        type: projectGallery[i].type,
+        src: url,
+      });
+    } else if (typeof projectGallery[i].src === "string") {
+      galleryItems.push({
+        name: projectGallery[i].name,
+        type: projectGallery[i].type,
+        // @ts-ignore
+        src: projectGallery[i].src,
+      });
+    }
+  };
+
+  setTimeout(() => {
+    // set artificial buffer for if upload is too quick, since react-hot-toast doesn't like when you call dismiss too fast
+    dismiss(uploadToast);
+  }, 300);
+
+  const project = new ProjectMeta();
+  project.image = imgURL;
+  project.name = projectDisplayName;
+  project.description = projectDescription;
+  project.short_description = projectShortDescription;
+  project.external_url = projectWebsite;
+  project.type = projectType;
+  project.tags = projectTags;
+  project.gallery = galleryItems;
+
+  console.log("Project Team", projectAccount);
+  console.log("Project Name", projectName);
+  console.log("Project Display Name", projectDisplayName);
+  console.log("Project Members", projectMembers);
+  console.log("Meta", project);
+
+  try {
+    const metaChanged = projectMetaChanged(previousMeta, project);
+    console.log('create', create);
+    // If create is true call createTeam else setProjectMeta
+    let transaction: any;
+    if (!create) {
+      if (metaChanged) {
+        toastID = notify('pending');
+        transaction = await valistCtx.setProjectMeta(
+          projectID,
+          project,
+        );
+
+        dismiss(toastID);
+        toastID = notify('transaction', transaction.hash);
+        await transaction.wait();
+      } else {
+        notify('message', 'Project Meta has not changed.');
+      }
+    } else {
+      toastID = notify('pending');
+      transaction = await valistCtx.createProject(
+        accountID,
+        projectName,
+        project,
+        projectMembers,
+      );
+
+      dismiss(toastID);
+      toastID = notify('transaction', transaction.hash);
+      await transaction.wait();
+    }
+
+    dismiss();
+    notify('success');
+
+    const previousPrice = await valistCtx.getProductPrice(projectID) || 0;
+    const currentPrice = ethers.utils.parseEther(projectPrice || '0');
+
+    if (!currentPrice.eq(previousPrice)) {
+      transaction = await valistCtx.setProductPrice(
+        projectID,
+        currentPrice,
+      );
+
+      dismiss(toastID);
+      toastID = notify('transaction', transaction.hash);
+      await transaction.wait();
+
+      dismiss(toastID);
+      notify('success');
+    }
+
+    const previousLimit = await valistCtx.getProductLimit(projectID);
+    const currentLimit = BigNumber.from(projectLimit);
+
+    if (!currentLimit.eq(previousLimit)) {
+      transaction = await valistCtx.setProductLimit(
+        projectID,
+        currentLimit,
+      );
+
+      dismiss(toastID);
+      toastID = notify('transaction', transaction.hash);
+      await transaction.wait();
+
+      dismiss(toastID);
+      notify('success');
+    }
+
+    const _royalty = await valistCtx.getProductRoyaltyInfo(projectID, BigNumber.from(10000));
+    const previousRoyalty = _royalty[1].div(100);
+    const currentRoyalty = BigNumber.from(projectRoyalty);
+
+    if (!currentRoyalty.eq(previousRoyalty)) {
+      transaction = await valistCtx.setProductRoyalty(
+        projectID,
+        projectRoyaltyAddress,
+        Number(currentRoyalty) * 100,
+      );
+
+      dismiss(toastID);
+      toastID = notify('transaction', transaction.hash);
+      await transaction.wait();
+
+      dismiss(toastID);
+      notify('success');
+    }
+
+    if (create) {
+      router.push('/');
+    }
+  } catch(err) {
+    console.log('Error', err);
+    dismiss(toastID);
+    notify('error', parseError(err));
+  }
+};
+
+export const addAccountMember = async (
   address: string,
   accountUsername: string,
   accountID: string,
@@ -191,7 +368,7 @@ export const addMember = async (
   }
 };
 
-export const removeMember = async (
+export const removeAccountMember = async (
   address: string,
   accountUsername: string,
   accountID: string,

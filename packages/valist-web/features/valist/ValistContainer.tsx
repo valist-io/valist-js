@@ -1,6 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { 
+  setAccounts, 
+  setAddress, 
+  setCurrentAccount, 
+  setLoading,
+  selectAccountNames,
+} from '../accounts/accountsSlice';
+
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { setAccounts, setAddress, setCurrentAccount, setLoading, setMagicAddress } from '../accounts/accountsSlice';
 import { useEffect, useState } from 'react';
 import { Client, createReadOnly } from '@valist/sdk';
 import { USER_HOMEPAGE_QUERY } from '@valist/sdk/dist/graphql';
@@ -26,9 +33,11 @@ declare global {
 
 export default function ValistContainer({ children }: any) {
   const dispatch = useAppDispatch();
+  const accountNames = useAppSelector(selectAccountNames);
+
   const { publicRuntimeConfig } = getConfig();
   const [provider, setProvider] = useState<ValistProvider>(defaultProvider);
-  const { data: account } = useAccount();
+  const { address } = useAccount();
   const { data: signer, isError, isLoading } = useSigner();
 
   const [valistClient, setValistClient] = useState<Client>(
@@ -41,23 +50,23 @@ export default function ValistContainer({ children }: any) {
   const [mainnet, setMainnet] = useState<JsonRpcProvider>(new ethers.providers.JsonRpcProvider('https://rpc.valist.io/ens'));
 
   const { data, loading, error } = useQuery(gql(USER_HOMEPAGE_QUERY), {
-    variables: { address: account?.address?.toLowerCase() },
+    variables: { address: address?.toLowerCase() },
   });
 
   // Signal to APP Components that user data has been loaded
   useEffect(() => {
     dispatch(setLoading(loading));
-  }, [account?.address]);
+    dispatch(setAddress(address || ''));
+  }, [address]);
   
   // Set Valist client on provider change.
   useEffect(() => {
-    (async () => {
-      if (signer?.provider && !isLoading) {
-        const client = await createValistClient(signer.provider as any);
-        dispatch(setAddress(await signer?.getAddress()));
+    if (signer?.provider && !isLoading) {
+      console.log('signer.provider', signer?.provider);
+      createValistClient(signer.provider as any).then((client) => {
         if (client) setValistClient(client);
-      }
-    })();
+      });
+    }
   }, [signer, isLoading]);
 
   // Add Valist client to window
@@ -66,7 +75,7 @@ export default function ValistContainer({ children }: any) {
   }, [valistClient]);
 
   // Log current address
-  useEffect(() => console.log("Address:", account?.address), [account?.address]);
+  useEffect(() => console.log("Address:", address), [address]);
 
   // Set User's teams and associated projects
   useEffect(() => {
@@ -76,22 +85,22 @@ export default function ValistContainer({ children }: any) {
         data.users[0].projects,
       );
 
-      dispatch(setAccounts({
-        accounts: teams,
-        accountNames: teamNames,
-      }));
-
+      dispatch(setAccounts({ accounts: teams, accountNames: teamNames }));
       dispatch(setLoading(loading));
+    } else {
+      dispatch(setAccounts({ accounts: {}, accountNames: [] }));
     }
   }, [data]);
 
-    // Load and set currentAccount if saved in local storage
-    useEffect(() => {
-      if (account?.address) {
-        const savedAccounts = JSON.parse(localStorage.getItem('currentAccount') || '[]');
-        dispatch(setCurrentAccount(savedAccounts[account?.address]));
-      }
-    }, [account?.address, dispatch]);
+  // Set user account from local storage or accountNames
+  useEffect(() => {
+    if (accountNames.length !== 0 && address) {
+      const savedAccounts = JSON.parse(localStorage.getItem('currentAccount') || '[]');
+      dispatch(setCurrentAccount(savedAccounts[address] || accountNames[0]));
+    } else {
+      dispatch(setCurrentAccount(''));
+    }
+  }, [dispatch, accountNames, address]);
 
   const web3Ctx: Web3ContextInstance = new Web3ContextInstance(
     mainnet,

@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from 'react';
 import { ProjectMeta } from '@valist/sdk';
 import ValistContext from '../../features/valist/ValistContext';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { selectAccountNames, selectLoginTried, selectLoginType } from '../../features/accounts/accountsSlice';
+import { selectAccountNames } from '../../features/accounts/accountsSlice';
 import { dismiss, notify } from '../../utils/Notifications';
 import parseError from '../../utils/Errors';
 import { clear, selectAccount, selectDescription, selectDisplayName, selectLimit, selectMembers, selectName, selectPrice, selectRoyalty, selectRoyaltyAddress, selectShortDescription, selectTags, selectType, selectWebsite, selectYouTubeUrl, setDescription, setDisplayName, setLimit, setMembers, setName, setPrice, setRoyalty, setRoyaltyAddress, setShortDescription, setTags, setAccount, setType, setWebsite } from '../../features/projects/projectSlice';
@@ -13,10 +13,10 @@ import Tabs from '../../components/Tabs';
 import { Asset } from './ProjectGallery';
 import { generateID } from '@valist/sdk';
 import getConfig from 'next/config';
-import { BigNumber, ethers } from 'ethers';
-import { projectMetaChanged } from '../../utils/Validation';
+import { ethers } from 'ethers';
 import { useListState } from '@mantine/hooks';
 import { FileList } from '@/components/Files/FileUpload';
+import { createOrUpdateProject } from '@/utils/Valist';
 
 type Member = {
   id: string,
@@ -30,8 +30,6 @@ export default function ManageProject(props: ManageProjectProps) {
   // Page State
   const valistCtx = useContext(ValistContext);
   const accountNames = useAppSelector(selectAccountNames);
-  const loginType = useAppSelector(selectLoginType);
-  const loginTried = useAppSelector(selectLoginTried);
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [formView, setFormView] = useState('Basic Info');
@@ -180,169 +178,33 @@ export default function ManageProject(props: ManageProjectProps) {
     setProjectMembersParsed(members);
   }, [projectMembers]);
 
-  const createProject = async () => {
-    if (!projectID || !valistCtx) return;
-    let toastID = '';
-    let imgURL = currentImage;
-    let galleryItems:Asset[] = (projectGallery.length !== 0) ? [] : [...projectAssets];
-
-    const uploadToast = notify('text', 'Uploading files...');
-    if (projectImage.length > 0) {
-      imgURL = await valistCtx.writeFile({
-        // @ts-ignore
-        path: projectImage[0].src.path, 
-        content: projectImage[0].src,
-      });
-    } else {
-      imgURL = currentImage;
-    }
-
-    if (youtubeUrl) {
-      galleryItems.push({
-        name: youtubeUrl,
-        type: 'youtube',
-        src: youtubeUrl,
-      });
-    }
-
-    for (let i = 0; i < projectGallery.length; i++) {
-      if (typeof projectGallery[i].src === "object") {
-        const url = await valistCtx.writeFile({
-          // @ts-ignore
-          path: projectGallery[i].src.path,
-          content: projectGallery[i].src,
-        });
-
-        galleryItems.push({
-          name: projectGallery[i].name,
-          type: projectGallery[i].type,
-          src: url,
-        });
-      } else if (typeof projectGallery[i].src === "string") {
-        galleryItems.push({
-          name: projectGallery[i].name,
-          type: projectGallery[i].type,
-          // @ts-ignore
-          src: projectGallery[i].src,
-        });
-      }
-    };
-
-    setTimeout(() => {
-      // set artificial buffer for if upload is too quick, since react-hot-toast doesn't like when you call dismiss too fast
-      dismiss(uploadToast);
-    }, 300);
-
-    const project = new ProjectMeta();
-    project.image = imgURL;
-    project.name = projectDisplayName;
-    project.description = projectDescription;
-    project.short_description = projectShortDescription;
-    project.external_url = projectWebsite;
-    project.type = projectType;
-    project.tags = projectTags;
-    project.gallery = galleryItems;
-
-    console.log("Project Team", projectAccount);
-    console.log("Project Name", projectName);
-    console.log("Project Display Name", projectDisplayName);
-    console.log("Project Members", projectMembers);
-    console.log("Meta", project);
- 
-    try {
-      const metaChanged = projectMetaChanged(previousMeta, project);
-
-      // If props.project call setProjectMeta else createTeam
-      let transaction: any;
-      if (props.accountUsername && props.projectName) {
-        if (metaChanged) {
-          toastID = notify('pending');
-          transaction = await valistCtx.setProjectMeta(
-            projectID,
-            project,
-          );
-
-          dismiss(toastID);
-          toastID = notify('transaction', transaction.hash);
-          await transaction.wait();
-        } else {
-          notify('message', 'Project Meta has not changed.');
-        }
-      } else {
-        toastID = notify('pending');
-        transaction = await valistCtx.createProject(
-          accountID,
-          projectName,
-          project,
-          projectMembers,
-        );
-
-        dismiss(toastID);
-        toastID = notify('transaction', transaction.hash);
-        await transaction.wait();
-      }
-
-      const previousPrice = await valistCtx.getProductPrice(projectID) || 0;
-      const currentPrice = ethers.utils.parseEther(projectPrice || '0');
-
-      if (!currentPrice.eq(previousPrice)) {
-        transaction = await valistCtx.setProductPrice(
-          projectID,
-          currentPrice,
-        );
-
-        dismiss(toastID);
-        toastID = notify('transaction', transaction.hash);
-        await transaction.wait();
-  
-        dismiss(toastID);
-        notify('success');
-      }
-
-      const previousLimit = await valistCtx.getProductLimit(projectID);
-      const currentLimit = BigNumber.from(projectLimit);
-
-      if (!currentLimit.eq(previousLimit)) {
-        transaction = await valistCtx.setProductLimit(
-          projectID,
-          currentLimit,
-        );
-
-        dismiss(toastID);
-        toastID = notify('transaction', transaction.hash);
-        await transaction.wait();
-  
-        dismiss(toastID);
-        notify('success');
-      }
-
-      const _royalty = await valistCtx.getProductRoyaltyInfo(projectID, BigNumber.from(10000));
-      const previousRoyalty = _royalty[1].div(100);
-      const currentRoyalty = BigNumber.from(projectRoyalty);
-
-      if (!currentRoyalty.eq(previousRoyalty)) {
-        transaction = await valistCtx.setProductRoyalty(
-          projectID,
-          projectRoyaltyAddress,
-          Number(currentRoyalty) * 100,
-        );
-
-        dismiss(toastID);
-        toastID = notify('transaction', transaction.hash);
-        await transaction.wait();
-  
-        dismiss(toastID);
-        notify('success');
-      }
-
-      if (!(props.accountUsername && props.projectName) && metaChanged) {
-        router.push('/');
-      }
-    } catch(err) {
-      console.log('Error', err);
-      dismiss(toastID);
-      notify('error', parseError(err));
-    }
+  const handleSubmit = () => {
+    createOrUpdateProject(
+      (props.accountUsername && props.projectName ? false : true),
+      accountID,
+      projectID,
+      projectAccount,
+      projectName,
+      projectDisplayName,
+      projectDescription,
+      projectShortDescription,
+      projectWebsite,
+      projectMembers,
+      projectImage,
+      projectGallery,
+      projectType,
+      projectTags,
+      projectPrice,
+      projectRoyalty,
+      projectRoyaltyAddress,
+      projectLimit,
+      projectAssets,
+      currentImage,
+      previousMeta,
+      youtubeUrl,
+      router,
+      valistCtx,
+    );
   };
 
   const addMember = async (address: string) => {
@@ -410,6 +272,7 @@ export default function ManageProject(props: ManageProjectProps) {
               userAccounts={accountNames}
               accountUsername={projectAccount}
               accountID={accountID}
+              projectID={projectID}
               projectName={projectName}
               projectDisplayName={projectDisplayName}
               price={projectPrice}
@@ -429,7 +292,7 @@ export default function ManageProject(props: ManageProjectProps) {
               setImage={setProjectImage}
               setGallery={handleGallery}
               addMember={addMember}
-              submit={createProject}         
+              submit={handleSubmit}         
             />
           </div>
         </div>

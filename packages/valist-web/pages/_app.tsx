@@ -8,8 +8,9 @@ import { ApolloProvider } from '@apollo/client';
 import client from '../utils/Apollo/client';
 import { chain, createClient, WagmiConfig, configureChains } from 'wagmi';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
-import { magic } from '../utils/Providers/magic';
 import {
+  lightTheme,
+  darkTheme,
   connectorsForWallets,
   RainbowKitProvider,
   wallet,
@@ -20,6 +21,7 @@ import { getCookie, setCookies } from 'cookies-next';
 import { GetServerSidePropsContext } from 'next';
 import { theme } from '@/utils/Theme';
 import getConfig from 'next/config';
+import { magic } from '@/utils/Providers/magic';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -29,7 +31,7 @@ const AppContainer = dynamic(
 );
 
 const defaultProvider = jsonRpcProvider({
-  rpc: chain => ({
+  rpc: () => ({
     http: publicRuntimeConfig.WEB3_PROVIDER,
   }),
 });
@@ -45,18 +47,19 @@ const connectors = connectorsForWallets([
   {
     groupName: 'Popular',
     wallets: [
-      wallet.coinbase({ appName: 'Valist', chains }),
+      wallet.rainbow({ chains }),
       wallet.metaMask({ chains }),
       magic(),
-    ],
-  },
-  {
-    groupName: 'Mobile',
-    wallets: [
-      wallet.rainbow({ chains }),
       wallet.walletConnect({ chains }),
     ],
   },
+  // {
+  //   groupName: 'Mobile',
+  //   wallets: [
+  //     wallet.rainbow({ chains }),
+  //     wallet.walletConnect({ chains }),
+  //   ],
+  // },
 ]);
 
 const wagmiClient = createClient({ autoConnect: true, connectors, provider });
@@ -64,6 +67,8 @@ const wagmiClient = createClient({ autoConnect: true, connectors, provider });
 function ValistApp(props: AppProps & { colorScheme: ColorScheme }) {
   const { Component, pageProps } = props;
   const [colorScheme, setColorScheme] = useState<ColorScheme>(props.colorScheme);
+  const rainbowTheme = colorScheme === 'dark' ? darkTheme() : lightTheme();
+
   const toggleColorScheme = (value?: ColorScheme) => {
     const nextColorScheme = value || (colorScheme === 'dark' ? 'light' : 'dark');
     setColorScheme(nextColorScheme);
@@ -74,8 +79,8 @@ function ValistApp(props: AppProps & { colorScheme: ColorScheme }) {
     <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
       <MantineProvider theme={{ ...theme, colorScheme } as any} withGlobalStyles withNormalizeCSS>
         <Provider store={store}>
-        <WagmiConfig client={wagmiClient}>
-            <RainbowKitProvider chains={chains}>
+          <WagmiConfig client={wagmiClient}>
+            <RainbowKitProvider chains={chains} theme={rainbowTheme}>
               <ApolloProvider client={client}>
                 <AppContainer>
                     <Component {...pageProps} />

@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import { create as createIPFS } from 'ipfs-http-client';
 import { RelayProvider, GSNConfig } from '@opengsn/provider';
+import type WalletConnectProvider from '@walletconnect/web3-provider';
 import Client from './client';
 import * as contracts from './contracts';
 import * as graphql from './graphql';
@@ -43,7 +44,7 @@ export function createReadOnly(provider: Provider, options: Partial<Options>): C
   return new Client(registry, license, ipfs, ipfsGateway, subgraphUrl);
 }
 
-export async function createRelaySigner(provider: ethers.providers.Web3Provider, options: Partial<Options>): Promise<ethers.providers.JsonRpcSigner> {
+export async function createRelaySigner({ provider }: ethers.providers.Web3Provider, options: Partial<Options>): Promise<ethers.providers.JsonRpcSigner> {
 	const paymasterAddress = contracts.getPaymasterAddress(options.chainId);
 
 	// recommended settings for polygon see below for more info
@@ -55,8 +56,24 @@ export async function createRelaySigner(provider: ethers.providers.Web3Provider,
 		pastEventsQueryMaxPageSize: 990,
 	};
 
+  // fix for wallet connect provider not returning standard responses
+  // replace this once opengsn is able to handle an ethers wrapped signer
+  if ((provider as WalletConnectProvider).isWalletConnect) {
+    const walletConnectProvider = provider as WalletConnectProvider;
+    walletConnectProvider.send = async (args: any, callback: any) => {
+      walletConnectProvider.request(args)
+        .then((result: any) => callback(null, { result }))
+        .catch((error: any) => callback(error, undefined));
+    }
+    walletConnectProvider.sendAsync = (args: any, callback: any) => {
+      walletConnectProvider.request(args)
+        .then((result: any) => callback(null, { result }))
+        .catch((error: any) => callback(error, undefined));
+    }
+  }
+
 	// @ts-ignore
-	const relayProvider = RelayProvider.newProvider({ provider: provider.provider, config });
+	const relayProvider = RelayProvider.newProvider({ provider, config });
 	await relayProvider.init();
 
 	// add the wallet account if set

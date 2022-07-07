@@ -1,118 +1,92 @@
-// /* eslint-disable react-hooks/exhaustive-deps */
+import { 
+  selectCurrentAccount,
+} from '@/features/accounts/accountsSlice';
+
+import { useState, useEffect } from 'react';
 import { useQuery, gql } from '@apollo/client';
-import { Grid, Paper } from '@mantine/core';
 import type { NextPage } from 'next';
-import { useEffect, useState } from 'react';
 import { useAppSelector } from '../app/hooks';
-import Layout from '../components/Layouts/Main';
-import { selectAccountNames, selectAccounts, selectAddress, selectCurrentAccount, selectLoginTried } from '../features/accounts/accountsSlice';
-import CreateButton from '../features/dashboard/CreateButton';
-import DashboardContent from '../features/dashboard/DashboardContent';
-import HomepageProfileCard from '../features/dashboard/DashboardProfileCard';
-import PublishButton from '../features/dashboard/PublishButton';
-import LogCard from '../features/logs/LogCard';
-import { USER_LOGS_QUERY } from '@valist/sdk/dist/graphql';
-import { Log, Project } from '../utils/Apollo/types';
-import { truncate } from '../utils/Formatting/truncate';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import Layout from '@/components/Layouts/Main';
+import EmptyAccounts from '@/features/accounts/EmptyAccounts';
+import { Log, Project, Member } from '@/utils/Apollo/types';
+import { AccountMeta } from '@/utils/Valist/types';
+import { ACCOUNT_PROFILE_QUERY } from '@valist/sdk/dist/graphql';
+
+import LogTable from '@/features/logs/LogTable';
+import LogCard from '@/features/logs/LogCard';
+import TeamProfileCard from '@/features/accounts/AccountProfileCard';
+import TeamProjectList from '@/features/accounts/AccountProjectList';
+import TeamMemberList from '@/features/accounts/AccountMemberList';
+import TeamProfileCardActions from '@/features/accounts/AccountProfileCardActions';
 
 const Dashboard: NextPage = () => {
-  const address = useAppSelector(selectAddress);
   const currentAccount = useAppSelector(selectCurrentAccount);
-  const loginTried = useAppSelector(selectLoginTried);
-  const accounts = useAppSelector(selectAccounts);
-  const accountNames = useAppSelector(selectAccountNames);
-  const { data, loading, error } = useQuery(gql(USER_LOGS_QUERY), {
-    variables: { address: address.toLowerCase() },
+  const [view, setView] = useState<string>('Projects');
+  const [meta, setMeta] = useState<AccountMeta>({
+    image: '',
   });
+  const [members, setMembers] = useState<Member[]>([]);
   const [logs, setLogs] = useState<Log[]>([]);
-  const [userAccount, setUserAccount] = useState<string>('');
-  const [currentProjects, setCurrentProjects] = useState<Project[]>([]);
-  const [view, setView] = useState<string>('');
-  const isAccounts = (accountNames.length !== 0);
-  const isProjects = (currentProjects.length !== 0);
-  const transactionActions = ['Account'];
-  if (isAccounts) transactionActions.push('Project');
-  
-  const initialActivity = [
+  const [projects, setProjects] = useState<Project[]>([]);
+
+  const { data, loading, error } = useQuery(gql(ACCOUNT_PROFILE_QUERY), {
+    variables: { account: currentAccount },
+  });
+
+  useEffect(() => {
+    if (data && data.accounts && data.accounts[0] && data.accounts[0].metaURI) {
+      fetch(data.accounts[0].metaURI)
+        .then(res => res.json())
+        .then(setMeta);
+      setProjects(data.accounts[0].projects);
+      setMembers(data.accounts[0].members);
+      setLogs(data.accounts[0].logs);
+    }
+  }, [data, loading, error, setMeta]);
+
+  const tabs = [
     {
-      id: '0x0',
-      type: 'Connected',
-      sender: truncate(address, 10),
+      text: 'Projects',
+      disabled: false,
+    },
+    {
+      text: 'Activity',
+      disabled: false,
     },
   ];
 
-  useEffect(() => {
-    if (data?.logs) setLogs(data.logs);
-  }, [data]);
-
-  // Set user account from accountNames or local storage
-  useEffect(() => {
-    if (accountNames.length !== 0) {
-      setUserAccount(currentAccount || accountNames[0]);
-    }
-  }, [accountNames, currentAccount]);
-
-  // If userAccount changes set projects under current account
-  useEffect(() => {
-    setCurrentProjects(accounts[userAccount] || []);
-  }, [accounts, userAccount]);
-
-  // Set homepageView
-  useEffect(() => {
-    if (!isAccounts) {
-      setView('EmptyTeams');
-    } else if (currentProjects.length === 0) {
-      setView('EmptyProjects');
-    } else {
-      setView('Projects');
-    }
-  },[currentProjects, address, isAccounts]);
-
-  if (address === '0x0' && loginTried) {
+  if (currentAccount === '') {
     return (
-      <Layout title="Valist | Login">
-        <div className="flex justify-center items-center">
-          <div className="mt-40 m-auto bg-white border rounded-lg flex items-center flex-col max-w-lg">
-            <ConnectButton />
-          </div>
-        </div>
+      <Layout title="Valist | Dashboard">
+        <EmptyAccounts />
       </Layout>
     );
-  };
-  
+  }
+
   return (
     <Layout title="Valist | Dashboard">
-      <Grid gutter="xl">
-        {/* Left column */}
-        <Grid.Col xs={12} lg={8}>
-          <HomepageProfileCard
-            isProjects={isProjects}
-            isAccounts={isAccounts}
+      <div className="grid grid-cols-1 gap-4 items-start lg:grid-cols-6 lg:gap-8">
+        <div className="grid grid-cols-1 gap-4 lg:col-span-4">
+          <TeamProfileCard
             view={view}
-            accountNames={accountNames}
-            userAccount={userAccount}
             setView={setView}
+            accountName={currentAccount}
+            accountImage={meta.image ? meta.image : ''}
+            meta={meta}
+            tabs={tabs}          
           />
-          <DashboardContent
-            accountName={currentAccount} 
-            userProjects={currentProjects}
-            logs={logs}
-            address={address}
-            view={view}
+          {view === 'Projects' && <TeamProjectList projects={projects} linksDisabled={false} />}
+          {view === 'Activity' && <LogTable logs={logs} />}
+        </div>
+        <div className="grid grid-cols-1 gap-4 lg:col-span-2">
+          <TeamProfileCardActions accountName={currentAccount} />
+          <TeamMemberList
+            accountMembers={members} 
+            accountName={currentAccount}          
           />
-        </Grid.Col>
-        {/* Right column */}
-        <Grid.Col xs={12} lg={4}>
-          <Paper style={{ marginBottom: 15 }} shadow="xs" p="xl" radius={"md"} withBorder>
-            <div className='grid grid-cols-2 gap-4'>
-              <PublishButton account={currentAccount} disabled={isProjects} />
-              <CreateButton accountName={currentAccount} transactions={transactionActions}/>
-            </div>
-          </Paper>
-          <LogCard logs={logs.length !== 0 ? logs : initialActivity} />
-        </Grid.Col>
-      </Grid>
+          <LogCard logs={logs} />
+        </div>
+      </div> 
     </Layout>
   );
 };

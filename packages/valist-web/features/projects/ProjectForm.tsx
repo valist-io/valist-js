@@ -6,7 +6,7 @@ import { FileList } from "../../components/Files/FileUpload";
 import ValistContext from "../valist/ValistContext";
 import Web3Context from "../valist/Web3Context";
 import { setMembers, setName } from "./projectSlice";
-import { UseListStateHandler } from "@mantine/hooks/lib/use-list-state/use-list-state";
+import { UseListStateHandlers } from "@mantine/hooks/lib/use-list-state/use-list-state";
 import { BasicInfoForm } from "./forms/BasicInfoForm";
 import { GraphicsForm } from "./forms/GraphicsForm";
 import { DescriptionsForm } from "./forms/DescriptionsForm";
@@ -19,6 +19,7 @@ interface ProjectFormProps {
   submitText: string,
   accountUsername: string;
   accountID: BigNumberish | null;
+  projectID: string;
   projectName: string;
   projectDisplayName: string;
   price: string;
@@ -35,9 +36,9 @@ interface ProjectFormProps {
   youtubeUrl: string;
   userAccounts: string[];
   view: string;
-  setMainImage: UseListStateHandler<FileList>;
-  setImage: UseListStateHandler<FileList>;
-  setGallery: UseListStateHandler<FileList>;
+  setMainImage: UseListStateHandlers<FileList>;
+  setImage: UseListStateHandlers<FileList>;
+  setGallery: UseListStateHandlers<FileList>;
   addMember: (address: string) => Promise<void>;
   submit: () => void;
 }
@@ -167,6 +168,7 @@ export default function ProjectForm(props: ProjectFormProps) {
         />;
       case 'Pricing':
         return <PriceForm
+          projectID={props.projectID}
           price={props.price}
           limit={props.limit}
           royalty={props.royalty}
