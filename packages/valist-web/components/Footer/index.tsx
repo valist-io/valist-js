@@ -23,7 +23,7 @@ export default function Footer(): JSX.Element {
             size="sm"
           >
             <List.Item style={{ fontSize: 18, fontWeight: 900 }}>Company</List.Item>
-            <List.Item>Docs</List.Item>
+            <List.Item><a href="https://docs.valist.io">Docs</a></List.Item>
           </List>
         </Grid.Col>
         <Grid.Col lg={3}>
@@ -32,7 +32,7 @@ export default function Footer(): JSX.Element {
             size="sm"
           >
             <List.Item style={{ fontSize: 18, fontWeight: 900 }}>Support</List.Item>
-            <List.Item>Contact Us</List.Item>
+            <List.Item><a href="mailto:hello@valist.io">Contact Us</a></List.Item>
           </List>
         </Grid.Col>
         <Grid.Col lg={3}>
