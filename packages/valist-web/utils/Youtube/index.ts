@@ -2,7 +2,6 @@ import { youtubeRegex } from "../Validation";
 
 export const getYouTubeID = (url: string) => {
   const res = url.match(youtubeRegex);
-  console.log('REGEX', res);
   return res && res.length > 0 ? res[1] : null;
 };
 

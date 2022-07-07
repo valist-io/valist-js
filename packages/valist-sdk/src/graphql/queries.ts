@@ -245,6 +245,9 @@ export const PROJECT_PROFILE_QUERY = `
       metaURI
       account {
         name
+        members{
+          id
+        }
       }
       releases(orderBy: blockTime, orderDirection: "desc") {
         name
