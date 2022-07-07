@@ -8,9 +8,9 @@ import ProjectMemberList from "./ProjectMemberList";
 import ProjectListCard from "./ProjectListCard";
 import { useEffect, useState } from "react";
 import { FileWithPath } from "file-selector";
-import DicoveryItem from "../discovery/DiscoveryItem";
 import { getYouTubeEmbedURL, getYouTubeID } from "../../utils/Youtube";
 import { FileList } from "@/components/Files/FileUpload";
+import DiscoveryItem from "@/components/Discovery/CarouselItem";
 
 interface ProjectPreviewProps {
   projectAccount: string;
@@ -151,9 +151,12 @@ export default function ProjectPreview(props: ProjectPreviewProps) {
           <div>
             {mainImgUrl &&
               <div className="mb-2"> 
-                <DicoveryItem 
-                  text={'main-image'} 
-                  image={mainImgUrl}             
+                <DiscoveryItem 
+                  img={mainImgUrl} 
+                  name={""} 
+                  description={"Example Discovery Image"} 
+                  link={""} 
+                  type={"Type"} 
                 />
               </div>
             }

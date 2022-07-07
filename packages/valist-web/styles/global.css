@@ -93,7 +93,7 @@ a {
 
 .markdown pre {
   padding: 15px;
-  background-color: #f6f8fa;
+  background-color: currentColor;
   border-radius: 6px;
   margin-bottom: 16px;
 }
@@ -145,4 +145,17 @@ a {
   font-weight: 500;
   height: 0;
   visibility: hidden;
+}
+
+.carouselTrack {
+  display: 'flex'; 
+  flex-direction: 'row'; 
+  overflow-x: 'scroll';
+}
+
+.promoBg {
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  background-image: url(/images/discovery/publish_bg.png);
 }

@@ -5,8 +5,8 @@ import Link from 'next/link';
 export default function EmptyTeams() {
   return (
     <div className="text-center border-2 border-gray-300 border-dashed rounded-lg p-12">
-      <UserIcon className="text-gray-500 h-10 mx-auto" />
-      <h3 className="mt-2 text-sm font-medium text-gray-900">No accounts</h3>
+      <UserIcon className="h-10 mx-auto" />
+      <h3 className="mt-2 text-sm font-medium">No accounts</h3>
       <p className="mt-1 text-sm text-gray-500">To publish a project on valist, first create an account.</p>
       <div className="mt-6">
         <Link href="/create/account">
