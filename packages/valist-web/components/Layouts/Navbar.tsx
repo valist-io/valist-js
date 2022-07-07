@@ -2,7 +2,6 @@ import {
   Navbar,
   Stack,
   Group,
-  MediaQuery,
   ActionIcon,
   useMantineTheme,
 } from '@mantine/core';
@@ -12,12 +11,12 @@ import {
 	selectCurrentAccount,
 } from '@/features/accounts/accountsSlice';
 
-import { useEffect } from 'react';
 import * as Icons from 'tabler-icons-react';
 import { NextLink } from '@mantine/next';
 import AccountPicker from '@/features/accounts/AccountPicker';
 import { useAppSelector } from '../../app/hooks';
 import Navlink from './Navlink';
+import SocialIcons from './SocialIcons';
 
 interface SideNavProps {
   opened: boolean,
@@ -29,7 +28,6 @@ export default function SideNav(props: SideNavProps): JSX.Element {
 
 	const theme = useMantineTheme();
 	const backgroundColor = theme.colorScheme === 'dark' ? theme.colors.dark[9] : '';
-	const linkColor = theme.colorScheme === 'dark' ? 'white' : theme.colors.gray[6];
 
 	return (
 		<Navbar 
@@ -58,32 +56,7 @@ export default function SideNav(props: SideNavProps): JSX.Element {
 				}
       </Navbar.Section>
       <Navbar.Section px={30} py="md">
-      	<Group spacing="lg">
-					<ActionIcon 
-						variant="transparent" 
-						component={NextLink}
-						target="_blank" 
-            href="https://valist.io/discord"
-					>
-						<Icons.BrandDiscord color={linkColor} size={48} strokeWidth={2} />
-					</ActionIcon>
-					<ActionIcon 
-						variant="transparent"
-						component={NextLink}
-						target="_blank" 
-            href="https://twitter.com/Valist_io"
-					>
-						<Icons.BrandTwitter color={linkColor} size={48} strokeWidth={2} />
-					</ActionIcon>
-					<ActionIcon 
-						variant="transparent"
-						component={NextLink}
-						target="_blank" 
-            href="https://github.com/valist-io"
-					>
-						<Icons.BrandGithub color={linkColor} size={48} strokeWidth={2} />
-					</ActionIcon>
-	      </Group>
+      	<SocialIcons />
     	</Navbar.Section>
     </Navbar>
 	);

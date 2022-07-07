@@ -22,7 +22,7 @@ export default function HeroSection(props: HeroSectionProps): JSX.Element {
         zIndex: 3, 
         height: "100%",
         width: "100%",
-        backgroundColor: "rgba(19, 7, 14, 0.56)",
+        backgroundColor: "rgba(19, 7, 14, 0.45)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",

@@ -3,12 +3,12 @@ import Link from "next/link";
 
 export default function PublishPromo(): JSX.Element {
   const theme = useMantineTheme();
-	const bgColor = theme.colorScheme === 'dark' ? 'linear-gradient(0deg, rgba(3, 1, 17, 0.9), rgba(3, 1, 17, 0.9)), url(625497.png)' : '#5850EC';
+	const bgColor = theme.colorScheme === 'dark' ? '' : '#5850EC';
   const btnColor = theme.colorScheme === 'dark' ? '#5850EC' : 'linear-gradient(90deg, #FF9A9E 0%, #FAD0C4 99%, #FAD0C4 100%), #5850EC';
   const publishImage = `/images/discovery/publish_media_${theme.colorScheme === 'dark' ? 'dark' : 'light'}.png`;
 
   return (
-    <Grid style={{ padding: '2rem 2rem 0 2rem', background: bgColor }}>
+    <Grid className={`${theme.colorScheme === 'dark' ? 'promoBg' : ''}`} style={{ padding: '2rem 2rem 0 2rem', background: bgColor }}>
       <Grid.Col lg={5}>
         <div style={{ height: '100%', display: 'flex', alignItems: 'center' }}>
           <div style={{ maxWidth: 320 }}>
@@ -22,7 +22,7 @@ export default function PublishPromo(): JSX.Element {
           </div>
         </div>
       </Grid.Col>
-      <Grid.Col lg={7}>
+      <Grid.Col lg={7} style={{ paddingBottom: 0 }}>
         <div style={{ paddingTop: '4rem' }}>
           <Image
             alt={'Featured Project'}

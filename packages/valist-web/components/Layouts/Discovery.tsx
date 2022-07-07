@@ -25,9 +25,10 @@ export default function Layout(props: LayoutProps): JSX.Element {
         fixed
         navbarOffsetBreakpoint="sm"
         asideOffsetBreakpoint="sm"
-        padding="md"
+        padding={0}
         header={<Header opened={opened} onBurger={() => setOpened(!opened)} />}
-        styles={(theme) => ({ main: { backgroundColor } })}
+        footer={<Footer />}
+        styles={() => ({ main: { backgroundColor } })}
       >
         { props.children }
       </AppShell>

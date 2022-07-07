@@ -12,6 +12,7 @@ export type Item = {
 
 interface CarouselProps {
   items: Item[],
+  title: string,
 }
 
 export function spliceCircular<T>(array: T[], offset: number, length: number = 4): T[] {
@@ -36,7 +37,7 @@ export default function Carousel(props: CarouselProps): JSX.Element {
   return (
     <div style={{ marginBottom: 25 }}>
       <div style={{ marginBottom: 20, display: 'flex', position: 'relative' }}>
-        <h2 style={{ fontSize: 20, fontWeight: 800, marginLeft: 15 }}>Popular Software</h2>
+        <h2 style={{ fontSize: 20, fontWeight: 800, marginLeft: 15 }}>{props.title}</h2>
         <div style={{ display: 'flex', position: 'absolute', right: 20 }}>
           <ChevronLeft onClick={goLeft}/>
           <ChevronRight onClick={goRight}/>
@@ -51,7 +52,7 @@ export default function Carousel(props: CarouselProps): JSX.Element {
             name={item.name}
             description={item.description}
             link={item.link}
-            type={item.type} 
+            type={item.type}
           />
         ))}
       </div>

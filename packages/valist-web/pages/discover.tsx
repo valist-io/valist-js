@@ -69,22 +69,22 @@ const demoItem: Item[] = [
 const Discover: NextPage = () => {
   const { publicRuntimeConfig } = getConfig();
 
-  if (publicRuntimeConfig.CHAIN_ID !== '137') {
-    return (
-      <Layout title="Valist | Discover">
-        <div className="flex mt-20 lg:mt-32">
-          <div className="m-auto">
-            <h2 className="text-center text-3xl leading-8 font-extrabold tracking-tight text-indigo-500 sm:text-7xl">
-              Coming Soon!
-            </h2>
-            <p className="mt-4 max-w-3xl mx-auto text-center text-xl text-gray-500">
-              Discover your favorite <b><i>software applications</i></b>, <b><i>libraries</i></b> and <b><i>games.</i></b> All on Web3!
-            </p>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
+  // if (publicRuntimeConfig.CHAIN_ID !== '137') {
+  //   return (
+  //     <Layout title="Valist | Discover">
+  //       <div className="flex mt-20 lg:mt-32">
+  //         <div className="m-auto">
+  //           <h2 className="text-center text-3xl leading-8 font-extrabold tracking-tight text-indigo-500 sm:text-7xl">
+  //             Coming Soon!
+  //           </h2>
+  //           <p className="mt-4 max-w-3xl mx-auto text-center text-xl text-gray-500">
+  //             Discover your favorite <b><i>software applications</i></b>, <b><i>libraries</i></b> and <b><i>games.</i></b> All on Web3!
+  //           </p>
+  //         </div>
+  //       </div>
+  //     </Layout>
+  //   );
+  // }
 
   return (
     <Layout title="Valist | Discover">
@@ -97,9 +97,9 @@ const Discover: NextPage = () => {
         />
       </section>
       <section style={{ marginTop: 20 }}>
-       <Carousel items={demoItem} />
+       <Carousel title="Recently Added" items={demoItem} />
       </section>
-      <section>
+      <section style={{ overflow: 'hidden' }}>
         <PublishPromo />
       </section>
     </Layout>
