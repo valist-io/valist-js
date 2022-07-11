@@ -3,7 +3,7 @@ import { AlertCircle as AlertCircleIcon } from 'tabler-icons-react';
 import ProjectTagsInput from "../ProjectTagsInput";
 import ProjectTypeSelect from "../ProjectTypeSelect";
 import {  setDisplayName, setAccount, setWebsite } from "../projectSlice";
-import { UseListStateHandler } from "@mantine/hooks/lib/use-list-state/use-list-state";
+import { UseListStateHandlers } from "@mantine/hooks/lib/use-list-state/use-list-state";
 import { SetUseState } from "@/utils/Account/types";
 import { useAppDispatch } from "../../../app/hooks";
 import FileUpload, { FileList } from "../../../components/Files/FileUpload";
@@ -22,7 +22,7 @@ interface BasicInfoProps {
     edit: boolean;
     cleanName: string;
     validName: boolean;
-    setImage: UseListStateHandler<FileList>;
+    setImage: UseListStateHandlers<FileList>;
     setCleanName: SetUseState<string>;
     _setName: SetUseState<string>;
   }

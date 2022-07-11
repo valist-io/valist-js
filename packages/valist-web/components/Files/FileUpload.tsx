@@ -6,7 +6,7 @@ import { XIcon } from '@heroicons/react/outline';
 import { Center } from '@mantine/core';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { GripVertical } from 'tabler-icons-react';
-import { UseListStateHandler } from '@mantine/hooks/lib/use-list-state/use-list-state';
+import { UseListStateHandlers } from '@mantine/hooks/lib/use-list-state/use-list-state';
 
 export type FileList = {
   src: FileWithPath | string;
@@ -21,7 +21,7 @@ interface FileUploadProps {
   fileNum?: number;
   multiple?: boolean;
   fileView: 'ordered' | 'tree' | 'none';
-  setFiles: UseListStateHandler<FileList>;
+  setFiles: UseListStateHandlers<FileList>;
 }
 
 export default function FileUpload(props: FileUploadProps) {
@@ -108,7 +108,7 @@ export const dropzoneChildren = (status: DropzoneStatus, theme: MantineTheme) =>
 
 interface OrderedListProps {
   files: FileList[];
-  setFiles: UseListStateHandler<FileList>;
+  setFiles: UseListStateHandlers<FileList>;
 }
 
 const OrderedList = (props: OrderedListProps) => {
@@ -147,7 +147,7 @@ const OrderedList = (props: OrderedListProps) => {
 
 interface DefaultListProps {
   files: FileList[];
-  setFiles: UseListStateHandler<FileList>;
+  setFiles: UseListStateHandlers<FileList>;
 }
 
 const DefaultList = (props: DefaultListProps) => {
