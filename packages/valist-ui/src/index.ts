@@ -1,3 +1,4 @@
+export { AccountModal } from './components/AccountModal';
 export { AccountPicker } from './components/AccountPicker';
 export { Address } from './components/Address';
 export { AddressInput } from './components/AddressInput';

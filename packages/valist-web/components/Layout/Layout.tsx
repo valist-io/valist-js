@@ -4,6 +4,7 @@ import * as Icons from 'tabler-icons-react';
 import { AccountContext } from '@/components/AccountProvider';
 
 import { 
+  AccountModal,
   AccountPicker,
   Anchor,
   AppShell,
@@ -18,13 +19,19 @@ export interface LayoutProps {
 }
 
 export function Layout(props: LayoutProps) {
-  const [opened, setOpened] = useState(false);
-  const { account } = useContext(AccountContext);
+  const [mobileOpened, setMobileOpened] = useState(false);
+  const [accountOpened, setAccountOpened] = useState(false);
+  const { accounts, account, setAccount } = useContext(AccountContext);
+
+  const changeAccount = (account: string) => {
+    setAccount(account);
+    setAccountOpened(false);
+  };
 
   return (
     <AppShell
       header={
-        <Header opened={opened} onClick={() => setOpened(!opened)}>
+        <Header opened={mobileOpened} onClick={() => setMobileOpened(!mobileOpened)}>
           <Anchor>Docs</Anchor>
           <Anchor>Discover</Anchor>
           <ConnectButton 
@@ -34,12 +41,13 @@ export function Layout(props: LayoutProps) {
         </Header>
       }
       navbar={
-        <Navbar opened={opened}>
+        <Navbar opened={mobileOpened}>
           <Navbar.Section grow>
             {account && 
               <div style={{ margin: '20px 0 10px 30px' }}>
                 <AccountPicker 
                   account={account}
+                  onClick={() => setAccountOpened(true)}
                 />
               </div>
             }
@@ -79,6 +87,13 @@ export function Layout(props: LayoutProps) {
         </Footer>
       }
     >
+      <AccountModal
+        accounts={accounts}
+        onChange={changeAccount}
+        opened={accountOpened}
+        onClose={() => setAccountOpened(false)}
+      >
+      </AccountModal>
       {props.children}
     </AppShell>
   ); 

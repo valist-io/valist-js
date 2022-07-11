@@ -7,7 +7,10 @@
   "scripts": {
     "test": "npm run test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
-    "build": "npm run build --workspaces --if-present",
+    "build:sdk": "npm run build --workspace=@valist/sdk",
+    "build:ui": "npm run build --workspace=@valist/ui",
+    "build:web": "npm run build --workspace=@valist/relay",
+    "build": "npm run build:sdk && npm run build:ui && npm run build:web",
     "dev:sdk": "npm run dev --workspace=@valist/sdk",
     "dev:ui": "npm run dev --workspace=@valist/ui",
     "dev:web": "npm run dev --workspace=@valist/relay",

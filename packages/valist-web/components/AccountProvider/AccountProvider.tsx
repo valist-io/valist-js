@@ -3,11 +3,13 @@ import { useAccount, useNetwork } from 'wagmi';
 import { useQuery, gql } from '@apollo/client';
 
 export interface IAccountContext {
+  accounts: string[];
   account: string;
   setAccount: (account: string) => void;
 }
 
 export const AccountContext = React.createContext<IAccountContext>({
+  accounts: [],
   account: '',
   setAccount: (account: string) => (void 0),
 });
@@ -37,7 +39,7 @@ export function AccountProvider(props: AccountProviderProps) {
   });
 
   const [account, _setAccount] = useState('');
-  const accounts = data?.user?.accounts.map((acc: any) => acc.name) ?? [];
+  const accounts = data?.user?.accounts.map((acc: any) => acc.name).sort() ?? [];
   const setAccount = (account: string) => _setAccount(account);
 
   // reset account when chain id or address changes
@@ -51,7 +53,7 @@ export function AccountProvider(props: AccountProviderProps) {
   }
 
   return (
-    <AccountContext.Provider value={{ account, setAccount }}>
+    <AccountContext.Provider value={{ accounts, account, setAccount }}>
       {props.children}
     </AccountContext.Provider>
   );

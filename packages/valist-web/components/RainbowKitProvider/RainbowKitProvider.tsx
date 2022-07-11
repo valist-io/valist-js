@@ -8,7 +8,7 @@ const valistProvider = jsonRpcProvider({
     if (chain.id === 1) {
       return { http: 'https://rpc.valist.io/ens' };
     } else if (chain.id === 137) {
-      return { http: 'https://rpc.valist.io' }
+      return { http: 'https://rpc.valist.io' };
     } else if (chain.id === 80001) {
       return { http: 'https://rpc.valist.io/mumbai' };
     }

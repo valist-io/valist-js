@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
-import { useRouter } from 'next/router';
-import { useForm } from '@mantine/form';
-import { useListState } from '@mantine/hooks';
 import { useAccount } from 'wagmi';
+import { useRouter } from 'next/router';
 import { useApolloClient, InMemoryCache } from '@apollo/client';
+import { useListState } from '@mantine/hooks';
+import { useForm, zodResolver } from '@mantine/form';
 import { showNotification, hideNotification } from '@mantine/notifications';
 import { ValistContext } from '@/components/ValistProvider';
 import { AccountContext } from '@/components/AccountProvider';
-import { createAccount } from './form';
+import { schema, FormValues } from './form';
+import { createAccount } from './logic';
 
 import {
   Title,
@@ -53,7 +54,8 @@ export function CreateAccountForm() {
     membersHandlers.setState(address ? [address] : []);
   }, [address]);
 
-  const form = useForm({
+  const form = useForm<FormValues>({
+    schema: zodResolver(schema),
     initialValues: {
       accountName: '',
       displayName: '',
@@ -62,7 +64,7 @@ export function CreateAccountForm() {
     },
   });
 
-  const submit = () => {
+  const submit = (values: FormValues) => {
     setLoading(true);
     hideNotification(ACCOUNT_ERROR_ID);
     showNotification({
@@ -76,16 +78,16 @@ export function CreateAccountForm() {
 
     createAccount(
       address,
-      form.values.accountName,
-      form.values.displayName,
-      form.values.description,
-      form.values.website,
+      values.accountName,
+      values.displayName,
+      values.description,
+      values.website,
       image,
       members,
       valist,
       cache as InMemoryCache,
     ).then(() => {
-      setAccount(form.values.accountName);
+      setAccount(values.accountName);
       router.push('/');
     }).catch((err) => {
       showNotification({
@@ -168,7 +170,6 @@ export function CreateAccountForm() {
             </List>
             <AddressInput
               onEnter={(member) => console.log('add', member)}
-              members={members}
               disabled={loading}
             />
             <MemberList 
@@ -187,7 +188,7 @@ export function CreateAccountForm() {
           <Button onClick={() => nextStep()} variant="primary">Continue</Button>
         }
         { active === 1 &&
-          <Button onClick={() => submit()} disabled={loading}>Save</Button>
+          <Button onClick={form.onSubmit(submit)} disabled={loading}>Save</Button>
         }
       </Group>
     </React.Fragment>
