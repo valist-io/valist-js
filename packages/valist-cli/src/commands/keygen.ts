@@ -3,7 +3,7 @@ import keytar from 'keytar';
 import { ethers } from 'ethers';
 import { randomBytes } from 'crypto';
 
-export default class Gen extends Command {
+export default class Keygen extends Command {
   static alias = ['gen'];
 
   static description = 'Generate a new account';
