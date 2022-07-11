@@ -4,7 +4,9 @@ import { ethers } from 'ethers';
 import { randomBytes } from 'crypto';
 
 export default class Gen extends Command {
-  static description = 'Generate a new account'
+  static alias = ['gen'];
+
+  static description = 'Generate a new account';
 
   static examples = [
     '<%= config.bin %> <%= command.id %>',
