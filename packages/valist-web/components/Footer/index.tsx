@@ -13,7 +13,7 @@ export default function Footer(): JSX.Element {
             spacing="md"
             size="sm"
           >
-            <List.Item style={{ fontSize: 18, fontWeight: 900 }}>Copyright © 2022 Valist</List.Item>
+            <List.Item style={{ fontSize: 18, fontWeight: 900 }}>© 2022 Valist, Inc</List.Item>
             <List.Item>All rights reserved</List.Item>
           </List>
         </Grid.Col>
@@ -22,7 +22,7 @@ export default function Footer(): JSX.Element {
             spacing="md"
             size="sm"
           >
-            <List.Item style={{ fontSize: 18, fontWeight: 900 }}>Company</List.Item>
+            <List.Item style={{ fontSize: 18, fontWeight: 900 }}>Resources</List.Item>
             <List.Item><a href="https://docs.valist.io">Docs</a></List.Item>
           </List>
         </Grid.Col>

@@ -13,6 +13,7 @@ export type Item = {
 interface CarouselProps {
   items: Item[],
   title: string,
+  number?: number,
 }
 
 export function spliceCircular<T>(array: T[], offset: number, length: number = 4): T[] {
@@ -29,7 +30,7 @@ export function spliceCircular<T>(array: T[], offset: number, length: number = 4
 
 export default function Carousel(props: CarouselProps): JSX.Element {
   const [offset, setOffset] = useState(0);
-  const carouselItems = spliceCircular(props.items, offset);
+  const carouselItems = spliceCircular(props.items, offset, props.number);
 
   const goLeft = () => setOffset(offset + 1);
   const goRight = () => setOffset(offset - 1);
@@ -37,7 +38,7 @@ export default function Carousel(props: CarouselProps): JSX.Element {
   return (
     <div style={{ marginBottom: 25 }}>
       <div style={{ marginBottom: 20, display: 'flex', position: 'relative' }}>
-        <h2 style={{ fontSize: 20, fontWeight: 800, marginLeft: 15 }}>{props.title}</h2>
+        <h2 style={{ fontSize: 30, fontWeight: 800, margin: 0 }}>{props.title}</h2>
         <div style={{ display: 'flex', position: 'absolute', right: 20 }}>
           <ChevronLeft onClick={goLeft}/>
           <ChevronRight onClick={goRight}/>

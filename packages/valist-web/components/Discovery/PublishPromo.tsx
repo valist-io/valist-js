@@ -11,13 +11,13 @@ export default function PublishPromo(): JSX.Element {
     <Grid className={`${theme.colorScheme === 'dark' ? 'promoBg' : ''}`} style={{ padding: '2rem 2rem 0 2rem', background: bgColor }}>
       <Grid.Col lg={5}>
         <div style={{ height: '100%', display: 'flex', alignItems: 'center' }}>
-          <div style={{ maxWidth: 320 }}>
-            <Text style={{ fontSize: 35, color: 'white', fontWeight: 900, margin: 0 }}>Publish today</Text>
-            <Text style={{ color: 'white', margin: '10px 0 25px 0' }}>
+          <div style={{ maxWidth: 420 }}>
+            <Text style={{ fontSize: 45, color: 'white', fontWeight: 900, margin: 0 }}>Publish today</Text>
+            <Text style={{ fontSize: 21, color: 'white', margin: '10px 0 25px 0' }}>
               Have your software, webapp, or game hosted on valist to be truly decentralized!
             </Text>
             <Link href="/create/release" passHref>
-              <Button style={{ background: btnColor }}>Publish Now</Button>
+              <Button size="lg" style={{ background: btnColor }}>Publish Now</Button>
             </Link>
           </div>
         </div>
