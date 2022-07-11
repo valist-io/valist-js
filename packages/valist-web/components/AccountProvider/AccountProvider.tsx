@@ -40,10 +40,10 @@ export function AccountProvider(props: AccountProviderProps) {
   const accounts = data?.user?.accounts.map((acc: any) => acc.name) ?? [];
   const setAccount = (account: string) => _setAccount(account);
 
-  // reset account when chain id changes
+  // reset account when chain id or address changes
   useEffect(() => {
     _setAccount('');
-  }, [chain?.id]);
+  }, [chain?.id, address]);
 
   // make sure a default account is selected
   if (account === '' && accounts.length > 0) {

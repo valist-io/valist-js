@@ -1,14 +1,14 @@
 import React from 'react';
 import { useListState } from '@mantine/hooks';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { MemberForm } from './MemberForm';
+import { MemberList } from './MemberList';
 
 export default {
-  title: 'MemberForm',
-  component: MemberForm,
-} as ComponentMeta<typeof MemberForm>;
+  title: 'MemberList',
+  component: MemberList,
+} as ComponentMeta<typeof MemberList>;
 
-const Template: ComponentStory<typeof MemberForm> = (args) => {
+const Template: ComponentStory<typeof MemberList> = (args) => {
   const [members, handlers] = useListState([
     '0xD50DaA26f556538562BA308DC0ED45CFaCe885fE',
     '0x89206150520322c1CDDe03Fcb94542eDfA78fC9b',
@@ -18,14 +18,10 @@ const Template: ComponentStory<typeof MemberForm> = (args) => {
     handlers.filter(other => other !== member)
   }
 
-  const onAdd = (member: string) => {
-    if (!members.includes(member)) handlers.append(member);
-  };
-
   return (
-    <MemberForm 
+    <MemberList
+      {...args}
       members={members}
-      onAdd={onAdd}
       onRemove={onRemove}
     />
   ); 
@@ -34,5 +30,5 @@ const Template: ComponentStory<typeof MemberForm> = (args) => {
 export const Primary = Template.bind({});
 
 Primary.args = {
-
+  editable: true,
 };

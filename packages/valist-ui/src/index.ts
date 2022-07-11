@@ -1,5 +1,6 @@
 export { AccountPicker } from './components/AccountPicker';
 export { Address } from './components/Address';
+export { AddressInput } from './components/AddressInput';
 export { Anchor } from './components/Anchor';
 export { AppShell } from './components/AppShell';
 export { Button } from './components/Button';
@@ -9,7 +10,7 @@ export { Header } from './components/Header';
 export { Identicon } from './components/Identicon';
 export { ImageInput } from './components/ImageInput';
 export { Logo } from './components/Logo';
-export { MemberForm } from './components/MemberForm';
+export { MemberList } from './components/MemberList';
 export { Navbar } from './components/Navbar';
 export { Social } from './components/Social';
 export { Tabs } from './components/Tabs';

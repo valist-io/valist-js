@@ -1,13 +1,19 @@
 {
   "name": "root",
   "private": true,
-  "devDependencies": {
-    "lerna": "^4.0.0"
-  },
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "test": "lerna run test",
-    "lint": "lerna run lint",
-    "build": "lerna run build",
-    "dev": "lerna run dev --parallel"
+    "test": "npm run test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "dev:sdk": "npm run dev --workspace=@valist/sdk",
+    "dev:ui": "npm run dev --workspace=@valist/ui",
+    "dev:web": "npm run dev --workspace=@valist/relay",
+    "dev": "concurrently --kill-others npm:dev:*"
+  },
+  "devDependencies": {
+    "concurrently": "^7.2.2"
   }
 }

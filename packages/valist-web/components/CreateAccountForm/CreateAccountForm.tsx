@@ -22,7 +22,8 @@ import {
   Tabs,
   Button,
   ImageInput,
-  MemberForm,
+  AddressInput,
+  MemberList,
 } from '@valist/ui';
 
 const ACCOUNT_LOADING_ID = 'account-create-loading';
@@ -50,7 +51,7 @@ export function CreateAccountForm() {
   // update the members list when current address changes
   useEffect(() => {
     membersHandlers.setState(address ? [address] : []);
-  }, [address, membersHandlers]);
+  }, [address]);
 
   const form = useForm({
     initialValues: {
@@ -113,7 +114,8 @@ export function CreateAccountForm() {
                 height={300}
                 onChange={setImage} 
                 value={image}
-                openRef={openRef} 
+                openRef={openRef}
+                disabled={loading}
               />
               <Stack align="start">
                 <Title>
@@ -164,10 +166,15 @@ export function CreateAccountForm() {
               <List.Item>Update project settings</List.Item>
               <List.Item>Publish new releases</List.Item>
             </List>
-            <MemberForm
+            <AddressInput
+              onEnter={(member) => console.log('add', member)}
+              members={members}
+              disabled={loading}
+            />
+            <MemberList 
               members={members}
               onRemove={(member) => console.log('remove', member)}
-              onAdd={(member) => console.log('add', member)} 
+              editable={!loading}
             />
           </Stack>
         </Tabs.Tab>

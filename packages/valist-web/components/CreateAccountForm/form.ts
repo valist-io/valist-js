@@ -34,17 +34,22 @@ export async function createAccount(
   if (event && event.args) {
     const account = {
       __typename: 'Account',
-      id: event.args['_accountID'].toHexString(),
+      id: event.args['_accountID']?.toHexString(),
       metaURI: event.args['_metaURI'],
       name: event.args['_name'],
     };
 
-    const update = (data: any) => ({
-      user: {
-        id: data.user.id ?? address.toLowerCase(),
-        accounts: [...data.user.accounts, account],
-      },
-    });
+    const update = (data: any) => {
+      const id = data.user?.id ?? address.toLowerCase(); 
+      const accounts = data.user?.accounts ?? [];
+      
+      return {
+        user: {
+          id: id,
+          accounts: [...accounts, account],
+        },
+      };
+    };
 
     cache.updateQuery({
       query: query,

@@ -5,11 +5,14 @@ import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 
 const valistProvider = jsonRpcProvider({
   rpc: (chain) => {
-    let http = 'https://rpc.valist.io';
-    if (chain.id === 80001) {
-      http = 'https://rpc.valist.io/mumbai';
+    if (chain.id === 1) {
+      return { http: 'https://rpc.valist.io/ens' };
+    } else if (chain.id === 137) {
+      return { http: 'https://rpc.valist.io' }
+    } else if (chain.id === 80001) {
+      return { http: 'https://rpc.valist.io/mumbai' };
     }
-    return { http };
+    return null;
   },
 });
 

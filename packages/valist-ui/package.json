@@ -10,6 +10,7 @@
     "public/"
   ],
   "scripts": {
+    "dev": "parcel watch",
     "build": "parcel build",
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public"
