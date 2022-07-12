@@ -3,7 +3,6 @@ import {
   Drawer,
   Header,
   MediaQuery,
-  Container,
   Burger,
   Image,
   Group,
@@ -14,11 +13,12 @@ import {
 } from '@mantine/core';
 
 import { NextLink } from '@mantine/next';
-import { useState, MouseEventHandler } from 'react';
+import { useState, MouseEventHandler, useContext } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useRouter } from 'next/router';
 import ThemeButton from '../Theme/ThemeButton';
 import * as Icons from 'tabler-icons-react';
+import Web3Context from '@/features/valist/Web3Context';
 
 interface Props {
   opened: boolean;
@@ -30,6 +30,17 @@ export default function Nav(props: Props): JSX.Element {
   const theme = useMantineTheme();
   const [searchOpen, setSearchOpen] = useState(false);
   const backgroundColor = theme.colorScheme === 'dark' ? theme.colors.dark[9] : '';
+  const web3ctx = useContext(Web3Context);
+
+  const search = async (value: string) => {
+    const address = await web3ctx.isValidAddress(value);
+    if (address) {
+      router.push(`/addr/${address}`);
+      return;
+    }
+
+    router.push(`/search/${value}`);
+  };
 
   return (
     <Header height={70} px="lg" style={{ backgroundColor }}>
@@ -49,7 +60,7 @@ export default function Nav(props: Props): JSX.Element {
             radius="md"
             placeholder="Search"
             icon={<Icons.Search size={18} strokeWidth={3} />}
-            onKeyPress={(e) => e.key === 'Enter' && router.push(`/search/${(e.target as HTMLTextAreaElement).value}`)}
+            onKeyPress={(e) => e.key === 'Enter' && search((e.target as HTMLTextAreaElement).value)}
           />
           <Group style={{ flexGrow: 1, flexShrink: 0 }} position="right" noWrap>
             <Text 
@@ -111,7 +122,7 @@ export default function Nav(props: Props): JSX.Element {
                   radius="md"
                   placeholder="Search"
                   icon={<Icons.Search size={18} strokeWidth={3} />}
-                  onKeyPress={(e) => e.key === 'Enter' && router.push(`/search/${(e.target as HTMLTextAreaElement).value}`)}
+                  onKeyPress={(e) => e.key === 'Enter' && search((e.target as HTMLTextAreaElement).value)}
                 />
               </Group>
             </Drawer>
