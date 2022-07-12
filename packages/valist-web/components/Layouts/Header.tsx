@@ -74,7 +74,6 @@ export default function Nav(props: Props): JSX.Element {
             <Text 
               variant="link" 
               component={NextLink} 
-              target="_blank" 
               href="/discover"
             >
               Discover

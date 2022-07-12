@@ -96,10 +96,10 @@ const Discover: NextPage = () => {
           link={'/shatteredrealms/game'} 
         />
       </section>
-      <section style={{ marginTop: 20 }}>
-       <Carousel items={demoItem} />
+      <section style={{ marginTop: 20, padding: '0 2rem' }}>
+       <Carousel title="Popular Software" items={demoItem} number={5} />
       </section>
-      <section>
+      <section style={{ overflow: 'hidden' }}>
         <PublishPromo />
       </section>
     </Layout>
