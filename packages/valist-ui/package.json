@@ -19,6 +19,7 @@
     "@mantine/core": "^4.2.12",
     "@mantine/dropzone": "^4.2.12",
     "@mantine/hooks": "^4.2.12",
+    "@mantine/next": "^4.2.12",
     "@mantine/styles": "^4.2.12",
     "jdenticon": "^3.1.1",
     "tabler-icons-react": "^1.49.0"

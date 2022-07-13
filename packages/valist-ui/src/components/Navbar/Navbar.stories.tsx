@@ -19,20 +19,20 @@ const Template: ComponentStory<typeof Navbar> = (args) => (
       <Navbar.Link 
         icon={Icon.Apps} 
         text="Dashboard" 
-        href="/" />
+      />
       <Navbar.Link 
         icon={Icon.FileText}
         text="Projects" 
-        href="/" 
-        active />
+        active 
+      />
       <Navbar.Link 
         icon={Icon.Users}
         text="Members" 
-        href="/" />
+      />
       <Navbar.Link 
         icon={Icon.Hourglass}
         text="Activity" 
-        href="/" />
+      />
     </Navbar.Section>
     <Navbar.Section px={30} py="md">
       <Group spacing={30}>

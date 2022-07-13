@@ -12,6 +12,7 @@ import * as Icon from 'tabler-icons-react';
 export interface AccountPickerProps {
   account: string;
   onClick?: () => void;
+  image?: string;
 }
 
 export function AccountPicker(props: AccountPickerProps) {
@@ -23,7 +24,7 @@ export function AccountPicker(props: AccountPickerProps) {
   return (
     <UnstyledButton onClick={props.onClick}>
       <Group>
-        <Avatar size="md" radius="xl" color="indigo" />
+        <Avatar size="md" radius="xl" src={props.image} />
         <Stack spacing={0}>
           <Group>
             <Text

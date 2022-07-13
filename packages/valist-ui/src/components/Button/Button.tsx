@@ -5,10 +5,7 @@ import {
 } from '@mantine/core';
 
 import React from 'react';
-import useStyles from './Button.styles';
-import { MantineSize } from '@mantine/styles';
-
-export type ButtonVariant = 'primary' | 'secondary' | 'subtle' | 'text';
+import useStyles, { ButtonVariant } from './Button.styles';
 
 export interface ButtonProps {
   children?: React.ReactNode;
@@ -16,12 +13,11 @@ export interface ButtonProps {
   disabled?: boolean;
   loading?: boolean;
   onClick?: () => void;
-  size?: MantineSize;
 }
 
 export function Button(props: ButtonProps) {
   const theme = useMantineTheme();
-  const { classes } = useStyles();
+  const { classes } = useStyles({ variant: props.variant });
   const { children, loading, variant, ...rest } = props;
 
   const loader = () => {
@@ -37,7 +33,7 @@ export function Button(props: ButtonProps) {
   };
 
   return (
-    <MantineButton {...rest} className={classes[variant]}>
+    <MantineButton {...rest} classNames={classes}>
       { props.loading ? loader() : props.children }
     </MantineButton>
   );

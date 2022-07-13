@@ -10,7 +10,7 @@ export default {
 const Template: ComponentStory<typeof ImageInput> = (args) => {
   const [file, setFile] = useState<File>(null);
   return (
-    <ImageInput value={file} onChange={setFile} />
+    <ImageInput {...args} value={file} onChange={setFile} />
   );
 };
 

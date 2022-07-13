@@ -1,13 +1,16 @@
 import React, { useState, useContext } from 'react';
+import { useRouter } from 'next/router';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import * as Icons from 'tabler-icons-react';
-import { AccountContext } from '@/components/AccountProvider';
+import { NextLink } from '@mantine/next';
+import { AccountContext, Account } from '@/components/AccountProvider';
 
 import { 
   AccountModal,
   AccountPicker,
   Anchor,
   AppShell,
+  Button,
   Footer,
   Navbar,
   Header,
@@ -19,25 +22,36 @@ export interface LayoutProps {
 }
 
 export function Layout(props: LayoutProps) {
+  const router = useRouter();
   const [mobileOpened, setMobileOpened] = useState(false);
   const [accountOpened, setAccountOpened] = useState(false);
-  const { accounts, account, setAccount } = useContext(AccountContext);
+  
+  const { 
+    account,
+    accounts,
+    setAccount, 
+    accountMeta,
+  } = useContext(AccountContext);
 
-  const changeAccount = (account: string) => {
-    setAccount(account);
+  const changeAccount = (name: string) => {
+    setAccount(accounts.find(acc => acc.name === name));
     setAccountOpened(false);
   };
 
   return (
     <AppShell
       header={
-        <Header opened={mobileOpened} onClick={() => setMobileOpened(!mobileOpened)}>
+        <Header 
+          opened={mobileOpened} 
+          onClick={() => setMobileOpened(!mobileOpened)}
+        >
           <Anchor>Docs</Anchor>
           <Anchor>Discover</Anchor>
           <ConnectButton 
             chainStatus="icon" 
             accountStatus="avatar" 
-            showBalance={false} />
+            showBalance={false}
+          />
         </Header>
       }
       navbar={
@@ -46,28 +60,26 @@ export function Layout(props: LayoutProps) {
             {account && 
               <div style={{ margin: '20px 0 10px 30px' }}>
                 <AccountPicker 
-                  account={account}
+                  account={account.name}
+                  image={accountMeta?.image}
                   onClick={() => setAccountOpened(true)}
                 />
               </div>
             }
-            <Navbar.Link 
-              icon={Icons.Apps} 
-              text="Dashboard" 
-              href="/" 
-              active />
-            <Navbar.Link 
-              icon={Icons.FileText}
-              text="Projects" 
-              href="/" />
-            <Navbar.Link 
-              icon={Icons.Users}
-              text="Members" 
-              href="/" />
-            <Navbar.Link 
-              icon={Icons.Hourglass}
-              text="Activity" 
-              href="/" />
+            <NextLink href="/">
+              <Navbar.Link 
+                icon={Icons.Apps} 
+                text="Dashboard" 
+                active={router.asPath === "/"} 
+              />
+            </NextLink>
+            <NextLink href="/-/settings">
+              <Navbar.Link 
+                icon={Icons.Settings} 
+                text="Settings" 
+                active={router.asPath === "/-/settings"} 
+              />
+            </NextLink>
           </Navbar.Section>
           <Navbar.Section px={30} py="md">
             <div style={{ display: 'flex', gap: 30 }}>
@@ -88,13 +100,18 @@ export function Layout(props: LayoutProps) {
       }
     >
       <AccountModal
-        accounts={accounts}
+        accounts={accounts.map(acc => acc.name)}
         onChange={changeAccount}
         opened={accountOpened}
         onClose={() => setAccountOpened(false)}
       >
+        <NextLink href="/-/create/account">
+          <Button>Create Account</Button>
+        </NextLink>
       </AccountModal>
-      {props.children}
+      <div style={{ padding: 40 }}>
+        {props.children}
+      </div>
     </AppShell>
   ); 
 }

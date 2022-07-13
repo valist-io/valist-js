@@ -1,11 +1,11 @@
 import { 
-  TextInput,
   ActionIcon,
   useMantineTheme,
 } from '@mantine/core';
 
 import * as Icon from 'tabler-icons-react';
 import { useState } from 'react';
+import { TextInput } from '../TextInput';
 
 export interface AddressInputProps {
   onEnter: (value: string) => void;
@@ -29,7 +29,6 @@ export function AddressInput(props: AddressInputProps) {
   return (
     <form onSubmit={submit}>
       <TextInput
-        size="md"
         label="Add member"
         placeholder="Address or ENS"
         value={value} 

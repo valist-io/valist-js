@@ -3,7 +3,6 @@ import {
   Burger,
   Drawer,
   Group,
-  TextInput,
   MediaQuery,
   Header as MantineHeader,
 } from '@mantine/core';
@@ -12,6 +11,7 @@ import React, { useState } from 'react';
 import * as Icon from 'tabler-icons-react';
 import useStyles from './Header.styles';
 import { Logo } from '../Logo';
+import { TextInput } from '../TextInput';
 
 export interface HeaderProps {
   children?: React.ReactNode;
@@ -31,11 +31,12 @@ export function Header(props: HeaderProps) {
         </a>
         <MediaQuery smallerThan="sm" styles={{ display: 'none' }}>
           <Group style={{ width: '100%' }}>
-            <TextInput
-              style={{ flex: '1 1 0px', maxWidth: 350 }}
-              placeholder="Search projects"
-              icon={<Icon.Search size={18} strokeWidth={3} />}
-            />
+            <div style={{ flex: '1 1 0px', maxWidth: 350 }}>
+              <TextInput
+                placeholder="Search projects"
+                icon={<Icon.Search size={18} strokeWidth={3} />}
+              />
+            </div>
             <Group 
               style={{ flex: '1 1 0px' }} 
               position="right" 
@@ -65,7 +66,6 @@ export function Header(props: HeaderProps) {
                   <Icon.ArrowLeft size={24} />
                 </ActionIcon>
                 <TextInput
-                  style={{ flexGrow: 1 }}
                   placeholder="Search"
                   icon={<Icon.Search size={18} strokeWidth={3} />}
                 />

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const schema = z.object({
+export const createAccountSchema = z.object({
   accountName: z.string()
     .min(3, { 
       message: 'Account name should have at least 3 characters',
@@ -28,7 +28,7 @@ export const schema = z.object({
     }),
 });
 
-export interface FormValues {
+export interface CreateAccountFormValues {
   accountName: string;
   displayName: string;
   website: string;

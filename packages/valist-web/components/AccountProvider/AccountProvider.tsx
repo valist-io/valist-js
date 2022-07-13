@@ -1,17 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useAccount, useNetwork } from 'wagmi';
 import { useQuery, gql } from '@apollo/client';
+import { AccountMeta } from '@valist/sdk';
+import useSWRImmutable from 'swr/immutable';
+
+export interface Account {
+  id: string;
+  name: string;
+  metaURI: string;
+}
 
 export interface IAccountContext {
-  accounts: string[];
-  account: string;
-  setAccount: (account: string) => void;
+  account?: Account;
+  setAccount: (account?: Account) => void;
+  accountNames: string[];
+  accountMeta?: AccountMeta;
 }
 
 export const AccountContext = React.createContext<IAccountContext>({
+  account: undefined,
+  setAccount: (account: Account) => (void 0),
   accounts: [],
-  account: '',
-  setAccount: (account: string) => (void 0),
 });
 
 export interface AccountProviderProps {
@@ -21,7 +30,7 @@ export interface AccountProviderProps {
 export const query = gql`
   query UserAccounts($address: String!){
     user(id: $address) {
-      accounts {
+      accounts(orderBy: name) {
         id
         name
         metaURI
@@ -34,26 +43,28 @@ export function AccountProvider(props: AccountProviderProps) {
   const { address } = useAccount();
   const { chain } = useNetwork();
 
-  const { data, loading } = useQuery(query, {
+  const [account, setAccount] = useState<Account>(null);
+  const { data: accountMeta } = useSWRImmutable(account?.metaURI);
+  const { data: accountQuery } = useQuery(query, {
     variables: { address: address?.toLowerCase() },
   });
 
-  const [account, _setAccount] = useState('');
-  const accounts = data?.user?.accounts.map((acc: any) => acc.name).sort() ?? [];
-  const setAccount = (account: string) => _setAccount(account);
+  const accounts = accountQuery?.user?.accounts ?? [];
 
   // reset account when chain id or address changes
   useEffect(() => {
-    _setAccount('');
+    setAccount(null);
   }, [chain?.id, address]);
 
   // make sure a default account is selected
-  if (account === '' && accounts.length > 0) {
-    _setAccount(accounts[0]);
+  if (!account && accounts.length > 0) {
+    setAccount(accounts[0]);
   }
 
   return (
-    <AccountContext.Provider value={{ accounts, account, setAccount }}>
+    <AccountContext.Provider 
+      value={{ account, setAccount, accounts, accountMeta }}
+    >
       {props.children}
     </AccountContext.Provider>
   );
