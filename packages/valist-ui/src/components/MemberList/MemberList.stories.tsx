@@ -30,5 +30,6 @@ const Template: ComponentStory<typeof MemberList> = (args) => {
 export const Primary = Template.bind({});
 
 Primary.args = {
+  label: 'Project Admin',
   editable: true,
 };

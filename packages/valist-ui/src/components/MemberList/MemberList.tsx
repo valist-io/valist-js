@@ -4,15 +4,16 @@ import {
   Stack,
   Avatar,
   Text,
-  Divider,
   useMantineTheme,
 } from '@mantine/core';
 
 import * as Icon from 'tabler-icons-react';
 import { Address } from '../Address';
 import { Identicon } from '../Identicon';
+import { Divider } from '../Divider';
 
 export interface MemberListProps {
+  label: string;
   members: string[];
   onRemove?: (member: string) => void;
   editable?: boolean;
@@ -24,10 +25,6 @@ export function MemberList(props: MemberListProps) {
     ? theme.colors.gray[2]
     : theme.colors.gray[3];
 
-  const dividerColor = theme.colorScheme === 'dark'
-    ? theme.colors.gray[5]
-    : theme.colors.gray[1];
-
   const remove = (member: string) => {
     if (props.onRemove) props.onRemove(member);
   };
@@ -36,11 +33,11 @@ export function MemberList(props: MemberListProps) {
     <Stack>
       {props.members.map((mem: string, idx: number) => 
         <div key={idx}>
-          <Group noWrap>
+          <Group mb="md" noWrap>
             <Identicon value={mem} />
             <Stack spacing={0} style={{ flexGrow: 1 }}>
               <Address address={mem} />
-              <Text color={color}>Admin</Text>
+              <Text color={color}>{props.label}</Text>
             </Stack>
             { props.editable &&
               <ActionIcon onClick={() => remove(mem)}>
@@ -49,7 +46,7 @@ export function MemberList(props: MemberListProps) {
             }
           </Group>
           { idx !== (props.members.length-1) && 
-            <Divider color={dividerColor} mt="md" /> 
+            <Divider /> 
           }
         </div>
       )}

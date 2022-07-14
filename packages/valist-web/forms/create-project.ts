@@ -1,18 +1,18 @@
 import { z } from 'zod';
 
-export const createAccountSchema = z.object({
-  accountName: z.string()
+export const schema = z.object({
+  projectName: z.string()
     .min(3, { 
-      message: 'Account name should have at least 3 characters',
+      message: 'Project name should have at least 3 characters',
     })
     .max(24, { 
-      message: 'Account name should not be longer than 24 characters',
+      message: 'Project name should not be longer than 24 characters',
     })
     .regex(/^[\w-]+$/g, { 
-      message: 'Account name can only contain letters, numbers, and dashes',
+      message: 'Project name can only contain letters, numbers, and dashes',
     })
     .refine((val) => val.toLocaleLowerCase() === val, { 
-      message: 'Account name can only contain lowercase letters',
+      message: 'Project name can only contain lowercase letters',
     }),
   displayName: z.string()
     .min(3, {
@@ -22,15 +22,17 @@ export const createAccountSchema = z.object({
       message: 'Display name should not be longer than 32 characters',
     }),
   website: z.string(),
-  description: z.string()
+  description: z.string(),
+  shortDescription: z.string()
     .max(100, {
       message: 'Description should be shorter than 100 characters',
     }),
 });
 
-export interface CreateAccountFormValues {
-  accountName: string;
+export interface FormValues {
+  projectName: string;
   displayName: string;
   website: string;
   description: string;
+  shortDescription: string;
 }

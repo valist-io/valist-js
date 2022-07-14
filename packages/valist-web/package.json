@@ -13,6 +13,7 @@
     "@everipedia/wagmi-magic-connector": "^0.6.0",
     "@mantine/core": "^4.2.12",
     "@mantine/form": "^4.2.12",
+    "@mantine/next": "^4.2.12",
     "@mantine/notifications": "^4.2.12",
     "@rainbow-me/rainbowkit": "^0.4.1",
     "@valist/sdk": "*",

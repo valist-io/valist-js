@@ -3,11 +3,11 @@ import { useContext } from 'react';
 import { useNetwork } from 'wagmi';
 import { useQuery, gql } from '@apollo/client';
 import { Title, Group, Grid } from '@mantine/core';
-import { Button } from '@valist/ui';
+import { Button, ProjectCard } from '@valist/ui';
 import { NextLink } from '@mantine/next';
 import { Layout } from '@/components/Layout';
 import { AccountContext } from '@/components/AccountProvider';
-import { ProjectCard } from '@/components/ProjectCard';
+import { Metadata } from '@/components/Metadata';
 
 const query = gql`
   query AccountProjects($accountId: String!){
@@ -44,7 +44,15 @@ const Dashboard: NextPage = () => {
           <Grid gutter={24}>
             {projects.map((project, index) => 
               <Grid.Col lg={6} key={index}>
-                <ProjectCard name={project.name} metaURI={project.metaURI} />
+                <Metadata url={project.metaURI}>
+                  {(data: any) => 
+                    <ProjectCard
+                      title={project.name} 
+                      secondary={data?.name}
+                      description={data?.description} 
+                      image={data?.image} /> 
+                  }
+                </Metadata>
               </Grid.Col>
             )}
           </Grid>

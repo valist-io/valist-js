@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "lib": ["es6", "dom"],
-    "outDir": "lib",
+    "outDir": "dist",
     "module": "es6",
     "target": "es6",
     "jsx": "react-jsx",

@@ -14,7 +14,8 @@
     "dev:sdk": "npm run dev --workspace=@valist/sdk",
     "dev:ui": "npm run dev --workspace=@valist/ui",
     "dev:web": "npm run dev --workspace=@valist/relay",
-    "dev": "concurrently --kill-others npm:dev:*"
+    "dev": "concurrently --kill-others npm:dev:*",
+    "storybook": "npm run storybook --workspace=@valist/ui"
   },
   "devDependencies": {
     "concurrently": "^7.2.2"

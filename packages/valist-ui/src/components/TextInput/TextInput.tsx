@@ -37,5 +37,5 @@ export function TextInput(props: TextInputProps) {
 }
 
 TextInput.defaultProps = {
-  variant: "short"
+
 }

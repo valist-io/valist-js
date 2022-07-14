@@ -34,6 +34,11 @@ export const query = gql`
         id
         name
         metaURI
+        projects(orderBy: name) {
+          id
+          name
+          metaURI
+        }
       }
     }
   }

@@ -16,9 +16,6 @@ interface AppShellProps {
 export function AppShell(props: AppShellProps) {
   const theme = useMantineTheme();
   const showFooter = useMediaQuery(`(max-width: ${theme.breakpoints.sm}px)`, false);
-  const backgroundColor = theme.colorScheme === 'dark'
-    ? theme.colors.dark[9]
-    : theme.colors.gray[1];
 
   return (
     <MantineAppShell
@@ -28,10 +25,11 @@ export function AppShell(props: AppShellProps) {
       footer={showFooter ? props.footer : undefined}
       navbar={props.navbar}
       header={props.header}
-      styles={{ main: { backgroundColor } }}
       fixed
     >
-      { props.children }
+      <div style={{ padding: 40 }}>
+        { props.children }
+      </div>
     </MantineAppShell>
   );
 }

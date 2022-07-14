@@ -1,6 +1,8 @@
 import { 
   MantineProvider, 
+  MantineTheme,
   ColorScheme,
+  Global,
 } from '@mantine/core';
 
 import React from 'react';
@@ -11,14 +13,24 @@ export interface ThemeProviderProps {
   colorScheme?: ColorScheme;
 }
 
+export const globalStyles = (theme: MantineTheme) => ({
+  body: { 
+    backgroundColor: theme.colorScheme === 'dark'
+      ? theme.colors.dark[9]
+      : theme.colors.gray[1],
+  },
+});
+
 export function ThemeProvider(props: ThemeProviderProps) {
   const colorScheme = props.colorScheme;
+
   return (
     <MantineProvider 
       theme={{...theme, colorScheme}} 
       withGlobalStyles 
       withNormalizeCSS
     >
+      <Global styles={globalStyles} />
       {props.children}
     </MantineProvider>
   );

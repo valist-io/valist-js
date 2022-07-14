@@ -1,5 +1,4 @@
-export { AccountModal } from './components/AccountModal';
-export { AccountPicker } from './components/AccountPicker';
+export { AccountSelect } from './components/AccountSelect';
 export { Address } from './components/Address';
 export { AddressInput } from './components/AddressInput';
 export { Anchor } from './components/Anchor';
@@ -12,10 +11,10 @@ export { GalleryInput } from './components/GalleryInput';
 export { Header } from './components/Header';
 export { Identicon } from './components/Identicon';
 export { ImageInput } from './components/ImageInput';
+export { InfoCard } from './components/InfoCard';
 export { Logo } from './components/Logo';
 export { MemberList } from './components/MemberList';
 export { Navbar } from './components/Navbar';
-export { ProjectInfo } from './components/ProjectInfo';
 export { ProjectCard } from './components/ProjectCard';
 export { Social } from './components/Social';
 export { Tabs } from './components/Tabs';

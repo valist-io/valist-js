@@ -10,3 +10,4 @@ site
 *.out
 dist
 .env*
+.parcel-cache

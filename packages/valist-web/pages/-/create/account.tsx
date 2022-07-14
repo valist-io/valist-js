@@ -9,8 +9,7 @@ import { showNotification, hideNotification } from '@mantine/notifications';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
 import { AccountContext } from '@/components/AccountProvider';
-import { createAccountSchema, CreateAccountFormValues } from '@/utils/schema';
-import { createAccount, optimisticAccount } from '@/utils/create-account';
+import { createAccount, schema, FormValues } from '@/forms/create-account';
 
 import {
   Title,
@@ -18,7 +17,6 @@ import {
   Stack,
   Group,
   List,
-  TextInput,
 } from '@mantine/core';
 
 import { 
@@ -27,6 +25,7 @@ import {
   ImageInput,
   AddressInput,
   MemberList,
+  TextInput,
 } from '@valist/ui';
 
 const ACCOUNT_LOADING_ID = 'account-create-loading';
@@ -42,7 +41,7 @@ const Account: NextPage = () => {
 
   // form values
   const [loading, setLoading] = useState(false);
-  const [image, setImage] = useState<File | undefined>();
+  const [image, setImage] = useState<File>(null);
   const [members, membersHandlers] = useListState<string>([]);
 
   // form controls
@@ -56,7 +55,7 @@ const Account: NextPage = () => {
   }, [address]);
 
   const form = useForm<FormValues>({
-    schema: zodResolver(createAccountSchema),
+    schema: zodResolver(schema),
     initialValues: {
       accountName: '',
       displayName: '',
@@ -86,8 +85,8 @@ const Account: NextPage = () => {
       image,
       members,
       valist,
+      cache,
     ).then((account) => {
-      optimisticAccount(address, account, cache as InMemoryCache);
       setAccount(account);
       router.push('/');
     }).catch((err) => {
@@ -160,7 +159,8 @@ const Account: NextPage = () => {
               onEnter={(member) => console.log('add', member)}
               disabled={loading}
             />
-            <MemberList 
+            <MemberList
+              label="Account Admin"
               members={members}
               onRemove={(member) => console.log('remove', member)}
               editable={!loading}

@@ -13,6 +13,7 @@ export interface ButtonProps {
   disabled?: boolean;
   loading?: boolean;
   onClick?: () => void;
+  leftIcon?: React.ReactNode;
 }
 
 export function Button(props: ButtonProps) {
