@@ -19,6 +19,7 @@ import { useRouter } from 'next/router';
 import ThemeButton from '../Theme/ThemeButton';
 import * as Icons from 'tabler-icons-react';
 import Web3Context from '@/features/valist/Web3Context';
+import Logo from '../Logo/Logo';
 
 interface Props {
   opened: boolean;
@@ -49,10 +50,7 @@ export default function Nav(props: Props): JSX.Element {
         <Group style={{ height: '100%' }} noWrap>
           <div style={{ width: 250, flexShrink: 0 }}>
             <NextLink href="/">
-              <Group spacing={0} noWrap>
-                <Image src="/images/logo.png" alt="Valist" height={32} />
-                <Title order={2}>alist</Title>
-              </Group>
+              <Logo />
             </NextLink>
           </div>
           <TextInput
@@ -87,10 +85,7 @@ export default function Nav(props: Props): JSX.Element {
       <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
         <Group style={{ height: '100%' }} position="apart" noWrap>
           <NextLink href="/">
-            <Group spacing={0}>
-              <Image src="/images/logo.png" alt="Valist" height={32} />
-              <Title order={2}>alist</Title>
-            </Group>
+          <Logo />
           </NextLink>
           <Group style={{ flexGrow: 1, flexShrink: 0 }} position="right" noWrap>
             {/* Search button */}
