@@ -5,21 +5,25 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import Layout from '../../components/Layouts/Main';
 import ProjectListCard from '../../features/projects/ProjectListCard';
-import { Account, ALL_SEARCH_QUERY } from '@valist/sdk/dist/graphql';
+import { Account, SEARCH_QUERY } from '@valist/sdk/dist/graphql';
 import { Project } from '../../utils/Apollo/types';
-import { Badge, Card, Center, Divider, Grid, List, Select } from '@mantine/core';
+import { Badge, Card, Divider, Grid, List, Select, useMantineTheme } from '@mantine/core';
 import AccountListCard from '@/features/accounts/AccountListCard';
 
 const SearchPage: NextPage = () => {
   const router = useRouter();
   const search = `${router.query.query}`;
-  const { data, loading, error } = useQuery(gql(ALL_SEARCH_QUERY), {
-    variables: { search: search },
-  });
+  const theme = useMantineTheme();
   const [ projects, setProjects ] = useState<Project[]>([]);
   const [ accounts, setAccounts ] = useState<Account[]>([]);
-  const [searchType, setSearchType] = useState<string>('projects');;
-  const [ order, setOrder ] = useState<string>('Newest');
+  const [ searchType, setSearchType ] = useState<string>('projects');;
+  const [ order, setOrder ] = useState<string>('desc');
+  const { data, loading, error } = useQuery(gql(SEARCH_QUERY), {
+    variables: { search: search, order },
+  });
+  const btnHighlightColor = theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[3];
+  const accountActiveColor = searchType === 'accounts' ? btnHighlightColor : '';
+  const projectActiveColor = searchType === 'projects' ? btnHighlightColor : '';
 
   useEffect(() => {
     if (data && data.projects) setProjects(data.projects);
@@ -30,20 +34,22 @@ const SearchPage: NextPage = () => {
     <Layout title="Valist | Search">
       <Grid gutter="lg">
         <Grid.Col lg={2}>
-          <Card style={{ padding: '0 16px' }}>
+          <Card p={0}>
             <List>
-              <List.Item style={{ padding: '10px 0' }} onClick={() => setSearchType('accounts')} sx={(theme) => ({
+              <List.Item style={{ padding: '10px 16px' }} onClick={() => setSearchType('accounts')} sx={(theme) => ({
+                backgroundColor: accountActiveColor,
                 '&:hover': {
-                  backgroundColor: theme.colors.dark[4],
+                  backgroundColor: btnHighlightColor,
                 },
               })}>
                 <span>Accounts</span>
                 <Badge style={{ float: 'right' }}>{accounts.length}</Badge>
               </List.Item>
               <Divider/>
-              <List.Item style={{ padding: '10px 0' }} onClick={() => setSearchType('projects')} sx={(theme) => ({
+              <List.Item style={{ padding: '10px 16px' }} onClick={() => setSearchType('projects')} sx={(theme) => ({
+                backgroundColor: projectActiveColor,
                 '&:hover': {
-                  backgroundColor: theme.colors.dark[4],
+                  backgroundColor: btnHighlightColor,
                 },
               })}>
                 <span>Projects</span>
@@ -55,7 +61,10 @@ const SearchPage: NextPage = () => {
             <Select
               label="Sort By"
               value={order}
-              data={['Newest', 'Oldest']}
+              data={[ 
+                { value: 'desc', label: 'Newest' },
+                { value: 'asc', label: 'Oldest' },
+              ]}
               onChange={(value) => setOrder(value || '')}
             />
           </Card>

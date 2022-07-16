@@ -246,20 +246,22 @@ export const ACCOUNTS_SEARCH__QUERY = `
   }
 `;
 
-export const ALL_SEARCH_QUERY = `
-  query ProjectSearch($search: String){
-    projects(where:{name_contains: $search}){
+export const SEARCH_QUERY = `
+  query Search($search: String, $order: String){
+    projects(where:{name_contains: $search}, orderBy: blockTime, orderDirection: $order){
       id
       name
       metaURI
       account {
         name
       }
+      blockTime
     }
-    accounts(where:{name_contains: $search}){
+    accounts(where:{name_contains: $search}, orderBy: blockTime, orderDirection: $order){
       id
       name
       metaURI
+      blockTime
     }
   }
 `;
