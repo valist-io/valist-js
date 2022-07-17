@@ -25,17 +25,17 @@ export function ActivityText(props: ActivityTextProps) {
     case 'AccountUpdated':
       return <React.Fragment>Updated account <a href={accountURL}>{account}</a></React.Fragment>;
     case 'AccountMemberAdded':
-      return <React.Fragment>Added account member <Address address={props.member} truncate /></React.Fragment>;
+      return <React.Fragment>Added account member <Address address={props.member} size={14} truncate /></React.Fragment>;
     case 'AccountMemberRemoved':
-      return <React.Fragment>Removed account member <Address address={props.member} truncate /></React.Fragment>;
+      return <React.Fragment>Removed account member <Address address={props.member} size={14} truncate /></React.Fragment>;
     case 'ProjectCreated':
       return <React.Fragment>Created project <a href={projectURL}>{project}</a></React.Fragment>;
     case 'ProjectUpdated':
       return <React.Fragment>Updated project <a href={projectURL}>{project}</a></React.Fragment>;
     case 'ProjectMemberAdded':
-      return <React.Fragment>Added <Address address={props.member} truncate /> to project <a href={projectURL}>{project}</a></React.Fragment>;
+      return <React.Fragment>Added <Address address={props.member} size={14} truncate /> to project <a href={projectURL}>{project}</a></React.Fragment>;
     case 'ProjectMemberRemoved':
-      return <React.Fragment>Removed <Address address={props.member} truncate /> from project <a href={projectURL}>{project}</a></React.Fragment>;
+      return <React.Fragment>Removed <Address address={props.member} size={14} truncate /> from project <a href={projectURL}>{project}</a></React.Fragment>;
     case 'ReleaseCreated':
       return <React.Fragment>Created release <a href={releaseURL}>{release}</a></React.Fragment>;
     case 'ReleaseApproved':

@@ -4,6 +4,7 @@ export default createStyles((theme, _params, getRef) => {
   return {
     text: {
       fontSize: 14,
+      fontWeight: 400,
       overflow: 'hidden', 
       whiteSpace: 'nowrap',
     },
