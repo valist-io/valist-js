@@ -19,6 +19,7 @@ import ProjectContent from "../../../features/projects/ProjectProfileContent";
 import ProjectProfileCardActions from "../../../features/projects/ProjectProfileCardActions";
 import getConfig from "next/config";
 import { generateID } from "@valist/sdk";
+import CommentsSection from "@/components/Comments/CommentSection";
 
 export default function ProjectPage():JSX.Element {
   const { publicRuntimeConfig } = getConfig();
@@ -182,6 +183,7 @@ export default function ProjectPage():JSX.Element {
             members={members}
             logs={logs}
           />
+          <CommentsSection threadId={`${accountName}/${projectName}`} />
         </div>
         <div className="grid grid-cols-1 gap-4 lg:col-span-2">
           <ProjectActions
