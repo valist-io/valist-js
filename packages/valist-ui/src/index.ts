@@ -5,7 +5,7 @@ export { Anchor } from './components/Anchor';
 export { AppShell } from './components/AppShell';
 export { Button } from './components/Button';
 export { Breadcrumbs } from './components/Breadcrumbs';
-export { CheckboxList } from './components/CheckboxList';
+export { Steps } from './components/Steps';
 export { FileInput } from './components/FileInput';
 export { Footer } from './components/Footer';
 export { GalleryInput } from './components/GalleryInput';
