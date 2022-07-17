@@ -54,6 +54,7 @@ export function AccountProvider(props: AccountProviderProps) {
     variables: { address: address?.toLowerCase() },
   });
 
+  console.log('accountQuery', accountQuery)
   const accounts = accountQuery?.user?.accounts ?? [];
 
   // reset account when chain id or address changes

@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import * as Icons from 'tabler-icons-react';
 import { NextLink } from '@mantine/next';
-import { Select } from './Select';
+import { AccountSelect } from '@/components/AccountSelect';
 
 import { 
   Anchor,
@@ -42,16 +42,16 @@ export function Layout(props: LayoutProps) {
         <Navbar opened={opened}>
           <Navbar.Section grow>
             <div style={{ margin: '20px 0 10px 30px' }}>
-              <Select />
+              <AccountSelect />
             </div>
-            <NextLink href="/">
+            <NextLink href="/" style={{ textDecoration: 'none' }}>
               <Navbar.Link 
                 icon={Icons.Apps} 
                 text="Dashboard" 
                 active={router.asPath === "/"} 
               />
             </NextLink>
-            <NextLink href="/-/settings">
+            <NextLink href="/-/settings" style={{ textDecoration: 'none' }}>
               <Navbar.Link 
                 icon={Icons.Settings} 
                 text="Settings" 

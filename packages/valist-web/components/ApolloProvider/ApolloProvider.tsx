@@ -1,7 +1,7 @@
 import { 
   ApolloProvider as Provider,
   ApolloClient,
-  InMemoryCache, 
+  InMemoryCache,
 } from '@apollo/client';
 
 import { useState, useEffect } from 'react';
@@ -24,7 +24,7 @@ export interface ApolloProviderProps {
 export function ApolloProvider(props: ApolloProviderProps) {
   const { chain } = useNetwork();
   const [client, setClient] = useState(polygonClient);
-  
+
   // change the apollo client based on network id
   useEffect(() => {
     if (chain?.id === 80001) {

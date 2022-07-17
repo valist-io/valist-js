@@ -10,7 +10,7 @@ import {
 import * as Icon from 'tabler-icons-react';
 import { Address } from '../Address';
 import { Identicon } from '../Identicon';
-import { Divider } from '../Divider';
+import { List } from '../List';
 
 export interface MemberListProps {
   label: string;
@@ -30,26 +30,21 @@ export function MemberList(props: MemberListProps) {
   };
 
   return (
-    <Stack>
+    <List>
       {props.members.map((mem: string, idx: number) => 
-        <div key={idx}>
-          <Group mb="md" noWrap>
-            <Identicon value={mem} />
-            <Stack spacing={0} style={{ flexGrow: 1 }}>
-              <Address address={mem} />
-              <Text color={color}>{props.label}</Text>
-            </Stack>
-            { props.editable &&
-              <ActionIcon onClick={() => remove(mem)}>
-                <Icon.Trash color={color} />
-              </ActionIcon>  
-            }
-          </Group>
-          { idx !== (props.members.length-1) && 
-            <Divider /> 
+        <Group key={idx} noWrap>
+          <Identicon value={mem} />
+          <Stack spacing={0} style={{ flexGrow: 1 }}>
+            <Address address={mem} />
+            <Text color={color}>{props.label}</Text>
+          </Stack>
+          { props.editable &&
+            <ActionIcon variant="transparent" onClick={() => remove(mem)}>
+              <Icon.Trash color={color} />
+            </ActionIcon>  
           }
-        </div>
+        </Group>
       )}
-    </Stack>
+    </List>
   );
 }

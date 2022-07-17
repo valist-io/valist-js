@@ -21,13 +21,13 @@ export function ProjectCard(props: ProjectCardProps): JSX.Element {
   return (
     <Paper className={classes.root}>
       <Group mb={16} noWrap>
-        <Avatar size="lg" radius="xl" src={props.image} />
+        <Avatar size={40} radius="xl" src={props.image} />
         <Stack spacing={0}> 
           <Text weight={700} size="md">{props.title}</Text>
-          <Text color="dimmed">{props.secondary}</Text>
+          <Text size="xs" color="dimmed">{props.secondary}</Text>
         </Stack>
       </Group>
-      <Text lineClamp={2}>{props.description}</Text>
+      <Text size="sm" lineClamp={2}>{props.description}</Text>
     </Paper>
   )
 }

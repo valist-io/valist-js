@@ -10,11 +10,12 @@ export interface ButtonProps {
   name: string;
   image?: string;
   onClick?: () => void;
+  style?: React.CSSProperties;
 }
 
 export function Button(props: ButtonProps) {
   return (
-    <UnstyledButton onClick={props.onClick}>
+    <UnstyledButton style={props.style} onClick={props.onClick}>
       <Group spacing={10}>
         <Account 
           name={props.name} 

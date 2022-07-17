@@ -17,7 +17,7 @@ const valistProvider = jsonRpcProvider({
 });
 
 const { chains, provider } = configureChains(
-  [chain.polygon, chain.polygonMumbai], 
+  [chain.mainnet, chain.polygon, chain.polygonMumbai], 
   [valistProvider],
 );
 

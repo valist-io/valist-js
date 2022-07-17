@@ -21,6 +21,7 @@ export interface AccountSelectProps {
   href?: string;
   onChange: (name: string) => void;
   children: React.ReactNode;
+  style?: React.CSSProperties;
 }
 
 export const AccountSelectContext = React.createContext({
@@ -42,23 +43,23 @@ export const AccountSelect: AccountSelectComponent = (props: AccountSelectProps)
   };
 
   return (
-    <Popover
-      opened={opened}
-      onClose={() => setOpened(false)}
-      target={
-        <Button 
-          name={props.value} 
-          image={props.image} 
-          onClick={() => setOpened(!opened)} 
-        />
-      }
+    <Popover    
       width={324}
+      spacing={0}
+      radius={0}
       position="bottom"
       placement="start"
-      classNames={{
-        body: classes.popoverBody,
-        inner: classes.popoverInner,
-      }}
+      opened={opened}
+      onClose={() => setOpened(false)}
+      classNames={{ body: classes.popoverBody }}
+      target={
+        <Button 
+          style={props.style}
+          name={props.value} 
+          image={props.image} 
+          onClick={() => setOpened(!opened)}
+        />
+      }
     >
       <Stack spacing={0}>
         <div className={classes.popoverHeader}>

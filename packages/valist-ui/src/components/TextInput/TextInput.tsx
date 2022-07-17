@@ -13,6 +13,7 @@ export interface TextInputProps {
   rightSection?: React.ReactNode;
   error?: string;
   disabled?: boolean;
+  style?: React.CSSProperties;
   value?: string;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
 }
@@ -20,22 +21,9 @@ export interface TextInputProps {
 export function TextInput(props: TextInputProps) {
   const { classes } = useStyles()
   return (
-    <MantineTextInput 
+    <MantineTextInput
+      {...props}
       classNames={classes}
-      label={props.label}
-      type={props.type}
-      icon={props.icon}
-      description={props.description}
-      placeholder={props.placeholder}
-      rightSection={props.rightSection}
-      error={props.error}
-      disabled={props.disabled}
-      value={props.value}
-      onChange={props.onChange}
     />
   );
-}
-
-TextInput.defaultProps = {
-
 }

@@ -6,9 +6,7 @@ export default createStyles((theme, _params, getRef) => {
       width: '100%',
     },
     input: {
-      height: 44,
       borderRadius: 8,
-      padding: '0 16px',
 
       borderColor: theme.colorScheme === "dark" 
         ? theme.colors.dark[6] 
