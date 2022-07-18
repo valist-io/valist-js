@@ -223,7 +223,7 @@ export const ACCOUNT_PROFILE_QUERY = `
 `;
 
 
-export const PROJECT_SEARCH_QUERY = `
+export const PROJECTS_SEARCH_QUERY = `
   query ProjectSearch($search: String){
     projects(where:{name_contains: $search}){
       id
@@ -233,7 +233,36 @@ export const PROJECT_SEARCH_QUERY = `
         name
       }
     }
-	
+  }
+`;
+
+export const ACCOUNTS_SEARCH__QUERY = `
+  query AccountSearch($search: String){
+    accounts(where:{name_contains: $search}){
+      id
+      name
+      metaURI
+    }
+  }
+`;
+
+export const SEARCH_QUERY = `
+  query Search($search: String, $order: String){
+    projects(where:{name_contains: $search}, orderBy: blockTime, orderDirection: $order){
+      id
+      name
+      metaURI
+      account {
+        name
+      }
+      blockTime
+    }
+    accounts(where:{name_contains: $search}, orderBy: blockTime, orderDirection: $order){
+      id
+      name
+      metaURI
+      blockTime
+    }
   }
 `;
 
@@ -286,7 +315,7 @@ export const ADDR_PROFILE_QUERY = `
       address
       account {
         id
-        project{
+        project {
           id
           metaURI
           name
