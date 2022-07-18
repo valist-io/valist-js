@@ -2,13 +2,13 @@ import type { NextPage } from 'next';
 import React, { useState, useEffect, useContext } from 'react';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
-import { useApolloClient, InMemoryCache } from '@apollo/client';
+import { useApolloClient } from '@apollo/client';
 import { useListState } from '@mantine/hooks';
 import { useForm, zodResolver } from '@mantine/form';
-import { showNotification, hideNotification } from '@mantine/notifications';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
 import { AccountContext } from '@/components/AccountProvider';
+import { AddressInput } from '@/components/AddressInput';
 import { createAccount, schema, FormValues } from '@/forms/create-account';
 
 import {
@@ -23,13 +23,9 @@ import {
   Tabs,
   Button,
   ImageInput,
-  AddressInput,
   MemberList,
   TextInput,
 } from '@valist/ui';
-
-const ACCOUNT_LOADING_ID = 'account-create-loading';
-const ACCOUNT_ERROR_ID = 'account-create-error';
 
 const Account: NextPage = () => {
   const router = useRouter();
@@ -49,6 +45,17 @@ const Account: NextPage = () => {
   const nextStep = () => setActive(active < 1 ? active + 1 : active);
   const prevStep = () => setActive(active > 0 ? active - 1 : active);
 
+  const removeMember = (member: string) => {
+    membersHandlers.filter((other: string) => 
+      other.toLowerCase() !== member.toLowerCase()
+    );
+  };
+
+  const addMember = (member: string) => {
+    removeMember(member);
+    membersHandlers.append(member);
+  };
+
   // update the members list when current address changes
   useEffect(() => {
     membersHandlers.setState(address ? [address] : []);
@@ -64,42 +71,22 @@ const Account: NextPage = () => {
     },
   });
 
-  const submit = (values: CreateAccountFormValues) => {
+  const submit = (values: FormValues) => {
     setLoading(true);
-    hideNotification(ACCOUNT_ERROR_ID);
-    showNotification({
-      id: ACCOUNT_LOADING_ID,
-      autoClose: false,
-      disallowClose: true,
-      loading: true,
-      title: 'Loading',
-      message: 'Waiting for transaction',
-    });
-
     createAccount(
       address,
-      values.accountName,
-      values.displayName,
-      values.description,
-      values.website,
       image,
       members,
+      values,
       valist,
-      cache,
-    ).then((account) => {
-      setAccount(account);
-      router.push('/');
-    }).catch((err) => {
-      showNotification({
-        id: ACCOUNT_ERROR_ID,
-        autoClose: false,
-        color: 'red',
-        title: 'Error',
-        message: err.message,
-      });
-    }).finally(() => {
-      hideNotification(ACCOUNT_LOADING_ID);
-      setLoading(false);
+      cache
+    ).then(account => {
+      if (account) {
+        setAccount(account);
+        router.push('/');  
+      }
+      
+      setLoading(false);  
     });
   };
 
@@ -146,7 +133,7 @@ const Account: NextPage = () => {
         <Tabs.Tab label="Members">
           <Stack style={{ maxWidth: 784 }}>
             <Title mt="lg">Members</Title>
-            <Text color="dimmed">Account members can perform the following actions:</Text>
+            <Text color="dimmed">Members can perform the following actions:</Text>
             <List>
               <List.Item>Update account info</List.Item>
               <List.Item>Add or remove account members</List.Item>
@@ -155,14 +142,15 @@ const Account: NextPage = () => {
               <List.Item>Update project info</List.Item>
               <List.Item>Publish new releases</List.Item>
             </List>
+            <Title order={2}>Account Admins</Title>
             <AddressInput
-              onEnter={(member) => console.log('add', member)}
+              onSubmit={addMember}
               disabled={loading}
             />
             <MemberList
               label="Account Admin"
               members={members}
-              onRemove={(member) => console.log('remove', member)}
+              onRemove={removeMember}
               editable={!loading}
             />
           </Stack>

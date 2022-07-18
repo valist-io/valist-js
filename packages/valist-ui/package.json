@@ -20,7 +20,7 @@
     "@mantine/dropzone": "^4.2.12",
     "@mantine/hooks": "^4.2.12",
     "@mantine/styles": "^4.2.12",
-    "jdenticon": "^3.1.1",
+    "ethereum-blockies-base64": "^1.0.2",
     "tabler-icons-react": "^1.49.0"
   },
   "devDependencies": {

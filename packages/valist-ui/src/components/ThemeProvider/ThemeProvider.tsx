@@ -17,7 +17,7 @@ export const globalStyles = (theme: MantineTheme) => ({
   body: { 
     backgroundColor: theme.colorScheme === 'dark'
       ? theme.colors.dark[9]
-      : theme.colors.gray[1],
+      : '#FBFBFF',
   },
 });
 

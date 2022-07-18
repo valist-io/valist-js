@@ -9,12 +9,24 @@ export default createStyles((theme, _params, getRef) => {
       height: 44,
       borderRadius: 8,
       padding: '0 16px',
+
       borderColor: theme.colorScheme === "dark" 
-        ? "#2F2F41" 
-        : "#F0F0F9",
+        ? theme.colors.dark[6] 
+        : theme.colors.gray[1],
+
       backgroundColor: theme.colorScheme === "dark" 
-        ? "#1E1D26" 
-        : "#FFFFFF",
+        ? theme.colors.dark[6] 
+        : theme.white,
+
+      '&:focus, &:focus-within': {
+        borderColor: theme.colors.purple[1],
+      },
+
+      '&:disabled': {
+        backgroundColor: theme.colorScheme === 'dark'
+          ? theme.colors.dark[7]
+          : theme.colors.gray[0],  
+      },
     },
   }
 })

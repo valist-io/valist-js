@@ -14,6 +14,7 @@ export function Divider(props: DividerProps) {
   const color = theme.colorScheme === 'dark'
     ? theme.colors.dark[5]
     : theme.colors.gray[1];
+
   return (
     <MantineDivider color={color} style={props.style} />
   );

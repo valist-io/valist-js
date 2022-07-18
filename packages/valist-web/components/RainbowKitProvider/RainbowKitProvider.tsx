@@ -1,6 +1,12 @@
+import { 
+  RainbowKitProvider as Provider,
+  connectorsForWallets, 
+  wallet,
+  lightTheme,
+  darkTheme,
+} from '@rainbow-me/rainbowkit';
+
 import { chain, createClient, WagmiConfig, configureChains } from 'wagmi';
-import { RainbowKitProvider as Provider } from '@rainbow-me/rainbowkit';
-import { connectorsForWallets, wallet } from '@rainbow-me/rainbowkit';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 
 const valistProvider = jsonRpcProvider({
@@ -17,7 +23,7 @@ const valistProvider = jsonRpcProvider({
 });
 
 const { chains, provider } = configureChains(
-  [chain.polygon, chain.polygonMumbai], 
+  [chain.mainnet, chain.polygon, chain.polygonMumbai], 
   [valistProvider],
 );
 
@@ -47,12 +53,17 @@ const wagmiClient = createClient({
 
 export interface RainbowKitProviderProps {
   children?: React.ReactNode;
+  colorScheme?: 'dark' | 'light';
 }
 
 export function RainbowKitProvider(props: RainbowKitProviderProps) {
-	return (
+  const theme = props.colorScheme === 'dark' 
+    ? darkTheme() 
+    : lightTheme();
+	
+  return (
     <WagmiConfig client={wagmiClient}>
-      <Provider chains={chains}>
+      <Provider chains={chains} theme={theme}>
         {props.children}
       </Provider>
     </WagmiConfig>

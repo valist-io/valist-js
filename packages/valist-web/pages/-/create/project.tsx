@@ -1,11 +1,15 @@
 import type { NextPage } from 'next';
 import React, { useState, useContext } from 'react';
-import { useQuery, gql } from '@apollo/client';
+import { useAccount } from 'wagmi';
+import { useRouter } from 'next/router';
+import { useApolloClient, useQuery, gql } from '@apollo/client';
 import { useListState } from '@mantine/hooks';
 import { useForm, zodResolver } from '@mantine/form';
 import { Layout } from '@/components/Layout';
+import { ValistContext } from '@/components/ValistProvider';
 import { AccountContext } from '@/components/AccountProvider';
-import { schema, FormValues } from '@/forms/create-project';
+import { AddressInput } from '@/components/AddressInput';
+import { createProject, schema, FormValues } from '@/forms/create-project';
 
 import {
   Group,
@@ -20,7 +24,7 @@ import {
   Button,
   ImageInput,
   TextInput,
-  AddressInput,
+  Textarea,
   MemberList,
   GalleryInput,
 } from '@valist/ui';
@@ -36,6 +40,11 @@ export const query = gql`
 `;
 
 const Project: NextPage = () => {
+  const router = useRouter();
+  const { cache } = useApolloClient();
+  const { address } = useAccount();
+
+  const valist = useContext(ValistContext);
   const { account } = useContext(AccountContext);
 
   const { data } = useQuery(query, {
@@ -47,14 +56,25 @@ const Project: NextPage = () => {
   // form values
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState<File>(null);
-  const [headerImage, setHeaderImage] = useState<File>(null);
-  const [galleryImages, setGalleryImages] = useState<File[]>([]);
+  const [mainCapsule, setMainCapsule] = useState<File>(null);
+  const [gallery, setGallery] = useState<File[]>([]);
   const [members, membersHandlers] = useListState<string>([]);
 
   // form controls
   const [active, setActive] = useState(0);
   const nextStep = () => setActive(active < 3 ? active + 1 : active);
   const prevStep = () => setActive(active > 0 ? active - 1 : active);
+
+  const removeMember = (member: string) => {
+    membersHandlers.filter((other: string) => 
+      other.toLowerCase() !== member.toLowerCase()
+    );
+  };
+
+  const addMember = (member: string) => {
+    removeMember(member);
+    membersHandlers.append(member);
+  };
 
   const form = useForm<FormValues>({
     schema: zodResolver(schema),
@@ -66,6 +86,27 @@ const Project: NextPage = () => {
       shortDescription: '',
     },
   });
+
+  const submit = (values: FormValues) => {
+    setLoading(true);
+    createProject(
+      address,
+      account?.id,
+      image,
+      mainCapsule,
+      gallery,
+      members,
+      values,
+      valist,
+      cache
+    ).then(project => {
+      if (project) {
+        router.push('/');  
+      }
+      
+      setLoading(false);  
+    });
+  };
 
   return (
     <Layout>
@@ -87,7 +128,7 @@ const Project: NextPage = () => {
               label="Project Name (cannot be changed)"
               disabled={loading}
               required
-              {...form.getInputProps('accountName')}
+              {...form.getInputProps('projectName')}
             />
             <TextInput 
               label="Display Name"
@@ -115,9 +156,12 @@ const Project: NextPage = () => {
             />
             <Title order={2}>Description</Title>
             <Text color="dimmed">Give an extensive overview of your project. This will be displayed on your project landing page.</Text>
-            <TextInput
+            <Textarea
               label="Description"
               disabled={loading}
+              autosize={true}
+              minRows={4}
+              maxRows={12}
               {...form.getInputProps('description')}
             />
           </Stack>
@@ -125,24 +169,26 @@ const Project: NextPage = () => {
         <Tabs.Tab label="Members">
           <Stack style={{ maxWidth: 784 }}>
             <Title mt="lg">Members</Title>
-            <Text color="dimmed">Project members can perform the following actions:</Text>
+            <Text color="dimmed">Members can perform the following actions:</Text>
             <List>
               <List.Item>Add or remove project members</List.Item>
               <List.Item>Update project info</List.Item>
               <List.Item>Publish new releases</List.Item>
             </List>
-            <AddressInput
-              onEnter={(member) => console.log('add', member)}
-              disabled={loading}
-            />
+            <Title order={2}>Account Admins</Title>
             <MemberList
               label="Account Admin"
               members={accountMembers.map(acc => acc.id)}
             />
+            <Title order={2}>Project Admins</Title>
+            <AddressInput
+              onSubmit={addMember}
+              disabled={loading}
+            />
             <MemberList
               label="Project Admin"
               members={members}
-              onRemove={(member) => console.log('remove', member)}
+              onRemove={removeMember}
               editable={!loading}
             />
           </Stack>
@@ -162,15 +208,15 @@ const Project: NextPage = () => {
             <ImageInput 
               width={616}
               height={353}
-              onChange={setHeaderImage} 
-              value={headerImage}
+              onChange={setMainCapsule} 
+              value={mainCapsule}
               disabled={loading}
             />
             <Title order={2}>Gallery Images</Title>
             <Text color="dimmed">Additional images of your game or app. Recommended size is (1280x720 or 1920x1080).</Text>
             <GalleryInput
-              onChange={setGalleryImages}
-              value={galleryImages}
+              onChange={setGallery}
+              value={gallery}
               disabled={loading}
             />
           </Stack>
@@ -184,7 +230,7 @@ const Project: NextPage = () => {
           <Button onClick={() => nextStep()} variant="primary">Continue</Button>
         }
         { active === 3 &&
-          <Button>Create</Button>
+          <Button onClick={form.onSubmit(submit)} disabled={loading}>Create</Button>
         }
       </Group>
     </Layout>

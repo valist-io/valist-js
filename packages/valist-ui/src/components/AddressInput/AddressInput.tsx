@@ -1,50 +1,35 @@
-import { 
-  ActionIcon,
-  useMantineTheme,
+import {
+  Loader,
 } from '@mantine/core';
 
 import * as Icon from 'tabler-icons-react';
-import { useState } from 'react';
 import { TextInput } from '../TextInput';
 
 export interface AddressInputProps {
-  onEnter: (value: string) => void;
   disabled?: boolean;
+  error?: string;
+  loading?: boolean;
+  valid?: boolean;
+  value?: string;
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
 }
 
 export function AddressInput(props: AddressInputProps) {
-  const theme = useMantineTheme();
-  const [value, setValue] = useState('');
-
-  const submit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    if (value && !props.disabled) {
-      props.onEnter(value);
-    }
-    
-    setValue('');
-  };
+  const status = props.loading
+    ? <Loader color="#5850EC" size="xs" />
+    : props.valid
+    ? <Icon.Check color="#669F2A" />
+    : undefined;
 
   return (
-    <form onSubmit={submit}>
-      <TextInput
-        label="Add member"
-        placeholder="Address or ENS"
-        value={value} 
-        onChange={(event) => setValue(event.currentTarget.value)}
-        disabled={props.disabled}
-        rightSection={
-          <ActionIcon 
-            variant="filled" 
-            type="submit"
-            disabled={props.disabled}
-            style={{ backgroundColor: theme.colors.purple[3] }}
-          >
-            <Icon.Plus size={18} />
-          </ActionIcon>
-        }
-      />
-    </form>
+    <TextInput
+      label="Add member"
+      placeholder="Address or ENS"
+      value={props.value}
+      onChange={props.onChange}
+      disabled={props.disabled}
+      error={props.error}
+      rightSection={status}
+    />
   );
 }

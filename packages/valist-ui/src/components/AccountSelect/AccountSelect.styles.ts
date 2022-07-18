@@ -4,10 +4,6 @@ export default createStyles((theme, _params, getRef) => {
   return {
     popoverBody: {
       border: 'none',
-      borderRadius: 0,
-    },
-    popoverInner: {
-      padding: 0,
     },
     popoverHeader: {
       padding: 24,

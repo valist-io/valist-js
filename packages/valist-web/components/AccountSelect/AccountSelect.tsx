@@ -1,9 +1,9 @@
 import { useContext } from 'react';
-import { AccountSelect } from '@valist/ui';
+import { AccountSelect as AccountSelectUI } from '@valist/ui';
 import { Metadata } from '@/components/Metadata';
 import { AccountContext } from '@/components/AccountProvider';
 
-export function Select() {
+export function AccountSelect() {
   const { account, accounts, setAccount, accountMeta } = useContext(AccountContext);
 
   const projectCount = (length: number) => (
@@ -17,7 +17,7 @@ export function Select() {
   if (!account) return undefined;
 
 	return (
-    <AccountSelect
+    <AccountSelectUI
       value={account.name}
       image={accountMeta?.image}
       href="/-/create/account"
@@ -26,7 +26,7 @@ export function Select() {
       {accounts.map((acc, index) => 
         <Metadata key={index} url={acc.metaURI}>
           {(data: any) => (
-            <AccountSelect.Option
+            <AccountSelectUI.Option
               name={acc.name}
               label={projectCount(acc.projects.length)}
               image={data?.image}
@@ -34,6 +34,6 @@ export function Select() {
           )}
         </Metadata>
       )}
-    </AccountSelect>
+    </AccountSelectUI>
   );
 }

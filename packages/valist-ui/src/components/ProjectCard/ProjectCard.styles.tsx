@@ -3,9 +3,13 @@ import { createStyles } from "@mantine/core";
 export default createStyles((theme, _params, getRef) => {
   return {
     root: {
-      height: 186,
+      width: '100%',
+      height: 168,
       padding: 32,
-      background: theme.colorScheme === "dark" ? "#030111" : "#FFFF",
+      borderRadius: 8,
+      background: theme.colorScheme === "dark" 
+        ? "#030111" 
+        : "#FFFF",
     }
   }
 });
