@@ -159,6 +159,14 @@ export default function ProjectPage():JSX.Element {
       }
     }
   };
+
+  if (!loading && data.projects.length === 0) {
+    return (
+      <Layout title="Valist | Not Found">
+        <div>Not found</div>
+      </Layout>
+    );
+  };
  
   return (
     <Layout title="Valist | Project">

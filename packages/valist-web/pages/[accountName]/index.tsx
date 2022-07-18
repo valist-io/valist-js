@@ -54,6 +54,14 @@ export default function AccountProfilePage() {
     }
   }, [data, loading, error, setMeta]);
 
+  if (!loading && data.accounts.length === 0) {
+    return (
+      <Layout title="Valist | Not Found">
+        <div>Not found</div>
+      </Layout>
+    );
+  };
+
   return (
     <Layout title='Valist | Team'>
       <div className="grid grid-cols-1 gap-4 items-start lg:grid-cols-6 lg:gap-8">
