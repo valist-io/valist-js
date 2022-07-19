@@ -15,7 +15,7 @@ const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 function ValistApp(props: AppProps) {
   const { Component, pageProps } = props;
-  const colorScheme = useColorScheme();
+  const colorScheme = 'light';//useColorScheme();
 
   return (
     <SWRConfig value={{ fetcher }}>

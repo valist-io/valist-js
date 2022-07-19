@@ -1,29 +1,30 @@
 import type { NextPage } from 'next';
 import { useContext } from 'react';
-import { useNetwork } from 'wagmi';
 import { useQuery, gql } from '@apollo/client';
 import { NextLink } from '@mantine/next';
-import { Activity, List } from '@valist/ui';
 import { Layout } from '@/components/Layout';
+import { Metadata } from '@/components/Metadata';
 import { AccountContext } from '@/components/AccountProvider';
-import { ProjectCard } from '@/components/ProjectCard';
-import { ActivityText } from '@/components/ActivityText';
+import { ActivityCard } from '@/components/ActivityCard';
 
 import { 
   Title, 
-  Group, 
+  Group,
   Stack,
 } from '@mantine/core';
 
-import { 
-  Button, 
-  Card, 
-  MemberStack,
+import {
+  Button,
+  Card,
+  CardGrid,
   Dashboard,
+  ProjectCard,
+  MemberStack,
+  List,
 } from '@valist/ui';
 
 const query = gql`
-  query AccountProjects($accountId: String!){
+  query IndexPage($accountId: String!){
     account(id: $accountId){
       projects {
         id
@@ -51,8 +52,7 @@ const query = gql`
   }
 `;
 
-const Index: NextPage = () => {
-  const { chain } = useNetwork();
+const IndexPage: NextPage = () => {
   const { account } = useContext(AccountContext);
 
   const { data } = useQuery(query, { 
@@ -73,13 +73,25 @@ const Index: NextPage = () => {
       </Group>
       <Dashboard>
         <Dashboard.Main>
-          {projects.map((project, index) =>
-            <ProjectCard 
-              key={index} 
-              name={project.name} 
-              metaURI={project.metaURI}
-            /> 
-          )}
+          <CardGrid>
+            {projects.map((project, index) =>
+               <Metadata key={index} url={project.metaURI}>
+                {(data: any) =>
+                  <NextLink
+                    style={{ textDecoration: 'none' }}
+                    href={`/${account.name}/${project.name}`}
+                  >
+                    <ProjectCard
+                      title={project.name} 
+                      secondary={data?.name}
+                      description={data?.description} 
+                      image={data?.image} 
+                    />
+                  </NextLink>
+                }
+              </Metadata>
+            )}
+          </CardGrid>
         </Dashboard.Main>
         <Dashboard.Side>
           <Card>
@@ -88,20 +100,11 @@ const Index: NextPage = () => {
               <MemberStack members={members.map(member => member.id)} />
             </Stack>
           </Card>
-          <Card>
-            <Title order={5}>Recent Activity</Title>
-            <List style={{ marginTop: 24 }}>
-              {logs.slice(0, 4).map((log: any, index: number) => 
-                <Activity key={index} sender={log.sender}>
-                  <ActivityText {...log} />
-                </Activity>
-              )}
-            </List>
-          </Card>
+          <ActivityCard logs={logs} />
         </Dashboard.Side>
       </Dashboard>
     </Layout>
   );
 };
 
-export default Index;
+export default IndexPage;

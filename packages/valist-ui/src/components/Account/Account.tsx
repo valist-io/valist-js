@@ -2,6 +2,7 @@ import {
   Avatar,
   Stack,
   Text,
+  Title,
   Group,
 } from '@mantine/core';
 
@@ -11,18 +12,29 @@ export interface AccountProps {
   name: string;
   image?: string;
   label?: string;
+  large?: boolean;
 }
 
 export function Account(props: AccountProps) {
-  const { classes } = useStyles();
+  const { classes } = useStyles({ large: props.large });
 	return (
     <Group>
-      <Avatar size={40} radius="xl" src={props.image} />
+      <Avatar 
+        radius="xl"
+        size={props.large ? 56 : 40} 
+        src={props.image} 
+      />
       <Stack spacing={0}>
-        <Text className={classes.name}>
+        <Title 
+          order={props.large ? 2 : 5}
+          className={classes.name}
+        >
           {props.name}
-        </Text>
-        <Text className={classes.label}>
+        </Title>
+        <Text 
+          size={props.large ? 'md' : 'xs'}
+          className={classes.label}
+        >
           {props.label}
         </Text>
       </Stack>

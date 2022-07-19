@@ -25,7 +25,7 @@ export function Activity(props: ActivityProps) {
           {props.children}
         </Text>
         <Anchor className={classes.link} href={props.href}>
-          View transaction
+          view transaction
         </Anchor>
       </Stack>
     </Group>

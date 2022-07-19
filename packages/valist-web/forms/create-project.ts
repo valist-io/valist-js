@@ -12,6 +12,7 @@ import {
 const LOADING_ID = 'project-create-loading';
 const ERROR_ID = 'project-create-error';
 
+
 export interface FormValues {
   projectName: string;
   displayName: string;
@@ -74,7 +75,10 @@ export async function createProject(
       meta.main_capsule = await valist.writeFile(content);
     }
 
-    // TODO handle youtube URL
+    if (values.youTubeLink) {
+      const src = values.youTubeLink;
+      meta.gallery.push({ name: src, type: 'youtube', src });
+    }
 
     for (const item of gallery) {
       const content = { path: item.name, content: item };
@@ -128,6 +132,9 @@ export async function createProject(
   }
 }
 
+// see https://stackoverflow.com/a/27728417
+const youTubeLinkRegex = /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/; 
+
 export const schema = z.object({
   projectName: z.string()
     .min(3, { 
@@ -151,6 +158,11 @@ export const schema = z.object({
     }),
   website: z.string(),
   description: z.string(),
+  youTubeLink: z.string()
+    .regex(youTubeLinkRegex, {
+      message: 'YouTube link format is invalid.'
+    })
+    .optional(),
   shortDescription: z.string()
     .max(100, {
       message: 'Description should be shorter than 100 characters',

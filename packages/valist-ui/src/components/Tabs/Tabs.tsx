@@ -10,16 +10,18 @@ export interface TabsProps {
   grow?: boolean;
   onTabChange?(tabIndex: number, tabKey?: string): void;
   children: React.ReactNode;
+  withCard?: boolean;
 }
 
 export function Tabs(props: TabsProps) {
-  const { classes } = useStyles();
-  const { children, ...rest } = props;
+  const { children, withCard, ...rest } = props;
+  const { classes } = useStyles({ withCard });
 
   return (
     <MantineTabs 
       variant="unstyled" 
       classNames={classes}
+      tabPadding={16}
       {...rest}
     >
       {children}

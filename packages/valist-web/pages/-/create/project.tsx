@@ -202,6 +202,7 @@ const Project: NextPage = () => {
             <TextInput
               label="YouTube Link"
               disabled={loading}
+              {...form.getInputProps('youTubeLink')}
             />
             <Title order={2}>Header Image</Title>
             <Text color="dimmed">This can be the cover image of your game or app. Recommended size is (616x353).</Text>

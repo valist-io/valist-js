@@ -33,7 +33,7 @@ export function Identicon(props: IdenticonProps) {
       position="bottom"
       placement="center"
       label={label}
-      style={{ marginLeft: props.stack ? -16 : 0 }}
+      style={{ marginLeft: props.stack ? -(props.size/3) : 0 }}
       width={110}
       withArrow
     >
