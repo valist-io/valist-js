@@ -16,21 +16,25 @@ export default {
 const Template: ComponentStory<typeof Navbar> = (args) => (
   <Navbar {...args}>
     <Navbar.Section grow>
-      <Navbar.Link 
-        icon={Icon.Apps} 
-        text="Dashboard" 
+      <Navbar.Link
+        icon={Icon.Apps}
+        text="Dashboard"
+        href="/"
       />
-      <Navbar.Link 
+      <Navbar.Link
         icon={Icon.FileText}
-        text="Projects" 
+        text="Projects"
+        href="/"
         active 
       />
-      <Navbar.Link 
+      <Navbar.Link
         icon={Icon.Users}
+        href="/"
         text="Members" 
       />
       <Navbar.Link 
         icon={Icon.Hourglass}
+        href="/"
         text="Activity" 
       />
     </Navbar.Section>

@@ -47,7 +47,7 @@ const Account: NextPage = () => {
 
   const removeMember = (member: string) => {
     membersHandlers.filter((other: string) => 
-      other.toLowerCase() !== member.toLowerCase()
+      other.toLowerCase() !== member.toLowerCase(),
     );
   };
 
@@ -79,7 +79,7 @@ const Account: NextPage = () => {
       members,
       values,
       valist,
-      cache
+      cache,
     ).then(account => {
       if (account) {
         setAccount(account);
@@ -91,7 +91,11 @@ const Account: NextPage = () => {
   };
 
   return (
-    <Layout>
+    <Layout
+      breadcrumbs={[
+        { title: 'Create Account', href: '/-/create/account' },
+      ]}
+    >
       <Tabs active={active} onTabChange={setActive} grow>
         <Tabs.Tab label="Basic Info">
           <Stack style={{ maxWidth: 784 }}>

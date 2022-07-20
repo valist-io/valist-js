@@ -11,7 +11,7 @@ import useStyles from './Activity.styles';
 
 export interface ActivityProps {
   sender: string;
-  href?: string;
+  href: string;
   children?: React.ReactNode;
 }
 
@@ -24,7 +24,11 @@ export function Activity(props: ActivityProps) {
         <Text className={classes.text}>
           {props.children}
         </Text>
-        <Anchor className={classes.link} href={props.href}>
+        <Anchor 
+          className={classes.link} 
+          href={props.href} 
+          target="_blank"
+        >
           view transaction
         </Anchor>
       </Stack>

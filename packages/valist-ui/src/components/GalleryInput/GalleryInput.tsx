@@ -7,7 +7,7 @@ import {
   UnstyledButton,
 } from '@mantine/core';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import * as Icon from 'tabler-icons-react';
 import { ImageInput } from '../ImageInput';
 import useStyles from './GalleryInput.styles';
@@ -19,6 +19,8 @@ export interface GalleryInputProps {
 
 export function GalleryInput(props: GalleryInputProps) {
   const { classes } = useStyles();
+  
+  const openRef = useRef<() => void>();
   const [index, setIndex] = useState(0);
 
   const files = props.value ?? [];
@@ -34,6 +36,11 @@ export function GalleryInput(props: GalleryInputProps) {
     }
   };
 
+  const add = () => {
+    setIndex(files.length);
+    openRef.current();
+  }
+
   const remove = (index: number) => {
     setIndex(index);
     props.onChange(files.filter((_file, _index) => _index !== index));
@@ -46,6 +53,7 @@ export function GalleryInput(props: GalleryInputProps) {
         height={360}
         value={value} 
         onChange={update}
+        openRef={openRef}
       />
       <Group>
         {files.map((file: File, index: number) =>
@@ -66,7 +74,7 @@ export function GalleryInput(props: GalleryInputProps) {
         )}
         <UnstyledButton 
           className={classes.preview}
-          onClick={() => setIndex(files.length)}
+          onClick={() => add()}
         >
           <Center>
             <Icon.Plus size={32} color="#9595A8" />

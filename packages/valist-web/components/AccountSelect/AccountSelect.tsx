@@ -32,7 +32,7 @@ export function AccountSelect() {
               image={data?.image}
             />
           )}
-        </Metadata>
+        </Metadata>,
       )}
     </AccountSelectUI>
   );

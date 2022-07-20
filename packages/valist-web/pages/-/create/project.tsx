@@ -67,7 +67,7 @@ const Project: NextPage = () => {
 
   const removeMember = (member: string) => {
     membersHandlers.filter((other: string) => 
-      other.toLowerCase() !== member.toLowerCase()
+      other.toLowerCase() !== member.toLowerCase(),
     );
   };
 
@@ -98,7 +98,7 @@ const Project: NextPage = () => {
       members,
       values,
       valist,
-      cache
+      cache,
     ).then(project => {
       if (project) {
         router.push('/');  
@@ -109,7 +109,11 @@ const Project: NextPage = () => {
   };
 
   return (
-    <Layout>
+    <Layout
+      breadcrumbs={[
+        { title: 'Create Project', href: '/-/create/project' },
+      ]}
+    >
       <Tabs active={active} onTabChange={setActive} grow>
         <Tabs.Tab label="Basic Info">
           <Stack style={{ maxWidth: 784 }}>

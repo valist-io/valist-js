@@ -3,6 +3,7 @@ import '@valist/ui/public/styles.css';
 
 import type { AppProps } from 'next/app';
 import { SWRConfig } from 'swr';
+import { NextLink } from '@mantine/next';
 import { useColorScheme } from '@mantine/hooks';
 import { ThemeProvider } from '@valist/ui';
 import { NotificationsProvider } from '@mantine/notifications';
@@ -13,9 +14,15 @@ import { ValistProvider } from '@/components/ValistProvider';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
+const defaultProps = {
+  Anchor: {
+    component: NextLink,
+  },
+};
+
 function ValistApp(props: AppProps) {
   const { Component, pageProps } = props;
-  const colorScheme = 'light';//useColorScheme();
+  const colorScheme = 'light'; //useColorScheme();
 
   return (
     <SWRConfig value={{ fetcher }}>
@@ -23,7 +30,7 @@ function ValistApp(props: AppProps) {
         <ApolloProvider>
           <AccountProvider>
             <ValistProvider metaTx>
-              <ThemeProvider colorScheme={colorScheme}>
+              <ThemeProvider colorScheme={colorScheme} defaultProps={defaultProps}>
                 <NotificationsProvider>
                   <Component {...pageProps} />
                 </NotificationsProvider>

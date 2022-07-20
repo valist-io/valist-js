@@ -1,24 +1,30 @@
 import { createStyles } from '@mantine/styles';
 
+export type TabsVariant = 'default' | 'card';
+
 export interface TabsStyleParams {
-  withCard?: boolean;
+  variant: TabsVariant;
 }
 
 export default createStyles((theme, params: TabsStyleParams, getRef) => {
+  const background = theme.colorScheme === 'dark' 
+    ? theme.black 
+    : theme.white;
+
   return {
     tabInner: {
       justifyContent: 'start',
     },
     tabsList: {
-      gap: params.withCard ? 40 : 16,
+      gap: params.variant === 'card' 
+        ? 40 
+        : 16,
     },
     tabsListWrapper: {
-      background: !params.withCard
-        ? 'none'
-        : theme.colorScheme === 'dark'
-        ? theme.black
-        : theme.white,
-      padding: params.withCard 
+      background: params.variant === 'card'
+        ? background
+        : 'none',
+      padding: params.variant === 'card'
         ? '25px 25px 0px 25px'
         : 0,
       borderRadius: 8,
@@ -33,7 +39,9 @@ export default createStyles((theme, params: TabsStyleParams, getRef) => {
     tabControl: {
       padding: 0,
       color: '#9B9BB1',
-      borderBottom: `4px solid ${theme.colors.dark[2]}`,
+      borderBottom: params.variant === 'card'
+        ? `4px solid ${background}`
+        : `4px solid ${theme.colors.dark[2]}`,
     },
     tabLabel: {
       fontSize: 16,

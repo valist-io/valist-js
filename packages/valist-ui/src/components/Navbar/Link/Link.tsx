@@ -1,7 +1,7 @@
 import {
   Group,
   Text,
-  UnstyledButton,
+  Anchor,
 } from '@mantine/core';
 
 import useStyles from './Link.styles';
@@ -10,6 +10,7 @@ import type { Icon } from 'tabler-icons-react';
 interface LinkProps {
   icon: Icon;
   text: string;
+  href: string;
   active: boolean;
 }
 
@@ -18,7 +19,7 @@ export function Link(props: LinkProps) {
   const IconNode = props.icon;
 
   return (
-    <UnstyledButton className={classes.link}>
+    <Anchor className={classes.link} href={props.href}>
       <Group noWrap>
         <IconNode
           size={24} 
@@ -29,7 +30,7 @@ export function Link(props: LinkProps) {
           {props.text}
         </Text>
       </Group>
-    </UnstyledButton>
+    </Anchor>
   );
 }
 

@@ -2,12 +2,13 @@ import React, { useState, useContext } from 'react';
 import { useRouter } from 'next/router';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import * as Icons from 'tabler-icons-react';
-import { NextLink } from '@mantine/next';
+import { Anchor } from '@mantine/core';
 import { AccountSelect } from '@/components/AccountSelect';
+import type { Breadcrumb } from '@/valist/ui';
 
 import { 
-  Anchor,
   AppShell,
+  Breadcrumbs,
   Footer,
   Navbar,
   Header,
@@ -16,6 +17,7 @@ import {
 
 export interface LayoutProps {
   children?: React.ReactNode;
+  breadcrumbs?: Breadcrumb[];
 }
 
 export function Layout(props: LayoutProps) {
@@ -29,8 +31,8 @@ export function Layout(props: LayoutProps) {
           opened={opened} 
           onClick={() => setOpened(!opened)}
         >
-          <Anchor>Docs</Anchor>
-          <Anchor>Discover</Anchor>
+          <Anchor target="_blank" href="https://docs.valist.io">Docs</Anchor>
+          <Anchor target="_blank" href="/-/discover">Discover</Anchor>
           <ConnectButton 
             chainStatus="icon" 
             accountStatus="avatar" 
@@ -44,20 +46,18 @@ export function Layout(props: LayoutProps) {
             <div style={{ margin: '20px 0 10px 30px' }}>
               <AccountSelect />
             </div>
-            <NextLink href="/" style={{ textDecoration: 'none' }}>
-              <Navbar.Link 
-                icon={Icons.Apps} 
-                text="Dashboard" 
-                active={router.asPath === "/"} 
-              />
-            </NextLink>
-            <NextLink href="/-/settings" style={{ textDecoration: 'none' }}>
-              <Navbar.Link 
-                icon={Icons.Settings} 
-                text="Settings" 
-                active={router.asPath === "/-/settings"} 
-              />
-            </NextLink>
+            <Navbar.Link 
+              icon={Icons.Apps} 
+              text="Dashboard"
+              href="/"
+              active={router.asPath === "/"} 
+            />
+            <Navbar.Link 
+              icon={Icons.Settings} 
+              text="Settings"
+              href="/-/settings"
+              active={router.asPath === "/-/settings"} 
+            />
           </Navbar.Section>
           <Navbar.Section px={30} py="md">
             <div style={{ display: 'flex', gap: 30 }}>
@@ -77,6 +77,11 @@ export function Layout(props: LayoutProps) {
         </Footer>
       }
     >
+      {props.breadcrumbs && 
+        <div style={{ paddingBottom: 32 }}>
+          <Breadcrumbs items={props.breadcrumbs} />
+        </div>
+      }
       {props.children}
     </AppShell>
   ); 

@@ -1,7 +1,7 @@
 import React from "react";
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { Breadcrumbs, BreadcrumbsProps } from "./Breadcrumbs";
-import { Anchor } from '../Anchor';
+import { Anchor } from '@mantine/core';
 
 export default {
   title: "Breadcrumbs",
@@ -9,13 +9,13 @@ export default {
 } as ComponentMeta<typeof Breadcrumbs>
 
 const Template:ComponentStory<typeof Breadcrumbs> = (args: BreadcrumbsProps) => (
-  <Breadcrumbs {...args}>
-    <Anchor>Projects</Anchor>
-    <Anchor>Game</Anchor>
-  </Breadcrumbs>
+  <Breadcrumbs {...args} />
 )
 
 export const Primary = Template.bind({})
 Primary.args = {
-
+  items: [
+    { title: 'acme-co', href: '/' },
+    { title: 'go-binary', href: '/' },
+  ]
 }

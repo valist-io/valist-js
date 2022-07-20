@@ -1,6 +1,6 @@
 import React from 'react';
-import { Anchor } from '@mantine/core';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { Anchor } from '@mantine/core';
 import { Button } from '../Button';
 import { Header } from './Header';
 

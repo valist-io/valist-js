@@ -11,6 +11,7 @@ import { theme } from './theme';
 export interface ThemeProviderProps {
   children?: React.ReactNode;
   colorScheme?: ColorScheme;
+  defaultProps?: Record<string, Record<string, any>>;
 }
 
 export const globalStyles = (theme: MantineTheme) => ({
@@ -26,7 +27,8 @@ export function ThemeProvider(props: ThemeProviderProps) {
 
   return (
     <MantineProvider 
-      theme={{...theme, colorScheme}} 
+      theme={{...theme, colorScheme}}
+      defaultProps={props.defaultProps}
       withGlobalStyles 
       withNormalizeCSS
     >

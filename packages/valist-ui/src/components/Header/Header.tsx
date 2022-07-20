@@ -1,5 +1,6 @@
 import {
   ActionIcon,
+  Anchor,
   Burger,
   Drawer,
   Group,
@@ -26,9 +27,9 @@ export function Header(props: HeaderProps) {
   return (
     <MantineHeader height={72} className={classes.root}>
       <Group style={{ height: '100%' }} spacing={0} noWrap>
-        <a href="/" style={{ width: 250, flexShrink: 0 }}>
+        <Anchor href="/" style={{ width: 250, flexShrink: 0 }}>
           <Logo />
-        </a>
+        </Anchor>
         <MediaQuery smallerThan="sm" styles={{ display: 'none' }}>
           <Group style={{ width: '100%' }}>
             <div style={{ flex: '1 1 0px', maxWidth: 350 }}>

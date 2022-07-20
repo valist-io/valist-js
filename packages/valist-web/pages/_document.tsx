@@ -7,4 +7,4 @@ class ValistDocument extends Document {
   static getInitialProps = getInitialProps;
 }
 
-export default ValistDocument
+export default ValistDocument;

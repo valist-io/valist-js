@@ -12,7 +12,6 @@ import {
 const LOADING_ID = 'project-create-loading';
 const ERROR_ID = 'project-create-error';
 
-
 export interface FormValues {
   projectName: string;
   displayName: string;
@@ -37,7 +36,7 @@ export async function createProject(
   values: FormValues,
   valist: Client,
   cache: ApolloCache<any>,
-): Project {
+): Promise<Project | undefined> {
   try {
     hideNotification(ERROR_ID);
 
@@ -101,9 +100,9 @@ export async function createProject(
 
     const project = {
       __typename: 'Project',
-      id: event?.args['_projectID']?.toHexString() ?? '',
-      metaURI: event?.args['_metaURI'] ?? '',
-      name: event?.args['_name'] ?? '',
+      id: event?.args?.['_projectID']?.toHexString() ?? '',
+      metaURI: event?.args?.['_metaURI'] ?? '',
+      name: event?.args?.['_name'] ?? '',
     };
 
     cache.updateFragment({

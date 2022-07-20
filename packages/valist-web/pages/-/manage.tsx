@@ -1,11 +1,11 @@
 import type { NextPage } from 'next';
 import { Layout } from '@/components/Layout';
 
-const SettingsPage: NextPage = () => {
+const ManagePage: NextPage = () => {
   return (
     <Layout>
     </Layout>
   );
 };
 
-export default SettingsPage;
+export default ManagePage;

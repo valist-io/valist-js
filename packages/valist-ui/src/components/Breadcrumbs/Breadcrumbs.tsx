@@ -1,21 +1,32 @@
-import React from "react"
-import { Breadcrumbs as MantineBreadcrumbs, Anchor } from "@mantine/core"
-import * as Icons from "tabler-icons-react"
-import useStyles from './Breadcrumbs.styles'
+import { 
+  Breadcrumbs as MantineBreadcrumbs,
+  Anchor,
+  Text,
+} from '@mantine/core'
+
+import React from 'react';
+import * as Icon from 'tabler-icons-react';
+
+export interface Breadcrumb {
+  title: string;
+  href: string;
+}
 
 export interface BreadcrumbsProps {
-  children?: React.ReactNode;
+  items: Breadcrumb[];
 }
 
 export function Breadcrumbs(props: BreadcrumbsProps) {
-  const { classes } = useStyles()
   return (
-    <MantineBreadcrumbs classNames={classes}>
-      {props.children}
+    <MantineBreadcrumbs separator={<Icon.ChevronRight color="#9B9BB1" />}>
+      <Anchor href="/">
+        <Icon.Home color="#9B9BB1" style={{ height: '100%' }} />
+      </Anchor>
+      {props.items.map((item, index) => 
+        <Anchor key={index} href={item.href}>
+          <Text color="#9B9BB1" style={{ lineHeight: '31px' }}>{item.title}</Text>
+        </Anchor>
+      )}
     </MantineBreadcrumbs>
   )
-}
-
-Breadcrumbs.defaultProps = {
-  items: []
 }

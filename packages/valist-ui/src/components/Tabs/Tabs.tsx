@@ -3,19 +3,19 @@ import {
 } from '@mantine/core';
 
 import React from 'react';
-import useStyles from './Tabs.styles';
+import useStyles, { TabsVariant } from './Tabs.styles';
 
 export interface TabsProps {
   active?: number;
   grow?: boolean;
   onTabChange?(tabIndex: number, tabKey?: string): void;
   children: React.ReactNode;
-  withCard?: boolean;
+  variant?: TabsVariant;
 }
 
 export function Tabs(props: TabsProps) {
-  const { children, withCard, ...rest } = props;
-  const { classes } = useStyles({ withCard });
+  const { children, variant, ...rest } = props;
+  const { classes } = useStyles({ variant });
 
   return (
     <MantineTabs 
@@ -30,3 +30,7 @@ export function Tabs(props: TabsProps) {
 }
 
 Tabs.Tab = MantineTabs.Tab;
+
+Tabs.defaultProps = {
+  variant: 'default',
+}

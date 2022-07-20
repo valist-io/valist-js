@@ -1,7 +1,8 @@
 import { z } from 'zod';
-import { AccountMeta, Client } from '@valist/sdk';
-import { ApolloCache } from '@apollo/client';
+import { ReleaseMeta, Client } from '@valist/sdk';
+import { ApolloCache, gql } from '@apollo/client';
 import { query } from '@/components/AccountProvider';
+import type { FileWithPath } from 'file-selector';
 
 import { 
   showNotification, 
@@ -10,26 +11,26 @@ import {
 } from '@mantine/notifications';
 
 // notification IDs
-const LOADING_ID = 'account-create-loading';
-const ERROR_ID = 'account-create-error';
+const LOADING_ID = 'release-create-loading';
+const ERROR_ID = 'release-create-error';
 
-export interface Account {
+export interface Release {
   id: string;
   metaURI: string;
   name: string;
 }
 
 export interface FormValues {
-  accountName: string;
+  releaseName: string;
   displayName: string;
-  website: string;
   description: string;
 }
 
-export async function createAccount(
+export async function createRelease(
   address: string | undefined,
+  projectId: string,
   image: File | undefined,
-  members: string[],
+  files: FileWithPath[],
   values: FormValues,
   valist: Client,
   cache: ApolloCache<any>,
@@ -41,14 +42,13 @@ export async function createAccount(
       throw new Error('connect your wallet to continue');
     }
 
-    if (members.length === 0) {
-      throw new Error('members cannot be empty');
+    if (files.length === 0) {
+      throw new Error('files cannot be empty');
     }
 
-    const meta: AccountMeta = {
+    const meta: ReleaseMeta = {
       name: values.displayName,
       description: values.description,
-      external_url: values.website,
     };
 
     showNotification({
@@ -65,6 +65,9 @@ export async function createAccount(
       meta.image = await valist.writeFile(content);
     }
 
+    const content = files.map(file => ({ path: file.path, content: file }));
+    meta.external_url = await valist.writeFolder(content);
+
     updateNotification({
       id: LOADING_ID,
       autoClose: false,
@@ -74,35 +77,30 @@ export async function createAccount(
       message: 'Waiting for transaction',
     });
 
-    const transaction = await valist.createAccount(values.accountName, meta, members);
+    const transaction = await valist.createRelease(projectId, values.releaseName, meta);
     const receipt = await transaction.wait();
-    const event = receipt.events?.find(event => event.event === 'AccountCreated');
+    const event = receipt.events?.find(event => event.event === 'ReleaseCreated');
 
-    const account = {
-      __typename: 'Account',
-      id: event?.args?.['_accountID']?.toHexString() ?? '',
+    const release = {
+      __typename: 'Release',
+      id: event?.args?.['_releaseID']?.toHexString() ?? '',
       metaURI: event?.args?.['_metaURI'] ?? '',
       name: event?.args?.['_name'] ?? '',
-      projects: [],
     };
 
-    cache.updateQuery({ 
-      query: query,
-      variables: { 
-        address: address.toLowerCase() 
-      },
-    }, (data) => {
-      const accounts = data?.user?.accounts ?? [];
-      return {
-        user: {
-          __typename: 'User',
-          id: address.toLowerCase(),
-          accounts: [...accounts, account],
+    cache.updateFragment({
+      id: `Project:${projectId}`,
+      fragment: gql`
+        fragment OptimisticRelease on Project {
+          releases
         }
-      };
+      `,
+    }, (data: any) => {
+      const releases = data?.project?.releases ?? [];
+      return { releases: [...releases, release] };
     });
 
-    return account;
+    return release;
   } catch (error: any) {
     showNotification({
       id: ERROR_ID,
@@ -117,18 +115,18 @@ export async function createAccount(
 }
 
 export const schema = z.object({
-  accountName: z.string()
+  releaseName: z.string()
     .min(3, { 
-      message: 'Account name should have at least 3 characters',
+      message: 'Release name should have at least 3 characters',
     })
     .max(24, { 
-      message: 'Account name should not be longer than 24 characters',
+      message: 'Release name should not be longer than 24 characters',
     })
-    .regex(/^[\w-]+$/g, { 
-      message: 'Account name can only contain letters, numbers, and dashes',
+    .regex(/^[\w-.]+$/g, { 
+      message: 'Release name can only contain letters, numbers, and dashes',
     })
     .refine((val) => val.toLocaleLowerCase() === val, { 
-      message: 'Account name can only contain lowercase letters',
+      message: 'Release name can only contain lowercase letters',
     }),
   displayName: z.string()
     .min(3, {
@@ -137,7 +135,6 @@ export const schema = z.object({
     .max(24, {
       message: 'Display name should not be longer than 32 characters',
     }),
-  website: z.string(),
   description: z.string()
     .max(100, {
       message: 'Description should be shorter than 100 characters',

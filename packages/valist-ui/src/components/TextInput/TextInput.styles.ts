@@ -10,6 +10,10 @@ export default createStyles((theme, _params, getRef) => {
       borderRadius: 8,
       padding: '0 16px',
 
+      '::placeholder': {
+        color: '#9B9BB1',
+      },
+
       borderColor: theme.colorScheme === "dark" 
         ? theme.colors.dark[6] 
         : theme.colors.gray[1],

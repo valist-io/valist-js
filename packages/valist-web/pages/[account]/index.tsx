@@ -10,9 +10,10 @@ import { AccountContext } from '@/components/AccountProvider';
 import { Metadata } from '@/components/Metadata';
 import { ActivityCard } from '@/components/ActivityCard';
 import { ValistContext } from '@/components/ValistProvider';
-import { ActivityText } from '@/components/ActivityText';
+import { Activity } from '@/components/Activity';
 
 import { 
+  Anchor,
   Title,
   Text,
   Group, 
@@ -20,9 +21,7 @@ import {
 } from '@mantine/core';
 
 import {
-  Anchor,
   Account,
-  Activity,
   Card,
   CardGrid,
   Dashboard,
@@ -46,6 +45,7 @@ const query = gql`
         id
       }
       logs(orderBy: blockTime, orderDirection: "desc"){
+        id
         type
         sender
         member
@@ -83,7 +83,11 @@ const AccountPage: NextPage = () => {
   const { data: meta } = useSWRImmutable(data?.account?.metaURI);
 
   return (
-    <Layout>
+    <Layout
+      breadcrumbs={[
+        { title: accountName, href: `/${accountName}` },
+      ]}
+    >
       <Group mb="xl">
         <Account 
           name={accountName}
@@ -94,7 +98,7 @@ const AccountPage: NextPage = () => {
       </Group>
       <Dashboard>
         <Dashboard.Main>
-          <Tabs active={active} onTabChange={setActive} withCard>
+          <Tabs active={active} onTabChange={setActive} variant="card">
             <Tabs.Tab label="Projects">
               <CardGrid>
                 {projects.map((project, index) =>
@@ -102,7 +106,7 @@ const AccountPage: NextPage = () => {
                     {(data: any) => 
                       <NextLink
                         style={{ textDecoration: 'none' }}
-                        href={`/${account.name}/${project.name}`}
+                        href={`/${accountName}/${project.name}`}
                       >
                         <ProjectCard
                           title={project.name} 
@@ -112,7 +116,7 @@ const AccountPage: NextPage = () => {
                         />
                       </NextLink>
                     }
-                  </Metadata>
+                  </Metadata>,
                 )}
               </CardGrid>
             </Tabs.Tab>
@@ -128,9 +132,7 @@ const AccountPage: NextPage = () => {
               <Card>
                 <List>
                   {logs.map((log: any, index: number) => 
-                    <Activity key={index} sender={log.sender}>
-                      <ActivityText {...log} />
-                    </Activity>
+                    <Activity key={index} {...log} />,
                   )}
                 </List>
               </Card>
@@ -148,12 +150,23 @@ const AccountPage: NextPage = () => {
                 </Group>
                 <Group position="apart">
                   <Text>Website</Text>
-                  <Anchor>{meta?.external_url}</Anchor>
+                  <Anchor href={meta?.external_url ?? ''}>
+                    {meta?.external_url}
+                  </Anchor>
                 </Group>
               </List>
             </Stack>
           </Card>
-          <ActivityCard logs={logs} />
+          <Card>
+            <Stack spacing={24}>
+              <Title order={5}>Recent Activity</Title>
+              <List>
+                {logs.slice(0, 4).map((log: any, index: number) => 
+                  <Activity key={index} {...log} />,
+                )}
+              </List>
+            </Stack>
+          </Card>
         </Dashboard.Side>
       </Dashboard>
     </Layout>

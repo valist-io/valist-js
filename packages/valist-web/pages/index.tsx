@@ -5,7 +5,7 @@ import { NextLink } from '@mantine/next';
 import { Layout } from '@/components/Layout';
 import { Metadata } from '@/components/Metadata';
 import { AccountContext } from '@/components/AccountProvider';
-import { ActivityCard } from '@/components/ActivityCard';
+import { Activity } from '@/components/Activity';
 
 import { 
   Title, 
@@ -35,6 +35,7 @@ const query = gql`
         id
       }
       logs(orderBy: blockTime, orderDirection: "desc"){
+        id
         type
         sender
         member
@@ -89,7 +90,7 @@ const IndexPage: NextPage = () => {
                     />
                   </NextLink>
                 }
-              </Metadata>
+              </Metadata>,
             )}
           </CardGrid>
         </Dashboard.Main>
@@ -100,7 +101,16 @@ const IndexPage: NextPage = () => {
               <MemberStack members={members.map(member => member.id)} />
             </Stack>
           </Card>
-          <ActivityCard logs={logs} />
+          <Card>
+            <Stack spacing={24}>
+              <Title order={5}>Recent Activity</Title>
+              <List>
+                {logs.slice(0, 4).map((log: any, index: number) => 
+                  <Activity key={index} {...log} />,
+                )}
+              </List>
+            </Stack>
+          </Card>
         </Dashboard.Side>
       </Dashboard>
     </Layout>

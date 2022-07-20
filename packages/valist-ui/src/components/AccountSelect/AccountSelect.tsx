@@ -18,7 +18,7 @@ import { Button } from './Button/Button';
 export interface AccountSelectProps {
   value: string;
   image?: string;
-  href?: string;
+  href: string;
   onChange: (name: string) => void;
   children: React.ReactNode;
   style?: React.CSSProperties;

@@ -9,7 +9,7 @@ import { useHover } from '@mantine/hooks';
 export type SocialVariant = 'twitter' | 'github' | 'discord';
 
 export interface SocialProps {
-  href?: string;
+  href: string;
   variant: SocialVariant;
 }
 
