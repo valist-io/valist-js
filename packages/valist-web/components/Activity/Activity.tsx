@@ -17,18 +17,19 @@ export interface ActivityProps {
   release?: { name: string };
 }
 
-export function Activity(props: ActivityTextProps) {
+export function Activity(props: ActivityProps) {
   const { chain } = useNetwork();
 
   const account = props.account?.name;
   const project = props.project?.name;
   const release = props.release?.name;
+  const member = props.member ?? '0x0';
 
   const accountURL = `/${account}`;
   const projectURL = `/${account}/${project}`;
   const releaseURL = `/${account}/${project}/${release}`;
 
-  const href = getBlockExplorer(chain?.id, props.id);
+  const href = getBlockExplorer(chain?.id ?? 0, props.id);
   const children = () => {
     switch (props.type) {
       case 'AccountCreated':
@@ -36,17 +37,17 @@ export function Activity(props: ActivityTextProps) {
       case 'AccountUpdated':
         return <React.Fragment>Updated account <Anchor href={accountURL}>{account}</Anchor></React.Fragment>;
       case 'AccountMemberAdded':
-        return <React.Fragment>Added account member <Address address={props.member} size={14} truncate /></React.Fragment>;
+        return <React.Fragment>Added account member <Address address={member} size={14} truncate /></React.Fragment>;
       case 'AccountMemberRemoved':
-        return <React.Fragment>Removed account member <Address address={props.member} size={14} truncate /></React.Fragment>;
+        return <React.Fragment>Removed account member <Address address={member} size={14} truncate /></React.Fragment>;
       case 'ProjectCreated':
         return <React.Fragment>Created project <Anchor href={projectURL}>{project}</Anchor></React.Fragment>;
       case 'ProjectUpdated':
         return <React.Fragment>Updated project <Anchor href={projectURL}>{project}</Anchor></React.Fragment>;
       case 'ProjectMemberAdded':
-        return <React.Fragment>Added <Address address={props.member} size={14} truncate /> to project <a href={projectURL}>{project}</a></React.Fragment>;
+        return <React.Fragment>Added <Address address={member} size={14} truncate /> to project <a href={projectURL}>{project}</a></React.Fragment>;
       case 'ProjectMemberRemoved':
-        return <React.Fragment>Removed <Address address={props.member} size={14} truncate /> from project <a href={projectURL}>{project}</a></React.Fragment>;
+        return <React.Fragment>Removed <Address address={member} size={14} truncate /> from project <a href={projectURL}>{project}</a></React.Fragment>;
       case 'ReleaseCreated':
         return <React.Fragment>Created release <Anchor href={releaseURL}>{release}</Anchor></React.Fragment>;
       case 'ReleaseApproved':
@@ -73,7 +74,7 @@ export function Activity(props: ActivityTextProps) {
   );
 }
 
-function getBlockExplorer(chainId?: number, id: string) {
+function getBlockExplorer(chainId: number, id: string) {
   const hash = id.split('-')[0];
   switch (chainId) {
     case 1:

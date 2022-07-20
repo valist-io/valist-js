@@ -4,7 +4,6 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import * as Icons from 'tabler-icons-react';
 import { Anchor } from '@mantine/core';
 import { AccountSelect } from '@/components/AccountSelect';
-import type { Breadcrumb } from '@/valist/ui';
 
 import { 
   AppShell,
@@ -14,6 +13,11 @@ import {
   Header,
   Social,
 } from '@valist/ui';
+
+export interface Breadcrumb {
+  title: string;
+  href: string;
+}
 
 export interface LayoutProps {
   children?: React.ReactNode;

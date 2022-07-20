@@ -17,6 +17,7 @@ export interface Account {
   id: string;
   metaURI: string;
   name: string;
+  projects: any[];
 }
 
 export interface FormValues {
@@ -33,7 +34,7 @@ export async function createAccount(
   values: FormValues,
   valist: Client,
   cache: ApolloCache<any>,
-): Account {
+): Promise<Account | undefined> {
   try {
     hideNotification(ERROR_ID);
 

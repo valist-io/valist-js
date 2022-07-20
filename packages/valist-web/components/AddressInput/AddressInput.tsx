@@ -34,7 +34,7 @@ export function AddressInput(props: AddressProps) {
     }
   }, [value, isLoading, isValid]);
 
-  const submit = (event) => {
+  const submit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (isLoading || !isValid) return;
 

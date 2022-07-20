@@ -34,7 +34,7 @@ export async function createRelease(
   values: FormValues,
   valist: Client,
   cache: ApolloCache<any>,
-): Account {
+): Promise<Release | undefined> {
   try {
     hideNotification(ERROR_ID);
 

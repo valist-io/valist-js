@@ -55,8 +55,8 @@ const Project: NextPage = () => {
 
   // form values
   const [loading, setLoading] = useState(false);
-  const [image, setImage] = useState<File>(null);
-  const [mainCapsule, setMainCapsule] = useState<File>(null);
+  const [image, setImage] = useState<File>();
+  const [mainCapsule, setMainCapsule] = useState<File>();
   const [gallery, setGallery] = useState<File[]>([]);
   const [members, membersHandlers] = useListState<string>([]);
 
@@ -84,6 +84,7 @@ const Project: NextPage = () => {
       website: '',
       description: '',
       shortDescription: '',
+      youTubeLink: '',
     },
   });
 
@@ -182,7 +183,7 @@ const Project: NextPage = () => {
             <Title order={2}>Account Admins</Title>
             <MemberList
               label="Account Admin"
-              members={accountMembers.map(acc => acc.id)}
+              members={accountMembers.map((acc: any) => acc.id)}
             />
             <Title order={2}>Project Admins</Title>
             <AddressInput

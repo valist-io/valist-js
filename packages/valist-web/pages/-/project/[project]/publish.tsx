@@ -59,7 +59,7 @@ const PublishPage: NextPage = () => {
 
   // form values
   const [loading, setLoading] = useState(false);
-  const [image, setImage] = useState<File>(null);
+  const [image, setImage] = useState<File>();
   const [files, setFiles] = useState<FileWithPath[]>([]);
 
   // form controls
@@ -154,7 +154,7 @@ const PublishPage: NextPage = () => {
                 {files.map((file: FileWithPath, index: number) => 
                   <File 
                     key={index} 
-                    path={file.path} 
+                    path={file.path ?? file.name} 
                     size={file.size} 
                   />,
                 )}

@@ -89,7 +89,7 @@ const ProjectPage: NextPage = () => {
   const members = [...accountMembers, ...projectMembers];
 
   const isMember = !!members.find(
-    other => other.id.toLowerCase() === address.toLowerCase(),
+    other => other.id.toLowerCase() === address?.toLowerCase(),
   );
 
   const logs = data?.project?.logs ?? [];
@@ -167,11 +167,11 @@ const ProjectPage: NextPage = () => {
                 <List>
                   <MemberList
                     label="Account Admin"
-                    members={accountMembers.map(member => member.id)}
+                    members={accountMembers.map((member: any) => member.id)}
                   />
                   <MemberList
                     label="Project Admin"
-                    members={projectMembers.map(member => member.id)}
+                    members={projectMembers.map((member: any) => member.id)}
                   />
                 </List>
               </Card>

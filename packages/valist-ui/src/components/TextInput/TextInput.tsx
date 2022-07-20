@@ -11,10 +11,11 @@ export interface TextInputProps {
   description?: string;
   placeholder?: string;
   rightSection?: React.ReactNode;
-  error?: string;
+  error?: React.ReactNode;
   disabled?: boolean;
   style?: React.CSSProperties;
   value?: string;
+  required?: boolean;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
 }
 

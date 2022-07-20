@@ -75,12 +75,12 @@ const IndexPage: NextPage = () => {
       <Dashboard>
         <Dashboard.Main>
           <CardGrid>
-            {projects.map((project, index) =>
+            {projects.map((project: any, index: number) =>
                <Metadata key={index} url={project.metaURI}>
                 {(data: any) =>
                   <NextLink
                     style={{ textDecoration: 'none' }}
-                    href={`/${account.name}/${project.name}`}
+                    href={`/${account?.name}/${project.name}`}
                   >
                     <ProjectCard
                       title={project.name} 
@@ -98,7 +98,7 @@ const IndexPage: NextPage = () => {
           <Card>
             <Stack spacing={24}>
               <Title order={5}>Members</Title>
-              <MemberStack members={members.map(member => member.id)} />
+              <MemberStack members={members.map((member: any) => member.id)} />
             </Stack>
           </Card>
           <Card>

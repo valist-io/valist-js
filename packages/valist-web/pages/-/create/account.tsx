@@ -37,7 +37,7 @@ const Account: NextPage = () => {
 
   // form values
   const [loading, setLoading] = useState(false);
-  const [image, setImage] = useState<File>(null);
+  const [image, setImage] = useState<File>();
   const [members, membersHandlers] = useListState<string>([]);
 
   // form controls

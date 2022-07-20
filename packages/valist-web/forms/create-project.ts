@@ -18,6 +18,7 @@ export interface FormValues {
   website: string;
   description: string;
   shortDescription: string;
+  youTubeLink: string;
 }
 
 export interface Project {
@@ -76,13 +77,13 @@ export async function createProject(
 
     if (values.youTubeLink) {
       const src = values.youTubeLink;
-      meta.gallery.push({ name: src, type: 'youtube', src });
+      meta.gallery?.push({ name: src, type: 'youtube', src });
     }
 
     for (const item of gallery) {
       const content = { path: item.name, content: item };
       const src = await valist.writeFile(content);
-      meta.gallery.push({ name: item.name, type: 'image', src });
+      meta.gallery?.push({ name: item.name, type: 'image', src });
     }
 
     updateNotification({

@@ -14,7 +14,7 @@ export function AccountSelect() {
     setAccount(accounts.find(acc => acc.name === name));
   };
 
-  if (!account) return undefined;
+  if (!account) return (<></>);
 
 	return (
     <AccountSelectUI

@@ -8,18 +8,19 @@ export interface Account {
   id: string;
   name: string;
   metaURI: string;
+  projects: any[];
 }
 
 export interface IAccountContext {
   account?: Account;
   setAccount: (account?: Account) => void;
-  accountNames: string[];
+  accounts: Account[];
   accountMeta?: AccountMeta;
 }
 
 export const AccountContext = React.createContext<IAccountContext>({
   account: undefined,
-  setAccount: (account: Account) => (void 0),
+  setAccount: (account?: Account) => (void 0),
   accounts: [],
 });
 
@@ -48,7 +49,7 @@ export function AccountProvider(props: AccountProviderProps) {
   const { address } = useAccount();
   const { chain } = useNetwork();
 
-  const [account, setAccount] = useState<Account>(null);
+  const [account, setAccount] = useState<Account>();
   const { data: accountMeta } = useSWRImmutable(account?.metaURI);
   const { data: accountQuery } = useQuery(query, {
     variables: { address: address?.toLowerCase() },
@@ -58,7 +59,7 @@ export function AccountProvider(props: AccountProviderProps) {
 
   // reset account when chain id or address changes
   useEffect(() => {
-    setAccount(null);
+    setAccount(undefined);
   }, [chain?.id, address]);
 
   // make sure a default account is selected

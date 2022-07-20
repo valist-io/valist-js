@@ -8,7 +8,6 @@ import { useQuery, gql } from '@apollo/client';
 import { Layout } from '@/components/Layout';
 import { AccountContext } from '@/components/AccountProvider';
 import { Metadata } from '@/components/Metadata';
-import { ActivityCard } from '@/components/ActivityCard';
 import { ValistContext } from '@/components/ValistProvider';
 import { Activity } from '@/components/Activity';
 
@@ -101,7 +100,7 @@ const AccountPage: NextPage = () => {
           <Tabs active={active} onTabChange={setActive} variant="card">
             <Tabs.Tab label="Projects">
               <CardGrid>
-                {projects.map((project, index) =>
+                {projects.map((project: any, index: number) =>
                    <Metadata key={index} url={project.metaURI}>
                     {(data: any) => 
                       <NextLink
@@ -124,7 +123,7 @@ const AccountPage: NextPage = () => {
               <Card>
                 <MemberList
                   label="Account Admin"
-                  members={members.map(member => member.id)}
+                  members={members.map((member: any) => member.id)}
                 />
               </Card>
             </Tabs.Tab>
@@ -146,7 +145,7 @@ const AccountPage: NextPage = () => {
               <List>
                 <Group position="apart">
                   <Text>Members</Text>
-                  <MemberStack size={28} members={members.map(member => member.id)} />
+                  <MemberStack size={28} members={members.map((member: any) => member.id)} />
                 </Group>
                 <Group position="apart">
                   <Text>Website</Text>

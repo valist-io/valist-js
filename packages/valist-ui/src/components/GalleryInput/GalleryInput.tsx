@@ -15,6 +15,7 @@ import useStyles from './GalleryInput.styles';
 export interface GalleryInputProps {
   onChange: (files: File[]) => void;
   value?: File[];
+  disabled?: boolean;
 }
 
 export function GalleryInput(props: GalleryInputProps) {
@@ -54,6 +55,7 @@ export function GalleryInput(props: GalleryInputProps) {
         value={value} 
         onChange={update}
         openRef={openRef}
+        disabled={props.disabled}
       />
       <Group>
         {files.map((file: File, index: number) =>
@@ -75,6 +77,7 @@ export function GalleryInput(props: GalleryInputProps) {
         <UnstyledButton 
           className={classes.preview}
           onClick={() => add()}
+          disabled={props.disabled}
         >
           <Center>
             <Icon.Plus size={32} color="#9595A8" />
