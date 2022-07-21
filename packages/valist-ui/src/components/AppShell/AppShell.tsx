@@ -28,7 +28,7 @@ export function AppShell(props: AppShellProps) {
       header={props.header}
       fixed
     >
-      <div style={{ padding: props.padding || 40 }}>
+      <div style={{ padding: props.padding >= 0 ? props.padding : 40}}>
         { props.children }
       </div>
     </MantineAppShell>
