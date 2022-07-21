@@ -6,7 +6,7 @@ import { IPFSHTTPClient } from 'ipfs-http-client';
 import { ImportCandidate, ImportCandidateStream } from 'ipfs-core-types/src/utils';
 import { AccountMeta, ProjectMeta, ReleaseMeta } from './types';
 import { fetchGraphQL, Account, Project, Release } from './graphql';
-import { generateID } from './utils';
+import { generateID, getAccountID, getProjectID, getReleaseID } from './utils';
 import * as queries from './graphql/queries';
 
 // minimal ABI for interacting with erc20 tokens
@@ -280,4 +280,10 @@ export default class Client {
 	}
 
 	generateID = generateID
+
+	getAccountID = getAccountID;
+
+	getProjectID = getProjectID;
+
+	getReleaseID = getReleaseID;
 }

@@ -118,6 +118,8 @@ export default class Publish extends Command {
     }
     CliUx.ux.action.stop();
 
+    CliUx.ux.log(`successfully uploaded files to IPFS: ${release.external_url}`);
+
     CliUx.ux.action.start('publishing release');
     const tx = await valist.createRelease(projectID, config.release, release);
     CliUx.ux.action.stop();
@@ -126,7 +128,12 @@ export default class Publish extends Command {
     await tx.wait();
     CliUx.ux.action.stop();
 
-    CliUx.ux.log(`successfully published ${args.package}!`);
-    CliUx.ux.log(`view the release at: https://app.valist.io/${args.package}`);
+    CliUx.ux.log(`successfully published ${config.account}/${config.project}/${config.release}!`);
+
+    CliUx.ux.log(`view the release at:
+    https://app.valist.io/${config.account}/${config.project}/${config.release}
+    ${release.external_url}
+    ipfs://${release.external_url.replace('https://gateway.valist.io/ipfs/', '')}
+    `);
   }
 }
