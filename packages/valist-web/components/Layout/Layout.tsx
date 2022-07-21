@@ -4,6 +4,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import * as Icons from 'tabler-icons-react';
 import { Anchor } from '@mantine/core';
 import { AccountSelect } from '@/components/AccountSelect';
+import { AccountContext } from '@/components/AccountProvider';
 
 import { 
   AppShell,
@@ -28,10 +29,15 @@ export function Layout(props: LayoutProps) {
   const router = useRouter();
   const [opened, setOpened] = useState(false);
 
+  const { account } = useContext(AccountContext);
+  const showNavbar = !!account;
+
   return (
     <AppShell
+      showNavbar={showNavbar}
       header={
         <Header 
+          showNavbar={showNavbar}
           opened={opened} 
           onClick={() => setOpened(!opened)}
         >
@@ -59,8 +65,8 @@ export function Layout(props: LayoutProps) {
             <Navbar.Link 
               icon={Icons.Settings} 
               text="Settings"
-              href="/-/settings"
-              active={router.asPath === "/-/settings"} 
+              href={`/-/account/${account?.name}/settings`}
+              active={router.asPath === `/-/account/${account?.name}/settings`} 
             />
           </Navbar.Section>
           <Navbar.Section px={30} py="md">

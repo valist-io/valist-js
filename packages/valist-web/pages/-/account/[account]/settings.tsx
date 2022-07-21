@@ -1,20 +1,22 @@
 import type { NextPage } from 'next';
 import React, { useState, useEffect, useContext } from 'react';
-import { useAccount } from 'wagmi';
+import useSWRImmutable from 'swr/immutable';
+import { useAccount, useNetwork } from 'wagmi';
 import { useRouter } from 'next/router';
-import { useApolloClient } from '@apollo/client';
-import { useListState } from '@mantine/hooks';
+import { useApolloClient, useQuery } from '@apollo/client';
 import { useForm, zodResolver } from '@mantine/form';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
-import { AccountContext } from '@/components/AccountProvider';
 import { AddressInput } from '@/components/AddressInput';
+import query from '@/graphql/UpdateAccountPage.graphql';
 
 import { 
   schema,
   FormValues,
-  createAccount, 
-} from '@/forms/create-account';
+  updateAccount,
+  addAccountMember, 
+  removeAccountMember ,
+} from '@/forms/update-account';
 
 import {
   Title,
@@ -32,65 +34,82 @@ import {
   TextInput,
 } from '@valist/ui';
 
-const Account: NextPage = () => {
+const SettingsPage: NextPage = () => {
   const router = useRouter();
   const { cache } = useApolloClient();
   const { address } = useAccount();
+  const { chain } = useNetwork();
 
   const valist = useContext(ValistContext);
-  const { setAccount } = useContext(AccountContext);
+
+  const accountName = `${router.query.account}`;
+  const accountId = valist.generateID(chain?.id ?? 0, accountName);
+
+  const { data } = useQuery(query, { variables: { accountId } });
+  const { data: meta } = useSWRImmutable(data?.account?.metaURI);
+
+  const members = data?.account?.members ?? [];
 
   // form values
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [image, setImage] = useState<File | string>();
-  const [members, membersHandlers] = useListState<string>([]);
-
-  // form controls
-  const [active, setActive] = useState(0);
-  const nextStep = () => setActive(active < 1 ? active + 1 : active);
-  const prevStep = () => setActive(active > 0 ? active - 1 : active);
-
-  const removeMember = (member: string) => {
-    membersHandlers.filter((other: string) => 
-      other.toLowerCase() !== member.toLowerCase(),
-    );
-  };
-
-  const addMember = (member: string) => {
-    removeMember(member);
-    membersHandlers.append(member);
-  };
-
-  // update the members list when current address changes
-  useEffect(() => {
-    membersHandlers.setState(address ? [address] : []);
-  }, [address]);
 
   const form = useForm<FormValues>({
     schema: zodResolver(schema),
     initialValues: {
-      accountName: '',
       displayName: '',
       website: '',
       description: '',
     },
   });
 
-  const submit = (values: FormValues) => {
+  // wait for metadata to load
+  useEffect(() => {
+    if (meta) {
+      form.setFieldValue('displayName', meta.name);
+      form.setFieldValue('website', meta.external_url);
+      form.setFieldValue('description', meta.description);
+      setImage(meta.image);
+      setLoading(false);
+    }
+  }, [meta]);
+
+  const removeMember = (member: string) => {
     setLoading(true);
-    createAccount(
+    removeAccountMember(
       address,
+      accountId,
+      member,
+      valist,
+      cache,
+    ).finally(() => {
+      setLoading(false);
+    });
+  };
+
+  const addMember = (member: string) => {
+    setLoading(true);
+    addAccountMember(
+      address,
+      accountId,
+      member,
+      valist,
+      cache,
+    ).finally(() => {
+      setLoading(false);
+    });
+  };
+
+  const update = (values: FormValues) => {
+    setLoading(true);
+    updateAccount(
+      address,
+      accountId,
       image,
-      members,
       values,
       valist,
       cache,
-    ).then((success) => {
-      if (success) {
-        setAccount(values.accountName);
-        router.push('/');  
-      }
-    }).finally(() => {
+    ).finally(() => {
       setLoading(false);  
     });
   };
@@ -98,10 +117,11 @@ const Account: NextPage = () => {
   return (
     <Layout
       breadcrumbs={[
-        { title: 'Create Account', href: '/-/create/account' },
+        { title: accountName, href: `/${accountName}` },
+        { title: 'Settings', href: `/-/${accountName}/settings` },
       ]}
     >
-      <Tabs active={active} onTabChange={setActive} grow>
+      <Tabs grow>
         <Tabs.Tab label="Basic Info">
           <Stack style={{ maxWidth: 784 }}>
             <Title mt="lg">Basic Info</Title>
@@ -117,9 +137,8 @@ const Account: NextPage = () => {
             <Title order={2}>Account Details</Title>
             <TextInput 
               label="Account Name (cannot be changed)"
-              disabled={loading}
-              required
-              {...form.getInputProps('accountName')}
+              value={accountName}
+              disabled
             />
             <TextInput 
               label="Display Name"
@@ -138,6 +157,9 @@ const Account: NextPage = () => {
               {...form.getInputProps('description')}
             />
           </Stack>
+          <Group mt="lg">
+            <Button onClick={form.onSubmit(update)} disabled={loading}>Save</Button>
+          </Group>
         </Tabs.Tab>
         <Tabs.Tab label="Members">
           <Stack style={{ maxWidth: 784 }}>
@@ -158,26 +180,15 @@ const Account: NextPage = () => {
             />
             <MemberList
               label="Account Admin"
-              members={members}
+              members={members.map((member: any) => member.id)}
               onRemove={removeMember}
               editable={!loading}
             />
           </Stack>
         </Tabs.Tab>
       </Tabs>
-      <Group mt="lg">
-        { active > 0 && 
-          <Button onClick={() => prevStep()} variant="secondary">Back</Button>
-        }
-        { active < 1 &&
-          <Button onClick={() => nextStep()} variant="primary">Continue</Button>
-        }
-        { active === 1 &&
-          <Button onClick={form.onSubmit(submit)} disabled={loading}>Create</Button>
-        }
-      </Group>
     </Layout>
   );
 };
 
-export default Account;
+export default SettingsPage;

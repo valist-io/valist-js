@@ -10,25 +10,19 @@ export function AccountSelect() {
     `${length} project${length !== 1 ? 's' : ''}`
   );
 
-  const changeAccount = (name: string) => {
-    setAccount(accounts.find(acc => acc.name === name));
-  };
-
-  if (!account) return (<></>);
-
 	return (
     <AccountSelectUI
-      value={account.name}
+      value={account?.name ?? ''}
       image={accountMeta?.image}
       href="/-/create/account"
-      onChange={changeAccount}
+      onChange={setAccount}
     >
       {accounts.map((acc, index) => 
         <Metadata key={index} url={acc.metaURI}>
           {(data: any) => (
             <AccountSelectUI.Option
               name={acc.name}
-              label={projectCount(acc.projects.length)}
+              label={projectCount(acc.projects?.length ?? 0)}
               image={data?.image}
             />
           )}

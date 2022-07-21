@@ -1,15 +1,16 @@
 import type { NextPage } from 'next';
 import { useState, useContext } from 'react';
-import { useNetwork } from 'wagmi';
+import { useNetwork, useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import useSWRImmutable from 'swr/immutable';
 import { NextLink } from '@mantine/next';
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { Layout } from '@/components/Layout';
 import { AccountContext } from '@/components/AccountProvider';
 import { Metadata } from '@/components/Metadata';
 import { ValistContext } from '@/components/ValistProvider';
 import { Activity } from '@/components/Activity';
+import query from '@/graphql/AccountPage.graphql';
 
 import { 
   Anchor,
@@ -21,6 +22,7 @@ import {
 
 import {
   Account,
+  Button,
   Card,
   CardGrid,
   Dashboard,
@@ -31,39 +33,10 @@ import {
   Tabs,
 } from '@valist/ui';
 
-const query = gql`
-  query AccountPage($accountId: String!){
-    account(id: $accountId){
-      metaURI
-      projects {
-        id
-        name
-        metaURI
-      }
-      members {
-        id
-      }
-      logs(orderBy: blockTime, orderDirection: "desc"){
-        id
-        type
-        sender
-        member
-        account {
-          name
-        }
-        project {
-          name
-        }
-        release {
-          name
-        }
-      }
-    }
-  }
-`;
-
 const AccountPage: NextPage = () => {
   const { chain } = useNetwork();
+  const { address } = useAccount();
+
   const router = useRouter();
   const valist = useContext(ValistContext);
   const [active, setActive] = useState(0);
@@ -79,6 +52,10 @@ const AccountPage: NextPage = () => {
   const members = data?.account?.members ?? [];
   const logs = data?.account?.logs ?? [];
 
+  const isMember = !!members.find(
+    (other: any) => other.id.toLowerCase() === address?.toLowerCase(),
+  );
+
   const { data: meta } = useSWRImmutable(data?.account?.metaURI);
 
   return (
@@ -87,13 +64,21 @@ const AccountPage: NextPage = () => {
         { title: accountName, href: `/${accountName}` },
       ]}
     >
-      <Group mb="xl">
+      <Group mb="xl" position="apart">
         <Account 
           name={accountName}
           label={meta?.name}
           image={meta?.image} 
           large 
         />
+        <Group>
+          <NextLink href={`/-/account/${accountName}/settings`}>
+            <Button variant="subtle">Settings</Button>
+          </NextLink>
+          <NextLink href={`/-/account/${accountName}/create/project`}>
+            <Button>New Project</Button>
+          </NextLink>
+        </Group>
       </Group>
       <Dashboard>
         <Dashboard.Main>

@@ -21,6 +21,14 @@ const nextConfig = {
       config.resolve.fallback.events = require.resolve('events/');
       config.resolve.fallback.fs = false;
     }
+
+    // add graphql file loader
+    config.module.rules.push({
+      test: /\.(graphql|gql)$/,
+      exclude: /node_modules/,
+      loader: 'graphql-tag/loader',
+    });
+
     config.plugins.push(new options.webpack.IgnorePlugin({ resourceRegExp: /^electron$/ }));
     return config;
   },

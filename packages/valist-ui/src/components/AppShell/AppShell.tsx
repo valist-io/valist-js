@@ -12,6 +12,7 @@ interface AppShellProps {
   navbar?: React.ReactElement;
   header?: React.ReactElement;
   padding?: number;
+  showNavbar?: boolean;
 }
 
 export function AppShell(props: AppShellProps) {
@@ -24,7 +25,7 @@ export function AppShell(props: AppShellProps) {
       asideOffsetBreakpoint="sm"
       padding={0}
       footer={showFooter ? props.footer : undefined}
-      navbar={props.navbar}
+      navbar={props.showNavbar ? props.navbar : undefined}
       header={props.header}
       fixed
     >
@@ -34,3 +35,7 @@ export function AppShell(props: AppShellProps) {
     </MantineAppShell>
   );
 }
+
+AppShell.defaultProps = {
+  showNavbar: true,
+};

@@ -1,0 +1,9 @@
+query UpdateAccountPage($accountId: String!){
+  account(id: $accountId){
+    id
+    metaURI
+    members {
+      id
+    }
+  }
+}

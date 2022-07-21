@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useAccount, useNetwork } from 'wagmi';
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { AccountMeta } from '@valist/sdk';
 import useSWRImmutable from 'swr/immutable';
+import query from '@/graphql/UserAccounts.graphql';
 
 export interface Account {
   id: string;
@@ -13,14 +14,14 @@ export interface Account {
 
 export interface IAccountContext {
   account?: Account;
-  setAccount: (account?: Account) => void;
+  setAccount: (name: string) => void;
   accounts: Account[];
   accountMeta?: AccountMeta;
 }
 
 export const AccountContext = React.createContext<IAccountContext>({
   account: undefined,
-  setAccount: (account?: Account) => (void 0),
+  setAccount: (name: string) => (void 0),
   accounts: [],
 });
 
@@ -28,44 +29,22 @@ export interface AccountProviderProps {
   children?: React.ReactNode;
 }
 
-export const query = gql`
-  query UserAccounts($address: String!){
-    user(id: $address) {
-      accounts(orderBy: name) {
-        id
-        name
-        metaURI
-        projects(orderBy: name) {
-          id
-          name
-          metaURI
-        }
-      }
-    }
-  }
-`;
-
 export function AccountProvider(props: AccountProviderProps) {  
   const { address } = useAccount();
   const { chain } = useNetwork();
 
-  const [account, setAccount] = useState<Account>();
-  const { data: accountMeta } = useSWRImmutable(account?.metaURI);
+  const [_account, setAccount] = useState<string>('');
+
   const { data: accountQuery } = useQuery(query, {
     variables: { address: address?.toLowerCase() },
+    returnPartialData: true,
   });
 
   const accounts = accountQuery?.user?.accounts ?? [];
+  const account = accounts.find((other: any) => other.name === _account) 
+    ?? (accounts.length > 0 ? accounts[0] : undefined);
 
-  // reset account when chain id or address changes
-  useEffect(() => {
-    setAccount(undefined);
-  }, [chain?.id, address]);
-
-  // make sure a default account is selected
-  if (!account && accounts.length > 0) {
-    setAccount(accounts[0]);
-  }
+  const { data: accountMeta } = useSWRImmutable(account?.metaURI);
 
   return (
     <AccountContext.Provider 

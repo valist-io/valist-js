@@ -17,6 +17,8 @@ const valistProvider = jsonRpcProvider({
       return { http: 'https://rpc.valist.io' };
     } else if (chain.id === 80001) {
       return { http: 'https://rpc.valist.io/mumbai' };
+    } else if (chain.id === 1337) {
+      return { http: 'http://localhost:8584' };
     }
     return null;
   },
