@@ -2,13 +2,18 @@ import type { NextPage } from 'next';
 import type { FileWithPath } from 'file-selector';
 import { useState, useContext } from 'react';
 import { useRouter } from 'next/router';
-import { useAccount } from 'wagmi';
+import { useAccount, useNetwork } from 'wagmi';
 import { useForm, zodResolver } from '@mantine/form';
-import { useApolloClient, useQuery, gql } from '@apollo/client';
+import { useApolloClient, useQuery } from '@apollo/client';
 import { Layout } from '@/components/Layout';
-import { AccountContext } from '@/components/AccountProvider';
 import { ValistContext } from '@/components/ValistProvider';
-import { createRelease, schema, FormValues } from '@/forms/create-release';
+import query from '@/graphql/CreateReleasePage.graphql';
+
+import {
+  schema,
+  FormValues,
+  createRelease,
+} from '@/forms/create-release';
 
 import {
   Button,
@@ -29,27 +34,19 @@ import {
   ScrollArea,
 } from '@mantine/core';
 
-const query = gql`
-  query ProjectPage($projectId: String!){
-    project(id: $projectId){
-      releases(orderBy: blockTime, orderDirection: "desc", limit: 1) {
-        name
-      }
-    }
-  }
-`;
-
-const PublishPage: NextPage = () => {
+const CreateReleasePage: NextPage = () => {
   const router = useRouter();
-  const { address } = useAccount();
   const { cache } = useApolloClient();
-
-  const { account } = useContext(AccountContext);
   const valist = useContext(ValistContext);
 
-  const accountName = account?.name ?? '';
+  const { address } = useAccount();
+  const { chain } = useNetwork();  
+
+  const accountName = `${router.query.account}`;
+  const accountId = valist.generateID(chain?.id ?? 0, accountName);
+
   const projectName = `${router.query.project}`;
-  const projectId = valist.generateID(account?.id ?? 0, projectName);
+  const projectId = valist.generateID(accountId, projectName);
 
   const { data } = useQuery(query, { 
     variables: { projectId }, 
@@ -86,11 +83,11 @@ const PublishPage: NextPage = () => {
       values,
       valist,
       cache,
-    ).then(release => {
-      if (release) {
+    ).then(success => {
+      if (success) {
         router.push(`/${accountName}/${projectName}`);  
       }
-      
+    }).finally(() => {
       setLoading(false);  
     });
   };
@@ -100,7 +97,7 @@ const PublishPage: NextPage = () => {
       breadcrumbs={[
         { title: accountName, href: `/${accountName}` },
         { title: projectName, href: `/${accountName}/${projectName}` },
-        { title: 'Publish Release', href: `/-/project/${projectName}/publish` },
+        { title: 'Create Release', href: `/-/account/${accountName}/project/${projectName}/create/release` },
       ]}
     >
       <Tabs active={active} onTabChange={setActive} grow>
@@ -178,4 +175,4 @@ const PublishPage: NextPage = () => {
   );
 };
 
-export default PublishPage;
+export default CreateReleasePage;

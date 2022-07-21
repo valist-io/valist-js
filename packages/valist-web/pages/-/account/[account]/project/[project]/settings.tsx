@@ -1,15 +1,23 @@
 import type { NextPage } from 'next';
-import React, { useState, useContext } from 'react';
-import { useAccount } from 'wagmi';
+import React, { useState, useEffect, useContext } from 'react';
+import useSWRImmutable from 'swr/immutable';
+import { useAccount, useNetwork } from 'wagmi';
 import { useRouter } from 'next/router';
-import { useApolloClient, useQuery, gql } from '@apollo/client';
+import { useApolloClient, useQuery } from '@apollo/client';
 import { useListState } from '@mantine/hooks';
 import { useForm, zodResolver } from '@mantine/form';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
-import { AccountContext } from '@/components/AccountProvider';
 import { AddressInput } from '@/components/AddressInput';
-import { createProject, schema, FormValues } from '@/forms/create-project';
+import query from '@/graphql/UpdateProjectPage.graphql';
+
+import { 
+  schema,
+  FormValues,
+  updateProject,
+  addProjectMember,
+  removeProjectMember,
+} from '@/forms/update-project';
 
 import {
   Group,
@@ -29,57 +37,35 @@ import {
   GalleryInput,
 } from '@valist/ui';
 
-export const query = gql`
-  query AccountMembers($id: String!){
-    account(id: $id) {
-      members {
-        id
-      }
-    }
-  }
-`;
-
 const Project: NextPage = () => {
   const router = useRouter();
   const { cache } = useApolloClient();
   const { address } = useAccount();
+  const { chain } = useNetwork();
 
   const valist = useContext(ValistContext);
-  const { account } = useContext(AccountContext);
 
-  const { data } = useQuery(query, {
-    variables: { id: account?.id },
-  });
+  const accountName = `${router.query.account}`;
+  const accountId = valist.generateID(chain?.id ?? 0, accountName);
 
-  const accountMembers = data?.account?.members ?? [];
+  const projectName = `${router.query.project}`;
+  const projectId = valist.generateID(accountId, projectName);
+
+  const { data } = useQuery(query, { variables: { projectId } });
+  const { data: meta } = useSWRImmutable(data?.project?.metaURI);
+
+  const accountMembers = data?.project?.account?.members ?? [];
+  const projectMembers = data?.project?.members ?? [];
 
   // form values
-  const [loading, setLoading] = useState(false);
-  const [image, setImage] = useState<File>();
-  const [mainCapsule, setMainCapsule] = useState<File>();
-  const [gallery, setGallery] = useState<File[]>([]);
-  const [members, membersHandlers] = useListState<string>([]);
-
-  // form controls
-  const [active, setActive] = useState(0);
-  const nextStep = () => setActive(active < 3 ? active + 1 : active);
-  const prevStep = () => setActive(active > 0 ? active - 1 : active);
-
-  const removeMember = (member: string) => {
-    membersHandlers.filter((other: string) => 
-      other.toLowerCase() !== member.toLowerCase(),
-    );
-  };
-
-  const addMember = (member: string) => {
-    removeMember(member);
-    membersHandlers.append(member);
-  };
+  const [loading, setLoading] = useState(true);
+  const [image, setImage] = useState<File | string>();
+  const [mainCapsule, setMainCapsule] = useState<File | string>();
+  const [gallery, setGallery] = useState<(File | string)[]>([]);
 
   const form = useForm<FormValues>({
     schema: zodResolver(schema),
     initialValues: {
-      projectName: '',
       displayName: '',
       website: '',
       description: '',
@@ -88,23 +74,62 @@ const Project: NextPage = () => {
     },
   });
 
-  const submit = (values: FormValues) => {
+  // wait for metadata to load
+  useEffect(() => {
+    if (meta) {
+      const youTubeLink = meta.gallery?.find((item: any) => item.type === 'youtube');
+      const galleryLinks = meta.gallery?.filter((item: any) => item.type === 'image');
+
+      form.setFieldValue('displayName', meta.name);
+      form.setFieldValue('website', meta.external_url);
+      form.setFieldValue('description', meta.description);
+      form.setFieldValue('youTubeLink', youTubeLink?.src ?? '');
+
+      setGallery(galleryLinks?.map((item: any) => item.src) ?? []);
+      setMainCapsule(meta.main_capsule);
+      setImage(meta.image);
+      setLoading(false);
+    }
+  }, [meta]);
+
+  const removeMember = (member: string) => {
     setLoading(true);
-    createProject(
+    removeProjectMember(
       address,
-      account?.id,
+      projectId,
+      member,
+      valist,
+      cache,
+    ).finally(() => {
+      setLoading(false);
+    });
+  };
+
+  const addMember = (member: string) => {
+    setLoading(true);
+    addProjectMember(
+      address,
+      projectId,
+      member,
+      valist,
+      cache,
+    ).finally(() => {
+      setLoading(false);
+    });
+  };
+
+  const update = (values: FormValues) => {
+    setLoading(true);
+    updateProject(
+      address,
+      projectId,
       image,
       mainCapsule,
       gallery,
-      members,
       values,
       valist,
       cache,
-    ).then(project => {
-      if (project) {
-        router.push('/');  
-      }
-      
+    ).finally(() => {
       setLoading(false);  
     });
   };
@@ -112,10 +137,12 @@ const Project: NextPage = () => {
   return (
     <Layout
       breadcrumbs={[
-        { title: 'Create Project', href: '/-/create/project' },
+        { title: accountName, href: `/${accountName}` },
+        { title: projectName, href: `/${accountName}/${projectName}` },
+        { title: 'Settings', href: `/-/account/${accountName}/project/${projectName}/settings` },
       ]}
     >
-      <Tabs active={active} onTabChange={setActive} grow>
+      <Tabs grow>
         <Tabs.Tab label="Basic Info">
           <Stack style={{ maxWidth: 784 }}>
             <Title mt="lg">Basic Info</Title>
@@ -131,9 +158,9 @@ const Project: NextPage = () => {
             <Title order={2}>Project Details</Title>
             <TextInput 
               label="Project Name (cannot be changed)"
-              disabled={loading}
+              disabled={true}
+              value={projectName}
               required
-              {...form.getInputProps('projectName')}
             />
             <TextInput 
               label="Display Name"
@@ -147,6 +174,9 @@ const Project: NextPage = () => {
               {...form.getInputProps('website')}
             />
           </Stack>
+          <Group mt="lg">
+            <Button onClick={form.onSubmit(update)} disabled={loading}>Save</Button>
+          </Group>
         </Tabs.Tab>
         <Tabs.Tab label="Descriptions">
           <Stack style={{ maxWidth: 784 }}>
@@ -170,6 +200,9 @@ const Project: NextPage = () => {
               {...form.getInputProps('description')}
             />
           </Stack>
+          <Group mt="lg">
+            <Button onClick={form.onSubmit(update)} disabled={loading}>Save</Button>
+          </Group>
         </Tabs.Tab>
         <Tabs.Tab label="Members">
           <Stack style={{ maxWidth: 784 }}>
@@ -183,7 +216,7 @@ const Project: NextPage = () => {
             <Title order={2}>Account Admins</Title>
             <MemberList
               label="Account Admin"
-              members={accountMembers.map((acc: any) => acc.id)}
+              members={accountMembers.map((member: any) => member.id)}
             />
             <Title order={2}>Project Admins</Title>
             <AddressInput
@@ -192,7 +225,7 @@ const Project: NextPage = () => {
             />
             <MemberList
               label="Project Admin"
-              members={members}
+              members={projectMembers.map((member: any) => member.id)}
               onRemove={removeMember}
               editable={!loading}
             />
@@ -226,19 +259,11 @@ const Project: NextPage = () => {
               disabled={loading}
             />
           </Stack>
+          <Group mt="lg">
+            <Button onClick={form.onSubmit(update)} disabled={loading}>Save</Button>
+          </Group>
         </Tabs.Tab>
       </Tabs>
-      <Group mt="lg">
-        { active > 0 && 
-          <Button onClick={() => prevStep()} variant="secondary">Back</Button>
-        }
-        { active < 3 &&
-          <Button onClick={() => nextStep()} variant="primary">Continue</Button>
-        }
-        { active === 3 &&
-          <Button onClick={form.onSubmit(submit)} disabled={loading}>Create</Button>
-        }
-      </Group>
     </Layout>
   );
 };

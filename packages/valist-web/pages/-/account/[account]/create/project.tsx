@@ -1,26 +1,27 @@
 import type { NextPage } from 'next';
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
-import { useApolloClient } from '@apollo/client';
+import { useApolloClient, useQuery } from '@apollo/client';
 import { useListState } from '@mantine/hooks';
 import { useForm, zodResolver } from '@mantine/form';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
 import { AccountContext } from '@/components/AccountProvider';
 import { AddressInput } from '@/components/AddressInput';
+import query from '@/graphql/CreateProjectPage.graphql';
 
 import { 
   schema,
   FormValues,
-  createAccount, 
-} from '@/forms/create-account';
+  createProject, 
+} from '@/forms/create-project';
 
 import {
-  Title,
-  Text,
-  Stack,
   Group,
+  Text,
+  Title,
+  Stack,
   List,
 } from '@mantine/core';
 
@@ -28,26 +29,37 @@ import {
   Tabs,
   Button,
   ImageInput,
-  MemberList,
   TextInput,
+  Textarea,
+  MemberList,
+  GalleryInput,
 } from '@valist/ui';
 
-const Account: NextPage = () => {
+const Project: NextPage = () => {
   const router = useRouter();
   const { cache } = useApolloClient();
   const { address } = useAccount();
 
   const valist = useContext(ValistContext);
-  const { setAccount } = useContext(AccountContext);
+  const { account } = useContext(AccountContext);
+
+  const { data } = useQuery(query, {
+    variables: { id: account?.id ?? '' },
+  });
+
+  const accountName = `${router.query.account}`;
+  const accountMembers = data?.account?.members ?? [];
 
   // form values
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState<File | string>();
+  const [mainCapsule, setMainCapsule] = useState<File | string>();
+  const [gallery, setGallery] = useState<(File | string)[]>([]);
   const [members, membersHandlers] = useListState<string>([]);
 
   // form controls
   const [active, setActive] = useState(0);
-  const nextStep = () => setActive(active < 1 ? active + 1 : active);
+  const nextStep = () => setActive(active < 3 ? active + 1 : active);
   const prevStep = () => setActive(active > 0 ? active - 1 : active);
 
   const removeMember = (member: string) => {
@@ -61,34 +73,33 @@ const Account: NextPage = () => {
     membersHandlers.append(member);
   };
 
-  // update the members list when current address changes
-  useEffect(() => {
-    membersHandlers.setState(address ? [address] : []);
-  }, [address]);
-
   const form = useForm<FormValues>({
     schema: zodResolver(schema),
     initialValues: {
-      accountName: '',
+      projectName: '',
       displayName: '',
       website: '',
       description: '',
+      shortDescription: '',
+      youTubeLink: '',
     },
   });
 
   const submit = (values: FormValues) => {
     setLoading(true);
-    createAccount(
+    createProject(
       address,
+      account?.id,
       image,
+      mainCapsule,
+      gallery,
       members,
       values,
       valist,
       cache,
-    ).then((success) => {
+    ).then(success => {
       if (success) {
-        setAccount(values.accountName);
-        router.push('/');  
+        router.push(`/${accountName}`);  
       }
     }).finally(() => {
       setLoading(false);  
@@ -98,7 +109,8 @@ const Account: NextPage = () => {
   return (
     <Layout
       breadcrumbs={[
-        { title: 'Create Account', href: '/-/create/account' },
+        { title: accountName, href: `/${accountName}` },
+        { title: 'Create Project', href: `/-/account/${accountName}/create/project` },
       ]}
     >
       <Tabs active={active} onTabChange={setActive} grow>
@@ -106,7 +118,7 @@ const Account: NextPage = () => {
           <Stack style={{ maxWidth: 784 }}>
             <Title mt="lg">Basic Info</Title>
             <Text color="dimmed">This is your public account info.</Text>
-            <Title order={2}>Account Image</Title>
+            <Title order={2}>Project Image</Title>
             <ImageInput 
               width={300}
               height={300}
@@ -114,12 +126,12 @@ const Account: NextPage = () => {
               value={image}
               disabled={loading}
             />
-            <Title order={2}>Account Details</Title>
+            <Title order={2}>Project Details</Title>
             <TextInput 
-              label="Account Name (cannot be changed)"
+              label="Project Name (cannot be changed)"
               disabled={loading}
               required
-              {...form.getInputProps('accountName')}
+              {...form.getInputProps('projectName')}
             />
             <TextInput 
               label="Display Name"
@@ -132,9 +144,27 @@ const Account: NextPage = () => {
               disabled={loading}
               {...form.getInputProps('website')}
             />
+          </Stack>
+        </Tabs.Tab>
+        <Tabs.Tab label="Descriptions">
+          <Stack style={{ maxWidth: 784 }}>
+            <Title mt="lg">Descriptions</Title>
+            <Text color="dimmed">Let everyone know about your project.</Text>
+            <Title order={2}>Short Description</Title>
+            <Text color="dimmed">Enter a brief summary of the project. This will be displayed on the project card or thumbnail.</Text>
             <TextInput
+              label="Short Description"
+              disabled={loading}
+              {...form.getInputProps('shortDescription')}
+            />
+            <Title order={2}>Description</Title>
+            <Text color="dimmed">Give an extensive overview of your project. This will be displayed on your project landing page.</Text>
+            <Textarea
               label="Description"
               disabled={loading}
+              autosize={true}
+              minRows={4}
+              maxRows={12}
               {...form.getInputProps('description')}
             />
           </Stack>
@@ -144,23 +174,54 @@ const Account: NextPage = () => {
             <Title mt="lg">Members</Title>
             <Text color="dimmed">Members can perform the following actions:</Text>
             <List>
-              <List.Item>Update account info</List.Item>
-              <List.Item>Add or remove account members</List.Item>
-              <List.Item>Create new projects</List.Item>
               <List.Item>Add or remove project members</List.Item>
               <List.Item>Update project info</List.Item>
               <List.Item>Publish new releases</List.Item>
             </List>
             <Title order={2}>Account Admins</Title>
+            <MemberList
+              label="Account Admin"
+              members={accountMembers.map((acc: any) => acc.id)}
+            />
+            <Title order={2}>Project Admins</Title>
             <AddressInput
               onSubmit={addMember}
               disabled={loading}
             />
             <MemberList
-              label="Account Admin"
+              label="Project Admin"
               members={members}
               onRemove={removeMember}
               editable={!loading}
+            />
+          </Stack>
+        </Tabs.Tab>
+        <Tabs.Tab label="Media">
+          <Stack style={{ maxWidth: 784 }}>
+            <Title mt="lg">Media</Title>
+            <Text color="dimmed">Show off your project with videos and images.</Text>
+            <Title order={2}>YouTube Link</Title>
+            <Text color="dimmed">Paste a link to your video.</Text>
+            <TextInput
+              label="YouTube Link"
+              disabled={loading}
+              {...form.getInputProps('youTubeLink')}
+            />
+            <Title order={2}>Header Image</Title>
+            <Text color="dimmed">This can be the cover image of your game or app. Recommended size is (616x353).</Text>
+            <ImageInput 
+              width={616}
+              height={353}
+              onChange={setMainCapsule} 
+              value={mainCapsule}
+              disabled={loading}
+            />
+            <Title order={2}>Gallery Images</Title>
+            <Text color="dimmed">Additional images of your game or app. Recommended size is (1280x720 or 1920x1080).</Text>
+            <GalleryInput
+              onChange={setGallery}
+              value={gallery}
+              disabled={loading}
             />
           </Stack>
         </Tabs.Tab>
@@ -169,10 +230,10 @@ const Account: NextPage = () => {
         { active > 0 && 
           <Button onClick={() => prevStep()} variant="secondary">Back</Button>
         }
-        { active < 1 &&
+        { active < 3 &&
           <Button onClick={() => nextStep()} variant="primary">Continue</Button>
         }
-        { active === 1 &&
+        { active === 3 &&
           <Button onClick={form.onSubmit(submit)} disabled={loading}>Create</Button>
         }
       </Group>
@@ -180,4 +241,4 @@ const Account: NextPage = () => {
   );
 };
 
-export default Account;
+export default Project;

@@ -8,7 +8,7 @@ export default {
 } as ComponentMeta<typeof ImageInput>;
 
 const Template: ComponentStory<typeof ImageInput> = (args) => {
-  const [file, setFile] = useState<File>(null);
+  const [file, setFile] = useState<File | string>('https://app.valist.io/images/logo-light.svg');
   return (
     <ImageInput {...args} value={file} onChange={setFile} />
   );
@@ -17,5 +17,4 @@ const Template: ComponentStory<typeof ImageInput> = (args) => {
 export const Primary = Template.bind({});
 
 Primary.args = {
-
 };

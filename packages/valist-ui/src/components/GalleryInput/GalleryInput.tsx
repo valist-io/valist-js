@@ -13,8 +13,8 @@ import { ImageInput } from '../ImageInput';
 import useStyles from './GalleryInput.styles';
 
 export interface GalleryInputProps {
-  onChange: (files: File[]) => void;
-  value?: File[];
+  onChange: (files: (File | string)[]) => void;
+  value?: (File | string)[];
   disabled?: boolean;
 }
 
@@ -47,6 +47,14 @@ export function GalleryInput(props: GalleryInputProps) {
     props.onChange(files.filter((_file, _index) => _index !== index));
   };
 
+  const src = (file: File | string) => {
+    if (typeof file === 'object') {
+      return URL.createObjectURL(file);
+    } else if (file) {
+      return file as string;
+    }
+  };
+
   return (
     <Stack>
       <ImageInput
@@ -70,7 +78,7 @@ export function GalleryInput(props: GalleryInputProps) {
               className={classes.preview}
               onClick={() => setIndex(index)}
             >
-              <Image fit="contain" width="100%" height="100%" radius="sm" src={URL.createObjectURL(file)} />
+              <Image fit="contain" width="100%" height="100%" radius="sm" src={src(file)} />
             </UnstyledButton>
           </div>
         )}

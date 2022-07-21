@@ -5,7 +5,6 @@ import { handleEvent } from './events';
 import * as utils from './utils';
 
 export interface FormValues {
-  projectName: string;
   displayName: string;
   website: string;
   description: string;
@@ -14,11 +13,6 @@ export interface FormValues {
 }
 
 export const schema = z.object({
-  projectName: z.string()
-    .min(3, { message: 'Project name should have at least 3 characters' })
-    .max(24, { message: 'Project name should not be longer than 24 characters' })
-    .regex(/^[\w-]+$/g, { message: 'Project name can only contain letters, numbers, and dashes' })
-    .refine((val) => val.toLocaleLowerCase() === val, { message: 'Project name can only contain lowercase letters' }),
   displayName: z.string()
     .min(3, { message: 'Display name should have at least 3 characters' })
     .max(24, { message: 'Display name should not be longer than 32 characters' }),
@@ -30,26 +24,21 @@ export const schema = z.object({
     .max(100, { message: 'Description should be shorter than 100 characters' }),
 });
 
-export async function createProject(
+export async function updateProject(
   address: string | undefined,
-  accountId: string | undefined,
+  projectId: string,
   image: File | string | undefined,
   mainCapsule: File | string | undefined,
   gallery: (File | string)[],
-  members: string[],
   values: FormValues,
   valist: Client,
   cache: ApolloCache<any>,
 ): Promise<boolean | undefined> {
   try {
-    utils.hideError();
+  	utils.hideError();
 
     if (!address) {
       throw new Error('connect your wallet to continue');
-    }
-
-    if (!accountId) {
-      throw new Error('create an account to continue');
     }
 
     const meta: ProjectMeta = {
@@ -79,12 +68,68 @@ export async function createProject(
     }
 
     utils.updateLoading('Waiting for transaction');
-    const transaction = await valist.createProject(accountId, values.projectName, meta, members);
+    const transaction = await valist.setProjectMeta(projectId, meta);
     const receipt = await transaction.wait();
     receipt.events?.forEach(event => handleEvent(event, cache));
 
     return true;
   } catch(error: any) {
+    utils.showError(error);
+    console.log(error);
+  } finally {
+    utils.hideLoading();
+  }
+}
+
+export async function addProjectMember(
+  address: string | undefined,
+  projectId: string,
+  member: string,
+  valist: Client,
+  cache: ApolloCache<any>,
+): Promise<boolean | undefined> {
+  try {
+    utils.hideError();
+
+    if (!address) {
+      throw new Error('connect your wallet to continue');
+    }
+
+    utils.showLoading('Waiting for transaction');
+    const transaction = await valist.addProjectMember(projectId, member);
+    const receipt = await transaction.wait();
+    receipt.events?.forEach(event => handleEvent(event, cache));
+
+    return true;
+  } catch (error: any) {
+    utils.showError(error);
+    console.log(error);
+  } finally {
+    utils.hideLoading();
+  }
+}
+
+export async function removeProjectMember(
+  address: string | undefined,
+  projectId: string,
+  member: string,
+  valist: Client,
+  cache: ApolloCache<any>,
+): Promise<boolean | undefined> {
+  try {
+    utils.hideError();
+
+    if (!address) {
+      throw new Error('connect your wallet to continue');
+    }
+
+    utils.showLoading('Waiting for transaction');
+    const transaction = await valist.removeProjectMember(projectId, member);
+    const receipt = await transaction.wait();
+    receipt.events?.forEach(event => handleEvent(event, cache));
+
+    return true;
+  } catch (error: any) {
     utils.showError(error);
     console.log(error);
   } finally {

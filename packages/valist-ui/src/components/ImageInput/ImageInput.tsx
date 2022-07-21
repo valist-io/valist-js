@@ -11,9 +11,9 @@ import { useElementSize } from '@mantine/hooks';
 import React, { useEffect, useState } from 'react';
 import * as Icon from 'tabler-icons-react';
 
-interface ImageInputProps {
+export interface ImageInputProps {
   onChange: (file: File) => void;
-  value?: File;
+  value?: File | string;
   width?: number;
   height?: number;
   disabled?: boolean;
@@ -25,8 +25,10 @@ export function ImageInput(props: ImageInputProps) {
   const [src, setSrc] = useState<string>();
 
   useEffect(() => {
-    if (props.value) {
+    if (typeof props.value === 'object') {
       setSrc(URL.createObjectURL(props.value));
+    } else if (props.value) {
+      setSrc(props.value as string);
     } else {
       setSrc(null);
     }

@@ -18,6 +18,7 @@ export interface HeaderProps {
   children?: React.ReactNode;
   opened: boolean;
   onClick(): void;
+  showNavbar?: boolean;
 }
 
 export function Header(props: HeaderProps) {
@@ -79,11 +80,14 @@ export function Header(props: HeaderProps) {
             >
               <Icon.Search size={18} strokeWidth={3} />
             </ActionIcon>
-            <Burger
-              size="sm"
-              opened={props.opened}
-              onClick={props.onClick}
-            />
+            {props.showNavbar &&
+              <Burger
+                size="sm"
+                opened={props.opened}
+                onClick={props.onClick}
+              />
+            }
+            
           </Group>
         </MediaQuery>
       </Group>
@@ -93,4 +97,5 @@ export function Header(props: HeaderProps) {
 
 Header.defaultProps = {
   opened: false,
+  showNavbar: true,
 };

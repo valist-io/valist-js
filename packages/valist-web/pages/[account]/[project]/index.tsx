@@ -3,11 +3,12 @@ import { useState, useContext } from 'react';
 import { useAccount, useNetwork } from 'wagmi';
 import { useRouter } from 'next/router';
 import useSWRImmutable from 'swr/immutable';
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { NextLink } from '@mantine/next';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
 import { Activity } from '@/components/Activity';
+import query from '@/graphql/ProjectPage.graphql';
 
 import {
   Account,
@@ -29,42 +30,6 @@ import {
   Group, 
   Stack,
 } from '@mantine/core';
-
-const query = gql`
-  query ProjectPage($projectId: String!){
-    project(id: $projectId){
-      metaURI
-      account {
-        members {
-          id
-        }
-      }
-      releases(orderBy: blockTime, orderDirection: "desc") {
-        id
-        name
-        metaURI
-      }
-      members {
-        id
-      }
-      logs(orderBy: blockTime, orderDirection: "desc"){
-        id
-        type
-        sender
-        member
-        account {
-          name
-        }
-        project {
-          name
-        }
-        release {
-          name
-        }
-      }
-    }
-  }
-`;
 
 const ProjectPage: NextPage = () => {
   const { chain } = useNetwork();
@@ -116,10 +81,10 @@ const ProjectPage: NextPage = () => {
         <Group>
           { isMember &&
             <>
-              <NextLink href={`/-/project/${projectName}/edit`}>
+              <NextLink href={`/-/account/${accountName}/project/${projectName}/settings`}>
                 <Button variant="secondary">Edit</Button>
               </NextLink>
-              <NextLink href={`/-/project/${projectName}/publish`}>
+              <NextLink href={`/-/account/${accountName}/project/${projectName}/create/release`}>
                 <Button variant="subtle">Publish</Button>
               </NextLink>
             </>
