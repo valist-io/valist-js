@@ -6,6 +6,7 @@ export { AddressInput } from './components/AddressInput';
 export { AppShell } from './components/AppShell';
 export { Button } from './components/Button';
 export { Breadcrumbs } from './components/Breadcrumbs';
+export { Steps } from './components/Steps';
 export { Card } from './components/Card';
 export { CardGrid } from './components/CardGrid';
 export { Carousel } from './components/Carousel';
