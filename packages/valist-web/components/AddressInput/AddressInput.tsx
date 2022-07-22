@@ -1,7 +1,7 @@
 import { AddressInput as AddressInputUI } from '@valist/ui';
 import { ethers } from 'ethers';
-import { useEnsAddress } from 'wagmi';
 import { useState, useEffect } from 'react';
+import { useEnsAddress } from '@/utils/ens';
 
 export interface AddressProps {
   onSubmit: (address: string) => void;
@@ -15,11 +15,7 @@ export function AddressInput(props: AddressProps) {
   const [value, setValue] = useState('');
   const [error, setError] = useState('');
 
-  const { data, isLoading } = useEnsAddress({
-    name: value,
-    chainId: 1,
-    enabled: isENS(value),
-  });
+  const { data, isLoading } = useEnsAddress(value);
 
   const isValidENS = !isLoading && !!data;
   const isValid = isValidENS || isAddress(value);

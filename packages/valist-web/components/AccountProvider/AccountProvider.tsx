@@ -36,7 +36,7 @@ export function AccountProvider(props: AccountProviderProps) {
   const [_account, setAccount] = useState<string>('');
 
   const { data: accountQuery } = useQuery(query, {
-    variables: { address: address?.toLowerCase() },
+    variables: { address: address?.toLowerCase() ?? '' },
     returnPartialData: true,
   });
 
