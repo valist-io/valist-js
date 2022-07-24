@@ -1,7 +1,6 @@
 import { Command, CliUx, Flags } from '@oclif/core';
 import { ethers } from 'ethers';
-import globSource from 'ipfs-utils/src/files/glob-source.js';
-import { create, ReleaseMeta, Provider, archiveSource } from '@valist/sdk';
+import { create, ReleaseMeta, Provider, getFilesFromPath } from '@valist/sdk';
 import YAML from 'yaml';
 import * as fs from 'node:fs';
 import * as flags from '../flags';
@@ -96,26 +95,20 @@ export default class Publish extends Command {
 
     CliUx.ux.action.start('uploading files');
     // upload release assets
-    const stat = await fs.promises.stat(config.path);
-    if (stat.isDirectory()) { 
-      const artifact = globSource(config.path, '**/*', { hidden });
-      release.external_url = await valist.writeFolder(artifact);
-    } else {
-      const artifact = fs.createReadStream(config.path);
-      release.external_url = await valist.writeFile(artifact);
-    }
+    const artifacts = await getFilesFromPath(config.path);
+    release.external_url = await valist.writeFolder(artifacts);
     
     // upload release image
     if (config.image) {
-      const imageFile = fs.createReadStream(config.image);
-      release.image = await valist.writeFile(imageFile);
+      const imageFile = await getFilesFromPath(config.image);
+      release.image = await valist.writeFile(imageFile[0]);
     }
     
     // upload source snapshot
-    if (config.source) {
-      const archiveURL = archiveSource(config.source);
-      release.source = await valist.writeFile(archiveURL);
-    }
+    // if (config.source) {
+    //   const archiveURL = archiveSource(config.source);
+    //   release.source = await valist.writeFile(archiveURL);
+    // }
     CliUx.ux.action.stop();
 
     CliUx.ux.action.start('publishing release');
