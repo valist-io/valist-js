@@ -16,17 +16,17 @@ export default class Publish extends Command {
 
   static examples = [
     '<%= config.bin %> <%= command.id %> ipfs/go-ipfs/v0.12.3 README.md',
-    '<%= config.bin %> <%= command.id %> ipfs/go-ipfs/v0.12.3 dist/** docs/**',
+    '<%= config.bin %> <%= command.id %> ipfs/go-ipfs/v0.12.3 dist/',
   ]
 
   static flags = {
     'meta-tx': flags.metaTx,
     'network': flags.network,
     'private-key': flags.privateKey,
-    'include-dot-files': Flags.boolean({
-      description: 'Include hidden dot files',
-      default: false,
-    }),
+    // 'include-dot-files': Flags.boolean({
+    //   description: 'Include hidden dot files',
+    //   default: false,
+    // }),
   }
 
   static args = [
