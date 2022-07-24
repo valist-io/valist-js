@@ -204,11 +204,7 @@ export const createOrUpdateProject = async (
 
   for (let i = 0; i < projectGallery.length; i++) {
     if (typeof projectGallery[i].src === "object") {
-      const url = await valistCtx.writeFile({
-        // @ts-ignore
-        path: projectGallery[i].src.path,
-        content: projectGallery[i].src,
-      });
+      const url = await valistCtx.writeFile(projectGallery[i].src as File);
 
       galleryItems.push({
         name: projectGallery[i].name,
