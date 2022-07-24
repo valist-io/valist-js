@@ -3,9 +3,9 @@ import { BigNumber, ethers } from 'ethers';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { IPFS } from 'ipfs-core-types';
 import { IPFSHTTPClient } from 'ipfs-http-client';
-import { Web3Storage, File } from 'web3.storage';
+import { Web3Storage, File, Filelike } from 'web3.storage';
+import { FileObject } from 'files-from-path';
 
-import { ImportCandidate, ImportCandidateStream } from 'ipfs-core-types/src/utils';
 import { AccountMeta, ProjectMeta, ReleaseMeta } from './types';
 import { fetchGraphQL, Account, Project, Release } from './graphql';
 import { generateID } from './utils';
@@ -276,17 +276,18 @@ export default class Client {
 		return `${this.ipfsGateway}/ipfs/${cid.toString()}`;
 	}
 
-	async writeFile(file: File): Promise<string> {
-		const cid = await this.w3sClient.put([file]);
+	async writeFile(file: File | FileObject | Filelike, wrapWithDirectory = false): Promise<string> {
+		const opts = { wrapWithDirectory };
+		const cid = await this.w3sClient.put([file as Filelike], opts);
 		return `${this.ipfsGateway}/ipfs/${cid.toString()}`;
 	}
 
-	async writeFolder(files: File[], wrapWithDirectory = true): Promise<string> {
+	async writeFolder(files: File[] | FileObject[] | Iterable<Filelike>, wrapWithDirectory = false): Promise<string> {
 		const onRootCidReady = (cid: string) => {
 			console.log('uploading files with cid:', cid);
 		}
 		const opts = { wrapWithDirectory, onRootCidReady };
-		const cid = await this.w3sClient.put(files, opts);
+		const cid = await this.w3sClient.put(files as Filelike[], opts);
 		return `${this.ipfsGateway}/ipfs/${cid}`;
 	}
 

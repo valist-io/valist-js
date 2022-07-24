@@ -66,7 +66,7 @@ export default class Publish extends Command {
 
     const privateKey = flags['private-key'] || await select();
     const metaTx = flags['meta-tx'];
-    const hidden = flags['include-dot-files'];
+    // const hidden = flags['include-dot-files'];
 
     const provider = await this.provider(flags.network);
     const wallet = new ethers.Wallet(privateKey);
