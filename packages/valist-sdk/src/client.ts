@@ -5,6 +5,7 @@ import { IPFS } from 'ipfs-core-types';
 import { IPFSHTTPClient } from 'ipfs-http-client';
 import { Web3Storage, File, Filelike } from 'web3.storage';
 import { FileObject } from 'files-from-path';
+import { ImportCandidateStream } from 'ipfs-core-types/src/utils';
 
 import { AccountMeta, ProjectMeta, ReleaseMeta } from './types';
 import { fetchGraphQL, Account, Project, Release } from './graphql';
@@ -289,6 +290,15 @@ export default class Client {
 		const opts = { wrapWithDirectory, onRootCidReady };
 		const cid = await this.w3sClient.put(files as Filelike[], opts);
 		return `${this.ipfsGateway}/ipfs/${cid}`;
+	}
+
+	async writeFolderClassic(data: ImportCandidateStream): Promise<string> {
+		const opts = { wrapWithDirectory: true };
+		const cids: string[] = [];
+		for await (const res of this.ipfs.addAll(data, opts)) {
+			cids.push(res.cid.toString());
+		}
+		return `${this.ipfsGateway}/ipfs/${cids[cids.length - 1]}`;
 	}
 
 	generateID = generateID

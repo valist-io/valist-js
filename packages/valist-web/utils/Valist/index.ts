@@ -7,6 +7,7 @@ import { FileList } from '@/components/Files/FileUpload';
 import { NextRouter } from "next/router";
 import { Asset } from "@/features/projects/ProjectGallery";
 import { projectMetaChanged } from "../Validation";
+// import axios from "axios";
 
 // Wrap Valist Sdk call for create or update account
 export const createOrUpdateAccount = async (
@@ -105,14 +106,26 @@ export const createRelease = async (
   // map the files to a format IPFS can handle
   const files: File[] = [];
   
+  // let formdata = new FormData();
+
   releaseFiles.map(file => {
-    files.push(file.src as File);
+    // files.push(file.src as File);
+    // @ts-ignore
+    files.push({ path: file.src.path, content: file.src });
+    // formdata.append("file", file.src);
   });
 
-  console.log("FILES LENGTH", files)
+  console.log("FILES", files);
 
-  release.external_url = await valistCtx.writeFolder(files);
-  console.log("DA EXTERNAL URL", release.external_url);
+  // const postReq = await axios.post(`https://pin-w3s.valist.workers.dev/upload`, formdata, {
+  //   headers: {
+  //     'content-type': 'multipart/form-data'
+  // }
+  // });
+
+  // release.external_url = `https://dweb.link/ipfs/${postReq.data.cid}`;
+  release.external_url = (await valistCtx.writeFolderClassic(files)).replace('https://dweb.link', 'https://gateway.valist.io');
+  console.log("EXTERNAL URL", release.external_url);
   dismiss(uploadToast);
 
   console.log("Release Team", account);
