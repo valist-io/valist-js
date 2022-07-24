@@ -3,6 +3,8 @@ import { BigNumber, ethers } from 'ethers';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { IPFS } from 'ipfs-core-types';
 import { IPFSHTTPClient } from 'ipfs-http-client';
+import { Web3Storage, File } from 'web3.storage';
+
 import { ImportCandidate, ImportCandidateStream } from 'ipfs-core-types/src/utils';
 import { AccountMeta, ProjectMeta, ReleaseMeta } from './types';
 import { fetchGraphQL, Account, Project, Release } from './graphql';
@@ -18,6 +20,7 @@ export default class Client {
 	constructor(
 		private registry: ethers.Contract,
 		private license: ethers.Contract,
+		private w3sClient: Web3Storage,
 		private ipfs: IPFS | IPFSHTTPClient,
 		private ipfsGateway: string,
 		private subgraphUrl: string
@@ -261,22 +264,30 @@ export default class Client {
 	}
 
 	async writeJSON(data: string): Promise<string> {
-		const { cid } = await this.ipfs.add(data);
-		return `${this.ipfsGateway}/ipfs/${cid.toString()}`;
-	}
+		let buffer: Blob | Buffer;
+		if (typeof window === 'undefined') {
+			buffer = Buffer.from(data);
 
-	async writeFile(data: ImportCandidate): Promise<string> {
-		const { cid } = await this.ipfs.add(data);
-		return `${this.ipfsGateway}/ipfs/${cid.toString()}`;
-	}
-
-	async writeFolder(data: ImportCandidateStream): Promise<string> {
-		const opts = { wrapWithDirectory: true };
-		const cids: string[] = [];
-		for await (const res of this.ipfs.addAll(data, opts)) {
-			cids.push(res.cid.toString());
+		} else {
+			buffer = new Blob([data], { type: 'application/json' });
 		}
-		return `${this.ipfsGateway}/ipfs/${cids[cids.length - 1]}`;
+		const file = new File([buffer], 'data.json');
+		const cid = await this.w3sClient.put([file], { wrapWithDirectory: false });
+		return `${this.ipfsGateway}/ipfs/${cid.toString()}`;
+	}
+
+	async writeFile(file: File): Promise<string> {
+		const cid = await this.w3sClient.put([file]);
+		return `${this.ipfsGateway}/ipfs/${cid.toString()}`;
+	}
+
+	async writeFolder(files: File[], wrapWithDirectory = true): Promise<string> {
+		const onRootCidReady = (cid: string) => {
+			console.log('uploading files with cid:', cid);
+		}
+		const opts = { wrapWithDirectory, onRootCidReady };
+		const cid = await this.w3sClient.put(files, opts);
+		return `${this.ipfsGateway}/ipfs/${cid}`;
 	}
 
 	generateID = generateID

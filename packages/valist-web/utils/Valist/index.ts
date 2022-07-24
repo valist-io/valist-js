@@ -27,11 +27,7 @@ export const createOrUpdateAccount = async (
   let imgURL = "";
 
   if (accountImage.length > 0) {
-    imgURL = await valistCtx.writeFile({
-      // @ts-ignore
-      path: accountImage[0].src.path,
-      content: accountImage[0].src,
-    });
+    imgURL = await valistCtx.writeFile(accountImage[0].src as File);
   } else {
     imgURL = currentImage;
   }
@@ -96,7 +92,7 @@ export const createRelease = async (
   let imgURL = "";
 
   if (releaseImage.length !== 0) {
-    imgURL = await valistCtx.writeFile(releaseImage[0].src);
+    imgURL = await valistCtx.writeFile(releaseImage[0].src as File);
   }
 
   const release = new ReleaseMeta();
@@ -107,14 +103,16 @@ export const createRelease = async (
   const uploadToast = notify('text', 'Uploading files...');
 
   // map the files to a format IPFS can handle
-  const files: { path: string, content: File }[] = [];
+  const files: File[] = [];
   
   releaseFiles.map(file => {
-    // @ts-ignore
-    files.push({ path: file.src.path, content: file.src });
+    files.push(file.src as File);
   });
 
+  console.log("FILES LENGTH", files)
+
   release.external_url = await valistCtx.writeFolder(files);
+  console.log("DA EXTERNAL URL", release.external_url);
   dismiss(uploadToast);
 
   console.log("Release Team", account);
@@ -178,11 +176,7 @@ export const createOrUpdateProject = async (
 
   const uploadToast = notify('text', 'Uploading files...');
   if (projectImage.length > 0) {
-    imgURL = await valistCtx.writeFile({
-      // @ts-ignore
-      path: projectImage[0].src.path, 
-      content: projectImage[0].src,
-    });
+    imgURL = await valistCtx.writeFile(projectImage[0].src as File);
   } else {
     imgURL = currentImage;
   }

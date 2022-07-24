@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 import { create as createIPFS } from 'ipfs-http-client';
+import { Web3Storage } from 'web3.storage';
 import { RelayProvider, GSNConfig } from '@opengsn/provider';
 import type WalletConnectProvider from '@walletconnect/web3-provider';
 import Client from './client';
@@ -41,7 +42,9 @@ export function createReadOnly(provider: Provider, options: Partial<Options>): C
   const ipfsGateway = options.ipfsGateway || 'https://gateway.valist.io';
   const ipfs = createIPFS({ url: ipfsHost });
 
-  return new Client(registry, license, ipfs, ipfsGateway, subgraphUrl);
+  const w3sClient = new Web3Storage({ token: 'VALIST_PUBLIC_TOKEN', endpoint: new URL('https://pin-w3s.valist.workers.dev')});
+
+  return new Client(registry, license, w3sClient, ipfs, ipfsGateway, subgraphUrl);
 }
 
 export async function createRelaySigner({ provider }: ethers.providers.Web3Provider, options: Partial<Options>): Promise<ethers.providers.JsonRpcSigner> {
@@ -130,10 +133,12 @@ export async function create(provider: Provider, options: Partial<Options>): Pro
   }
 
   const ipfsHost = options.ipfsHost || 'https://pin.valist.io';
-  const ipfsGateway = options.ipfsGateway || 'https://gateway.valist.io';
+  const ipfsGateway = options.ipfsGateway || 'https://dweb.link';
   const ipfs = createIPFS({ url: ipfsHost });
 
-  return new Client(registry, license, ipfs, ipfsGateway, subgraphUrl);
+  const w3sClient = new Web3Storage({ token: 'VALIST_PUBLIC_TOKEN', endpoint: new URL('https://pin-w3s.valist.workers.dev')});
+
+  return new Client(registry, license, w3sClient, ipfs, ipfsGateway, subgraphUrl);
 }
 
 export * from './types';
