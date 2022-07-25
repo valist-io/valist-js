@@ -22,12 +22,11 @@ import {
   MemberStack,
 } from '@valist/ui';
 
-import { 
+import {
   Anchor,
-  Avatar,
   Title,
   Text,
-  Group, 
+  Group,
   Stack,
 } from '@mantine/core';
 
@@ -45,7 +44,7 @@ const ProjectPage: NextPage = () => {
   const projectName = `${router.query.project}`;
   const projectId = valist.generateID(accountId, projectName);
 
-  const { data } = useQuery(query, { 
+  const { data } = useQuery(query, {
     variables: { projectId },
   });
 
@@ -79,7 +78,7 @@ const ProjectPage: NextPage = () => {
           large
         />
         <Group>
-          { isMember &&
+          {isMember &&
             <>
               <NextLink href={`/-/account/${accountName}/project/${projectName}/settings`}>
                 <Button variant="secondary">Edit</Button>
@@ -89,11 +88,9 @@ const ProjectPage: NextPage = () => {
               </NextLink>
             </>
           }
-          { releaseMeta?.external_url &&
-            <NextLink target="_blank" href={releaseMeta?.external_url}>
-              <Button>Launch</Button>
-            </NextLink>
-          }
+          <NextLink target="_blank" href={`/${accountName}/${projectName}/launch`}>
+            <Button>Launch</Button>
+          </NextLink>
         </Group>
       </Group>
       <Dashboard>
@@ -109,7 +106,7 @@ const ProjectPage: NextPage = () => {
             <Tabs.Tab label="Versions">
               <Card>
                 <List>
-                  {releases.map((release: any, index: number) => 
+                  {releases.map((release: any, index: number) =>
                     <Group key={index} position="apart">
                       <Text>{release.name}</Text>
                       <a target="_blank" href={release.metaURI} rel="noreferrer">view metadata</a>
@@ -121,7 +118,7 @@ const ProjectPage: NextPage = () => {
             <Tabs.Tab label="Activity">
               <Card>
                 <List>
-                  {logs.map((log: any, index: number) => 
+                  {logs.map((log: any, index: number) =>
                     <Activity key={index} {...log} />,
                   )}
                 </List>
@@ -154,9 +151,9 @@ const ProjectPage: NextPage = () => {
                 </Group>
                 <Group position="apart">
                   <Text>Members</Text>
-                  <MemberStack 
-                    size={28} 
-                    members={members.map(member => member.id)} 
+                  <MemberStack
+                    size={28}
+                    members={members.map(member => member.id)}
                   />
                 </Group>
                 <Group position="apart">
@@ -176,7 +173,7 @@ const ProjectPage: NextPage = () => {
             <Stack spacing={24}>
               <Title order={5}>Recent Activity</Title>
               <List>
-                {logs.slice(0, 4).map((log: any, index: number) => 
+                {logs.slice(0, 4).map((log: any, index: number) =>
                   <Activity key={index} {...log} />,
                 )}
               </List>
