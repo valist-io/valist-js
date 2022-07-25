@@ -24,6 +24,7 @@ import {
   Stack,
   Group,
   List,
+  TextInput,
 } from '@mantine/core';
 
 import { 
@@ -31,7 +32,6 @@ import {
   Button,
   ImageInput,
   MemberList,
-  TextInput,
 } from '@valist/ui';
 
 const SettingsPage: NextPage = () => {

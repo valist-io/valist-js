@@ -1,9 +1,9 @@
 import {
   Loader,
+  TextInput,
 } from '@mantine/core';
 
 import * as Icon from 'tabler-icons-react';
-import { TextInput } from '../TextInput';
 
 export interface AddressInputProps {
   disabled?: boolean;

@@ -7,6 +7,7 @@ import {
 
 import React from 'react';
 import { theme } from './theme';
+import { components } from './components';
 
 export interface ThemeProviderProps {
   children?: React.ReactNode;
@@ -28,7 +29,7 @@ export function ThemeProvider(props: ThemeProviderProps) {
   return (
     <MantineProvider 
       theme={{...theme, colorScheme}}
-      defaultProps={props.defaultProps}
+      defaultProps={{...components, ...props.defaultProps}}
       withGlobalStyles 
       withNormalizeCSS
     >

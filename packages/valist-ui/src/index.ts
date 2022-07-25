@@ -30,6 +30,4 @@ export { PublishPromo } from './components/PublishPromo';
 export { ProjectCard } from './components/ProjectCard';
 export { Social } from './components/Social';
 export { Tabs } from './components/Tabs';
-export { Textarea } from './components/Textarea';
-export { TextInput } from './components/TextInput';
 export { ThemeProvider } from './components/ThemeProvider';

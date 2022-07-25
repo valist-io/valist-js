@@ -25,14 +25,14 @@ import {
   Title,
   Stack,
   List,
+  TextInput,
+  Textarea,
 } from '@mantine/core';
 
 import { 
   Tabs,
   Button,
   ImageInput,
-  TextInput,
-  Textarea,
   MemberList,
   GalleryInput,
 } from '@valist/ui';

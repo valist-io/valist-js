@@ -45,17 +45,21 @@ const ProjectPage: NextPage = () => {
   const projectName = `${router.query.project}`;
   const projectId = valist.generateID(accountId, projectName);
 
-  const { data } = useQuery(query, { 
-    variables: { projectId },
-  });
+  const { data } = useQuery(query, { variables: { projectId } });
 
   const accountMembers = data?.project?.account?.members ?? [];
   const projectMembers = data?.project?.members ?? [];
   const members = [...accountMembers, ...projectMembers];
 
-  const isMember = !!members.find(
-    other => other.id.toLowerCase() === address?.toLowerCase(),
+  const isAccountMember = accountMembers.find(
+    (other: any) => other.id.toLowerCase() === address?.toLowerCase(),
   );
+
+  const isProjectMember = projectMembers.find(
+    (other: any) => other.id.toLowerCase() === address?.toLowerCase(),
+  );
+
+  const isMember = isAccountMember || isProjectMember;
 
   const logs = data?.project?.logs ?? [];
   const releases = data?.project?.releases ?? [];
@@ -80,14 +84,19 @@ const ProjectPage: NextPage = () => {
         />
         <Group>
           { isMember &&
-            <>
               <NextLink href={`/-/account/${accountName}/project/${projectName}/settings`}>
-                <Button variant="secondary">Edit</Button>
+                <Button variant="secondary">Settings</Button>
               </NextLink>
-              <NextLink href={`/-/account/${accountName}/project/${projectName}/create/release`}>
-                <Button variant="subtle">Publish</Button>
-              </NextLink>
-            </>
+          }
+          { isAccountMember &&
+            <NextLink href={`/-/account/${accountName}/project/${projectName}/pricing`}>
+              <Button variant="secondary">Pricing</Button>
+            </NextLink>
+          }
+          { isMember && 
+            <NextLink href={`/-/account/${accountName}/project/${projectName}/create/release`}>
+              <Button variant="subtle">Publish</Button>
+            </NextLink>
           }
           { releaseMeta?.external_url &&
             <NextLink target="_blank" href={releaseMeta?.external_url}>

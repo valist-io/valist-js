@@ -18,8 +18,6 @@ import {
 import {
   Button,
   ImageInput,
-  TextInput,
-  Textarea,
   FileInput,
   File,
   Card,
@@ -31,6 +29,8 @@ import {
   Stack,
   Title,
   Text,
+  TextInput,
+  Textarea,
   ScrollArea,
 } from '@mantine/core';
 

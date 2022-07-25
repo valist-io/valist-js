@@ -140,6 +140,16 @@ export default class Client {
 		return await purchase(token, projectID, recipient);
 	}
 
+	async withdrawProductBalance(projectID: ethers.BigNumberish, recipient: string): Promise<ContractTransaction> {
+		const withdraw = this.license['withdraw(uint256,address)'];
+		return await withdraw(projectID, recipient);
+	}
+
+	async withdrawProductTokenBalance(token: string, projectID: ethers.BigNumberish, recipient: string): Promise<ContractTransaction> {
+		const withdraw = this.license['withdraw(address,uint256,address)'];
+		return await withdraw(token, projectID, recipient);
+	}
+
 	async getProductPrice(projectID: ethers.BigNumberish): Promise<ethers.BigNumber> {
 		const getPrice = this.license['getPrice(uint256)'];
 		return await getPrice(projectID);

@@ -5,6 +5,7 @@ import {
   Drawer,
   Group,
   MediaQuery,
+  TextInput,
   Header as MantineHeader,
 } from '@mantine/core';
 
@@ -12,7 +13,6 @@ import React, { useState } from 'react';
 import * as Icon from 'tabler-icons-react';
 import useStyles from './Header.styles';
 import { Logo } from '../Logo';
-import { TextInput } from '../TextInput';
 
 export interface HeaderProps {
   children?: React.ReactNode;
