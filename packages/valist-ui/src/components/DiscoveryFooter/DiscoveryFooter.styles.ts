@@ -5,33 +5,24 @@ import { useMantineTheme } from "@mantine/core";
 export default createStyles(() => {
   const isMobile = useMediaQuery('(max-width: 900px)');
   const theme = useMantineTheme();
-  const bgColor = theme.colorScheme === 'dark' ? '' : '#5850EC';
-  const btnColor = theme.colorScheme === 'dark' ? '#5850EC' : 'linear-gradient(90deg, #FF9A9E 0%, #FAD0C4 99%, #FAD0C4 100%), #5850EC';
-  const paddingY = isMobile ? '24px' : '64px';
+	const bgColor = theme.colorScheme === 'dark' ? theme.colors.dark[9] : '';
+  const color = theme.colorScheme === 'dark' ? 'white' : 'black';
 
   return {
     "root": {
-      padding: `2rem ${paddingY} 0 ${paddingY}`,
+      padding: isMobile ? '60px 23px' : '79px 113px', 
       background: bgColor,
     },
-    "heading": {
-      fontSize: 45, 
-      color: 'white', 
-      fontWeight: 900,
-      margin: 0,
+    "heading" : {
+      fontSize: isMobile ? '18' : '20px',
+      fontWeight: 900, 
+      margin: '10px 0 15px 0',
     },
     "text": {
-      fontSize: 21, 
-      color: 'white',
-      margin: '10px 0 25px 0',
+      fontSize: isMobile ? '14' : '16px',
+      margin: '10px 0 15px 0',
+      color: color,
+      textDecoration: 'none',
     },
-    "button": {
-      background: btnColor,
-    },
-    "msgBox": {
-      height: '100%',
-      display: 'flex', 
-      alignItems: 'center',
-    }
   };
 });

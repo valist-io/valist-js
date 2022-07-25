@@ -11,11 +11,12 @@ export default createStyles(() => {
 
   return {
     "root": {
-      padding: `2rem ${paddingY} 0 ${paddingY}`,
+      padding: `0 ${paddingY} 0 ${paddingY}`,
       background: bgColor,
+      maxWidth: '100vw',
     },
     "heading": {
-      fontSize: 45, 
+      fontSize: isMobile ? 40 : 56, 
       color: 'white', 
       fontWeight: 900,
       margin: 0,

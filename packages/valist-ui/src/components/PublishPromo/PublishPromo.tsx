@@ -10,12 +10,13 @@ export function PublishPromo(): JSX.Element {
 
   return (
     <Grid className={classes.root}>
-      <Grid.Col lg={5}>
+      <Grid.Col lg={6}>
         <div style={{ height: '100%', display: 'flex', alignItems: 'center' }}>
-          <div style={{ maxWidth: 420 }}>
+          <div style={{ maxWidth: 480 }}>
             <Text className={classes.heading}>Publish today</Text>
             <Text className={classes.text}>
-              Have your software, webapp, or game hosted on valist to be truly decentralized!
+              Have your software, weba
+              pp, or game hosted on valist to be truly decentralized!
             </Text>
             <Link href="/create/release" passHref>
               <Button size="lg" style={{ background: btnColor }}>Publish Now</Button>
@@ -23,8 +24,8 @@ export function PublishPromo(): JSX.Element {
           </div>
         </div>
       </Grid.Col>
-      <Grid.Col lg={7} style={{ paddingBottom: 0 }}>
-        <div style={{ paddingTop: '4rem' }}>
+      <Grid.Col lg={6} style={{ paddingBottom: 0 }}>
+        <div style={{ paddingTop: '4rem', maxWidth: 735 }}>
           <Image
             alt={'Featured Project'}
             src={publishImage}

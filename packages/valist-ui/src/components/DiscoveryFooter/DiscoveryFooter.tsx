@@ -5,12 +5,9 @@ import useStyles from "./DiscoveryFooter.styles";
 
 export function DiscoveryFooter(): JSX.Element {
   const { classes } = useStyles();
-  const theme = useMantineTheme();
-	const backgroundColor = theme.colorScheme === 'dark' ? theme.colors.dark[9] : '';
-  const color = theme.colorScheme === 'dark' ? 'white' : 'black';
 
   return (
-    <footer style={{ padding: '80px 40px', backgroundColor }}>
+    <footer className={classes.root}>
       <Grid>
         <Grid.Col lg={3}>
           <List listStyleType="none" spacing="md" size="sm">
@@ -21,8 +18,8 @@ export function DiscoveryFooter(): JSX.Element {
         </Grid.Col>
         <Grid.Col sm={6} lg={3}>
           <List listStyleType="none" spacing="md" size="sm">
-            <List.Item style={{ fontSize: 18, fontWeight: 900, margin: '10px 0 25px 0'}}>Resources</List.Item>
-            <List.Item><a style={{textDecoration: 'none', color}} href="https://docs.valist.io">Docs</a></List.Item>
+            <List.Item className={classes.heading}>Resources</List.Item>
+            <List.Item><a className={classes.text} href="https://docs.valist.io">Docs</a></List.Item>
           </List>
         </Grid.Col>
         <Grid.Col sm={6} lg={3}>
@@ -31,8 +28,8 @@ export function DiscoveryFooter(): JSX.Element {
             spacing="md"
             size="sm"
           >
-            <List.Item style={{ fontSize: 18, fontWeight: 900, margin: '10px 0 25px 0'}}>Support</List.Item>
-            <List.Item><a style={{textDecoration: 'none', color}} href="mailto:hello@valist.io">Contact Us</a></List.Item>
+            <List.Item className={classes.heading}>Support</List.Item>
+            <List.Item><a className={classes.text} href="mailto:hello@valist.io">Contact Us</a></List.Item>
           </List>
         </Grid.Col>
         <Grid.Col lg={3}>
