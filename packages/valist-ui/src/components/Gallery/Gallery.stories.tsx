@@ -4,9 +4,6 @@ import { Gallery } from './Gallery';
 export default {
   title: 'Gallery',
   component: Gallery,
-  parameters: {
-    layout: 'fullscreen',
-  },
 } as ComponentMeta<typeof Gallery>;
 
 const Template: ComponentStory<typeof Gallery> = (args) => (

@@ -41,7 +41,7 @@ export function Layout(props: LayoutProps) {
           showNavbar={showNavbar}
           opened={opened} 
           onClick={() => setOpened(!opened)}
-          router={router}
+          onSearch={value => router.push(`/-/search/${value}`)}
         >
           <Anchor target="_blank" href="https://docs.valist.io">Docs</Anchor>
           <Anchor target="_blank" href="/-/discover">Discover</Anchor>

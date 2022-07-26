@@ -19,15 +19,17 @@ export interface HeaderProps {
   opened: boolean;
   onClick(): void;
   showNavbar?: boolean;
-  router?: any;
+  onSearch?: (value: string) => void;
 }
 
 export function Header(props: HeaderProps) {
   const { classes } = useStyles();
   const [searchOpened, setSearchOpened] = useState(false);
 
-  const search = async (value: string) => {
-    props?.router?.push(`/-/search/${value}`);
+  const onSearch = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      props.onSearch?.(event.target.value);
+    }
   };
 
   return (
@@ -42,7 +44,7 @@ export function Header(props: HeaderProps) {
               <TextInput
                 placeholder="Search projects"
                 icon={<Icon.Search size={18} strokeWidth={3} />}
-                onKeyPress={(e) => e.key === 'Enter' && search((e.target.value))}
+                onKeyPress={onSearch}
               />
             </div>
             <Group 
@@ -76,7 +78,7 @@ export function Header(props: HeaderProps) {
                 <TextInput
                   placeholder="Search"
                   icon={<Icon.Search size={18} strokeWidth={3} />}
-                  onKeyPress={(e) => e.key === 'Enter' && search((e.target.value))}
+                  onKeyPress={onSearch}
                 />
               </Group>
             </Drawer>
@@ -94,7 +96,6 @@ export function Header(props: HeaderProps) {
                 onClick={props.onClick}
               />
             }
-            
           </Group>
         </MediaQuery>
       </Group>
