@@ -3,6 +3,7 @@ import { useAccount, useNetwork } from 'wagmi';
 import { useQuery } from '@apollo/client';
 import { AccountMeta } from '@valist/sdk';
 import useSWRImmutable from 'swr/immutable';
+import { useLocalStorage } from '@mantine/hooks';
 import query from '@/graphql/UserAccounts.graphql';
 
 export interface Account {
@@ -33,7 +34,10 @@ export function AccountProvider(props: AccountProviderProps) {
   const { address } = useAccount();
   const { chain } = useNetwork();
 
-  const [_account, setAccount] = useState<string>('');
+  const [_account, setAccount] = useLocalStorage({ 
+    key: 'valist.account', 
+    defaultValue: '',
+  });
 
   const { data: accountQuery } = useQuery(query, {
     variables: { address: address?.toLowerCase() ?? '' },

@@ -45,9 +45,9 @@ export function Activity(props: ActivityProps) {
       case 'ProjectUpdated':
         return <React.Fragment>Updated project <Anchor href={projectURL}>{project}</Anchor></React.Fragment>;
       case 'ProjectMemberAdded':
-        return <React.Fragment>Added <Address address={member} size={14} truncate /> to project <a href={projectURL}>{project}</a></React.Fragment>;
+        return <React.Fragment>Added <Address address={member} size={14} truncate /> to project <Anchor href={projectURL}>{project}</Anchor></React.Fragment>;
       case 'ProjectMemberRemoved':
-        return <React.Fragment>Removed <Address address={member} size={14} truncate /> from project <a href={projectURL}>{project}</a></React.Fragment>;
+        return <React.Fragment>Removed <Address address={member} size={14} truncate /> from project <Anchor href={projectURL}>{project}</Anchor></React.Fragment>;
       case 'ReleaseCreated':
         return <React.Fragment>Created release <Anchor href={releaseURL}>{release}</Anchor></React.Fragment>;
       case 'ReleaseApproved':

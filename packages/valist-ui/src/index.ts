@@ -30,4 +30,5 @@ export { PublishPromo } from './components/PublishPromo';
 export { ProjectCard } from './components/ProjectCard';
 export { Social } from './components/Social';
 export { Tabs } from './components/Tabs';
+export { ThemeButton } from './components/ThemeButton';
 export { ThemeProvider } from './components/ThemeProvider';

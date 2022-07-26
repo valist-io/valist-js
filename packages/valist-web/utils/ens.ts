@@ -51,7 +51,7 @@ export function useEnsAddress(name: string) {
     resolveName(name).then(address => {
       if (_name === name) setData(address);
     }).finally(() => {
-      setIsLoading(false);
+      if (_name === name) setIsLoading(false);
     });
   }, [name]);
 
@@ -74,7 +74,7 @@ export function useEnsName(address: string) {
     resolveAddress(address).then(name => {
       if (_address === address) setData(name);
     }).finally(() => {
-      setIsLoading(false);
+      if (_address === address) setIsLoading(false);
     });
   }, [address]);
 

@@ -2,11 +2,13 @@ import '@rainbow-me/rainbowkit/styles.css';
 import '@valist/ui/public/styles.css';
 
 import type { AppProps } from 'next/app';
+import { useState } from 'react';
 import { SWRConfig } from 'swr';
 import { NextLink } from '@mantine/next';
-import { useColorScheme } from '@mantine/hooks';
-import { ThemeProvider } from '@valist/ui';
+import { useLocalStorage } from '@mantine/hooks';
 import { NotificationsProvider } from '@mantine/notifications';
+import { ColorSchemeProvider, ColorScheme } from '@mantine/core';
+import { ThemeProvider } from '@valist/ui';
 import { AccountProvider } from '@/components/AccountProvider';
 import { ApolloProvider } from '@/components/ApolloProvider';
 import { RainbowKitProvider } from '@/components/RainbowKitProvider';
@@ -22,7 +24,16 @@ const defaultProps = {
 
 function ValistApp(props: AppProps) {
   const { Component, pageProps } = props;
-  const colorScheme = 'light'; //useColorScheme();
+  
+  const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
+    key: 'mantine-color-scheme',
+    defaultValue: 'light',
+    getInitialValueInEffect: true,
+  });
+
+  const toggleColorScheme = (value?: ColorScheme) => {
+    setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
+  };
 
   return (
     <SWRConfig value={{ fetcher }}>
@@ -30,11 +41,13 @@ function ValistApp(props: AppProps) {
         <ApolloProvider>
           <AccountProvider>
             <ValistProvider metaTx>
-              <ThemeProvider colorScheme={colorScheme} defaultProps={defaultProps}>
-                <NotificationsProvider>
-                  <Component {...pageProps} />
-                </NotificationsProvider>
-              </ThemeProvider>
+              <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
+                <ThemeProvider colorScheme={colorScheme} defaultProps={defaultProps}>
+                  <NotificationsProvider>
+                    <Component {...pageProps} />
+                  </NotificationsProvider>
+                </ThemeProvider>
+              </ColorSchemeProvider>
             </ValistProvider>
           </AccountProvider>
         </ApolloProvider>

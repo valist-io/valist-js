@@ -1,0 +1,12 @@
+query Purchase($projectId: String!){
+  product(id: $projectId){
+    id
+    limit
+    supply
+    currencies {
+      id
+      token
+      price
+    }
+  }
+}

@@ -71,14 +71,16 @@ const AccountPage: NextPage = () => {
           image={meta?.image} 
           large 
         />
-        <Group>
-          <NextLink href={`/-/account/${accountName}/settings`}>
-            <Button variant="subtle">Settings</Button>
-          </NextLink>
-          <NextLink href={`/-/account/${accountName}/create/project`}>
-            <Button>New Project</Button>
-          </NextLink>
-        </Group>
+        { isMember &&
+          <Group>
+            <NextLink href={`/-/account/${accountName}/settings`}>
+              <Button variant="subtle">Settings</Button>
+            </NextLink>
+            <NextLink href={`/-/account/${accountName}/create/project`}>
+              <Button>New Project</Button>
+            </NextLink>
+          </Group>
+        }
       </Group>
       <Dashboard>
         <Dashboard.Main>

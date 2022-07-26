@@ -13,6 +13,7 @@ import {
   Navbar,
   Header,
   Social,
+  ThemeButton,
 } from '@valist/ui';
 
 export interface Breadcrumb {
@@ -48,6 +49,7 @@ export function Layout(props: LayoutProps) {
             accountStatus="avatar" 
             showBalance={false}
           />
+          <ThemeButton />
         </Header>
       }
       navbar={

@@ -1,25 +1,26 @@
 import { 
   ApolloProvider as Provider,
   ApolloClient,
+  InMemoryCache,
 } from '@apollo/client';
 
 import { useState, useEffect } from 'react';
 import { useNetwork } from 'wagmi';
-import cache from './cache';
+import { config } from './cache';
 
 const localClient = new ApolloClient({
   uri: 'http://localhost:8000/subgraphs/name/valist-io/valist',
-  cache,
+  cache: new InMemoryCache(config),
 });
 
 const polygonClient = new ApolloClient({
   uri: 'https://api.thegraph.com/subgraphs/name/valist-io/valist',
-  cache,
+  cache: new InMemoryCache(config),
 });
 
 const mumbaiClient = new ApolloClient({
   uri: 'https://api.thegraph.com/subgraphs/name/valist-io/valistmumbai',
-  cache,
+  cache: new InMemoryCache(config),
 });
 
 export interface ApolloProviderProps {
@@ -39,8 +40,6 @@ export function ApolloProvider(props: ApolloProviderProps) {
     } else {
       setClient(polygonClient);
     }
-    // clear the cache
-    client.resetStore();
   }, [chain?.id]);
 
   return (

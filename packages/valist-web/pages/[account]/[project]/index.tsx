@@ -8,6 +8,7 @@ import { NextLink } from '@mantine/next';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
 import { Activity } from '@/components/Activity';
+import { Purchase } from '@/components/Purchase';
 import query from '@/graphql/ProjectPage.graphql';
 
 import {
@@ -83,25 +84,20 @@ const ProjectPage: NextPage = () => {
           large
         />
         <Group>
-          { isMember &&
-              <NextLink href={`/-/account/${accountName}/project/${projectName}/settings`}>
-                <Button variant="secondary">Settings</Button>
-              </NextLink>
-          }
           { isAccountMember &&
             <NextLink href={`/-/account/${accountName}/project/${projectName}/pricing`}>
               <Button variant="secondary">Pricing</Button>
             </NextLink>
           }
-          { isMember && 
-            <NextLink href={`/-/account/${accountName}/project/${projectName}/create/release`}>
-              <Button variant="subtle">Publish</Button>
-            </NextLink>
-          }
-          { releaseMeta?.external_url &&
-            <NextLink target="_blank" href={releaseMeta?.external_url}>
-              <Button>Launch</Button>
-            </NextLink>
+          { isMember &&
+            <>
+              <NextLink href={`/-/account/${accountName}/project/${projectName}/settings`}>
+                <Button variant="subtle">Settings</Button>
+              </NextLink>
+              <NextLink href={`/-/account/${accountName}/project/${projectName}/create/release`}>
+                <Button>New Release</Button>
+              </NextLink>
+            </>
           }
         </Group>
       </Group>
@@ -109,11 +105,20 @@ const ProjectPage: NextPage = () => {
         <Dashboard.Main>
           <Tabs active={active} onTabChange={setActive} variant="card">
             <Tabs.Tab label="Readme">
-              <Card>
-                <Markdown>
-                  {projectMeta?.description}
-                </Markdown>
-              </Card>
+              <Stack spacing={24}>
+                { releases.length > 0 &&
+                  <Purchase 
+                    projectId={projectId}
+                    name={projectMeta?.name ?? projectName}
+                    href={projectMeta?.external_url ?? '/'}
+                  />
+                }
+                <Card>                
+                  <Markdown>
+                    {projectMeta?.description}
+                  </Markdown>
+                </Card>
+              </Stack>
             </Tabs.Tab>
             <Tabs.Tab label="Versions">
               <Card>
