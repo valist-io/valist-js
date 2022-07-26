@@ -19,11 +19,16 @@ export interface HeaderProps {
   opened: boolean;
   onClick(): void;
   showNavbar?: boolean;
+  router?: any;
 }
 
 export function Header(props: HeaderProps) {
   const { classes } = useStyles();
   const [searchOpened, setSearchOpened] = useState(false);
+
+  const search = async (value: string) => {
+    props?.router?.push(`/-/search/${value}`);
+  };
 
   return (
     <MantineHeader height={72} className={classes.root}>
@@ -37,6 +42,7 @@ export function Header(props: HeaderProps) {
               <TextInput
                 placeholder="Search projects"
                 icon={<Icon.Search size={18} strokeWidth={3} />}
+                onKeyPress={(e) => e.key === 'Enter' && search((e.target.value))}
               />
             </div>
             <Group 
@@ -70,6 +76,7 @@ export function Header(props: HeaderProps) {
                 <TextInput
                   placeholder="Search"
                   icon={<Icon.Search size={18} strokeWidth={3} />}
+                  onKeyPress={(e) => e.key === 'Enter' && search((e.target.value))}
                 />
               </Group>
             </Drawer>

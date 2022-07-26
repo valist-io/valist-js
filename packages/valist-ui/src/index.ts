@@ -15,6 +15,7 @@ export { Divider } from './components/Divider';
 export { File } from './components/File';
 export { FileInput } from './components/FileInput';
 export { Footer } from './components/Footer';
+export { Gallery } from './components/Gallery';
 export { GalleryInput } from './components/GalleryInput';
 export { Header } from './components/Header';
 export { HeroSection } from './components/HeroSection';

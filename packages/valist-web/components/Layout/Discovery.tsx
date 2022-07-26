@@ -7,12 +7,14 @@ import {
   Header,
 } from '@valist/ui';
 import { Anchor } from '@mantine/core';
+import { useRouter } from 'next/router';
 
 export interface DiscoveryLayoutProps {
   children?: React.ReactNode;
 }
 
 export function DiscoveryLayout(props: DiscoveryLayoutProps) {
+  const router = useRouter();
   const [opened, setOpened] = useState(false);
 
   return (
@@ -22,6 +24,7 @@ export function DiscoveryLayout(props: DiscoveryLayoutProps) {
         <Header 
           opened={opened} 
           onClick={() => setOpened(!opened)}
+          router={router}
         >
           <Anchor target="_blank" href="https://docs.valist.io">Docs</Anchor>
           <Anchor target="_blank" href="/-/discover">Discover</Anchor>

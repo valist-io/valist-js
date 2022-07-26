@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import { useState, useContext } from 'react';
+import { useState, useContext, Fragment } from 'react';
 import { useAccount, useNetwork } from 'wagmi';
 import { useRouter } from 'next/router';
 import useSWRImmutable from 'swr/immutable';
@@ -10,6 +10,7 @@ import { ValistContext } from '@/components/ValistProvider';
 import { Activity } from '@/components/Activity';
 import { Purchase } from '@/components/Purchase';
 import query from '@/graphql/ProjectPage.graphql';
+import { Gallery } from '@valist/ui';
 
 import {
   Account,
@@ -106,6 +107,9 @@ const ProjectPage: NextPage = () => {
           <Tabs active={active} onTabChange={setActive} variant="card">
             <Tabs.Tab label="Readme">
               <Stack spacing={24}>
+                { (projectMeta?.gallery && projectMeta?.gallery?.length !== 0) &&
+                  <Gallery assets={projectMeta?.gallery} />
+                }
                 { releases.length > 0 &&
                   <Purchase 
                     projectId={projectId}
