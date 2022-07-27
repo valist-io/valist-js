@@ -48,7 +48,7 @@ export function Purchase(props: PurchaseProps) {
   const limit = data?.product?.limit ?? 0;
 
   // TODO add support for erc20 tokens
-  const currency = data?.product?.find(
+  const currency = data?.product?.currencies?.find(
     (curr: any) => curr.token === '0x0000000000000000000000000000000000000000',
   );
 

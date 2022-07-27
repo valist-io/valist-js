@@ -65,14 +65,14 @@ const Pricing: NextPage = () => {
     const currency = currencies.find(
       (curr: any) => curr.token === token.toLowerCase(),
     );
-    return currency?.balance ?? 0;
+    return parseInt(currency?.balance ?? '0');
   };
 
   const getTokenPrice = (token: string) => {
     const currency = currencies.find(
       (curr: any) => curr.token === token.toLowerCase(),
     );
-    return currency?.price ?? 0;
+    return parseInt(currency?.price ?? '0');
   };
 
   const updatePrice = () => {
@@ -131,11 +131,14 @@ const Pricing: NextPage = () => {
   // wait for data to load
   useEffect(() => {
     if (data) {
-      setLimit(data?.product?.limit ?? 0);
+      const _limit = parseInt(data?.product?.limit ?? '0');
+      const _royalty = parseInt(data?.product?.royaltyAmount ?? '0');
+
+      setLimit(_limit);
       setPrice(getTokenPrice(zeroAddress));
       setBalance(getTokenBalance(zeroAddress));
+      setRoyaltyAmount(_royalty / 10000);
       setRoyaltyRecipient(data?.product?.royaltyRecipient ?? '');
-      setRoyaltyAmount(data?.product?.royaltyAmount ?? 0);
       setLoading(false);
     }
   }, [data]);
@@ -176,6 +179,7 @@ const Pricing: NextPage = () => {
               <NumberInput
                 style={{ flex: '1 1 0px' }}
                 label="Limit"
+                min={0}
                 disabled={loading}
                 hideControls
                 value={limit}
