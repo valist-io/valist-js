@@ -110,11 +110,11 @@ const ProjectPage: NextPage = () => {
                 { (projectMeta?.gallery && projectMeta?.gallery?.length !== 0) &&
                   <Gallery assets={projectMeta?.gallery} />
                 }
-                { latestRelease &&
+                { releaseMeta &&
                   <Purchase 
                     projectId={projectId}
                     name={projectMeta?.name ?? projectName}
-                    href={latestRelease.external_url ?? ''}
+                    href={releaseMeta.external_url ?? ''}
                   />
                 }
                 <Card>                
