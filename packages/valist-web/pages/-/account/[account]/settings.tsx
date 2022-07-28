@@ -66,9 +66,9 @@ const SettingsPage: NextPage = () => {
   // wait for metadata to load
   useEffect(() => {
     if (meta) {
-      form.setFieldValue('displayName', meta.name);
-      form.setFieldValue('website', meta.external_url);
-      form.setFieldValue('description', meta.description);
+      form.setFieldValue('displayName', meta.name ?? '');
+      form.setFieldValue('website', meta.external_url ?? '');
+      form.setFieldValue('description', meta.description ?? '');
       setImage(meta.image);
       setLoading(false);
     }

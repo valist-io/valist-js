@@ -3,6 +3,7 @@ import { ApolloCache } from '@apollo/client';
 import { ProjectMeta, GalleryMeta, Client } from '@valist/sdk';
 import { handleEvent } from './events';
 import * as utils from './utils';
+import { refineYouTube } from './common';
 
 export interface FormValues {
   displayName: string;
@@ -10,6 +11,8 @@ export interface FormValues {
   description: string;
   shortDescription: string;
   youTubeLink: string;
+  type: string;
+  tags: string[];
 }
 
 export const schema = z.object({
@@ -19,9 +22,11 @@ export const schema = z.object({
   website: z.string(),
   description: z.string(),
   youTubeLink: z.string()
-    .refine(utils.refineYouTube, { message: 'YouTube link format is invalid.' }),
+    .refine(refineYouTube, { message: 'YouTube link format is invalid.' }),
   shortDescription: z.string()
     .max(100, { message: 'Description should be shorter than 100 characters' }),
+  type: z.string(),
+  tags: z.string().array(),
 });
 
 export async function updateProject(
@@ -45,8 +50,12 @@ export async function updateProject(
       name: values.displayName,
       description: values.description,
       external_url: values.website,
+      type: values.type,
+      tags: values.tags,
       gallery: [],
     };
+
+    console.log('META!!!!', meta);
 
     utils.showLoading('Uploading files');
     if (image) {

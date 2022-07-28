@@ -9,13 +9,9 @@ import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
 import { AccountContext } from '@/components/AccountProvider';
 import { AddressInput } from '@/components/AddressInput';
+import { defaultTags, defaultTypes } from '@/forms/common';
+import { schema, FormValues, createProject } from '@/forms/create-project';
 import query from '@/graphql/CreateProjectPage.graphql';
-
-import { 
-  schema,
-  FormValues,
-  createProject, 
-} from '@/forms/create-project';
 
 import {
   Group,
@@ -25,6 +21,8 @@ import {
   List,
   TextInput,
   Textarea,
+  Select,
+  MultiSelect,
 } from '@mantine/core';
 
 import { 
@@ -82,6 +80,8 @@ const Project: NextPage = () => {
       description: '',
       shortDescription: '',
       youTubeLink: '',
+      type: '',
+      tags: [],
     },
   });
 
@@ -143,6 +143,25 @@ const Project: NextPage = () => {
               label="Website"
               disabled={loading}
               {...form.getInputProps('website')}
+            />
+            <Select
+              label="Type"
+              data={defaultTypes}
+              placeholder="Select type"
+              nothingFound="Nothing found"
+              searchable
+              creatable
+              getCreateLabel={(query) => `+ Create ${query}`}
+              {...form.getInputProps('type')}
+            />
+            <MultiSelect
+              label="Tags"
+              data={defaultTags}
+              placeholder="Select tags"
+              searchable
+              creatable
+              getCreateLabel={(query) => `+ Create ${query}`}
+              {...form.getInputProps('tags')}
             />
           </Stack>
         </Tabs.Tab>

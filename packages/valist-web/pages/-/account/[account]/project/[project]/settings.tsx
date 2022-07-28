@@ -9,6 +9,7 @@ import { useForm, zodResolver } from '@mantine/form';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
 import { AddressInput } from '@/components/AddressInput';
+import { defaultTags, defaultTypes } from '@/forms/common';
 import query from '@/graphql/UpdateProjectPage.graphql';
 
 import { 
@@ -27,6 +28,8 @@ import {
   List,
   TextInput,
   Textarea,
+  Select,
+  MultiSelect,
 } from '@mantine/core';
 
 import { 
@@ -71,6 +74,8 @@ const Project: NextPage = () => {
       description: '',
       shortDescription: '',
       youTubeLink: '',
+      type: '',
+      tags: [],
     },
   });
 
@@ -80,10 +85,12 @@ const Project: NextPage = () => {
       const youTubeLink = meta.gallery?.find((item: any) => item.type === 'youtube');
       const galleryLinks = meta.gallery?.filter((item: any) => item.type === 'image');
 
-      form.setFieldValue('displayName', meta.name);
-      form.setFieldValue('website', meta.external_url);
-      form.setFieldValue('description', meta.description);
+      form.setFieldValue('displayName', meta.name ?? '');
+      form.setFieldValue('website', meta.external_url ?? '');
+      form.setFieldValue('description', meta.description ?? '');
       form.setFieldValue('youTubeLink', youTubeLink?.src ?? '');
+      form.setFieldValue('tags', meta.tags ?? []);
+      form.setFieldValue('type', meta.type ?? '');
 
       setGallery(galleryLinks?.map((item: any) => item.src) ?? []);
       setMainCapsule(meta.main_capsule);
@@ -172,6 +179,25 @@ const Project: NextPage = () => {
               label="Website"
               disabled={loading}
               {...form.getInputProps('website')}
+            />
+            <Select
+              label="Type"
+              data={defaultTypes}
+              placeholder="Select type"
+              nothingFound="Nothing found"
+              searchable
+              creatable
+              getCreateLabel={(query) => `+ Create ${query}`}
+              {...form.getInputProps('type')}
+            />
+            <MultiSelect
+              label="Tags"
+              data={defaultTags}
+              placeholder="Select tags"
+              searchable
+              creatable
+              getCreateLabel={(query) => `+ Create ${query}`}
+              {...form.getInputProps('tags')}
             />
           </Stack>
           <Group mt="lg">

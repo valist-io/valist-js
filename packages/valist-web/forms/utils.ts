@@ -10,13 +10,6 @@ import {
 const LOADING_ID = 'valist-loading-notification';
 const ERROR_ID = 'valist-error-notification';
 
-// see https://stackoverflow.com/a/27728417
-const youTubeRegex = /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/; 
-
-export const refineYouTube = (val: string) => (
-  val.length === 0 || youTubeRegex.test(val)
-);
-
 export const showError = (error: any) => showNotification({
   id: ERROR_ID,
   autoClose: false,
