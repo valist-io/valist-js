@@ -21,3 +21,10 @@ Primary.args = {
   grow: true,
   active: 0,
 };
+
+export const Card = Template.bind({});
+
+Card.args = {
+  active: 0,
+  variant: 'card',
+};

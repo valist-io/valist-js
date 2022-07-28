@@ -8,7 +8,7 @@ export interface TabsStyleParams {
 
 export default createStyles((theme, params: TabsStyleParams, getRef) => {
   const background = theme.colorScheme === 'dark' 
-    ? theme.black 
+    ? theme.colors.dark[7]
     : theme.white;
 
   return {
