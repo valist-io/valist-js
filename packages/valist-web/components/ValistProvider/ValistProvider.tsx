@@ -25,7 +25,9 @@ export function ValistProvider(props: ValistProviderProps) {
   useEffect(() => {
     const options: Partial<Options> = { chainId: chain?.id, metaTx: props.metaTx };
     if (signer?.provider) {
-      create(signer.provider as any, options).then(setClient);
+      create(signer.provider as any, options)
+        .then(setClient)
+        .catch(console.error);
     } else {
       setClient(createReadOnly(provider as any, options));
     }
