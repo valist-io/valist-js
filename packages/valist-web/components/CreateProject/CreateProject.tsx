@@ -1,23 +1,20 @@
 import type { NextPage } from 'next';
-import React, { useState, useEffect, useContext } from 'react';
-import useSWRImmutable from 'swr/immutable';
-import { useAccount, useNetwork } from 'wagmi';
+import React, { useState, useContext } from 'react';
+import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import { useApolloClient, useQuery } from '@apollo/client';
+import { useListState } from '@mantine/hooks';
 import { useForm, zodResolver } from '@mantine/form';
-import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
+import { AccountContext } from '@/components/AccountProvider';
 import { AddressInput } from '@/components/AddressInput';
-import { defaultTags, defaultTypes } from '@/forms/common';
-import query from '@/graphql/UpdateProjectPage.graphql';
+import query from '@/graphql/CreateProjectPage.graphql';
 
 import { 
   schema,
   FormValues,
-  updateProject,
-  addProjectMember,
-  removeProjectMember,
-} from '@/forms/update-project';
+  createProject, 
+} from '@/forms/create-project';
 
 import {
   Group,
@@ -27,8 +24,6 @@ import {
   List,
   TextInput,
   Textarea,
-  Select,
-  MultiSelect,
 } from '@mantine/core';
 
 import { 
@@ -39,116 +34,85 @@ import {
   GalleryInput,
 } from '@valist/ui';
 
-const Project: NextPage = () => {
+interface CreateProjectProps {
+  afterCreate?: () => void;
+}
+
+const CreateProject = (props: CreateProjectProps):JSX.Element => {
   const router = useRouter();
   const { cache } = useApolloClient();
   const { address } = useAccount();
-  const { chain } = useNetwork();
 
   const valist = useContext(ValistContext);
+  const { account } = useContext(AccountContext);
+
+  const { data } = useQuery(query, {
+    variables: { id: account?.id ?? '' },
+  });
 
   const accountName = `${router.query.account}`;
-  const accountId = valist.generateID(chain?.id ?? 0, accountName);
-
-  const projectName = `${router.query.project}`;
-  const projectId = valist.generateID(accountId, projectName);
-
-  const { data } = useQuery(query, { variables: { projectId } });
-  const { data: meta } = useSWRImmutable(data?.project?.metaURI);
-
-  const accountMembers = data?.project?.account?.members ?? [];
-  const projectMembers = data?.project?.members ?? [];
+  const accountMembers = data?.account?.members ?? [];
 
   // form values
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [image, setImage] = useState<File | string>();
   const [mainCapsule, setMainCapsule] = useState<File | string>();
   const [gallery, setGallery] = useState<(File | string)[]>([]);
+  const [members, membersHandlers] = useListState<string>([]);
+
+  // form controls
+  const [active, setActive] = useState(0);
+  const nextStep = () => setActive(active < 3 ? active + 1 : active);
+  const prevStep = () => setActive(active > 0 ? active - 1 : active);
+
+  const removeMember = (member: string) => {
+    membersHandlers.filter((other: string) => 
+      other.toLowerCase() !== member.toLowerCase(),
+    );
+  };
+
+  const addMember = (member: string) => {
+    removeMember(member);
+    membersHandlers.append(member);
+  };
 
   const form = useForm<FormValues>({
     schema: zodResolver(schema),
     initialValues: {
+      projectName: '',
       displayName: '',
       website: '',
       description: '',
       shortDescription: '',
       youTubeLink: '',
-      type: '',
-      tags: [],
     },
   });
 
-  // wait for metadata to load
-  useEffect(() => {
-    if (meta) {
-      const youTubeLink = meta.gallery?.find((item: any) => item.type === 'youtube');
-      const galleryLinks = meta.gallery?.filter((item: any) => item.type === 'image');
-
-      form.setFieldValue('displayName', meta.name ?? '');
-      form.setFieldValue('website', meta.external_url ?? '');
-      form.setFieldValue('description', meta.description ?? '');
-      form.setFieldValue('youTubeLink', youTubeLink?.src ?? '');
-      form.setFieldValue('tags', meta.tags ?? []);
-      form.setFieldValue('type', meta.type ?? '');
-
-      setGallery(galleryLinks?.map((item: any) => item.src) ?? []);
-      setMainCapsule(meta.main_capsule);
-      setImage(meta.image);
-      setLoading(false);
-    }
-  }, [meta]);
-
-  const removeMember = (member: string) => {
+  const submit = (values: FormValues) => {
     setLoading(true);
-    removeProjectMember(
+    createProject(
       address,
-      projectId,
-      member,
-      valist,
-      cache,
-    ).finally(() => {
-      setLoading(false);
-    });
-  };
-
-  const addMember = (member: string) => {
-    setLoading(true);
-    addProjectMember(
-      address,
-      projectId,
-      member,
-      valist,
-      cache,
-    ).finally(() => {
-      setLoading(false);
-    });
-  };
-
-  const update = (values: FormValues) => {
-    setLoading(true);
-    updateProject(
-      address,
-      projectId,
+      account?.id,
       image,
       mainCapsule,
       gallery,
+      members,
       values,
       valist,
       cache,
-    ).finally(() => {
+    ).then(success => {
+      if (success) {
+        if (props.afterCreate) props.afterCreate();
+        router.push('/');  
+      }
+    }).finally(() => {
       setLoading(false);  
     });
   };
 
   return (
-    <Layout
-      breadcrumbs={[
-        { title: accountName, href: `/${accountName}` },
-        { title: projectName, href: `/${accountName}/${projectName}` },
-        { title: 'Settings', href: `/-/account/${accountName}/project/${projectName}/settings` },
-      ]}
-    >
-      <Tabs grow>
+    <div>
+      <Tabs active={active} onTabChange={setActive} grow>
         <Tabs.Tab label="Basic Info">
           <Stack style={{ maxWidth: 784 }}>
             <Title mt="lg">Basic Info</Title>
@@ -164,9 +128,9 @@ const Project: NextPage = () => {
             <Title order={2}>Project Details</Title>
             <TextInput 
               label="Project Name (cannot be changed)"
-              disabled={true}
-              value={projectName}
+              disabled={loading}
               required
+              {...form.getInputProps('projectName')}
             />
             <TextInput 
               label="Display Name"
@@ -179,29 +143,7 @@ const Project: NextPage = () => {
               disabled={loading}
               {...form.getInputProps('website')}
             />
-            <Select
-              label="Type"
-              data={defaultTypes}
-              placeholder="Select type"
-              nothingFound="Nothing found"
-              searchable
-              creatable
-              getCreateLabel={(query) => `+ Create ${query}`}
-              {...form.getInputProps('type')}
-            />
-            <MultiSelect
-              label="Tags"
-              data={defaultTags}
-              placeholder="Select tags"
-              searchable
-              creatable
-              getCreateLabel={(query) => `+ Create ${query}`}
-              {...form.getInputProps('tags')}
-            />
           </Stack>
-          <Group mt="lg">
-            <Button onClick={form.onSubmit(update)} disabled={loading}>Save</Button>
-          </Group>
         </Tabs.Tab>
         <Tabs.Tab label="Descriptions">
           <Stack style={{ maxWidth: 784 }}>
@@ -225,9 +167,6 @@ const Project: NextPage = () => {
               {...form.getInputProps('description')}
             />
           </Stack>
-          <Group mt="lg">
-            <Button onClick={form.onSubmit(update)} disabled={loading}>Save</Button>
-          </Group>
         </Tabs.Tab>
         <Tabs.Tab label="Members">
           <Stack style={{ maxWidth: 784 }}>
@@ -241,7 +180,7 @@ const Project: NextPage = () => {
             <Title order={2}>Account Admins</Title>
             <MemberList
               label="Account Admin"
-              members={accountMembers.map((member: any) => member.id)}
+              members={accountMembers.map((acc: any) => acc.id)}
             />
             <Title order={2}>Project Admins</Title>
             <AddressInput
@@ -250,7 +189,7 @@ const Project: NextPage = () => {
             />
             <MemberList
               label="Project Admin"
-              members={projectMembers.map((member: any) => member.id)}
+              members={members}
               onRemove={removeMember}
               editable={!loading}
             />
@@ -284,13 +223,21 @@ const Project: NextPage = () => {
               disabled={loading}
             />
           </Stack>
-          <Group mt="lg">
-            <Button onClick={form.onSubmit(update)} disabled={loading}>Save</Button>
-          </Group>
         </Tabs.Tab>
       </Tabs>
-    </Layout>
+      <Group mt="lg">
+        { active > 0 && 
+          <Button onClick={() => prevStep()} variant="secondary">Back</Button>
+        }
+        { active < 3 &&
+          <Button onClick={() => nextStep()} variant="primary">Continue</Button>
+        }
+        { active === 3 &&
+          <Button onClick={form.onSubmit(submit)} disabled={loading}>Create</Button>
+        }
+      </Group>
+    </div>
   );
 };
 
-export default Project;
+export default CreateProject;

@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { NextLink } from '@mantine/next';
 import { Layout } from '@/components/Layout';
@@ -12,6 +12,7 @@ import {
   Title, 
   Group,
   Stack,
+  Grid,
 } from '@mantine/core';
 
 import {
@@ -22,10 +23,22 @@ import {
   ProjectCard,
   MemberStack,
   List,
+  NoProjects,
+  Welcome,
+  CheckboxList,
 } from '@valist/ui';
+import { useAccount } from 'wagmi';
+import CreateAccount from '@/components/CreateAccount/CreateAccount';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
+import { useRouter } from 'next/router';
+import CreateProject from '@/components/CreateProject/CreateProject';
 
 const IndexPage: NextPage = () => {
+  const router = useRouter();
   const { account } = useContext(AccountContext);
+  const { openConnectModal } = useConnectModal();
+  const { isConnected } = useAccount();
+  const [continueOnboarding, setContinueOnboarding] = useState<boolean>(false);
 
   const { data } = useQuery(query, { 
     variables: { accountId: account?.id ?? '' },
@@ -35,17 +48,50 @@ const IndexPage: NextPage = () => {
   const members = data?.account?.members ?? [];
   const logs = data?.account?.logs ?? [];
 
+  const steps = [
+    { label: 'Connect Wallet', checked: isConnected },
+    { label: 'Create Account', checked: continueOnboarding || (account !== undefined) },
+    { label: 'Create Project (Optional)', checked: false },
+  ];
+
   return (
     <Layout>
-      <Group position="apart" mb="xl">
+      {account && !continueOnboarding &&
+        <Group position="apart" mb="xl">
         <Title>Dashboard</Title>
-        <NextLink href={`/-/account/${account?.name}/create/project`}>
-          <Button>Create Project</Button>
-        </NextLink>
-      </Group>
+          <NextLink href={`/-/account/${account?.name}/create/project`}>
+            <Button>Create Project</Button>
+          </NextLink>
+        </Group>
+      }
       <Dashboard>
         <Dashboard.Main>
-          <CardGrid>
+          {(!account || continueOnboarding) &&
+            <Grid>
+              <Grid.Col md={4}>
+                <CheckboxList items={steps} />
+              </Grid.Col>
+              <Grid.Col md={8}>
+                {!isConnected && 
+                  <Welcome button={
+                    <Button onClick={openConnectModal}>Connect Wallet</Button>
+                  } />
+                }
+                {isConnected && !continueOnboarding && 
+                  <CreateAccount afterCreate={() => setContinueOnboarding(true)} />
+                }
+                {isConnected && continueOnboarding && 
+                  <CreateProject afterCreate={() => setContinueOnboarding(false)} />
+                }
+              </Grid.Col>
+            </Grid>
+          }
+
+          {(account && !continueOnboarding && projects.length === 0) && 
+             <NoProjects action={() => router.push(`/-/account/${account?.name}/create/project`)} />
+          }
+
+          {projects && <CardGrid>
             {projects.map((project: any, index: number) =>
                <Metadata key={index} url={project.metaURI}>
                 {(data: any) =>
@@ -63,9 +109,9 @@ const IndexPage: NextPage = () => {
                 }
               </Metadata>,
             )}
-          </CardGrid>
+          </CardGrid>}
         </Dashboard.Main>
-        <Dashboard.Side>
+        {account && !continueOnboarding && <Dashboard.Side>
           <Card>
             <Stack spacing={24}>
               <Title order={5}>Members</Title>
@@ -82,7 +128,7 @@ const IndexPage: NextPage = () => {
               </List>
             </Stack>
           </Card>
-        </Dashboard.Side>
+        </Dashboard.Side>}
       </Dashboard>
     </Layout>
   );
