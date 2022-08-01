@@ -2,9 +2,14 @@ import React, { useState, useContext } from 'react';
 import { useRouter } from 'next/router';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import * as Icons from 'tabler-icons-react';
-import { Anchor } from '@mantine/core';
+import { NextLink } from '@mantine/next';
 import { AccountSelect } from '@/components/AccountSelect';
 import { AccountContext } from '@/components/AccountProvider';
+
+import { 
+  Anchor,
+  ActionIcon,
+} from '@mantine/core';
 
 import { 
   AppShell,
@@ -50,6 +55,9 @@ export function Layout(props: LayoutProps) {
             accountStatus="avatar" 
             showBalance={false}
           />
+          <ActionIcon component={NextLink} href="/-/gas" variant="transparent">
+            <Icons.GasStation size={18} />
+          </ActionIcon>
           <ThemeButton />
         </Header>
       }

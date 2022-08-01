@@ -55,8 +55,6 @@ export async function updateProject(
       gallery: [],
     };
 
-    console.log('META!!!!', meta);
-
     utils.showLoading('Uploading files');
     if (image) {
       meta.image = await utils.writeFile(image, valist);

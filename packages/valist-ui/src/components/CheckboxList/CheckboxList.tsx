@@ -13,12 +13,14 @@ export function CheckboxList(props: CheckboxListProps):JSX.Element {
 
   return (
     <>
-      {props?.items?.map((item) => 
+      {props?.items?.map((item, index) => 
         <Checkbox
+          key={index}
           label={item.label}
           checked={item.checked}
           classNames={classes}
           radius="lg"
+          readOnly
         />
       )}
     </>

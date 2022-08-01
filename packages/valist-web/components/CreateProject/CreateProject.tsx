@@ -8,6 +8,7 @@ import { useForm, zodResolver } from '@mantine/form';
 import { ValistContext } from '@/components/ValistProvider';
 import { AccountContext } from '@/components/AccountProvider';
 import { AddressInput } from '@/components/AddressInput';
+import { defaultTags, defaultTypes } from '@/forms/common';
 import query from '@/graphql/CreateProjectPage.graphql';
 
 import { 
@@ -24,6 +25,8 @@ import {
   List,
   TextInput,
   Textarea,
+  Select,
+  MultiSelect,
 } from '@mantine/core';
 
 import { 
@@ -85,6 +88,8 @@ const CreateProject = (props: CreateProjectProps):JSX.Element => {
       description: '',
       shortDescription: '',
       youTubeLink: '',
+      tags: [],
+      type: '',
     },
   });
 
@@ -142,6 +147,25 @@ const CreateProject = (props: CreateProjectProps):JSX.Element => {
               label="Website"
               disabled={loading}
               {...form.getInputProps('website')}
+            />
+            <Select
+              label="Type"
+              data={defaultTypes}
+              placeholder="Select type"
+              nothingFound="Nothing found"
+              searchable
+              creatable
+              getCreateLabel={(query) => `+ Create ${query}`}
+              {...form.getInputProps('type')}
+            />
+            <MultiSelect
+              label="Tags"
+              data={defaultTags}
+              placeholder="Select tags"
+              searchable
+              creatable
+              getCreateLabel={(query) => `+ Create ${query}`}
+              {...form.getInputProps('tags')}
             />
           </Stack>
         </Tabs.Tab>
