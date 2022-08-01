@@ -30,7 +30,7 @@ export function DiscoveryLayout(props: DiscoveryLayoutProps) {
           <Anchor target="_blank" href="/-/discover">Discover</Anchor>
           <ConnectButton 
             chainStatus="icon" 
-            accountStatus="avatar"
+            accountStatus="address" 
             showBalance={false}
           />
         </Header>
