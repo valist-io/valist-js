@@ -32,9 +32,11 @@ import CreateAccount from '@/components/CreateAccount/CreateAccount';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { useRouter } from 'next/router';
 import CreateProject from '@/components/CreateProject/CreateProject';
+import { useIsMounted } from '../utils/useIsMounted';
 
 const IndexPage: NextPage = () => {
   const router = useRouter();
+  const isMounted = useIsMounted();
   const { account } = useContext(AccountContext);
   const { openConnectModal } = useConnectModal();
   const { isConnected } = useAccount();
@@ -49,7 +51,7 @@ const IndexPage: NextPage = () => {
   const logs = data?.account?.logs ?? [];
 
   const steps = [
-    { label: 'Connect Wallet', checked: isConnected },
+    { label: 'Connect Wallet', checked: isMounted() && isConnected },
     { label: 'Create Account', checked: continueOnboarding || (account !== undefined) },
     { label: 'Create Project (Optional)', checked: false },
   ];
@@ -72,15 +74,15 @@ const IndexPage: NextPage = () => {
                 <CheckboxList items={steps} />
               </Grid.Col>
               <Grid.Col md={8}>
-                {!isConnected && 
+                {isMounted() && !isConnected && 
                   <Welcome button={
                     <Button onClick={openConnectModal}>Connect Wallet</Button>
                   } />
                 }
-                {isConnected && !continueOnboarding && 
+                {isMounted() && isConnected && !continueOnboarding && 
                   <CreateAccount afterCreate={() => setContinueOnboarding(true)} />
                 }
-                {isConnected && continueOnboarding && 
+                {isMounted() && isConnected && continueOnboarding && 
                   <CreateProject afterCreate={() => setContinueOnboarding(false)} />
                 }
               </Grid.Col>
