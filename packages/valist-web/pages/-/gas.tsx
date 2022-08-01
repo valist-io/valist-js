@@ -52,7 +52,7 @@ const GasTank: NextPage = () => {
           label="Amount"
           precision={18}
           value={amount} 
-          onChange={setAmount} 
+          onChange={val => setAmount(val ?? 0)} 
           disabled={loading}
           hideControls
         />

@@ -1,4 +1,4 @@
-import { providers } from 'ethers';
+import { Signer, BigNumber } from 'ethers';
 import * as utils from './utils';
 
 export const paymasterAddress = '0x137F8009fc7795dD8a004fdb38852F54368194e8';
@@ -18,8 +18,8 @@ export const paymasterABI = `[{
 }]`;
 
 export async function deposit(
-  value: string,
-  signer: providers.JsonRpcSigner | undefined,
+  value: BigNumber,
+  signer: Signer | undefined | null,
 ): Promise<boolean | undefined> {
   try {
     utils.hideError();
