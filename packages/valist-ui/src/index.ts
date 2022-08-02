@@ -31,6 +31,7 @@ export { Navbar } from './components/Navbar';
 export { NoProjects } from './components/NoProjects';
 export { PublishPromo } from './components/PublishPromo';
 export { ProjectCard } from './components/ProjectCard';
+export { SearchOptions } from './components/SearchOptions';
 export { Social } from './components/Social';
 export { TabsListCard } from './components/TabsListCard';
 export { ThemeButton } from './components/ThemeButton';
