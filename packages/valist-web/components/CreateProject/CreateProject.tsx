@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import React, { useState, useContext } from 'react';
-import { useAccount } from 'wagmi';
+import { useAccount, useNetwork } from 'wagmi';
 import { useRouter } from 'next/router';
 import { useApolloClient, useQuery } from '@apollo/client';
 import { useListState } from '@mantine/hooks';
@@ -8,6 +8,7 @@ import { useForm, zodResolver } from '@mantine/form';
 import { ValistContext } from '@/components/ValistProvider';
 import { AccountContext } from '@/components/AccountProvider';
 import { AddressInput } from '@/components/AddressInput';
+import { NameInput } from '@/components/NameInput';
 import { defaultTags, defaultTypes } from '@/forms/common';
 import query from '@/graphql/CreateProjectPage.graphql';
 
@@ -45,6 +46,7 @@ const CreateProject = (props: CreateProjectProps):JSX.Element => {
   const router = useRouter();
   const { cache } = useApolloClient();
   const { address } = useAccount();
+  const { chain } = useNetwork();
 
   const valist = useContext(ValistContext);
   const { account } = useContext(AccountContext);
@@ -54,6 +56,7 @@ const CreateProject = (props: CreateProjectProps):JSX.Element => {
   });
 
   const accountName = `${router.query.account}`;
+  const accountId = valist.generateID(chain?.id ?? 0, accountName);
   const accountMembers = data?.account?.members ?? [];
 
   // form values
@@ -138,9 +141,10 @@ const CreateProject = (props: CreateProjectProps):JSX.Element => {
               disabled={loading}
             />
             <Title order={2}>Project Details</Title>
-            <TextInput 
+            <NameInput 
               label="Project Name (cannot be changed)"
               disabled={loading}
+              parentId={accountId}
               required
               {...form.getInputProps('projectName')}
             />
@@ -179,6 +183,7 @@ const CreateProject = (props: CreateProjectProps):JSX.Element => {
             <Button 
               onClick={() => setActiveTab('descriptions')}
               variant="primary"
+              disabled={!(form.values.projectName && form.values.displayName)}
             >
               Continue
             </Button>

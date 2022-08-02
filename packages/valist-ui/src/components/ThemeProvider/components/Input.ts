@@ -29,5 +29,8 @@ export const Input = {
           : theme.colors.gray[0],  
       },
     },
+    invalid: {
+      color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
+    }
   }),
 };

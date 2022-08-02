@@ -1,15 +1,15 @@
-import { AddressInput as AddressInputUI } from '@valist/ui';
+import { AsyncInput } from '@valist/ui';
 import { ethers } from 'ethers';
 import { useState, useEffect } from 'react';
 import { useEnsAddress } from '@/utils/ens';
+
+const isENS = (address: string) => address.endsWith('.eth');
+const isAddress = (address: string) => ethers.utils.isAddress(address);
 
 export interface AddressProps {
   onSubmit: (address: string) => void;
   disabled?: boolean;
 }
-
-const isENS = (address: string) => address.endsWith('.eth');
-const isAddress = (address: string) => ethers.utils.isAddress(address);
 
 export function AddressInput(props: AddressProps) {
   const [value, setValue] = useState('');
@@ -40,7 +40,9 @@ export function AddressInput(props: AddressProps) {
 
   return (
     <form onSubmit={submit}>
-      <AddressInputUI
+      <AsyncInput
+        label="Add member"
+        placeholder="Address or ENS"
         value={value} 
         error={error}
         disabled={props.disabled}

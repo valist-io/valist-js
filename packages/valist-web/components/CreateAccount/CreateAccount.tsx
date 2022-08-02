@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import React, { useState, useEffect, useContext } from 'react';
-import { useAccount } from 'wagmi';
+import { useAccount, useNetwork } from 'wagmi';
 import { useRouter } from 'next/router';
 import { useApolloClient } from '@apollo/client';
 import { useListState } from '@mantine/hooks';
@@ -8,6 +8,7 @@ import { useForm, zodResolver } from '@mantine/form';
 import { ValistContext } from '@/components/ValistProvider';
 import { AccountContext } from '@/components/AccountProvider';
 import { AddressInput } from '@/components/AddressInput';
+import { NameInput } from '@/components/NameInput';
 
 import { 
   schema,
@@ -39,6 +40,7 @@ const CreateAccount = (props: CreateAccountProps): JSX.Element => {
   const router = useRouter();
   const { cache } = useApolloClient();
   const { address } = useAccount();
+  const { chain } = useNetwork();
 
   const valist = useContext(ValistContext);
   const { setAccount } = useContext(AccountContext);
@@ -118,9 +120,10 @@ const CreateAccount = (props: CreateAccountProps): JSX.Element => {
             disabled={loading}
           />
           <Title order={2}>Account Details</Title>
-          <TextInput 
+          <NameInput 
             label="Account Name (cannot be changed)"
             disabled={loading}
+            parentId={chain?.id ?? 0}
             required
             {...form.getInputProps('accountName')}
           />
@@ -145,6 +148,7 @@ const CreateAccount = (props: CreateAccountProps): JSX.Element => {
           <Button 
             onClick={() => setActiveTab('members')} 
             variant="primary"
+            disabled={!(form.values.accountName && form.values.displayName)}
           >
             Continue
           </Button>

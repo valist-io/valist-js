@@ -84,7 +84,11 @@ export const AccountSelect: AccountSelectComponent = (props: AccountSelectProps)
             <Divider style={{ marginBottom: 16 }} />
             <Anchor href={props.href}>
               <Group spacing={10}>
-                <Icon.CirclePlus size={26} color="#fff" fill="#5850EC" />
+                <Icon.CirclePlus 
+                  size={26}
+                  fill="#5850EC" 
+                  className={classes.popoverFooterIcon} 
+                />
                 <Text color="#5850EC">New Account</Text>
               </Group>
             </Anchor>

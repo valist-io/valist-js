@@ -14,5 +14,10 @@ export default createStyles((theme, _params, getRef) => {
     popoverFooter: {
       padding: 24,
     },
+    popoverFooterIcon: {
+      color: theme.colorScheme === 'dark' 
+        ? theme.colors.dark[6]
+        : theme.white,
+    },
   };
 })

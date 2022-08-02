@@ -5,30 +5,32 @@ import {
 
 import * as Icon from 'tabler-icons-react';
 
-export interface AddressInputProps {
+export interface AsyncInputProps {
   disabled?: boolean;
   error?: string;
   loading?: boolean;
   valid?: boolean;
   value?: string;
+  label?: string;
+  required?: boolean;
+  placeholder?: string;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
 }
 
-export function AddressInput(props: AddressInputProps) {
+export function AsyncInput(props: AsyncInputProps) {
+  const { loading, valid, ...rest } = props;
+
   const status = props.loading
     ? <Loader color="#5850EC" size="xs" />
     : props.valid
     ? <Icon.Check color="#669F2A" />
+    : props.value
+    ? <Icon.AlertCircle color="#F04438" />
     : undefined;
 
   return (
     <TextInput
-      label="Add member"
-      placeholder="Address or ENS"
-      value={props.value}
-      onChange={props.onChange}
-      disabled={props.disabled}
-      error={props.error}
+      {...rest}
       rightSection={status}
     />
   );

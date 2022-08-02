@@ -7,6 +7,7 @@ import { useForm, zodResolver } from '@mantine/form';
 import { useApolloClient, useQuery } from '@apollo/client';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
+import { NameInput } from '@/components/NameInput';
 import query from '@/graphql/CreateReleasePage.graphql';
 
 import {
@@ -99,6 +100,7 @@ const CreateReleasePage: NextPage = () => {
     >
       <Tabs
         defaultValue="basic"
+        value={activeTab}
         onTabChange={setActiveTab}
       >
         <Tabs.List grow>
@@ -118,10 +120,11 @@ const CreateReleasePage: NextPage = () => {
               disabled={loading}
             />
             <Title order={2}>Release Details</Title>
-            <TextInput 
+            <NameInput 
               label="Release Name (cannot be changed)"
               placeholder={latestReleaseName}
               disabled={loading}
+              parentId={projectId}
               required
               {...form.getInputProps('releaseName')}
             />
@@ -144,6 +147,7 @@ const CreateReleasePage: NextPage = () => {
             <Button 
               onClick={() => setActiveTab('files')}
               variant="primary"
+              disabled={!(form.values.releaseName && form.values.displayName)}
             >
               Continue
             </Button>
