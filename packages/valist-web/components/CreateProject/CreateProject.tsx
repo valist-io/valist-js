@@ -27,10 +27,10 @@ import {
   Textarea,
   Select,
   MultiSelect,
+  Tabs,
 } from '@mantine/core';
 
 import { 
-  Tabs,
   Button,
   ImageInput,
   MemberList,
@@ -62,11 +62,7 @@ const CreateProject = (props: CreateProjectProps):JSX.Element => {
   const [mainCapsule, setMainCapsule] = useState<File | string>();
   const [gallery, setGallery] = useState<(File | string)[]>([]);
   const [members, membersHandlers] = useListState<string>([]);
-
-  // form controls
-  const [active, setActive] = useState(0);
-  const nextStep = () => setActive(active < 3 ? active + 1 : active);
-  const prevStep = () => setActive(active > 0 ? active - 1 : active);
+  const [activeTab, setActiveTab] = useState<string | null>();
 
   const removeMember = (member: string) => {
     membersHandlers.filter((other: string) => 
@@ -80,7 +76,8 @@ const CreateProject = (props: CreateProjectProps):JSX.Element => {
   };
 
   const form = useForm<FormValues>({
-    schema: zodResolver(schema),
+    validate: zodResolver(schema),
+    validateInputOnChange: true,
     initialValues: {
       projectName: '',
       displayName: '',
@@ -117,8 +114,18 @@ const CreateProject = (props: CreateProjectProps):JSX.Element => {
 
   return (
     <div>
-      <Tabs active={active} onTabChange={setActive} grow>
-        <Tabs.Tab label="Basic Info">
+      <Tabs 
+        defaultValue="basic"
+        value={activeTab}
+        onTabChange={setActiveTab}
+      >
+        <Tabs.List grow>
+          <Tabs.Tab value="basic">Basic Info</Tabs.Tab>
+          <Tabs.Tab value="descriptions">Descriptions</Tabs.Tab>
+          <Tabs.Tab value="members">Members</Tabs.Tab>
+          <Tabs.Tab value="media">Media</Tabs.Tab>
+        </Tabs.List>
+        <Tabs.Panel value="basic">
           <Stack style={{ maxWidth: 784 }}>
             <Title mt="lg">Basic Info</Title>
             <Text color="dimmed">This is your public account info.</Text>
@@ -168,8 +175,16 @@ const CreateProject = (props: CreateProjectProps):JSX.Element => {
               {...form.getInputProps('tags')}
             />
           </Stack>
-        </Tabs.Tab>
-        <Tabs.Tab label="Descriptions">
+          <Group mt="lg">
+            <Button 
+              onClick={() => setActiveTab('descriptions')}
+              variant="primary"
+            >
+              Continue
+            </Button>
+          </Group>
+        </Tabs.Panel>
+        <Tabs.Panel value="descriptions">
           <Stack style={{ maxWidth: 784 }}>
             <Title mt="lg">Descriptions</Title>
             <Text color="dimmed">Let everyone know about your project.</Text>
@@ -191,8 +206,22 @@ const CreateProject = (props: CreateProjectProps):JSX.Element => {
               {...form.getInputProps('description')}
             />
           </Stack>
-        </Tabs.Tab>
-        <Tabs.Tab label="Members">
+          <Group mt="lg">
+            <Button 
+              onClick={() => setActiveTab('basic')}
+              variant="secondary"
+            >
+              Back
+            </Button>
+            <Button 
+              onClick={() => setActiveTab('members')}
+              variant="primary"
+            >
+              Continue
+            </Button>
+          </Group>
+        </Tabs.Panel>
+        <Tabs.Panel value="members">
           <Stack style={{ maxWidth: 784 }}>
             <Title mt="lg">Members</Title>
             <Text color="dimmed">Members can perform the following actions:</Text>
@@ -218,8 +247,22 @@ const CreateProject = (props: CreateProjectProps):JSX.Element => {
               editable={!loading}
             />
           </Stack>
-        </Tabs.Tab>
-        <Tabs.Tab label="Media">
+          <Group mt="lg">
+            <Button 
+              onClick={() => setActiveTab('descriptions')}
+              variant="secondary"
+            >
+              Back
+            </Button>
+            <Button 
+              onClick={() => setActiveTab('media')}
+              variant="primary"
+            >
+              Continue
+            </Button>
+          </Group>
+        </Tabs.Panel>
+        <Tabs.Panel value="media">
           <Stack style={{ maxWidth: 784 }}>
             <Title mt="lg">Media</Title>
             <Text color="dimmed">Show off your project with videos and images.</Text>
@@ -247,19 +290,22 @@ const CreateProject = (props: CreateProjectProps):JSX.Element => {
               disabled={loading}
             />
           </Stack>
-        </Tabs.Tab>
+          <Group mt="lg">
+            <Button 
+              onClick={() => setActiveTab('members')}
+              variant="secondary"
+            >
+              Back
+            </Button>
+            <Button 
+              onClick={() => form.onSubmit(submit)}
+              disabled={loading}
+            >
+              Create
+            </Button>
+          </Group>
+        </Tabs.Panel>
       </Tabs>
-      <Group mt="lg">
-        { active > 0 && 
-          <Button onClick={() => prevStep()} variant="secondary">Back</Button>
-        }
-        { active < 3 &&
-          <Button onClick={() => nextStep()} variant="primary">Continue</Button>
-        }
-        { active === 3 &&
-          <Button onClick={form.onSubmit(submit)} disabled={loading}>Create</Button>
-        }
-      </Group>
     </div>
   );
 };

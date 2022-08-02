@@ -9,8 +9,6 @@ export default createStyles((theme, _params, getRef) => {
       padding: 24,
     },
     popoverList: {
-      maxHeight: 266,
-      overflow: 'scroll',
       padding: '0 24px',
     },
     popoverFooter: {

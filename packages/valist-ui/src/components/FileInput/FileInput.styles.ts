@@ -8,5 +8,8 @@ export default createStyles((theme, _params, getRef) => {
         ? `1px dashed ${theme.colors.gray[2]}`
         : `1px dashed ${theme.colors.gray[3]}`,
     },
+    inner: {
+      height: '100%',
+    },
   };
 });

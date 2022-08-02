@@ -16,9 +16,12 @@ import { ValistProvider } from '@/components/ValistProvider';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
-const defaultProps = {
+// theme overrides
+const components = {
   Anchor: {
-    component: NextLink,
+    defaultProps: {
+      component: NextLink,
+    },
   },
 };
 
@@ -42,7 +45,7 @@ function ValistApp(props: AppProps) {
           <AccountProvider>
             <ValistProvider metaTx>
               <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
-                <ThemeProvider colorScheme={colorScheme} defaultProps={defaultProps}>
+                <ThemeProvider theme={{ colorScheme, components }}>
                   <NotificationsProvider>
                     <Component {...pageProps} />
                   </NotificationsProvider>

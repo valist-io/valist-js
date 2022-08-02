@@ -33,7 +33,7 @@ export { PublishPromo } from './components/PublishPromo';
 export { ProjectCard } from './components/ProjectCard';
 export { SearchOptions } from './components/SearchOptions';
 export { Social } from './components/Social';
-export { Tabs } from './components/Tabs';
+export { TabsListCard } from './components/TabsListCard';
 export { ThemeButton } from './components/ThemeButton';
 export { ThemeProvider } from './components/ThemeProvider';
 export { Welcome } from './components/Welcome';
