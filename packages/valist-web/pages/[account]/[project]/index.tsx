@@ -16,12 +16,12 @@ import {
   Account,
   Button,
   Dashboard,
-  Tabs,
   Card,
   List,
   Markdown,
   MemberList,
   MemberStack,
+  TabsListCard,
 } from '@valist/ui';
 
 import { 
@@ -31,6 +31,7 @@ import {
   Text,
   Group, 
   Stack,
+  Tabs,
 } from '@mantine/core';
 
 const ProjectPage: NextPage = () => {
@@ -39,7 +40,6 @@ const ProjectPage: NextPage = () => {
 
   const router = useRouter();
   const valist = useContext(ValistContext);
-  const [active, setActive] = useState(0);
 
   const accountName = `${router.query.account}`;
   const accountId = valist.generateID(chain?.id ?? 0, accountName);
@@ -104,8 +104,14 @@ const ProjectPage: NextPage = () => {
       </Group>
       <Dashboard>
         <Dashboard.Main>
-          <Tabs active={active} onTabChange={setActive} variant="card">
-            <Tabs.Tab label="Readme">
+          <Tabs defaultValue="readme">
+            <TabsListCard>
+              <Tabs.Tab value="readme">Readme</Tabs.Tab>
+              <Tabs.Tab value="versions">Versions</Tabs.Tab>
+              <Tabs.Tab value="activity">Activity</Tabs.Tab>
+              <Tabs.Tab value="members">Members</Tabs.Tab>
+            </TabsListCard>
+            <Tabs.Panel value="readme">
               <Stack spacing={24}>
                 { (projectMeta?.gallery && projectMeta?.gallery?.length !== 0) &&
                   <Gallery assets={projectMeta?.gallery} />
@@ -123,8 +129,8 @@ const ProjectPage: NextPage = () => {
                   </Markdown>
                 </Card>
               </Stack>
-            </Tabs.Tab>
-            <Tabs.Tab label="Versions">
+            </Tabs.Panel>
+            <Tabs.Panel value="versions">
               <Card>
                 <List>
                   {releases.map((release: any, index: number) => 
@@ -135,8 +141,8 @@ const ProjectPage: NextPage = () => {
                   )}
                 </List>
               </Card>
-            </Tabs.Tab>
-            <Tabs.Tab label="Activity">
+            </Tabs.Panel>
+            <Tabs.Panel value="activity">
               <Card>
                 <List>
                   {logs.map((log: any, index: number) => 
@@ -144,8 +150,8 @@ const ProjectPage: NextPage = () => {
                   )}
                 </List>
               </Card>
-            </Tabs.Tab>
-            <Tabs.Tab label="Members">
+            </Tabs.Panel>
+            <Tabs.Panel value="members">
               <Card>
                 <List>
                   <MemberList
@@ -158,7 +164,7 @@ const ProjectPage: NextPage = () => {
                   />
                 </List>
               </Card>
-            </Tabs.Tab>
+            </Tabs.Panel>
           </Tabs>
         </Dashboard.Main>
         <Dashboard.Side>

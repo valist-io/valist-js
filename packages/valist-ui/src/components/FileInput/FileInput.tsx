@@ -24,12 +24,10 @@ export function FileInput(props: FileInputProps) {
       disabled={props.disabled}
       multiple
     >
-      {(status) => 
-        <Stack align="center" justify="center" style={{ height: '100%' }}>
-          <Icon.FileUpload color={'#9595A8'} size={64} />
-          <Text color="dimmed">Click or drop files to upload.</Text>
-        </Stack>
-      }
+      <Stack align="center" justify="center" style={{ height: '100%' }}>
+        <Icon.FileUpload color={'#9595A8'} size={64} />
+        <Text color="dimmed">Click or drop files to upload.</Text>
+      </Stack>
     </Dropzone>
   );
 }

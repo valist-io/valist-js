@@ -5,6 +5,8 @@ import {
   Text,
   Group,
   Anchor,
+  ScrollArea,
+  UnstyledButton,
 } from '@mantine/core';
 
 import React, { useState } from 'react';
@@ -13,7 +15,6 @@ import useStyles from './AccountSelect.styles'
 import { Account, AccountProps } from '../Account';
 import { Divider } from '../Divider';
 import { Option } from './Option/Option';
-import { Button } from './Button/Button';
 
 export interface AccountSelectProps {
   value: string;
@@ -45,41 +46,51 @@ export const AccountSelect: AccountSelectComponent = (props: AccountSelectProps)
   return (
     <Popover    
       width={324}
-      spacing={0}
       radius={0}
-      position="bottom"
-      placement="start"
+      position="bottom-start"
       opened={opened}
       onClose={() => setOpened(false)}
-      classNames={{ body: classes.popoverBody }}
-      target={
-        <Button 
-          style={props.style}
-          name={props.value} 
-          image={props.image} 
-          onClick={() => setOpened(!opened)}
-        />
-      }
+      classNames={{ dropdown: classes.popoverBody }}
     >
-      <Stack spacing={0}>
-        <div className={classes.popoverHeader}>
-          <Title order={5}>My Accounts</Title>
-        </div>
-        <Stack className={classes.popoverList}>
-          <AccountSelectContext.Provider value={{ value: props.value, setValue }}>
-            {props.children}
-          </AccountSelectContext.Provider>
+      <Popover.Target>
+        <UnstyledButton style={props.style} onClick={() => setOpened(!opened)}>
+          <Group spacing={10}>
+            <Account 
+              name={props.value} 
+              label="change account" 
+              image={props.image} 
+            />
+            <Icon.CaretDown 
+              style={{ alignSelf: 'flex-start', marginTop: 4 }} 
+              size={16} 
+              fill="currentColor" 
+            />
+          </Group>
+        </UnstyledButton>
+      </Popover.Target>
+      <Popover.Dropdown>
+        <Stack spacing={0}>
+          <div className={classes.popoverHeader}>
+            <Title order={5}>My Accounts</Title>
+          </div>
+          <ScrollArea.Autosize maxHeight={266}>
+            <Stack className={classes.popoverList}>
+              <AccountSelectContext.Provider value={{ value: props.value, setValue }}>
+                {props.children}
+              </AccountSelectContext.Provider>
+            </Stack>
+          </ScrollArea.Autosize>
+          <div className={classes.popoverFooter}>
+            <Divider style={{ marginBottom: 16 }} />
+            <Anchor href={props.href}>
+              <Group spacing={10}>
+                <Icon.CirclePlus size={26} color="#fff" fill="#5850EC" />
+                <Text color="#5850EC">New Account</Text>
+              </Group>
+            </Anchor>
+          </div>
         </Stack>
-        <div className={classes.popoverFooter}>
-          <Divider style={{ marginBottom: 16 }} />
-          <Anchor href={props.href}>
-            <Group spacing={10}>
-              <Icon.CirclePlus size={26} color="#fff" fill="#5850EC" />
-              <Text color="#5850EC">New Account</Text>
-            </Group>
-          </Anchor>
-        </div>
-      </Stack>
+      </Popover.Dropdown>
     </Popover>
   );
 }

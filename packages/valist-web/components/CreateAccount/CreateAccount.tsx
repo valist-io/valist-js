@@ -16,6 +16,7 @@ import {
 } from '@/forms/create-account';
 
 import {
+  Tabs,
   Title,
   Text,
   Stack,
@@ -25,7 +26,6 @@ import {
 } from '@mantine/core';
 
 import { 
-  Tabs,
   Button,
   ImageInput,
   MemberList,
@@ -47,11 +47,7 @@ const CreateAccount = (props: CreateAccountProps): JSX.Element => {
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState<File | string>();
   const [members, membersHandlers] = useListState<string>([]);
-
-  // form controls
-  const [active, setActive] = useState(0);
-  const nextStep = () => setActive(active < 1 ? active + 1 : active);
-  const prevStep = () => setActive(active > 0 ? active - 1 : active);
+  const [activeTab, setActiveTab] = useState<string | null>();
 
   const removeMember = (member: string) => {
     membersHandlers.filter((other: string) => 
@@ -70,7 +66,8 @@ const CreateAccount = (props: CreateAccountProps): JSX.Element => {
   }, [address]);
 
   const form = useForm<FormValues>({
-    schema: zodResolver(schema),
+    validate: zodResolver(schema),
+    validateInputOnChange: true,
     initialValues: {
       accountName: '',
       displayName: '',
@@ -99,83 +96,100 @@ const CreateAccount = (props: CreateAccountProps): JSX.Element => {
   };
 
   return (
-    <div>
-      <Tabs active={active} onTabChange={setActive} grow>
-        <Tabs.Tab label="Basic Info">
-          <Stack style={{ maxWidth: 784 }}>
-            <Title mt="lg">Basic Info</Title>
-            <Text color="dimmed">This is your public account info.</Text>
-            <Title order={2}>Account Image</Title>
-            <ImageInput 
-              width={300}
-              height={300}
-              onChange={setImage} 
-              value={image}
-              disabled={loading}
-            />
-            <Title order={2}>Account Details</Title>
-            <TextInput 
-              label="Account Name (cannot be changed)"
-              disabled={loading}
-              required
-              {...form.getInputProps('accountName')}
-            />
-            <TextInput 
-              label="Display Name"
-              disabled={loading}
-              required 
-              {...form.getInputProps('displayName')}
-            />
-            <TextInput 
-              label="Website"
-              disabled={loading}
-              {...form.getInputProps('website')}
-            />
-            <TextInput
-              label="Description"
-              disabled={loading}
-              {...form.getInputProps('description')}
-            />
-          </Stack>
-        </Tabs.Tab>
-        <Tabs.Tab label="Members">
-          <Stack style={{ maxWidth: 784 }}>
-            <Title mt="lg">Members</Title>
-            <Text color="dimmed">Members can perform the following actions:</Text>
-            <List>
-              <List.Item>Update account info</List.Item>
-              <List.Item>Add or remove account members</List.Item>
-              <List.Item>Create new projects</List.Item>
-              <List.Item>Add or remove project members</List.Item>
-              <List.Item>Update project info</List.Item>
-              <List.Item>Publish new releases</List.Item>
-            </List>
-            <Title order={2}>Account Admins</Title>
-            <AddressInput
-              onSubmit={addMember}
-              disabled={loading}
-            />
-            <MemberList
-              label="Account Admin"
-              members={members}
-              onRemove={removeMember}
-              editable={!loading}
-            />
-          </Stack>
-        </Tabs.Tab>
-      </Tabs>
-      <Group mt="lg">
-        { active > 0 && 
-          <Button onClick={() => prevStep()} variant="secondary">Back</Button>
-        }
-        { active < 1 &&
-          <Button onClick={() => nextStep()} variant="primary">Continue</Button>
-        }
-        { active === 1 &&
-          <Button onClick={form.onSubmit(submit)} disabled={loading}>Create</Button>
-        }
-      </Group>
-    </div>
+    <Tabs
+      defaultValue="basic"
+      value={activeTab}
+      onTabChange={setActiveTab}
+    >
+      <Tabs.List grow>
+        <Tabs.Tab value="basic">Basic Info</Tabs.Tab>
+        <Tabs.Tab value="members">Members</Tabs.Tab>
+      </Tabs.List>
+      <Tabs.Panel value="basic">
+        <Stack style={{ maxWidth: 784 }}>
+          <Title mt="lg">Basic Info</Title>
+          <Text color="dimmed">This is your public account info.</Text>
+          <Title order={2}>Account Image</Title>
+          <ImageInput 
+            width={300}
+            height={300}
+            onChange={setImage} 
+            value={image}
+            disabled={loading}
+          />
+          <Title order={2}>Account Details</Title>
+          <TextInput 
+            label="Account Name (cannot be changed)"
+            disabled={loading}
+            required
+            {...form.getInputProps('accountName')}
+          />
+          <TextInput 
+            label="Display Name"
+            disabled={loading}
+            required 
+            {...form.getInputProps('displayName')}
+          />
+          <TextInput 
+            label="Website"
+            disabled={loading}
+            {...form.getInputProps('website')}
+          />
+          <TextInput
+            label="Description"
+            disabled={loading}
+            {...form.getInputProps('description')}
+          />
+        </Stack>
+        <Group mt="lg">
+          <Button 
+            onClick={() => setActiveTab('members')} 
+            variant="primary"
+          >
+            Continue
+          </Button>
+        </Group>
+      </Tabs.Panel>
+      <Tabs.Panel value="members">
+        <Stack style={{ maxWidth: 784 }}>
+          <Title mt="lg">Members</Title>
+          <Text color="dimmed">Members can perform the following actions:</Text>
+          <List>
+            <List.Item>Update account info</List.Item>
+            <List.Item>Add or remove account members</List.Item>
+            <List.Item>Create new projects</List.Item>
+            <List.Item>Add or remove project members</List.Item>
+            <List.Item>Update project info</List.Item>
+            <List.Item>Publish new releases</List.Item>
+          </List>
+          <Title order={2}>Account Admins</Title>
+          <AddressInput
+            onSubmit={addMember}
+            disabled={loading}
+          />
+          <MemberList
+            label="Account Admin"
+            members={members}
+            onRemove={removeMember}
+            editable={!loading}
+          />
+        </Stack>
+        <Group mt="lg">
+          <Button 
+            onClick={() => setActiveTab('basic')} 
+            variant="secondary"
+          >
+            Back
+          </Button>
+          <Button 
+            onClick={() => form.onSubmit(submit)}
+            disabled={loading}
+          >
+            Create
+          </Button>
+        </Group>
+      </Tabs.Panel>
+    </Tabs>
   );
 };
 

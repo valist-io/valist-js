@@ -25,10 +25,10 @@ import {
   Group,
   List,
   TextInput,
+  Tabs,
 } from '@mantine/core';
 
 import { 
-  Tabs,
   Button,
   ImageInput,
   MemberList,
@@ -55,7 +55,8 @@ const SettingsPage: NextPage = () => {
   const [image, setImage] = useState<File | string>();
 
   const form = useForm<FormValues>({
-    schema: zodResolver(schema),
+    validate: zodResolver(schema),
+    validateInputOnChange: true,
     initialValues: {
       displayName: '',
       website: '',
@@ -121,8 +122,12 @@ const SettingsPage: NextPage = () => {
         { title: 'Settings', href: `/-/${accountName}/settings` },
       ]}
     >
-      <Tabs grow>
-        <Tabs.Tab label="Basic Info">
+      <Tabs defaultValue="basic">
+        <Tabs.List grow>
+          <Tabs.Tab value="basic">Basic Info</Tabs.Tab>
+          <Tabs.Tab value="members">Members</Tabs.Tab>
+        </Tabs.List>
+        <Tabs.Panel value="basic">
           <Stack style={{ maxWidth: 784 }}>
             <Title mt="lg">Basic Info</Title>
             <Text color="dimmed">This is your public account info.</Text>
@@ -158,10 +163,10 @@ const SettingsPage: NextPage = () => {
             />
           </Stack>
           <Group mt="lg">
-            <Button onClick={form.onSubmit(update)} disabled={loading}>Save</Button>
+            <Button onClick={() => form.onSubmit(update)} disabled={loading}>Save</Button>
           </Group>
-        </Tabs.Tab>
-        <Tabs.Tab label="Members">
+        </Tabs.Panel>
+        <Tabs.Panel value="members">
           <Stack style={{ maxWidth: 784 }}>
             <Title mt="lg">Members</Title>
             <Text color="dimmed">Members can perform the following actions:</Text>
@@ -185,7 +190,7 @@ const SettingsPage: NextPage = () => {
               editable={!loading}
             />
           </Stack>
-        </Tabs.Tab>
+        </Tabs.Panel>
       </Tabs>
     </Layout>
   );

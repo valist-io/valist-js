@@ -25,10 +25,10 @@ import {
   Textarea,
   NumberInput,
   List,
+  Tabs,
 } from '@mantine/core';
 
 import { 
-  Tabs,
   Button,
 } from '@valist/ui';
 
@@ -151,8 +151,13 @@ const Pricing: NextPage = () => {
         { title: 'Pricing', href: `/-/account/${accountName}/project/${projectName}/pricing` },
       ]}
     >
-      <Tabs grow>
-        <Tabs.Tab label="Pricing">
+      <Tabs defaultValue="pricing">
+        <Tabs.List grow>
+          <Tabs.Tab value="pricing">Pricing</Tabs.Tab>
+          <Tabs.Tab value="royalty">Royalty</Tabs.Tab>
+          <Tabs.Tab value="withdraw">Withdraw</Tabs.Tab>
+        </Tabs.List>
+        <Tabs.Panel value="pricing">
           <Stack style={{ maxWidth: 784 }}>
             <Title mt="lg">Pricing</Title>
             <Text color="dimmed">Monetize your game or app with Software License NFTs.</Text>
@@ -194,8 +199,8 @@ const Pricing: NextPage = () => {
               </Button>
             </Group>
           </Stack>
-        </Tabs.Tab>
-        <Tabs.Tab label="Royalty">
+        </Tabs.Panel>
+        <Tabs.Panel value="royalty">
           <Stack style={{ maxWidth: 784 }}>
             <Title mt="lg">Royalty</Title>
             <Text color="dimmed">
@@ -227,8 +232,8 @@ const Pricing: NextPage = () => {
               Save
             </Button>
           </Group>
-        </Tabs.Tab>
-        <Tabs.Tab label="Withdraw">
+        </Tabs.Panel>
+        <Tabs.Panel value="withdraw">
           <Stack style={{ maxWidth: 784 }}>
             <Title mt="lg">Withdraw</Title>
             <Text color="dimmed">Withdraw funds from product sales.</Text>
@@ -254,7 +259,7 @@ const Pricing: NextPage = () => {
               Withdraw
             </Button>
           </Group>
-        </Tabs.Tab>
+        </Tabs.Panel>
       </Tabs>
     </Layout>
   );

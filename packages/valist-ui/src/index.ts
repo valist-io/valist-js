@@ -32,7 +32,7 @@ export { NoProjects } from './components/NoProjects';
 export { PublishPromo } from './components/PublishPromo';
 export { ProjectCard } from './components/ProjectCard';
 export { Social } from './components/Social';
-export { Tabs } from './components/Tabs';
+export { TabsListCard } from './components/TabsListCard';
 export { ThemeButton } from './components/ThemeButton';
 export { ThemeProvider } from './components/ThemeProvider';
 export { Welcome } from './components/Welcome';

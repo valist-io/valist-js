@@ -21,7 +21,6 @@ import {
   FileInput,
   File,
   Card,
-  Tabs,
 } from '@valist/ui';
 
 import { 
@@ -32,6 +31,7 @@ import {
   TextInput,
   Textarea,
   ScrollArea,
+  Tabs,
 } from '@mantine/core';
 
 const CreateReleasePage: NextPage = () => {
@@ -58,14 +58,11 @@ const CreateReleasePage: NextPage = () => {
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState<File>();
   const [files, setFiles] = useState<FileWithPath[]>([]);
-
-  // form controls
-  const [active, setActive] = useState(0);
-  const nextStep = () => setActive(active < 1 ? active + 1 : active);
-  const prevStep = () => setActive(active > 0 ? active - 1 : active);
+  const [activeTab, setActiveTab] = useState<string | null>();
 
   const form = useForm<FormValues>({
-    schema: zodResolver(schema),
+    validate: zodResolver(schema),
+    validateInputOnChange: true,
     initialValues: {
       releaseName: '',
       displayName: '',
@@ -100,8 +97,15 @@ const CreateReleasePage: NextPage = () => {
         { title: 'Create Release', href: `/-/account/${accountName}/project/${projectName}/create/release` },
       ]}
     >
-      <Tabs active={active} onTabChange={setActive} grow>
-        <Tabs.Tab label="Basic Info">
+      <Tabs
+        defaultValue="basic"
+        onTabChange={setActiveTab}
+      >
+        <Tabs.List grow>
+          <Tabs.Tab value="basic">Basic Info</Tabs.Tab>
+          <Tabs.Tab value="files">Files</Tabs.Tab>
+        </Tabs.List>
+        <Tabs.Panel value="basic">
           <Stack style={{ maxWidth: 784 }}>
             <Title mt="lg">Basic Info</Title>
             <Text color="dimmed">This is your public release info.</Text>
@@ -136,8 +140,16 @@ const CreateReleasePage: NextPage = () => {
               {...form.getInputProps('description')}
             />
           </Stack>
-        </Tabs.Tab>
-        <Tabs.Tab label="Files">
+          <Group mt="lg">
+            <Button 
+              onClick={() => setActiveTab('files')}
+              variant="primary"
+            >
+              Continue
+            </Button>
+          </Group>
+        </Tabs.Panel>
+        <Tabs.Panel value="files">
           <Stack style={{ maxWidth: 784 }}>
             <Title mt="lg">Files</Title>
             <Text color="dimmed">Upload your release files.</Text>
@@ -158,19 +170,22 @@ const CreateReleasePage: NextPage = () => {
               </Stack>
             </ScrollArea>
           </Stack>
-        </Tabs.Tab>
+          <Group mt="lg">
+            <Button 
+              onClick={() => setActiveTab('basic')} 
+              variant="secondary"
+            >
+              Back
+            </Button>
+            <Button 
+              onClick={() => form.onSubmit(submit)} 
+              disabled={loading}
+            >
+              Create
+            </Button>
+          </Group>
+        </Tabs.Panel>
       </Tabs>
-      <Group mt="lg">
-        { active > 0 && 
-          <Button onClick={() => prevStep()} variant="secondary">Back</Button>
-        }
-        { active < 1 &&
-          <Button onClick={() => nextStep()} variant="primary">Continue</Button>
-        }
-        { active === 1 &&
-          <Button onClick={form.onSubmit(submit)} disabled={loading}>Create</Button>
-        }
-      </Group>
     </Layout>
   );
 };
