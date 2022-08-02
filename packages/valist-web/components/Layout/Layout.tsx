@@ -49,10 +49,10 @@ export function Layout(props: LayoutProps) {
           onSearch={value => router.push(`/-/search/${value}`)}
         >
           <Anchor target="_blank" href="https://docs.valist.io">Docs</Anchor>
-          <Anchor target="_blank" href="/-/discover">Discover</Anchor>
+          <Anchor href="/-/discover">Discover</Anchor>
           <ConnectButton 
             chainStatus="icon" 
-            accountStatus="avatar" 
+            accountStatus="address" 
             showBalance={false}
           />
           <ActionIcon component={NextLink} href="/-/gas" variant="transparent">

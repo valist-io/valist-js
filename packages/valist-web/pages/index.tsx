@@ -13,6 +13,7 @@ import {
   Group,
   Stack,
   Grid,
+  Text,
 } from '@mantine/core';
 
 import {
@@ -59,12 +60,15 @@ const IndexPage: NextPage = () => {
   return (
     <Layout>
       {account && !continueOnboarding &&
-        <Group position="apart" mb="xl">
-        <Title>Dashboard</Title>
-          <NextLink href={`/-/account/${account?.name}/create/project`}>
-            <Button>Create Project</Button>
-          </NextLink>
-        </Group>
+        <>
+          <Group position="apart" mb="xl" style={{ marginBottom: 10 }}>
+            <Title style={{ display: "block" }}>Hello & Welcome 👋🏽</Title>
+            <NextLink href={`/-/account/${account?.name}/create/project`}>
+              <Button>Create Project</Button>
+            </NextLink>
+          </Group>
+          <Text style={{ display: "block", marginBottom: 32 }}>Explore your recently Published or Edited projects.</Text>
+        </>
       }
       <Dashboard>
         <Dashboard.Main>
