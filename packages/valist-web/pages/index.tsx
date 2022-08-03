@@ -43,7 +43,7 @@ const IndexPage: NextPage = () => {
   const { isConnected } = useAccount();
   const [continueOnboarding, setContinueOnboarding] = useState<boolean>(false);
 
-  const { data } = useQuery(query, { 
+  const { data, loading } = useQuery(query, { 
     variables: { accountId: account?.id ?? '' },
   });
 
@@ -72,7 +72,7 @@ const IndexPage: NextPage = () => {
       }
       <Dashboard>
         <Dashboard.Main>
-          {(!account || continueOnboarding) &&
+          {(!loading && !account || continueOnboarding) &&
             <Grid>
               <Grid.Col md={4}>
                 <CheckboxList items={steps} />
@@ -93,7 +93,7 @@ const IndexPage: NextPage = () => {
             </Grid>
           }
 
-          {(account && !continueOnboarding && projects.length === 0) && 
+          {(!loading && account && !continueOnboarding && projects.length === 0) && 
              <NoProjects action={() => router.push(`/-/account/${account?.name}/create/project`)} />
           }
 

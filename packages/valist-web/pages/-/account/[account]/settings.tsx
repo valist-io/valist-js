@@ -32,6 +32,7 @@ import {
   Button,
   ImageInput,
   MemberList,
+  _404,
 } from '@valist/ui';
 
 const SettingsPage: NextPage = () => {
@@ -45,7 +46,7 @@ const SettingsPage: NextPage = () => {
   const accountName = `${router.query.account}`;
   const accountId = valist.generateID(chain?.id ?? 0, accountName);
 
-  const { data } = useQuery(query, { variables: { accountId } });
+  const { data, loading:gqLoading } = useQuery(query, { variables: { accountId } });
   const { data: meta } = useSWRImmutable(data?.account?.metaURI);
 
   const members = data?.account?.members ?? [];
@@ -113,6 +114,19 @@ const SettingsPage: NextPage = () => {
     ).finally(() => {
       setLoading(false);  
     });
+  };
+
+  if (!gqLoading && !data?.account) {
+    return (
+      <Layout>
+        <_404 
+          message={"The account you are looking for doesn't seem to exist, no biggie click on the button below to create it!."}
+          action={
+            <Button onClick={() => router.push(`/-/create/account`)}>Create account</Button>
+          }
+        />
+      </Layout>
+    );
   };
 
   return (

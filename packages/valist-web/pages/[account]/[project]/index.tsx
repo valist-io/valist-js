@@ -10,7 +10,7 @@ import { ValistContext } from '@/components/ValistProvider';
 import { Activity } from '@/components/Activity';
 import { Purchase } from '@/components/Purchase';
 import query from '@/graphql/ProjectPage.graphql';
-import { Gallery } from '@valist/ui';
+import { Gallery, _404 } from '@valist/ui';
 
 import {
   Account,
@@ -47,7 +47,7 @@ const ProjectPage: NextPage = () => {
   const projectName = `${router.query.project}`;
   const projectId = valist.generateID(accountId, projectName);
 
-  const { data } = useQuery(query, { variables: { projectId } });
+  const { data, loading } = useQuery(query, { variables: { projectId } });
 
   const accountMembers = data?.project?.account?.members ?? [];
   const projectMembers = data?.project?.members ?? [];
@@ -69,6 +69,19 @@ const ProjectPage: NextPage = () => {
 
   const { data: projectMeta } = useSWRImmutable(data?.project?.metaURI);
   const { data: releaseMeta } = useSWRImmutable(latestRelease?.metaURI);
+
+  if (!loading && !data?.project) {
+    return (
+      <Layout>
+        <_404 
+          message={"The project you are looking for doesn't seem to exist, no biggie, click on the button below to create it!"}
+          action={
+            <Button onClick={() => router.push(`/-/account/${accountName}/create/project`)}>Create project</Button>
+          }
+        />
+      </Layout>
+    );
+  };
 
   return (
     <Layout

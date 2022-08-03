@@ -32,6 +32,7 @@ import {
   ProjectCard,
   List,
   TabsListCard,
+  _404,
 } from '@valist/ui';
 
 const AccountPage: NextPage = () => {
@@ -44,7 +45,7 @@ const AccountPage: NextPage = () => {
   const accountName = `${router.query.account}`;
   const accountId = valist.generateID(chain?.id ?? 0, accountName);
 
-  const { data } = useQuery(query, { 
+  const { data, loading } = useQuery(query, { 
     variables: { accountId },
   });
 
@@ -57,6 +58,19 @@ const AccountPage: NextPage = () => {
   );
 
   const { data: meta } = useSWRImmutable(data?.account?.metaURI);
+
+  if (!loading && !data?.account) {
+    return (
+      <Layout>
+        <_404 
+          message={"The account you are looking for doesn't seem to exist, no biggie click on the button below to create it!."}
+          action={
+            <Button onClick={() => router.push(`/-/create/account`)}>Create account</Button>
+          }
+        />
+      </Layout>
+    );
+  };
 
   return (
     <Layout

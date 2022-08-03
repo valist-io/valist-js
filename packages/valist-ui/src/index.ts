@@ -1,3 +1,4 @@
+export { _404 } from "./components/404";
 export { Account } from './components/Account';
 export { AccountSelect } from './components/AccountSelect';
 export { Activity } from './components/Activity';

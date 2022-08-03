@@ -37,6 +37,7 @@ import {
   ImageInput,
   MemberList,
   GalleryInput,
+  _404,
 } from '@valist/ui';
 
 const Project: NextPage = () => {
@@ -53,7 +54,7 @@ const Project: NextPage = () => {
   const projectName = `${router.query.project}`;
   const projectId = valist.generateID(accountId, projectName);
 
-  const { data } = useQuery(query, { variables: { projectId } });
+  const { data, loading:gqLoading } = useQuery(query, { variables: { projectId } });
   const { data: meta } = useSWRImmutable(data?.project?.metaURI);
 
   const accountMembers = data?.project?.account?.members ?? [];
@@ -139,6 +140,19 @@ const Project: NextPage = () => {
     ).finally(() => {
       setLoading(false);  
     });
+  };
+
+  if (!gqLoading && !data?.project) {
+    return (
+      <Layout>
+        <_404 
+          message={"The project you are looking for doesn't seem to exist, no biggie, click on the button below to create it!"}
+          action={
+            <Button onClick={() => router.push(`/-/account/${accountName}/create/project`)}>Create project</Button>
+          }
+        />
+      </Layout>
+    );
   };
 
   return (
