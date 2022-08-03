@@ -142,43 +142,50 @@ const SettingsPage: NextPage = () => {
           <Tabs.Tab value="members">Members</Tabs.Tab>
         </Tabs.List>
         <Tabs.Panel value="basic">
-          <Stack style={{ maxWidth: 784 }}>
-            <Title mt="lg">Basic Info</Title>
-            <Text color="dimmed">This is your public account info.</Text>
-            <Title order={2}>Account Image</Title>
-            <ImageInput 
-              width={300}
-              height={300}
-              onChange={setImage} 
-              value={image}
-              disabled={loading}
-            />
-            <Title order={2}>Account Details</Title>
-            <TextInput 
-              label="Account Name (cannot be changed)"
-              value={accountName}
-              disabled
-            />
-            <TextInput 
-              label="Display Name"
-              disabled={loading}
-              required 
-              {...form.getInputProps('displayName')}
-            />
-            <TextInput 
-              label="Website"
-              disabled={loading}
-              {...form.getInputProps('website')}
-            />
-            <TextInput
-              label="Description"
-              disabled={loading}
-              {...form.getInputProps('description')}
-            />
-          </Stack>
-          <Group mt="lg">
-            <Button onClick={() => form.onSubmit(update)} disabled={loading}>Save</Button>
-          </Group>
+          <form onSubmit={form.onSubmit(update)}>
+            <Stack style={{ maxWidth: 784 }}>
+              <Title mt="lg">Basic Info</Title>
+              <Text color="dimmed">This is your public account info.</Text>
+              <Title order={2}>Account Image</Title>
+              <ImageInput 
+                width={300}
+                height={300}
+                onChange={setImage} 
+                value={image}
+                disabled={loading}
+              />
+              <Title order={2}>Account Details</Title>
+              <TextInput 
+                label="Account Name (cannot be changed)"
+                value={accountName}
+                disabled
+              />
+              <TextInput 
+                label="Display Name"
+                disabled={loading}
+                required 
+                {...form.getInputProps('displayName')}
+              />
+              <TextInput 
+                label="Website"
+                disabled={loading}
+                {...form.getInputProps('website')}
+              />
+              <TextInput
+                label="Description"
+                disabled={loading}
+                {...form.getInputProps('description')}
+              />
+            </Stack>
+            <Group mt="lg">
+              <Button 
+                disabled={loading} 
+                type="submit"
+              >
+                Save
+              </Button>
+            </Group>
+          </form>
         </Tabs.Panel>
         <Tabs.Panel value="members">
           <Stack style={{ maxWidth: 784 }}>

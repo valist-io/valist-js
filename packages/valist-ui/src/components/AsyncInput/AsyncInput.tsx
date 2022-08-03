@@ -14,6 +14,7 @@ export interface AsyncInputProps {
   label?: string;
   required?: boolean;
   placeholder?: string;
+  onKeyPress?: React.KeyboardEventHandler<HTMLInputElement>;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
 }
 

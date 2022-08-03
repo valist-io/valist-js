@@ -107,8 +107,8 @@ const CreateProject = (props: CreateProjectProps):JSX.Element => {
       cache,
     ).then(success => {
       if (success) {
-        if (props.afterCreate) props.afterCreate();
-        router.push('/');  
+        props.afterCreate?.();
+        router.push('/');
       }
     }).finally(() => {
       setLoading(false);  
@@ -116,7 +116,7 @@ const CreateProject = (props: CreateProjectProps):JSX.Element => {
   };
 
   return (
-    <div>
+    <form onSubmit={form.onSubmit(submit)}>
       <Tabs 
         defaultValue="basic"
         value={activeTab}
@@ -303,7 +303,7 @@ const CreateProject = (props: CreateProjectProps):JSX.Element => {
               Back
             </Button>
             <Button 
-              onClick={() => form.onSubmit(submit)}
+              type="submit"
               disabled={loading}
             >
               Create
@@ -311,7 +311,7 @@ const CreateProject = (props: CreateProjectProps):JSX.Element => {
           </Group>
         </Tabs.Panel>
       </Tabs>
-    </div>
+    </form>
   );
 };
 

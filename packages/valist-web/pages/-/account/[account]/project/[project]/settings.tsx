@@ -171,84 +171,98 @@ const Project: NextPage = () => {
           <Tabs.Tab value="media">Media</Tabs.Tab>
         </Tabs.List>
         <Tabs.Panel value="basic">
-          <Stack style={{ maxWidth: 784 }}>
-            <Title mt="lg">Basic Info</Title>
-            <Text color="dimmed">This is your public account info.</Text>
-            <Title order={2}>Project Image</Title>
-            <ImageInput 
-              width={300}
-              height={300}
-              onChange={setImage} 
-              value={image}
-              disabled={loading}
-            />
-            <Title order={2}>Project Details</Title>
-            <TextInput 
-              label="Project Name (cannot be changed)"
-              disabled={true}
-              value={projectName}
-              required
-            />
-            <TextInput 
-              label="Display Name"
-              disabled={loading}
-              required 
-              {...form.getInputProps('displayName')}
-            />
-            <TextInput 
-              label="Website"
-              disabled={loading}
-              {...form.getInputProps('website')}
-            />
-            <Select
-              label="Type"
-              data={defaultTypes}
-              placeholder="Select type"
-              nothingFound="Nothing found"
-              searchable
-              creatable
-              getCreateLabel={(query) => `+ Create ${query}`}
-              {...form.getInputProps('type')}
-            />
-            <MultiSelect
-              label="Tags"
-              data={defaultTags}
-              placeholder="Select tags"
-              searchable
-              creatable
-              getCreateLabel={(query) => `+ Create ${query}`}
-              {...form.getInputProps('tags')}
-            />
-          </Stack>
-          <Group mt="lg">
-            <Button onClick={() => form.onSubmit(update)} disabled={loading}>Save</Button>
-          </Group>
+          <form onSubmit={form.onSubmit(update)}>
+            <Stack style={{ maxWidth: 784 }}>
+              <Title mt="lg">Basic Info</Title>
+              <Text color="dimmed">This is your public account info.</Text>
+              <Title order={2}>Project Image</Title>
+              <ImageInput 
+                width={300}
+                height={300}
+                onChange={setImage} 
+                value={image}
+                disabled={loading}
+              />
+              <Title order={2}>Project Details</Title>
+              <TextInput 
+                label="Project Name (cannot be changed)"
+                disabled={true}
+                value={projectName}
+                required
+              />
+              <TextInput 
+                label="Display Name"
+                disabled={loading}
+                required 
+                {...form.getInputProps('displayName')}
+              />
+              <TextInput 
+                label="Website"
+                disabled={loading}
+                {...form.getInputProps('website')}
+              />
+              <Select
+                label="Type"
+                data={defaultTypes}
+                placeholder="Select type"
+                nothingFound="Nothing found"
+                searchable
+                creatable
+                getCreateLabel={(query) => `+ Create ${query}`}
+                {...form.getInputProps('type')}
+              />
+              <MultiSelect
+                label="Tags"
+                data={defaultTags}
+                placeholder="Select tags"
+                searchable
+                creatable
+                getCreateLabel={(query) => `+ Create ${query}`}
+                {...form.getInputProps('tags')}
+              />
+            </Stack>
+            <Group mt="lg">
+              <Button 
+                type="submit"
+                disabled={loading}
+              >
+                Save
+              </Button>
+            </Group>
+          </form>
         </Tabs.Panel>
         <Tabs.Panel value="descriptions">
-          <Stack style={{ maxWidth: 784 }}>
-            <Title mt="lg">Descriptions</Title>
-            <Text color="dimmed">Let everyone know about your project.</Text>
-            <Title order={2}>Short Description</Title>
-            <Text color="dimmed">Enter a brief summary of the project. This will be displayed on the project card or thumbnail.</Text>
-            <TextInput
-              label="Short Description"
-              disabled={loading}
-              {...form.getInputProps('shortDescription')}
-            />
-            <Title order={2}>Description</Title>
-            <Text color="dimmed">Give an extensive overview of your project. This will be displayed on your project landing page.</Text>
-            <Textarea
-              label="Description"
-              disabled={loading}
-              autosize={true}
-              minRows={4}
-              maxRows={12}
-              {...form.getInputProps('description')}
-            />
-          </Stack>
-          <Group mt="lg">
-            <Button onClick={() => form.onSubmit(update)} disabled={loading}>Save</Button>
-          </Group>
+          <form onSubmit={form.onSubmit(update)}>
+            <Stack style={{ maxWidth: 784 }}>
+              <Title mt="lg">Descriptions</Title>
+              <Text color="dimmed">Let everyone know about your project.</Text>
+              <Title order={2}>Short Description</Title>
+              <Text color="dimmed">Enter a brief summary of the project. This will be displayed on the project card or thumbnail.</Text>
+              <TextInput
+                label="Short Description"
+                disabled={loading}
+                {...form.getInputProps('shortDescription')}
+              />
+              <Title order={2}>Description</Title>
+              <Text color="dimmed">Give an extensive overview of your project. This will be displayed on your project landing page.</Text>
+              <Textarea
+                label="Description"
+                disabled={loading}
+                autosize={true}
+                minRows={4}
+                maxRows={12}
+                {...form.getInputProps('description')}
+              />
+            </Stack>
+            <Group mt="lg">
+              <Button
+                type="submit"
+                disabled={loading}
+              >
+                Save
+              </Button>
+            </Group>
+          </form>
         </Tabs.Panel>
         <Tabs.Panel value="members">
           <Stack style={{ maxWidth: 784 }}>
@@ -278,36 +292,43 @@ const Project: NextPage = () => {
           </Stack>
         </Tabs.Panel>
         <Tabs.Panel value="media">
-          <Stack style={{ maxWidth: 784 }}>
-            <Title mt="lg">Media</Title>
-            <Text color="dimmed">Show off your project with videos and images.</Text>
-            <Title order={2}>YouTube Link</Title>
-            <Text color="dimmed">Paste a link to your video.</Text>
-            <TextInput
-              label="YouTube Link"
-              disabled={loading}
-              {...form.getInputProps('youTubeLink')}
-            />
-            <Title order={2}>Header Image</Title>
-            <Text color="dimmed">This can be the cover image of your game or app. Recommended size is (616x353).</Text>
-            <ImageInput 
-              width={616}
-              height={353}
-              onChange={setMainCapsule} 
-              value={mainCapsule}
-              disabled={loading}
-            />
-            <Title order={2}>Gallery Images</Title>
-            <Text color="dimmed">Additional images of your game or app. Recommended size is (1280x720 or 1920x1080).</Text>
-            <GalleryInput
-              onChange={setGallery}
-              value={gallery}
-              disabled={loading}
-            />
-          </Stack>
-          <Group mt="lg">
-            <Button onClick={() => form.onSubmit(update)} disabled={loading}>Save</Button>
-          </Group>
+          <form onSubmit={form.onSubmit(update)}>
+            <Stack style={{ maxWidth: 784 }}>
+              <Title mt="lg">Media</Title>
+              <Text color="dimmed">Show off your project with videos and images.</Text>
+              <Title order={2}>YouTube Link</Title>
+              <Text color="dimmed">Paste a link to your video.</Text>
+              <TextInput
+                label="YouTube Link"
+                disabled={loading}
+                {...form.getInputProps('youTubeLink')}
+              />
+              <Title order={2}>Header Image</Title>
+              <Text color="dimmed">This can be the cover image of your game or app. Recommended size is (616x353).</Text>
+              <ImageInput 
+                width={616}
+                height={353}
+                onChange={setMainCapsule} 
+                value={mainCapsule}
+                disabled={loading}
+              />
+              <Title order={2}>Gallery Images</Title>
+              <Text color="dimmed">Additional images of your game or app. Recommended size is (1280x720 or 1920x1080).</Text>
+              <GalleryInput
+                onChange={setGallery}
+                value={gallery}
+                disabled={loading}
+              />
+            </Stack>
+            <Group mt="lg">
+              <Button 
+                type="submit"
+                disabled={loading}
+              >
+                Save
+              </Button>
+            </Group>
+          </form>
         </Tabs.Panel>
       </Tabs>
     </Layout>

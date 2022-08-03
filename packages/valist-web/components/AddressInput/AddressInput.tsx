@@ -30,26 +30,26 @@ export function AddressInput(props: AddressProps) {
     }
   }, [value, isLoading, isValid]);
 
-  const submit = (event: React.FormEvent<HTMLFormElement>) => {
+  const submit = (event: React.KeyboardEvent<HTMLElement>) => {
+    if (event.key !== 'Enter') return;
     event.preventDefault();
-    if (isLoading || !isValid) return;
 
+    if (isLoading || !isValid) return;
     props.onSubmit(data ?? value);
-    setValue('');
+    setValue('');  
   };
 
   return (
-    <form onSubmit={submit}>
-      <AsyncInput
-        label="Add member"
-        placeholder="Address or ENS"
-        value={value} 
-        error={error}
-        disabled={props.disabled}
-        loading={isLoading}
-        valid={isValid}
-        onChange={(event) => setValue(event.currentTarget.value)}
-      />
-    </form>
+    <AsyncInput
+      label="Add member"
+      placeholder="Address or ENS"
+      value={value} 
+      error={error}
+      disabled={props.disabled}
+      loading={isLoading}
+      valid={isValid}
+      onKeyPress={submit}
+      onChange={(event) => setValue(event.currentTarget.value)}
+    />
   );
 }
