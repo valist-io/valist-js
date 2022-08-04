@@ -2,7 +2,6 @@ import '@rainbow-me/rainbowkit/styles.css';
 import '@valist/ui/public/styles.css';
 
 import type { AppProps, AppContext } from 'next/app';
-import { useState } from 'react';
 import { SWRConfig } from 'swr';
 import { NextLink } from '@mantine/next';
 import { useLocalStorage } from '@mantine/hooks';

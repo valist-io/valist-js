@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import { useState, useContext, Fragment } from 'react';
+import { useContext } from 'react';
 import { useAccount, useNetwork } from 'wagmi';
 import { useRouter } from 'next/router';
 import useSWRImmutable from 'swr/immutable';
@@ -26,7 +26,6 @@ import {
 
 import { 
   Anchor,
-  Avatar,
   Title,
   Text,
   Group, 

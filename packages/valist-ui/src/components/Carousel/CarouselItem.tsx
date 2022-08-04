@@ -14,7 +14,7 @@ export function CarouselItem(props: DiscoveryItemProps) {
   const descColor = theme.colorScheme === 'dark' ? theme.colors.dark[2] : theme.colors.dark[4];
 
   return (
-    <div style={{ minWidth: 330, maxWidth: 340, margin: '0 20px 0 0' }}>
+    <div>
       <Link href={props.link} passHref>
         <Card shadow="sm" p="lg" sx={() => ({
           '&:hover': {
