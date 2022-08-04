@@ -32,6 +32,7 @@ export interface LayoutProps {
   children?: React.ReactNode;
   breadcrumbs?: Breadcrumb[];
   hideNavbar?: boolean;
+  padding?: number;
 }
 
 export function Layout(props: LayoutProps) {
@@ -45,6 +46,7 @@ export function Layout(props: LayoutProps) {
 
   return (
     <AppShell
+      padding={props.padding}
       hideNavbar={hideNavbar}
       header={
         <Header 

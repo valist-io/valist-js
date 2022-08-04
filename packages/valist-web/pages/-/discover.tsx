@@ -112,7 +112,7 @@ const Discover: NextPage = () => {
   ];
   
 	return (
-      <Layout hideNavbar={true}>
+      <Layout hideNavbar={true} padding={0}>
          <section>
            <HeroSection
             image={"/images/discovery/shattered_realms.png"} 

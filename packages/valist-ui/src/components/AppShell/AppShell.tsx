@@ -6,7 +6,7 @@ import {
 import { useMediaQuery } from '@mantine/hooks';
 import React from 'react';
 
-interface AppShellProps {
+export interface AppShellProps {
   children?: React.ReactNode;
   footer?: React.ReactElement;
   navbar?: React.ReactElement;
@@ -23,15 +23,17 @@ export function AppShell(props: AppShellProps) {
     <MantineAppShell
       navbarOffsetBreakpoint="sm"
       asideOffsetBreakpoint="sm"
-      padding={0}
+      padding={props.padding}
       footer={showFooter ? props.footer : undefined}
       navbar={props.hideNavbar ? undefined : props.navbar }
       header={props.header}
       fixed
     >
-      <div style={{ padding: props.padding >= 0 ? props.padding : 40}}>
-        { props.children }
-      </div>
+      { props.children }
     </MantineAppShell>
   );
 }
+
+AppShell.defaultProps = {
+  padding: 40,
+};
