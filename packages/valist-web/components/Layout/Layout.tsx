@@ -41,12 +41,14 @@ export function Layout(props: LayoutProps) {
   const { chain } = useNetwork();
   const { account } = useContext(AccountContext);
 
+  const hideNavbar = !account || props.hideNavbar;
+
   return (
     <AppShell
-      hideNavbar={props.hideNavbar}
+      hideNavbar={hideNavbar}
       header={
         <Header 
-          hideNavbar={props.hideNavbar}
+          hideNavbar={hideNavbar}
           opened={opened} 
           onClick={() => setOpened(!opened)}
           onSearch={value => router.push(`/-/search/${value}`)}
