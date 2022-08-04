@@ -18,6 +18,10 @@
     "storybook": "npm run storybook --workspace=@valist/ui"
   },
   "devDependencies": {
-    "concurrently": "^7.2.2"
+    "concurrently": "^7.2.2",
+    "@capacitor-community/electron": "latest",
+    "@capacitor/android": "^3.6.0",
+    "@capacitor/cli": "^3.6.0",
+    "@capacitor/core": "^3.6.0"
   }
 }

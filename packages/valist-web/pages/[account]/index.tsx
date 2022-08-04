@@ -1,12 +1,11 @@
 import type { NextPage } from 'next';
-import { useState, useContext } from 'react';
+import { useContext } from 'react';
 import { useNetwork, useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import useSWRImmutable from 'swr/immutable';
 import { NextLink } from '@mantine/next';
 import { useQuery } from '@apollo/client';
 import { Layout } from '@/components/Layout';
-import { AccountContext } from '@/components/AccountProvider';
 import { Metadata } from '@/components/Metadata';
 import { ValistContext } from '@/components/ValistProvider';
 import { Activity } from '@/components/Activity';

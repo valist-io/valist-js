@@ -15,6 +15,7 @@
     "build-storybook": "build-storybook -s public"
   },
   "dependencies": {
+    "@mantine/carousel": "latest",
     "@mantine/core": "^5.0.0",
     "@mantine/dropzone": "^5.0.0",
     "@mantine/hooks": "^5.0.0",
