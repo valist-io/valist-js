@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import { DiscoveryLayout } from '@/components/Layout';
+import { Layout } from '@/components/Layout';
 import { HeroSection, Carousel, PublishPromo, DiscoveryFooter } from '@valist/ui';
 import { useMantineTheme } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
@@ -14,7 +14,7 @@ const Discover: NextPage = () => {
         img: 'https://pbs.twimg.com/profile_images/1499209010637152259/5ZYfm1jB_400x400.png',
         name: 'HashChat',
         description: 'An encrypted, cross-chain messaging platform built on web3 wallets.',
-        link: 'max/hashchat',
+        link: '/max/hashchat',
         type: 'Application',
       },
       {
@@ -69,7 +69,7 @@ const Discover: NextPage = () => {
    ];
 
 	return (
-      <DiscoveryLayout>
+      <Layout hideNavbar={true}>
          <section>
            <HeroSection 
             image={"/images/discovery/shattered_realms.png"} 
@@ -87,7 +87,7 @@ const Discover: NextPage = () => {
          <section>
             <DiscoveryFooter />
          </section>
-      </DiscoveryLayout>
+      </Layout>
 	);
 };
 

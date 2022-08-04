@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { useRouter } from 'next/router';
+import { useNetwork, useProvider } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import * as Icons from 'tabler-icons-react';
 import { NextLink } from '@mantine/next';
@@ -9,6 +10,7 @@ import { AccountContext } from '@/components/AccountProvider';
 import { 
   Anchor,
   ActionIcon,
+  Group,
 } from '@mantine/core';
 
 import { 
@@ -29,32 +31,29 @@ export interface Breadcrumb {
 export interface LayoutProps {
   children?: React.ReactNode;
   breadcrumbs?: Breadcrumb[];
+  hideNavbar?: boolean;
 }
 
 export function Layout(props: LayoutProps) {
   const router = useRouter();
   const [opened, setOpened] = useState(false);
 
+  const { chain } = useNetwork();
   const { account } = useContext(AccountContext);
-  const showNavbar = !!account;
 
   return (
     <AppShell
-      showNavbar={showNavbar}
+      hideNavbar={props.hideNavbar}
       header={
         <Header 
-          showNavbar={showNavbar}
+          hideNavbar={props.hideNavbar}
           opened={opened} 
           onClick={() => setOpened(!opened)}
           onSearch={value => router.push(`/-/search/${value}`)}
         >
           <Anchor target="_blank" href="https://docs.valist.io">Docs</Anchor>
           <Anchor href="/-/discover">Discover</Anchor>
-          <ConnectButton 
-            chainStatus="icon" 
-            accountStatus="address" 
-            showBalance={false}
-          />
+          <ConnectButton showBalance={false} />
           <ActionIcon component={NextLink} href="/-/gas" variant="transparent">
             <Icons.GasStation size={18} />
           </ActionIcon>
@@ -91,10 +90,9 @@ export function Layout(props: LayoutProps) {
       }
       footer={
         <Footer>
-          <ConnectButton 
-            chainStatus="full" 
-            accountStatus="full" 
-            showBalance={false} />
+          <Group>
+            <ConnectButton showBalance={false} />
+          </Group>
         </Footer>
       }
     >

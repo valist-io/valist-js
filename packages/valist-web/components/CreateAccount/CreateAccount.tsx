@@ -32,11 +32,11 @@ import {
   MemberList,
 } from '@valist/ui';
 
-interface CreateAccountProps {
+export interface CreateAccountProps {
   afterCreate?: () => void;
 }
 
-const CreateAccount = (props: CreateAccountProps): JSX.Element => {
+export function CreateAccount(props: CreateAccountProps) {
   const router = useRouter();
   const { cache } = useApolloClient();
   const { address } = useAccount();
@@ -124,7 +124,7 @@ const CreateAccount = (props: CreateAccountProps): JSX.Element => {
             <NameInput 
               label="Account Name (cannot be changed)"
               disabled={loading}
-              parentId={chain?.id ?? 0}
+              parentId={chain?.id ?? 137}
               required
               {...form.getInputProps('accountName')}
             />
@@ -198,5 +198,3 @@ const CreateAccount = (props: CreateAccountProps): JSX.Element => {
     </form>
   );
 };
-
-export default CreateAccount;

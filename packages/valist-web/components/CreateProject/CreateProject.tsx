@@ -38,11 +38,11 @@ import {
   GalleryInput,
 } from '@valist/ui';
 
-interface CreateProjectProps {
+export interface CreateProjectProps {
   afterCreate?: () => void;
 }
 
-const CreateProject = (props: CreateProjectProps):JSX.Element => {
+export function CreateProject(props: CreateProjectProps) {
   const router = useRouter();
   const { cache } = useApolloClient();
   const { address } = useAccount();
@@ -56,7 +56,7 @@ const CreateProject = (props: CreateProjectProps):JSX.Element => {
   });
 
   const accountName = `${router.query.account}`;
-  const accountId = valist.generateID(chain?.id ?? 0, accountName);
+  const accountId = valist.generateID(chain?.id ?? 137, accountName);
   const accountMembers = data?.account?.members ?? [];
 
   // form values
@@ -314,5 +314,3 @@ const CreateProject = (props: CreateProjectProps):JSX.Element => {
     </form>
   );
 };
-
-export default CreateProject;

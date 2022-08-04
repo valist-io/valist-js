@@ -47,6 +47,7 @@ export const AccountSelect: AccountSelectComponent = (props: AccountSelectProps)
     <Popover    
       width={324}
       radius={0}
+      shadow="md"
       position="bottom-start"
       opened={opened}
       onClose={() => setOpened(false)}

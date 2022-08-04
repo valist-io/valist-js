@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useAccount, useNetwork } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { useQuery } from '@apollo/client';
 import { AccountMeta } from '@valist/sdk';
 import useSWRImmutable from 'swr/immutable';
@@ -32,7 +32,6 @@ export interface AccountProviderProps {
 
 export function AccountProvider(props: AccountProviderProps) {  
   const { address } = useAccount();
-  const { chain } = useNetwork();
 
   const [_account, setAccount] = useLocalStorage({ 
     key: 'valist.account', 

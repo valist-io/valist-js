@@ -29,6 +29,8 @@ export { Markdown } from './components/Markdown';
 export { MemberList } from './components/MemberList';
 export { MemberStack } from './components/MemberStack';
 export { Navbar } from './components/Navbar';
+export { Network } from './components/Network';
+export { NetworkSelect } from './components/NetworkSelect';
 export { NoProjects } from './components/NoProjects';
 export { PublishPromo } from './components/PublishPromo';
 export { ProjectCard } from './components/ProjectCard';

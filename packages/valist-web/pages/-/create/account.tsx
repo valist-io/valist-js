@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import React from 'react';
 import { Layout } from '@/components/Layout';
-import CreateAccount from '@/components/CreateAccount/CreateAccount';
+import { CreateAccount } from '@/components/CreateAccount';
 import { useRouter } from 'next/router';
 
 const Account: NextPage = () => {

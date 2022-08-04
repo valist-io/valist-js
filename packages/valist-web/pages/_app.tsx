@@ -1,7 +1,7 @@
 import '@rainbow-me/rainbowkit/styles.css';
 import '@valist/ui/public/styles.css';
 
-import type { AppProps } from 'next/app';
+import type { AppProps, AppContext } from 'next/app';
 import { useState } from 'react';
 import { SWRConfig } from 'swr';
 import { NextLink } from '@mantine/next';
@@ -11,6 +11,7 @@ import { ColorSchemeProvider, ColorScheme } from '@mantine/core';
 import { ThemeProvider } from '@valist/ui';
 import { AccountProvider } from '@/components/AccountProvider';
 import { ApolloProvider } from '@/components/ApolloProvider';
+import { WagmiProvider, rehydrate } from '@/components/WagmiProvider';
 import { RainbowKitProvider } from '@/components/RainbowKitProvider';
 import { ValistProvider } from '@/components/ValistProvider';
 
@@ -27,7 +28,7 @@ const components = {
 
 function ValistApp(props: AppProps) {
   const { Component, pageProps } = props;
-  
+
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
     key: 'mantine-color-scheme',
     defaultValue: 'light',
@@ -40,23 +41,33 @@ function ValistApp(props: AppProps) {
 
   return (
     <SWRConfig value={{ fetcher }}>
-      <RainbowKitProvider colorScheme={colorScheme}>
-        <ApolloProvider>
-          <AccountProvider>
-            <ValistProvider metaTx>
-              <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
-                <ThemeProvider theme={{ colorScheme, components }}>
-                  <NotificationsProvider>
-                    <Component {...pageProps} />
-                  </NotificationsProvider>
-                </ThemeProvider>
-              </ColorSchemeProvider>
-            </ValistProvider>
-          </AccountProvider>
-        </ApolloProvider>
-      </RainbowKitProvider>
+      <WagmiProvider>
+        <RainbowKitProvider colorScheme={colorScheme}>
+          <ApolloProvider>
+            <AccountProvider>
+              <ValistProvider metaTx>
+                <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
+                  <ThemeProvider theme={{ colorScheme, components }}>
+                    <NotificationsProvider>
+                      <Component {...pageProps} />
+                    </NotificationsProvider>
+                  </ThemeProvider>
+                </ColorSchemeProvider>
+              </ValistProvider>
+            </AccountProvider>
+          </ApolloProvider>
+        </RainbowKitProvider>
+      </WagmiProvider>
     </SWRConfig>
   );
 }
+
+ValistApp.getInitialProps = async ({ Component, ctx }: AppContext) => {
+  const wagmiStore = (ctx.req as any)?.cookies?.['wagmi.store'];
+  if (wagmiStore) rehydrate(wagmiStore);
+  
+  const pageProps = await Component.getInitialProps?.(ctx);
+  return { pageProps };
+};
 
 export default ValistApp;

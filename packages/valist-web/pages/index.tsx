@@ -1,11 +1,16 @@
 import type { NextPage } from 'next';
 import { useContext, useState } from 'react';
+import { useAccount } from 'wagmi';
+import { useRouter } from 'next/router';
 import { useQuery } from '@apollo/client';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { NextLink } from '@mantine/next';
 import { Layout } from '@/components/Layout';
 import { Metadata } from '@/components/Metadata';
 import { AccountContext } from '@/components/AccountProvider';
 import { Activity } from '@/components/Activity';
+import { CreateAccount } from '@/components/CreateAccount';
+import { CreateProject } from '@/components/CreateProject';
 import query from '@/graphql/DashboardPage.graphql';
 
 import { 
@@ -28,16 +33,9 @@ import {
   Welcome,
   CheckboxList,
 } from '@valist/ui';
-import { useAccount } from 'wagmi';
-import CreateAccount from '@/components/CreateAccount/CreateAccount';
-import { useConnectModal } from '@rainbow-me/rainbowkit';
-import { useRouter } from 'next/router';
-import CreateProject from '@/components/CreateProject/CreateProject';
-import { useIsMounted } from '../utils/useIsMounted';
 
 const IndexPage: NextPage = () => {
   const router = useRouter();
-  const isMounted = useIsMounted();
   const { account } = useContext(AccountContext);
   const { openConnectModal } = useConnectModal();
   const { isConnected } = useAccount();
@@ -52,7 +50,7 @@ const IndexPage: NextPage = () => {
   const logs = data?.account?.logs ?? [];
 
   const steps = [
-    { label: 'Connect Wallet', checked: isMounted() && isConnected },
+    { label: 'Connect Wallet', checked: isConnected },
     { label: 'Create Account', checked: continueOnboarding || (account !== undefined) },
     { label: 'Create Project (Optional)', checked: false },
   ];
@@ -78,15 +76,15 @@ const IndexPage: NextPage = () => {
                 <CheckboxList items={steps} />
               </Grid.Col>
               <Grid.Col md={8}>
-                {isMounted() && !isConnected && 
+                {!isConnected && 
                   <Welcome button={
                     <Button onClick={openConnectModal}>Connect Wallet</Button>
                   } />
                 }
-                {isMounted() && isConnected && !continueOnboarding && 
+                {isConnected && !continueOnboarding && 
                   <CreateAccount afterCreate={() => setContinueOnboarding(true)} />
                 }
-                {isMounted() && isConnected && continueOnboarding && 
+                {isConnected && continueOnboarding && 
                   <CreateProject afterCreate={() => setContinueOnboarding(false)} />
                 }
               </Grid.Col>

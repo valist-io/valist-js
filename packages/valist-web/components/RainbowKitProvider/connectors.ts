@@ -1,5 +1,6 @@
-import { Wallet } from '@rainbow-me/rainbowkit';
+import { connectorsForWallets, wallet, Wallet } from '@rainbow-me/rainbowkit';
 import { MagicConnector } from '@everipedia/wagmi-magic-connector';
+import { Chain } from 'wagmi';
 
 export const magic = ({ chains }: any): Wallet => ({
   id: 'magic',
@@ -24,3 +25,22 @@ export const magic = ({ chains }: any): Wallet => ({
     return { connector };
   },
 });
+
+export const connectors = (chains: Chain[]) => connectorsForWallets([
+  {
+    groupName: 'Popular',
+    wallets: [
+      wallet.rainbow({ chains }),
+      wallet.metaMask({ chains }),
+      wallet.walletConnect({ chains }),
+      magic({ chains }),
+    ],
+  },
+  {
+    groupName: 'Mobile',
+    wallets: [
+      wallet.rainbow({ chains }),
+      wallet.walletConnect({ chains }),
+    ],
+  },
+]);
