@@ -47,10 +47,10 @@ export function Layout(props: LayoutProps) {
   return (
     <AppShell
       padding={props.padding}
-      hideNavbar={hideNavbar}
+      showNavbar={hideNavbar}
       header={
-        <Header 
-          hideNavbar={hideNavbar}
+        <Header
+          showNavbar={hideNavbar}
           opened={opened} 
           onClick={() => setOpened(!opened)}
           onSearch={value => router.push(`/-/search/${value}`)}
@@ -81,6 +81,12 @@ export function Layout(props: LayoutProps) {
               text="Settings"
               href={`/-/account/${account?.name}/settings`}
               active={router.asPath === `/-/account/${account?.name}/settings`} 
+            />
+            <Navbar.Link 
+              icon={Icons.Apps} 
+              text="Library"
+              href={`/-/library`}
+              active={router.asPath === `/-/library`} 
             />
           </Navbar.Section>
           <Navbar.Section px={30} py="md">
