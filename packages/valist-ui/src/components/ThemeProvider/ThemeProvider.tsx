@@ -1,17 +1,17 @@
 import { 
   MantineProvider, 
   MantineTheme,
-  ColorScheme,
+  MantineThemeOverride,
   Global,
 } from '@mantine/core';
 
 import React from 'react';
 import { theme } from './theme';
+import { components } from './components';
 
 export interface ThemeProviderProps {
   children?: React.ReactNode;
-  colorScheme?: ColorScheme;
-  defaultProps?: Record<string, Record<string, any>>;
+  theme?: MantineThemeOverride;
 }
 
 export const globalStyles = (theme: MantineTheme) => ({
@@ -23,12 +23,20 @@ export const globalStyles = (theme: MantineTheme) => ({
 });
 
 export function ThemeProvider(props: ThemeProviderProps) {
-  const colorScheme = props.colorScheme;
+  const { components: componentsProps, ...themeProps } = props.theme;
+
+  const themeOverride = { 
+    ...theme,
+    ...themeProps,
+    components: { 
+      ...components, 
+      ...componentsProps,
+    },
+  };
 
   return (
     <MantineProvider 
-      theme={{...theme, colorScheme}}
-      defaultProps={props.defaultProps}
+      theme={themeOverride}
       withGlobalStyles 
       withNormalizeCSS
     >

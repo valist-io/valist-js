@@ -1,12 +1,11 @@
 import type { NextPage } from 'next';
-import { useState, useContext } from 'react';
+import { useContext } from 'react';
 import { useNetwork, useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import useSWRImmutable from 'swr/immutable';
 import { NextLink } from '@mantine/next';
 import { useQuery } from '@apollo/client';
 import { Layout } from '@/components/Layout';
-import { AccountContext } from '@/components/AccountProvider';
 import { Metadata } from '@/components/Metadata';
 import { ValistContext } from '@/components/ValistProvider';
 import { Activity } from '@/components/Activity';
@@ -18,6 +17,7 @@ import {
   Text,
   Group, 
   Stack,
+  Tabs,
 } from '@mantine/core';
 
 import {
@@ -30,7 +30,8 @@ import {
   MemberStack,
   ProjectCard,
   List,
-  Tabs,
+  TabsListCard,
+  _404,
 } from '@valist/ui';
 
 const AccountPage: NextPage = () => {
@@ -39,12 +40,11 @@ const AccountPage: NextPage = () => {
 
   const router = useRouter();
   const valist = useContext(ValistContext);
-  const [active, setActive] = useState(0);
 
   const accountName = `${router.query.account}`;
-  const accountId = valist.generateID(chain?.id ?? 0, accountName);
+  const accountId = valist.generateID(chain?.id ?? 137, accountName);
 
-  const { data } = useQuery(query, { 
+  const { data, loading } = useQuery(query, { 
     variables: { accountId },
   });
 
@@ -57,6 +57,19 @@ const AccountPage: NextPage = () => {
   );
 
   const { data: meta } = useSWRImmutable(data?.account?.metaURI);
+
+  if (!loading && !data?.account) {
+    return (
+      <Layout>
+        <_404 
+          message={"The account you are looking for doesn't seem to exist, no biggie click on the button below to create it!."}
+          action={
+            <Button onClick={() => router.push(`/-/create/account`)}>Create account</Button>
+          }
+        />
+      </Layout>
+    );
+  };
 
   return (
     <Layout
@@ -71,19 +84,26 @@ const AccountPage: NextPage = () => {
           image={meta?.image} 
           large 
         />
-        <Group>
-          <NextLink href={`/-/account/${accountName}/settings`}>
-            <Button variant="subtle">Settings</Button>
-          </NextLink>
-          <NextLink href={`/-/account/${accountName}/create/project`}>
-            <Button>New Project</Button>
-          </NextLink>
-        </Group>
+        { isMember &&
+          <Group>
+            <NextLink href={`/-/account/${accountName}/settings`}>
+              <Button variant="subtle">Settings</Button>
+            </NextLink>
+            <NextLink href={`/-/account/${accountName}/create/project`}>
+              <Button>New Project</Button>
+            </NextLink>
+          </Group>
+        }
       </Group>
       <Dashboard>
         <Dashboard.Main>
-          <Tabs active={active} onTabChange={setActive} variant="card">
-            <Tabs.Tab label="Projects">
+          <Tabs defaultValue="projects">
+            <TabsListCard>
+              <Tabs.Tab value="projects">Projects</Tabs.Tab>
+              <Tabs.Tab value="members">Members</Tabs.Tab>
+              <Tabs.Tab value="activity">Activity</Tabs.Tab>
+            </TabsListCard>
+            <Tabs.Panel value="projects">
               <CardGrid>
                 {projects.map((project: any, index: number) =>
                    <Metadata key={index} url={project.metaURI}>
@@ -103,16 +123,16 @@ const AccountPage: NextPage = () => {
                   </Metadata>,
                 )}
               </CardGrid>
-            </Tabs.Tab>
-            <Tabs.Tab label="Members">
+            </Tabs.Panel>
+            <Tabs.Panel value="members">
               <Card>
                 <MemberList
                   label="Account Admin"
                   members={members.map((member: any) => member.id)}
                 />
               </Card>
-            </Tabs.Tab>
-            <Tabs.Tab label="Activity">
+            </Tabs.Panel>
+            <Tabs.Panel value="activity">
               <Card>
                 <List>
                   {logs.map((log: any, index: number) => 
@@ -120,7 +140,7 @@ const AccountPage: NextPage = () => {
                   )}
                 </List>
               </Card>
-            </Tabs.Tab>
+            </Tabs.Panel>
           </Tabs>
         </Dashboard.Main>
         <Dashboard.Side>

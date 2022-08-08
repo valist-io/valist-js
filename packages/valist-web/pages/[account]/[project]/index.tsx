@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import { useState, useContext } from 'react';
+import { useContext } from 'react';
 import { useAccount, useNetwork } from 'wagmi';
 import { useRouter } from 'next/router';
 import useSWRImmutable from 'swr/immutable';
@@ -8,18 +8,20 @@ import { NextLink } from '@mantine/next';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
 import { Activity } from '@/components/Activity';
+import { Purchase } from '@/components/Purchase';
 import query from '@/graphql/ProjectPage.graphql';
+import { Gallery, _404 } from '@valist/ui';
 
 import {
   Account,
   Button,
   Dashboard,
-  Tabs,
   Card,
   List,
   Markdown,
   MemberList,
   MemberStack,
+  TabsListCard,
 } from '@valist/ui';
 
 import {
@@ -28,6 +30,7 @@ import {
   Text,
   Group,
   Stack,
+  Tabs,
 } from '@mantine/core';
 
 const ProjectPage: NextPage = () => {
@@ -36,25 +39,28 @@ const ProjectPage: NextPage = () => {
 
   const router = useRouter();
   const valist = useContext(ValistContext);
-  const [active, setActive] = useState(0);
 
   const accountName = `${router.query.account}`;
-  const accountId = valist.generateID(chain?.id ?? 0, accountName);
+  const accountId = valist.generateID(chain?.id ?? 137, accountName);
 
   const projectName = `${router.query.project}`;
   const projectId = valist.generateID(accountId, projectName);
 
-  const { data } = useQuery(query, {
-    variables: { projectId },
-  });
+  const { data, loading } = useQuery(query, { variables: { projectId } });
 
   const accountMembers = data?.project?.account?.members ?? [];
   const projectMembers = data?.project?.members ?? [];
   const members = [...accountMembers, ...projectMembers];
 
-  const isMember = !!members.find(
-    other => other.id.toLowerCase() === address?.toLowerCase(),
+  const isAccountMember = accountMembers.find(
+    (other: any) => other.id.toLowerCase() === address?.toLowerCase(),
   );
+
+  const isProjectMember = projectMembers.find(
+    (other: any) => other.id.toLowerCase() === address?.toLowerCase(),
+  );
+
+  const isMember = isAccountMember || isProjectMember;
 
   const logs = data?.project?.logs ?? [];
   const releases = data?.project?.releases ?? [];
@@ -62,6 +68,19 @@ const ProjectPage: NextPage = () => {
 
   const { data: projectMeta } = useSWRImmutable(data?.project?.metaURI);
   const { data: releaseMeta } = useSWRImmutable(latestRelease?.metaURI);
+
+  if (!loading && !data?.project) {
+    return (
+      <Layout>
+        <_404 
+          message={"The project you are looking for doesn't seem to exist, no biggie, click on the button below to create it!"}
+          action={
+            <Button onClick={() => router.push(`/-/account/${accountName}/create/project`)}>Create project</Button>
+          }
+        />
+      </Layout>
+    );
+  };
 
   return (
     <Layout
@@ -78,32 +97,52 @@ const ProjectPage: NextPage = () => {
           large
         />
         <Group>
-          {isMember &&
+          { isAccountMember &&
+            <NextLink href={`/-/account/${accountName}/project/${projectName}/pricing`}>
+              <Button variant="secondary">Pricing</Button>
+            </NextLink>
+          }
+          { isMember &&
             <>
               <NextLink href={`/-/account/${accountName}/project/${projectName}/settings`}>
-                <Button variant="secondary">Edit</Button>
+                <Button variant="subtle">Settings</Button>
               </NextLink>
               <NextLink href={`/-/account/${accountName}/project/${projectName}/create/release`}>
-                <Button variant="subtle">Publish</Button>
+                <Button>New Release</Button>
               </NextLink>
             </>
           }
-          <NextLink target="_blank" href={`/${accountName}/${projectName}/launch`}>
-            <Button>Launch</Button>
-          </NextLink>
         </Group>
       </Group>
       <Dashboard>
         <Dashboard.Main>
-          <Tabs active={active} onTabChange={setActive} variant="card">
-            <Tabs.Tab label="Readme">
-              <Card>
-                <Markdown>
-                  {projectMeta?.description}
-                </Markdown>
-              </Card>
-            </Tabs.Tab>
-            <Tabs.Tab label="Versions">
+          <Tabs defaultValue="readme">
+            <TabsListCard>
+              <Tabs.Tab value="readme">Readme</Tabs.Tab>
+              <Tabs.Tab value="versions">Versions</Tabs.Tab>
+              <Tabs.Tab value="activity">Activity</Tabs.Tab>
+              <Tabs.Tab value="members">Members</Tabs.Tab>
+            </TabsListCard>
+            <Tabs.Panel value="readme">
+              <Stack spacing={24}>
+                { (projectMeta?.gallery && projectMeta?.gallery?.length !== 0) &&
+                  <Gallery assets={projectMeta?.gallery} />
+                }
+                { releaseMeta &&
+                  <Purchase 
+                    projectId={projectId}
+                    name={projectMeta?.name ?? projectName}
+                    href={releaseMeta.external_url ?? ''}
+                  />
+                }
+                <Card>                
+                  <Markdown>
+                    {projectMeta?.description}
+                  </Markdown>
+                </Card>
+              </Stack>
+            </Tabs.Panel>
+            <Tabs.Panel value="versions">
               <Card>
                 <List>
                   {releases.map((release: any, index: number) =>
@@ -114,8 +153,8 @@ const ProjectPage: NextPage = () => {
                   )}
                 </List>
               </Card>
-            </Tabs.Tab>
-            <Tabs.Tab label="Activity">
+            </Tabs.Panel>
+            <Tabs.Panel value="activity">
               <Card>
                 <List>
                   {logs.map((log: any, index: number) =>
@@ -123,8 +162,8 @@ const ProjectPage: NextPage = () => {
                   )}
                 </List>
               </Card>
-            </Tabs.Tab>
-            <Tabs.Tab label="Members">
+            </Tabs.Panel>
+            <Tabs.Panel value="members">
               <Card>
                 <List>
                   <MemberList
@@ -137,7 +176,7 @@ const ProjectPage: NextPage = () => {
                   />
                 </List>
               </Card>
-            </Tabs.Tab>
+            </Tabs.Panel>
           </Tabs>
         </Dashboard.Main>
         <Dashboard.Side>

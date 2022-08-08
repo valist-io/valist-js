@@ -15,10 +15,11 @@
     "build-storybook": "build-storybook -s public"
   },
   "dependencies": {
-    "@mantine/core": "^4.2.12",
-    "@mantine/dropzone": "^4.2.12",
-    "@mantine/hooks": "^4.2.12",
-    "@mantine/styles": "^4.2.12",
+    "@mantine/carousel": "^5.0.0",
+    "@mantine/core": "^5.0.0",
+    "@mantine/dropzone": "^5.0.0",
+    "@mantine/hooks": "^5.0.0",
+    "@mantine/styles": "^5.0.0",
     "ethereum-blockies-base64": "^1.0.2",
     "react-markdown": "^8.0.3",
     "remark-gfm": "^3.0.1",

@@ -6,7 +6,7 @@ import {
   Text,
 } from '@mantine/core';
 
-import { Dropzone, DropzoneStatus, IMAGE_MIME_TYPE } from '@mantine/dropzone';
+import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 import { useElementSize } from '@mantine/hooks';
 import React, { useEffect, useState } from 'react';
 import * as Icon from 'tabler-icons-react';
@@ -42,19 +42,6 @@ export function ImageInput(props: ImageInputProps) {
     }
   };
 
-  const preview = (status: DropzoneStatus) => {
-    if (src) return (
-      <Image width={width} height={height} fit="contain" radius="sm" src={src} />
-    );
-
-    return (
-      <Stack align="center">
-        <Icon.Photo color="#9595A8" size={64} />
-        <Text color="#9595A8">Click or drag and drop to upload</Text>
-      </Stack>
-    );
-  };
-
 	return (
     <AspectRatio 
       ref={ref} 
@@ -68,7 +55,15 @@ export function ImageInput(props: ImageInputProps) {
         openRef={props.openRef}
         disabled={props.disabled}
       >
-        {(status) => preview(status)}
+        {src && 
+          <Image width={width} height={height} fit="contain" radius="sm" src={src} />
+        }
+        {!src &&
+          <Stack align="center">
+            <Icon.Photo color="#9595A8" size={64} />
+            <Text color="#9595A8">Click or drag and drop to upload</Text>
+          </Stack>
+        }
       </Dropzone>
     </AspectRatio>
 	);

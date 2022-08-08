@@ -4,11 +4,11 @@ import useSWRImmutable from 'swr/immutable';
 import { useAccount, useNetwork } from 'wagmi';
 import { useRouter } from 'next/router';
 import { useApolloClient, useQuery } from '@apollo/client';
-import { useListState } from '@mantine/hooks';
 import { useForm, zodResolver } from '@mantine/form';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
 import { AddressInput } from '@/components/AddressInput';
+import { defaultTags, defaultTypes } from '@/forms/common';
 import query from '@/graphql/UpdateProjectPage.graphql';
 
 import { 
@@ -25,16 +25,19 @@ import {
   Title,
   Stack,
   List,
+  TextInput,
+  Textarea,
+  Select,
+  MultiSelect,
+  Tabs,
 } from '@mantine/core';
 
 import { 
-  Tabs,
   Button,
   ImageInput,
-  TextInput,
-  Textarea,
   MemberList,
   GalleryInput,
+  _404,
 } from '@valist/ui';
 
 const Project: NextPage = () => {
@@ -46,12 +49,12 @@ const Project: NextPage = () => {
   const valist = useContext(ValistContext);
 
   const accountName = `${router.query.account}`;
-  const accountId = valist.generateID(chain?.id ?? 0, accountName);
+  const accountId = valist.generateID(chain?.id ?? 137, accountName);
 
   const projectName = `${router.query.project}`;
   const projectId = valist.generateID(accountId, projectName);
 
-  const { data } = useQuery(query, { variables: { projectId } });
+  const { data, loading:gqLoading } = useQuery(query, { variables: { projectId } });
   const { data: meta } = useSWRImmutable(data?.project?.metaURI);
 
   const accountMembers = data?.project?.account?.members ?? [];
@@ -64,13 +67,16 @@ const Project: NextPage = () => {
   const [gallery, setGallery] = useState<(File | string)[]>([]);
 
   const form = useForm<FormValues>({
-    schema: zodResolver(schema),
+    validate: zodResolver(schema),
+    validateInputOnChange: true,
     initialValues: {
       displayName: '',
       website: '',
       description: '',
       shortDescription: '',
       youTubeLink: '',
+      type: '',
+      tags: [],
     },
   });
 
@@ -80,10 +86,12 @@ const Project: NextPage = () => {
       const youTubeLink = meta.gallery?.find((item: any) => item.type === 'youtube');
       const galleryLinks = meta.gallery?.filter((item: any) => item.type === 'image');
 
-      form.setFieldValue('displayName', meta.name);
-      form.setFieldValue('website', meta.external_url);
-      form.setFieldValue('description', meta.description);
+      form.setFieldValue('displayName', meta.name ?? '');
+      form.setFieldValue('website', meta.external_url ?? '');
+      form.setFieldValue('description', meta.description ?? '');
       form.setFieldValue('youTubeLink', youTubeLink?.src ?? '');
+      form.setFieldValue('tags', meta.tags ?? []);
+      form.setFieldValue('type', meta.type ?? '');
 
       setGallery(galleryLinks?.map((item: any) => item.src) ?? []);
       setMainCapsule(meta.main_capsule);
@@ -134,6 +142,19 @@ const Project: NextPage = () => {
     });
   };
 
+  if (!gqLoading && !data?.project) {
+    return (
+      <Layout>
+        <_404 
+          message={"The project you are looking for doesn't seem to exist, no biggie, click on the button below to create it!"}
+          action={
+            <Button onClick={() => router.push(`/-/account/${accountName}/create/project`)}>Create project</Button>
+          }
+        />
+      </Layout>
+    );
+  };
+
   return (
     <Layout
       breadcrumbs={[
@@ -142,69 +163,108 @@ const Project: NextPage = () => {
         { title: 'Settings', href: `/-/account/${accountName}/project/${projectName}/settings` },
       ]}
     >
-      <Tabs grow>
-        <Tabs.Tab label="Basic Info">
-          <Stack style={{ maxWidth: 784 }}>
-            <Title mt="lg">Basic Info</Title>
-            <Text color="dimmed">This is your public account info.</Text>
-            <Title order={2}>Project Image</Title>
-            <ImageInput 
-              width={300}
-              height={300}
-              onChange={setImage} 
-              value={image}
-              disabled={loading}
-            />
-            <Title order={2}>Project Details</Title>
-            <TextInput 
-              label="Project Name (cannot be changed)"
-              disabled={true}
-              value={projectName}
-              required
-            />
-            <TextInput 
-              label="Display Name"
-              disabled={loading}
-              required 
-              {...form.getInputProps('displayName')}
-            />
-            <TextInput 
-              label="Website"
-              disabled={loading}
-              {...form.getInputProps('website')}
-            />
-          </Stack>
-          <Group mt="lg">
-            <Button onClick={form.onSubmit(update)} disabled={loading}>Save</Button>
-          </Group>
-        </Tabs.Tab>
-        <Tabs.Tab label="Descriptions">
-          <Stack style={{ maxWidth: 784 }}>
-            <Title mt="lg">Descriptions</Title>
-            <Text color="dimmed">Let everyone know about your project.</Text>
-            <Title order={2}>Short Description</Title>
-            <Text color="dimmed">Enter a brief summary of the project. This will be displayed on the project card or thumbnail.</Text>
-            <TextInput
-              label="Short Description"
-              disabled={loading}
-              {...form.getInputProps('shortDescription')}
-            />
-            <Title order={2}>Description</Title>
-            <Text color="dimmed">Give an extensive overview of your project. This will be displayed on your project landing page.</Text>
-            <Textarea
-              label="Description"
-              disabled={loading}
-              autosize={true}
-              minRows={4}
-              maxRows={12}
-              {...form.getInputProps('description')}
-            />
-          </Stack>
-          <Group mt="lg">
-            <Button onClick={form.onSubmit(update)} disabled={loading}>Save</Button>
-          </Group>
-        </Tabs.Tab>
-        <Tabs.Tab label="Members">
+      <Tabs defaultValue="basic">
+        <Tabs.List grow>
+          <Tabs.Tab value="basic">Basic Info</Tabs.Tab>
+          <Tabs.Tab value="descriptions">Descriptions</Tabs.Tab>
+          <Tabs.Tab value="members">Members</Tabs.Tab>
+          <Tabs.Tab value="media">Media</Tabs.Tab>
+        </Tabs.List>
+        <Tabs.Panel value="basic">
+          <form onSubmit={form.onSubmit(update)}>
+            <Stack style={{ maxWidth: 784 }}>
+              <Title mt="lg">Basic Info</Title>
+              <Text color="dimmed">This is your public account info.</Text>
+              <Title order={2}>Project Image</Title>
+              <ImageInput 
+                width={300}
+                height={300}
+                onChange={setImage} 
+                value={image}
+                disabled={loading}
+              />
+              <Title order={2}>Project Details</Title>
+              <TextInput 
+                label="Project Name (cannot be changed)"
+                disabled={true}
+                value={projectName}
+                required
+              />
+              <TextInput 
+                label="Display Name"
+                disabled={loading}
+                required 
+                {...form.getInputProps('displayName')}
+              />
+              <TextInput 
+                label="Website"
+                disabled={loading}
+                {...form.getInputProps('website')}
+              />
+              <Select
+                label="Type"
+                data={defaultTypes}
+                placeholder="Select type"
+                nothingFound="Nothing found"
+                searchable
+                creatable
+                getCreateLabel={(query) => `+ Create ${query}`}
+                {...form.getInputProps('type')}
+              />
+              <MultiSelect
+                label="Tags"
+                data={defaultTags}
+                placeholder="Select tags"
+                searchable
+                creatable
+                getCreateLabel={(query) => `+ Create ${query}`}
+                {...form.getInputProps('tags')}
+              />
+            </Stack>
+            <Group mt="lg">
+              <Button 
+                type="submit"
+                disabled={loading}
+              >
+                Save
+              </Button>
+            </Group>
+          </form>
+        </Tabs.Panel>
+        <Tabs.Panel value="descriptions">
+          <form onSubmit={form.onSubmit(update)}>
+            <Stack style={{ maxWidth: 784 }}>
+              <Title mt="lg">Descriptions</Title>
+              <Text color="dimmed">Let everyone know about your project.</Text>
+              <Title order={2}>Short Description</Title>
+              <Text color="dimmed">Enter a brief summary of the project. This will be displayed on the project card or thumbnail.</Text>
+              <TextInput
+                label="Short Description"
+                disabled={loading}
+                {...form.getInputProps('shortDescription')}
+              />
+              <Title order={2}>Description</Title>
+              <Text color="dimmed">Give an extensive overview of your project. This will be displayed on your project landing page.</Text>
+              <Textarea
+                label="Description"
+                disabled={loading}
+                autosize={true}
+                minRows={4}
+                maxRows={12}
+                {...form.getInputProps('description')}
+              />
+            </Stack>
+            <Group mt="lg">
+              <Button
+                type="submit"
+                disabled={loading}
+              >
+                Save
+              </Button>
+            </Group>
+          </form>
+        </Tabs.Panel>
+        <Tabs.Panel value="members">
           <Stack style={{ maxWidth: 784 }}>
             <Title mt="lg">Members</Title>
             <Text color="dimmed">Members can perform the following actions:</Text>
@@ -230,39 +290,46 @@ const Project: NextPage = () => {
               editable={!loading}
             />
           </Stack>
-        </Tabs.Tab>
-        <Tabs.Tab label="Media">
-          <Stack style={{ maxWidth: 784 }}>
-            <Title mt="lg">Media</Title>
-            <Text color="dimmed">Show off your project with videos and images.</Text>
-            <Title order={2}>YouTube Link</Title>
-            <Text color="dimmed">Paste a link to your video.</Text>
-            <TextInput
-              label="YouTube Link"
-              disabled={loading}
-              {...form.getInputProps('youTubeLink')}
-            />
-            <Title order={2}>Header Image</Title>
-            <Text color="dimmed">This can be the cover image of your game or app. Recommended size is (616x353).</Text>
-            <ImageInput 
-              width={616}
-              height={353}
-              onChange={setMainCapsule} 
-              value={mainCapsule}
-              disabled={loading}
-            />
-            <Title order={2}>Gallery Images</Title>
-            <Text color="dimmed">Additional images of your game or app. Recommended size is (1280x720 or 1920x1080).</Text>
-            <GalleryInput
-              onChange={setGallery}
-              value={gallery}
-              disabled={loading}
-            />
-          </Stack>
-          <Group mt="lg">
-            <Button onClick={form.onSubmit(update)} disabled={loading}>Save</Button>
-          </Group>
-        </Tabs.Tab>
+        </Tabs.Panel>
+        <Tabs.Panel value="media">
+          <form onSubmit={form.onSubmit(update)}>
+            <Stack style={{ maxWidth: 784 }}>
+              <Title mt="lg">Media</Title>
+              <Text color="dimmed">Show off your project with videos and images.</Text>
+              <Title order={2}>YouTube Link</Title>
+              <Text color="dimmed">Paste a link to your video.</Text>
+              <TextInput
+                label="YouTube Link"
+                disabled={loading}
+                {...form.getInputProps('youTubeLink')}
+              />
+              <Title order={2}>Header Image</Title>
+              <Text color="dimmed">This can be the cover image of your game or app. Recommended size is (616x353).</Text>
+              <ImageInput 
+                width={616}
+                height={353}
+                onChange={setMainCapsule} 
+                value={mainCapsule}
+                disabled={loading}
+              />
+              <Title order={2}>Gallery Images</Title>
+              <Text color="dimmed">Additional images of your game or app. Recommended size is (1280x720 or 1920x1080).</Text>
+              <GalleryInput
+                onChange={setGallery}
+                value={gallery}
+                disabled={loading}
+              />
+            </Stack>
+            <Group mt="lg">
+              <Button 
+                type="submit"
+                disabled={loading}
+              >
+                Save
+              </Button>
+            </Group>
+          </form>
+        </Tabs.Panel>
       </Tabs>
     </Layout>
   );

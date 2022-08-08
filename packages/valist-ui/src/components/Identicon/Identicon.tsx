@@ -31,13 +31,11 @@ export function Identicon(props: IdenticonProps) {
   return (
     <Tooltip 
       position="bottom"
-      placement="center"
       label={label}
-      style={{ marginLeft: props.stack ? -(props.size/3) : 0 }}
       width={110}
-      withArrow
     >
       <UnstyledButton 
+        style={{ marginLeft: props.stack ? -(props.size/3) : 0 }}
         onClick={() => clipboard.copy(props.value)}
       >
         <Avatar 

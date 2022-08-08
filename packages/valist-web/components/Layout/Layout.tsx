@@ -1,10 +1,17 @@
 import React, { useState, useContext } from 'react';
 import { useRouter } from 'next/router';
+import { useNetwork, useProvider } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import * as Icons from 'tabler-icons-react';
-import { Anchor } from '@mantine/core';
+import { NextLink } from '@mantine/next';
 import { AccountSelect } from '@/components/AccountSelect';
 import { AccountContext } from '@/components/AccountProvider';
+
+import { 
+  Anchor,
+  ActionIcon,
+  Group,
+} from '@mantine/core';
 
 import { 
   AppShell,
@@ -13,6 +20,7 @@ import {
   Navbar,
   Header,
   Social,
+  ThemeButton,
 } from '@valist/ui';
 
 export interface Breadcrumb {
@@ -23,31 +31,37 @@ export interface Breadcrumb {
 export interface LayoutProps {
   children?: React.ReactNode;
   breadcrumbs?: Breadcrumb[];
+  hideNavbar?: boolean;
+  padding?: number;
 }
 
 export function Layout(props: LayoutProps) {
   const router = useRouter();
   const [opened, setOpened] = useState(false);
 
+  const { chain } = useNetwork();
   const { account } = useContext(AccountContext);
-  const showNavbar = !!account;
+
+  const hideNavbar = !account || props.hideNavbar;
 
   return (
     <AppShell
-      showNavbar={showNavbar}
+      padding={props.padding}
+      hideNavbar={hideNavbar}
       header={
         <Header 
-          showNavbar={showNavbar}
+          hideNavbar={hideNavbar}
           opened={opened} 
           onClick={() => setOpened(!opened)}
+          onSearch={value => router.push(`/-/search/${value}`)}
         >
           <Anchor target="_blank" href="https://docs.valist.io">Docs</Anchor>
-          <Anchor target="_blank" href="/-/discover">Discover</Anchor>
-          <ConnectButton 
-            chainStatus="icon" 
-            accountStatus="avatar" 
-            showBalance={false}
-          />
+          <Anchor href="/-/discover">Discover</Anchor>
+          <ConnectButton showBalance={false} />
+          <ActionIcon component={NextLink} href="/-/gas" variant="transparent">
+            <Icons.GasStation size={18} />
+          </ActionIcon>
+          <ThemeButton />
         </Header>
       }
       navbar={
@@ -80,10 +94,9 @@ export function Layout(props: LayoutProps) {
       }
       footer={
         <Footer>
-          <ConnectButton 
-            chainStatus="full" 
-            accountStatus="full" 
-            showBalance={false} />
+          <Group>
+            <ConnectButton showBalance={false} />
+          </Group>
         </Footer>
       }
     >

@@ -24,14 +24,15 @@ import {
   Stack,
   Group,
   List,
+  TextInput,
+  Tabs,
 } from '@mantine/core';
 
 import { 
-  Tabs,
   Button,
   ImageInput,
   MemberList,
-  TextInput,
+  _404,
 } from '@valist/ui';
 
 const SettingsPage: NextPage = () => {
@@ -43,9 +44,9 @@ const SettingsPage: NextPage = () => {
   const valist = useContext(ValistContext);
 
   const accountName = `${router.query.account}`;
-  const accountId = valist.generateID(chain?.id ?? 0, accountName);
+  const accountId = valist.generateID(chain?.id ?? 137, accountName);
 
-  const { data } = useQuery(query, { variables: { accountId } });
+  const { data, loading:gqLoading } = useQuery(query, { variables: { accountId } });
   const { data: meta } = useSWRImmutable(data?.account?.metaURI);
 
   const members = data?.account?.members ?? [];
@@ -55,7 +56,8 @@ const SettingsPage: NextPage = () => {
   const [image, setImage] = useState<File | string>();
 
   const form = useForm<FormValues>({
-    schema: zodResolver(schema),
+    validate: zodResolver(schema),
+    validateInputOnChange: true,
     initialValues: {
       displayName: '',
       website: '',
@@ -66,9 +68,9 @@ const SettingsPage: NextPage = () => {
   // wait for metadata to load
   useEffect(() => {
     if (meta) {
-      form.setFieldValue('displayName', meta.name);
-      form.setFieldValue('website', meta.external_url);
-      form.setFieldValue('description', meta.description);
+      form.setFieldValue('displayName', meta.name ?? '');
+      form.setFieldValue('website', meta.external_url ?? '');
+      form.setFieldValue('description', meta.description ?? '');
       setImage(meta.image);
       setLoading(false);
     }
@@ -114,6 +116,19 @@ const SettingsPage: NextPage = () => {
     });
   };
 
+  if (!gqLoading && !data?.account) {
+    return (
+      <Layout>
+        <_404 
+          message={"The account you are looking for doesn't seem to exist, no biggie click on the button below to create it!."}
+          action={
+            <Button onClick={() => router.push(`/-/create/account`)}>Create account</Button>
+          }
+        />
+      </Layout>
+    );
+  };
+
   return (
     <Layout
       breadcrumbs={[
@@ -121,47 +136,58 @@ const SettingsPage: NextPage = () => {
         { title: 'Settings', href: `/-/${accountName}/settings` },
       ]}
     >
-      <Tabs grow>
-        <Tabs.Tab label="Basic Info">
-          <Stack style={{ maxWidth: 784 }}>
-            <Title mt="lg">Basic Info</Title>
-            <Text color="dimmed">This is your public account info.</Text>
-            <Title order={2}>Account Image</Title>
-            <ImageInput 
-              width={300}
-              height={300}
-              onChange={setImage} 
-              value={image}
-              disabled={loading}
-            />
-            <Title order={2}>Account Details</Title>
-            <TextInput 
-              label="Account Name (cannot be changed)"
-              value={accountName}
-              disabled
-            />
-            <TextInput 
-              label="Display Name"
-              disabled={loading}
-              required 
-              {...form.getInputProps('displayName')}
-            />
-            <TextInput 
-              label="Website"
-              disabled={loading}
-              {...form.getInputProps('website')}
-            />
-            <TextInput
-              label="Description"
-              disabled={loading}
-              {...form.getInputProps('description')}
-            />
-          </Stack>
-          <Group mt="lg">
-            <Button onClick={form.onSubmit(update)} disabled={loading}>Save</Button>
-          </Group>
-        </Tabs.Tab>
-        <Tabs.Tab label="Members">
+      <Tabs defaultValue="basic">
+        <Tabs.List grow>
+          <Tabs.Tab value="basic">Basic Info</Tabs.Tab>
+          <Tabs.Tab value="members">Members</Tabs.Tab>
+        </Tabs.List>
+        <Tabs.Panel value="basic">
+          <form onSubmit={form.onSubmit(update)}>
+            <Stack style={{ maxWidth: 784 }}>
+              <Title mt="lg">Basic Info</Title>
+              <Text color="dimmed">This is your public account info.</Text>
+              <Title order={2}>Account Image</Title>
+              <ImageInput 
+                width={300}
+                height={300}
+                onChange={setImage} 
+                value={image}
+                disabled={loading}
+              />
+              <Title order={2}>Account Details</Title>
+              <TextInput 
+                label="Account Name (cannot be changed)"
+                value={accountName}
+                disabled
+              />
+              <TextInput 
+                label="Display Name"
+                disabled={loading}
+                required 
+                {...form.getInputProps('displayName')}
+              />
+              <TextInput 
+                label="Website"
+                disabled={loading}
+                {...form.getInputProps('website')}
+              />
+              <TextInput
+                label="Description"
+                disabled={loading}
+                {...form.getInputProps('description')}
+              />
+            </Stack>
+            <Group mt="lg">
+              <Button 
+                disabled={loading} 
+                type="submit"
+              >
+                Save
+              </Button>
+            </Group>
+          </form>
+        </Tabs.Panel>
+        <Tabs.Panel value="members">
           <Stack style={{ maxWidth: 784 }}>
             <Title mt="lg">Members</Title>
             <Text color="dimmed">Members can perform the following actions:</Text>
@@ -185,7 +211,7 @@ const SettingsPage: NextPage = () => {
               editable={!loading}
             />
           </Stack>
-        </Tabs.Tab>
+        </Tabs.Panel>
       </Tabs>
     </Layout>
   );

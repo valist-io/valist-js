@@ -5,6 +5,7 @@ import {
   Drawer,
   Group,
   MediaQuery,
+  TextInput,
   Header as MantineHeader,
 } from '@mantine/core';
 
@@ -12,18 +13,24 @@ import React, { useState } from 'react';
 import * as Icon from 'tabler-icons-react';
 import useStyles from './Header.styles';
 import { Logo } from '../Logo';
-import { TextInput } from '../TextInput';
 
 export interface HeaderProps {
   children?: React.ReactNode;
   opened: boolean;
   onClick(): void;
-  showNavbar?: boolean;
+  hideNavbar?: boolean;
+  onSearch?: (value: string) => void;
 }
 
 export function Header(props: HeaderProps) {
   const { classes } = useStyles();
   const [searchOpened, setSearchOpened] = useState(false);
+
+  const onSearch = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      props.onSearch?.(event.target.value);
+    }
+  };
 
   return (
     <MantineHeader height={72} className={classes.root}>
@@ -37,6 +44,7 @@ export function Header(props: HeaderProps) {
               <TextInput
                 placeholder="Search projects"
                 icon={<Icon.Search size={18} strokeWidth={3} />}
+                onKeyPress={onSearch}
               />
             </div>
             <Group 
@@ -70,6 +78,7 @@ export function Header(props: HeaderProps) {
                 <TextInput
                   placeholder="Search"
                   icon={<Icon.Search size={18} strokeWidth={3} />}
+                  onKeyPress={onSearch}
                 />
               </Group>
             </Drawer>
@@ -80,14 +89,13 @@ export function Header(props: HeaderProps) {
             >
               <Icon.Search size={18} strokeWidth={3} />
             </ActionIcon>
-            {props.showNavbar &&
+            {!props.hideNavbar &&
               <Burger
                 size="sm"
                 opened={props.opened}
                 onClick={props.onClick}
               />
             }
-            
           </Group>
         </MediaQuery>
       </Group>
@@ -97,5 +105,4 @@ export function Header(props: HeaderProps) {
 
 Header.defaultProps = {
   opened: false,
-  showNavbar: true,
 };

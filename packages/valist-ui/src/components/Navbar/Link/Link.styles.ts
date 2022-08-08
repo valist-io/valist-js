@@ -22,6 +22,11 @@ export default createStyles((theme, params: LinkStyleProps) => {
       display: 'flex',
       padding: '14px 0 14px 30px',
       width: '100%',
+
+      '&:hover': {
+        textDecoration: 'none',        
+      },
+
       ...(params.active ? active : {}),
     },
     icon: {

@@ -3,6 +3,7 @@ import { ApolloCache } from '@apollo/client';
 import { ProjectMeta, GalleryMeta, Client } from '@valist/sdk';
 import { handleEvent } from './events';
 import * as utils from './utils';
+import { shortnameRegex, refineYouTube } from './common';
 
 export interface FormValues {
   projectName: string;
@@ -11,13 +12,15 @@ export interface FormValues {
   description: string;
   shortDescription: string;
   youTubeLink: string;
+  type: string;
+  tags: string[];
 }
 
 export const schema = z.object({
   projectName: z.string()
     .min(3, { message: 'Project name should have at least 3 characters' })
     .max(24, { message: 'Project name should not be longer than 24 characters' })
-    .regex(/^[\w-]+$/g, { message: 'Project name can only contain letters, numbers, and dashes' })
+    .regex(shortnameRegex, { message: 'Project name can only contain letters, numbers, and dashes' })
     .refine((val) => val.toLocaleLowerCase() === val, { message: 'Project name can only contain lowercase letters' }),
   displayName: z.string()
     .min(3, { message: 'Display name should have at least 3 characters' })
@@ -25,9 +28,11 @@ export const schema = z.object({
   website: z.string(),
   description: z.string(),
   youTubeLink: z.string()
-    .refine(utils.refineYouTube, { message: 'YouTube link format is invalid.' }),
+    .refine(refineYouTube, { message: 'YouTube link format is invalid.' }),
   shortDescription: z.string()
     .max(100, { message: 'Description should be shorter than 100 characters' }),
+  type: z.string(),
+  tags: z.string().array(),
 });
 
 export async function createProject(
@@ -56,6 +61,8 @@ export async function createProject(
       name: values.displayName,
       description: values.description,
       external_url: values.website,
+      type: values.type,
+      tags: values.tags,
       gallery: [],
     };
 

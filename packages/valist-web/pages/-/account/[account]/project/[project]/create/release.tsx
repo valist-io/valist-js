@@ -7,6 +7,7 @@ import { useForm, zodResolver } from '@mantine/form';
 import { useApolloClient, useQuery } from '@apollo/client';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
+import { NameInput } from '@/components/NameInput';
 import query from '@/graphql/CreateReleasePage.graphql';
 
 import {
@@ -18,12 +19,9 @@ import {
 import {
   Button,
   ImageInput,
-  TextInput,
-  Textarea,
   FileInput,
   File,
   Card,
-  Tabs,
 } from '@valist/ui';
 
 import { 
@@ -31,7 +29,10 @@ import {
   Stack,
   Title,
   Text,
+  TextInput,
+  Textarea,
   ScrollArea,
+  Tabs,
 } from '@mantine/core';
 
 const CreateReleasePage: NextPage = () => {
@@ -43,7 +44,7 @@ const CreateReleasePage: NextPage = () => {
   const { chain } = useNetwork();  
 
   const accountName = `${router.query.account}`;
-  const accountId = valist.generateID(chain?.id ?? 0, accountName);
+  const accountId = valist.generateID(chain?.id ?? 137, accountName);
 
   const projectName = `${router.query.project}`;
   const projectId = valist.generateID(accountId, projectName);
@@ -58,14 +59,11 @@ const CreateReleasePage: NextPage = () => {
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState<File>();
   const [files, setFiles] = useState<FileWithPath[]>([]);
-
-  // form controls
-  const [active, setActive] = useState(0);
-  const nextStep = () => setActive(active < 1 ? active + 1 : active);
-  const prevStep = () => setActive(active > 0 ? active - 1 : active);
+  const [activeTab, setActiveTab] = useState<string | null>();
 
   const form = useForm<FormValues>({
-    schema: zodResolver(schema),
+    validate: zodResolver(schema),
+    validateInputOnChange: true,
     initialValues: {
       releaseName: '',
       displayName: '',
@@ -93,85 +91,108 @@ const CreateReleasePage: NextPage = () => {
   };
 
   return (
-    <Layout
-      breadcrumbs={[
-        { title: accountName, href: `/${accountName}` },
-        { title: projectName, href: `/${accountName}/${projectName}` },
-        { title: 'Create Release', href: `/-/account/${accountName}/project/${projectName}/create/release` },
-      ]}
-    >
-      <Tabs active={active} onTabChange={setActive} grow>
-        <Tabs.Tab label="Basic Info">
-          <Stack style={{ maxWidth: 784 }}>
-            <Title mt="lg">Basic Info</Title>
-            <Text color="dimmed">This is your public release info.</Text>
-            <Title order={2}>Release Image</Title>
-            <ImageInput 
-              width={300}
-              height={300}
-              onChange={setImage} 
-              value={image}
-              disabled={loading}
-            />
-            <Title order={2}>Release Details</Title>
-            <TextInput 
-              label="Release Name (cannot be changed)"
-              placeholder={latestReleaseName}
-              disabled={loading}
-              required
-              {...form.getInputProps('releaseName')}
-            />
-            <TextInput 
-              label="Display Name"
-              disabled={loading}
-              required
-              {...form.getInputProps('displayName')}
-            />
-            <Textarea
-              label="Description"
-              disabled={loading}
-              autosize={true}
-              minRows={4}
-              maxRows={12}
-              {...form.getInputProps('description')}
-            />
-          </Stack>
-        </Tabs.Tab>
-        <Tabs.Tab label="Files">
-          <Stack style={{ maxWidth: 784 }}>
-            <Title mt="lg">Files</Title>
-            <Text color="dimmed">Upload your release files.</Text>
-            <FileInput
-              onChange={setFiles}
-              value={files}
-              disabled={loading}
-            />
-            <ScrollArea style={{ height: 300 }}>
-              <Stack spacing={12}>
-                {files.map((file: FileWithPath, index: number) => 
-                  <File 
-                    key={index} 
-                    path={file.path ?? file.name} 
-                    size={file.size} 
-                  />,
-                )}
-              </Stack>
-            </ScrollArea>
-          </Stack>
-        </Tabs.Tab>
-      </Tabs>
-      <Group mt="lg">
-        { active > 0 && 
-          <Button onClick={() => prevStep()} variant="secondary">Back</Button>
-        }
-        { active < 1 &&
-          <Button onClick={() => nextStep()} variant="primary">Continue</Button>
-        }
-        { active === 1 &&
-          <Button onClick={form.onSubmit(submit)} disabled={loading}>Create</Button>
-        }
-      </Group>
-    </Layout>
+    <form onSubmit={form.onSubmit(submit)}>
+      <Layout
+        breadcrumbs={[
+          { title: accountName, href: `/${accountName}` },
+          { title: projectName, href: `/${accountName}/${projectName}` },
+          { title: 'Create Release', href: `/-/account/${accountName}/project/${projectName}/create/release` },
+        ]}
+      >
+        <Tabs
+          defaultValue="basic"
+          value={activeTab}
+          onTabChange={setActiveTab}
+        >
+          <Tabs.List grow>
+            <Tabs.Tab value="basic">Basic Info</Tabs.Tab>
+            <Tabs.Tab value="files">Files</Tabs.Tab>
+          </Tabs.List>
+          <Tabs.Panel value="basic">
+            <Stack style={{ maxWidth: 784 }}>
+              <Title mt="lg">Basic Info</Title>
+              <Text color="dimmed">This is your public release info.</Text>
+              <Title order={2}>Release Image</Title>
+              <ImageInput 
+                width={300}
+                height={300}
+                onChange={setImage} 
+                value={image}
+                disabled={loading}
+              />
+              <Title order={2}>Release Details</Title>
+              <NameInput 
+                label="Release Name (cannot be changed)"
+                placeholder={latestReleaseName}
+                disabled={loading}
+                parentId={projectId}
+                required
+                {...form.getInputProps('releaseName')}
+              />
+              <TextInput 
+                label="Display Name"
+                disabled={loading}
+                required
+                {...form.getInputProps('displayName')}
+              />
+              <Textarea
+                label="Description"
+                disabled={loading}
+                autosize={true}
+                minRows={4}
+                maxRows={12}
+                {...form.getInputProps('description')}
+              />
+            </Stack>
+            <Group mt="lg">
+              <Button 
+                onClick={() => setActiveTab('files')}
+                variant="primary"
+                disabled={!(form.values.releaseName && form.values.displayName)}
+              >
+                Continue
+              </Button>
+            </Group>
+          </Tabs.Panel>
+          <Tabs.Panel value="files">
+            <Stack style={{ maxWidth: 784 }}>
+              <Title mt="lg">Files</Title>
+              <Text color="dimmed">Upload your release files.</Text>
+              <FileInput
+                onChange={setFiles}
+                value={files}
+                disabled={loading}
+              />
+              <ScrollArea style={{ height: 300 }}>
+                <Stack spacing={12}>
+                  {files.map((file: FileWithPath, index: number) => 
+                    <File 
+                      key={index} 
+                      path={file.path ?? file.name} 
+                      size={file.size} 
+                    />,
+                  )}
+                </Stack>
+              </ScrollArea>
+            </Stack>
+            <Group mt="lg">
+              <Button 
+                onClick={() => setActiveTab('basic')} 
+                variant="secondary"
+              >
+                Back
+              </Button>
+              <Button 
+                type="submit"
+                disabled={loading}
+              >
+                Create
+              </Button>
+            </Group>
+          </Tabs.Panel>
+        </Tabs>
+      </Layout>
+    </form>
   );
 };
 
