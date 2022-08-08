@@ -19,7 +19,7 @@ const ProjectPage: NextPage = () => {
   const valist = useContext(ValistContext);
 
   const accountName = `${router.query.account}`;
-  const accountId = valist.generateID(chain?.id ?? 0, accountName);
+  const accountId = valist.generateID(chain?.id ?? 137, accountName);
 
   const projectName = `${router.query.project}`;
   const projectId = valist.generateID(accountId, projectName);
