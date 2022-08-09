@@ -10,4 +10,5 @@ site
 *.out
 dist
 .env*
-android
+.parcel-cache
+electron

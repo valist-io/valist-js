@@ -1,0 +1,9 @@
+query CreateReleasePage($projectId: String!){
+  project(id: $projectId){
+    id
+    releases(orderBy: blockTime, orderDirection: "desc", limit: 1) {
+      id
+      name
+    }
+  }
+}

@@ -1,0 +1,14 @@
+query UpdateProjectPage($projectId: String!){
+  project(id: $projectId){
+    id
+    metaURI
+    account {
+      members {
+        id
+      }
+    }
+    members {
+      id
+    }
+  }
+}

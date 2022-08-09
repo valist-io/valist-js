@@ -1,0 +1,6 @@
+fragment UserAccounts on User {
+	id
+  accounts {
+    id
+  }
+}

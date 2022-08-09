@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { BigNumber, ethers } from 'ethers';
-import { TransactionResponse } from '@ethersproject/abstract-provider';
+import { ContractTransaction } from '@ethersproject/contracts';
 import { IPFS } from 'ipfs-core-types';
 import { IPFSHTTPClient } from 'ipfs-http-client';
 import { Web3Storage, File, Filelike } from 'web3.storage';
@@ -27,17 +27,17 @@ export default class Client {
 		private subgraphUrl: string
 	) { }
 
-	async createAccount(name: string, meta: AccountMeta, members: string[]): Promise<TransactionResponse> {
+	async createAccount(name: string, meta: AccountMeta, members: string[]): Promise<ContractTransaction> {
 		const metaURI = await this.writeJSON(JSON.stringify(meta));
 		return await this.registry.createAccount(name, metaURI, members);
 	}
 
-	async createProject(accountID: ethers.BigNumberish, name: string, meta: ProjectMeta, members: string[]): Promise<TransactionResponse> {
+	async createProject(accountID: ethers.BigNumberish, name: string, meta: ProjectMeta, members: string[]): Promise<ContractTransaction> {
 		const metaURI = await this.writeJSON(JSON.stringify(meta));
 		return await this.registry.createProject(accountID, name, metaURI, members);
 	}
 
-	async createRelease(projectID: ethers.BigNumberish, name: string, meta: ReleaseMeta): Promise<TransactionResponse> {
+	async createRelease(projectID: ethers.BigNumberish, name: string, meta: ReleaseMeta): Promise<ContractTransaction> {
 		const metaURI = await this.writeJSON(JSON.stringify(meta));
 		return await this.registry.createRelease(projectID, name, metaURI);
 	}
@@ -75,65 +75,65 @@ export default class Client {
 		return data;
 	}
 
-	async setAccountMeta(accountID: ethers.BigNumberish, meta: AccountMeta): Promise<TransactionResponse> {
+	async setAccountMeta(accountID: ethers.BigNumberish, meta: AccountMeta): Promise<ContractTransaction> {
 		const metaURI = await this.writeJSON(JSON.stringify(meta));
 		return await this.registry.setAccountMetaURI(accountID, metaURI);
 	}
 
-	async setProjectMeta(projectID: ethers.BigNumberish, meta: ProjectMeta): Promise<TransactionResponse> {
+	async setProjectMeta(projectID: ethers.BigNumberish, meta: ProjectMeta): Promise<ContractTransaction> {
 		const metaURI = await this.writeJSON(JSON.stringify(meta));
 		return await this.registry.setProjectMetaURI(projectID, metaURI);
 	}
 
-	async addAccountMember(accountID: ethers.BigNumberish, address: string): Promise<TransactionResponse> {
+	async addAccountMember(accountID: ethers.BigNumberish, address: string): Promise<ContractTransaction> {
 		return await this.registry.addAccountMember(accountID, address);
 	}
 
-	async removeAccountMember(accountID: ethers.BigNumberish, address: string): Promise<TransactionResponse> {
+	async removeAccountMember(accountID: ethers.BigNumberish, address: string): Promise<ContractTransaction> {
 		return await this.registry.removeAccountMember(accountID, address);
 	}
 
-	async addProjectMember(projectID: ethers.BigNumberish, address: string): Promise<TransactionResponse> {
+	async addProjectMember(projectID: ethers.BigNumberish, address: string): Promise<ContractTransaction> {
 		return await this.registry.addProjectMember(projectID, address);
 	}
 
-	async removeProjectMember(projectID: ethers.BigNumberish, address: string): Promise<TransactionResponse> {
+	async removeProjectMember(projectID: ethers.BigNumberish, address: string): Promise<ContractTransaction> {
 		return await this.registry.removeProjectMember(projectID, address);
 	}
 
-	async approveRelease(releaseID: ethers.BigNumberish): Promise<TransactionResponse> {
+	async approveRelease(releaseID: ethers.BigNumberish): Promise<ContractTransaction> {
 		return await this.registry.approveRelease(releaseID);
 	}
 
-	async revokeRelease(releaseID: ethers.BigNumberish): Promise<TransactionResponse> {
+	async revokeRelease(releaseID: ethers.BigNumberish): Promise<ContractTransaction> {
 		return await this.registry.approveRelease(releaseID);
 	}
 
-	async setProductLimit(projectID: ethers.BigNumberish, limit: ethers.BigNumberish): Promise<TransactionResponse> {
+	async setProductLimit(projectID: ethers.BigNumberish, limit: ethers.BigNumberish): Promise<ContractTransaction> {
 		return await this.license.setLimit(projectID, limit);
 	}
 
-	async setProductRoyalty(projectID: ethers.BigNumberish, recipient: string, amount: ethers.BigNumberish): Promise<TransactionResponse> {
+	async setProductRoyalty(projectID: ethers.BigNumberish, recipient: string, amount: ethers.BigNumberish): Promise<ContractTransaction> {
 		return await this.license.setRoyalty(projectID, recipient, amount);
 	}
 
-	async setProductPrice(projectID: ethers.BigNumberish, price: ethers.BigNumberish): Promise<TransactionResponse> {
+	async setProductPrice(projectID: ethers.BigNumberish, price: ethers.BigNumberish): Promise<ContractTransaction> {
 		const setPrice = this.license['setPrice(uint256,uint256)'];
 		return await setPrice(projectID, price);
 	}
 
-	async setProductTokenPrice(token: string, projectID: ethers.BigNumberish, price: ethers.BigNumberish): Promise<TransactionResponse> {
+	async setProductTokenPrice(token: string, projectID: ethers.BigNumberish, price: ethers.BigNumberish): Promise<ContractTransaction> {
 		const setPrice = this.license['setPrice(address,uint256,uint256)'];
 		return await setPrice(token, projectID, price);
 	}
 
-	async purchaseProduct(projectID: ethers.BigNumberish, recipient: string): Promise<TransactionResponse> {
+	async purchaseProduct(projectID: ethers.BigNumberish, recipient: string): Promise<ContractTransaction> {
 		const price = await this.getProductPrice(projectID);
 		const purchase = this.license['purchase(uint256,address)'];
 		return await purchase(projectID, recipient, { value: price });
 	}
 
-	async purchaseProductToken(token: string, projectID: ethers.BigNumberish, recipient: string): Promise<TransactionResponse> {
+	async purchaseProductToken(token: string, projectID: ethers.BigNumberish, recipient: string): Promise<ContractTransaction> {
 		const erc20 = new ethers.Contract(token, erc20ABI, this.license.signer);
 		const price = await this.getProductTokenPrice(token, projectID);
 		// approve the transfer
@@ -142,6 +142,16 @@ export default class Client {
 		// purchase the product
 		const purchase = this.license['purchase(address,uint256,address)'];
 		return await purchase(token, projectID, recipient);
+	}
+
+	async withdrawProductBalance(projectID: ethers.BigNumberish, recipient: string): Promise<ContractTransaction> {
+		const withdraw = this.license['withdraw(uint256,address)'];
+		return await withdraw(projectID, recipient);
+	}
+
+	async withdrawProductTokenBalance(token: string, projectID: ethers.BigNumberish, recipient: string): Promise<ContractTransaction> {
+		const withdraw = this.license['withdraw(address,uint256,address)'];
+		return await withdraw(token, projectID, recipient);
 	}
 
 	async getProductPrice(projectID: ethers.BigNumberish): Promise<ethers.BigNumber> {

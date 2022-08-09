@@ -1,101 +1,72 @@
-import '../styles/global.css';
 import '@rainbow-me/rainbowkit/styles.css';
-import type { AppProps } from 'next/app';
-import { store } from '../app/store';
-import { Provider } from 'react-redux';
-import dynamic from 'next/dynamic';
-import { ApolloProvider } from '@apollo/client';
-import client from '../utils/Apollo/client';
-import { chain, createClient, WagmiConfig, configureChains } from 'wagmi';
-import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
-import {
-  lightTheme,
-  darkTheme,
-  connectorsForWallets,
-  RainbowKitProvider,
-  wallet,
-} from '@rainbow-me/rainbowkit';
-import { ColorScheme, ColorSchemeProvider, MantineProvider } from '@mantine/core';
-import { useState } from 'react';
-import { getCookie, setCookies } from 'cookies-next';
-import { GetServerSidePropsContext } from 'next';
-import { theme } from '@/utils/Theme';
-import getConfig from 'next/config';
-import { magic } from '@/utils/Providers/magic';
+import '@valist/ui/public/styles.css';
 
-const { publicRuntimeConfig } = getConfig();
+import type { AppProps, AppContext } from 'next/app';
+import { SWRConfig } from 'swr';
+import { NextLink } from '@mantine/next';
+import { useLocalStorage } from '@mantine/hooks';
+import { NotificationsProvider } from '@mantine/notifications';
+import { ColorSchemeProvider, ColorScheme } from '@mantine/core';
+import { ThemeProvider } from '@valist/ui';
+import { AccountProvider } from '@/components/AccountProvider';
+import { ApolloProvider } from '@/components/ApolloProvider';
+import { WagmiProvider, rehydrate } from '@/components/WagmiProvider';
+import { RainbowKitProvider } from '@/components/RainbowKitProvider';
+import { ValistProvider } from '@/components/ValistProvider';
 
-const AppContainer = dynamic(
-  () => import('../features/valist/ValistContainer'),
-  { ssr: false },
-);
+const fetcher = (url: string) => fetch(url).then(res => res.json());
 
-const defaultProvider = jsonRpcProvider({
-  rpc: () => ({
-    http: publicRuntimeConfig.WEB3_PROVIDER,
-  }),
-});
-
-let currentChain = chain.polygonMumbai;
-if (publicRuntimeConfig.CHAIN_ID === '137') {
-  currentChain = chain.polygon;
-}
-
-const { chains, provider } = configureChains([currentChain], [defaultProvider]);
-
-const connectors = connectorsForWallets([
-  {
-    groupName: 'Popular',
-    wallets: [
-      wallet.rainbow({ chains }),
-      wallet.metaMask({ chains }),
-      magic(),
-      wallet.walletConnect({ chains }),
-    ],
+// theme overrides
+const components = {
+  Anchor: {
+    defaultProps: {
+      component: NextLink,
+    },
   },
-  // {
-  //   groupName: 'Mobile',
-  //   wallets: [
-  //     wallet.rainbow({ chains }),
-  //     wallet.walletConnect({ chains }),
-  //   ],
-  // },
-]);
+};
 
-const wagmiClient = createClient({ autoConnect: true, connectors, provider });
-
-function ValistApp(props: AppProps & { colorScheme: ColorScheme }) {
+function ValistApp(props: AppProps) {
   const { Component, pageProps } = props;
-  const [colorScheme, setColorScheme] = useState<ColorScheme>(props.colorScheme);
-  const rainbowTheme = colorScheme === 'dark' ? darkTheme() : lightTheme();
+
+  const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
+    key: 'mantine-color-scheme',
+    defaultValue: 'light',
+    getInitialValueInEffect: true,
+  });
 
   const toggleColorScheme = (value?: ColorScheme) => {
-    const nextColorScheme = value || (colorScheme === 'dark' ? 'light' : 'dark');
-    setColorScheme(nextColorScheme);
-    setCookies('mantine-color-scheme', nextColorScheme, { maxAge: 60 * 60 * 24 * 30 });
+    setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
   };
 
   return (
-    <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
-      <MantineProvider theme={{ ...theme, colorScheme } as any} withGlobalStyles withNormalizeCSS>
-        <Provider store={store}>
-          <WagmiConfig client={wagmiClient}>
-            <RainbowKitProvider chains={chains} theme={rainbowTheme}>
-              <ApolloProvider client={client}>
-                <AppContainer>
-                    <Component {...pageProps} />
-                </AppContainer>
-              </ApolloProvider>
-            </RainbowKitProvider>
-          </WagmiConfig>
-        </Provider>
-      </MantineProvider>
-    </ColorSchemeProvider>
+    <SWRConfig value={{ fetcher }}>
+      <WagmiProvider>
+        <RainbowKitProvider colorScheme={colorScheme}>
+          <ApolloProvider>
+            <AccountProvider>
+              <ValistProvider metaTx>
+                <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
+                  <ThemeProvider theme={{ colorScheme, components }}>
+                    <NotificationsProvider>
+                      <Component {...pageProps} />
+                    </NotificationsProvider>
+                  </ThemeProvider>
+                </ColorSchemeProvider>
+              </ValistProvider>
+            </AccountProvider>
+          </ApolloProvider>
+        </RainbowKitProvider>
+      </WagmiProvider>
+    </SWRConfig>
   );
 }
 
-ValistApp.getInitialProps = ({ ctx }: { ctx: GetServerSidePropsContext }) => ({
-  colorScheme: getCookie('mantine-color-scheme', ctx) || 'dark',
-});
+ValistApp.getInitialProps = async ({ Component, ctx }: AppContext) => {
+  const wagmiStore = (ctx.req as any)?.cookies?.['wagmi.store'];
+  if (wagmiStore) rehydrate(wagmiStore);
+  
+  const pageProps = await Component.getInitialProps?.(ctx);
+  return { pageProps };
+};
 
 export default ValistApp;

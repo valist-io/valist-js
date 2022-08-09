@@ -110,13 +110,12 @@ export async function create(provider: Provider, options: Partial<Options>): Pro
   let registry: ethers.Contract;
   let license: ethers.Contract;
 
-  if ((provider as ethers.providers.Web3Provider).provider) {
-    const web3Provider = provider as ethers.providers.Web3Provider;
+  const web3Provider = provider as ethers.providers.Web3Provider;
+  if (web3Provider.provider && web3Provider.getSigner) {
     const web3Signer = web3Provider.getSigner();
 
     // if meta transactions enabled setup opengsn relay signer
     let metaSigner: ethers.providers.JsonRpcSigner;
-
     if (options.metaTx && contracts.chainIds.includes(options.chainId)) {
       metaSigner = await createRelaySigner(web3Provider, options);
       console.log('Meta-transactions enabled');

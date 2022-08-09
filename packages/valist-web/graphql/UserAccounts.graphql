@@ -1,0 +1,15 @@
+query UserAccounts($address: String!){
+  user(id: $address) {
+    id
+    accounts {
+      id
+      name
+      metaURI
+      projects {
+        id
+        name
+        metaURI
+      }
+    }
+  }
+}

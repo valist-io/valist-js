@@ -1,13 +1,27 @@
 {
   "name": "root",
   "private": true,
-  "devDependencies": {
-    "lerna": "^4.0.0"
-  },
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "test": "lerna run test",
-    "lint": "lerna run lint",
-    "build": "lerna run build",
-    "dev": "lerna run dev --parallel"
+    "test": "npm run test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "build:sdk": "npm run build --workspace=@valist/sdk",
+    "build:ui": "npm run build --workspace=@valist/ui",
+    "build:web": "npm run build --workspace=@valist/relay",
+    "build": "npm run build:sdk && npm run build:ui && npm run build:web",
+    "dev:sdk": "npm run dev --workspace=@valist/sdk",
+    "dev:ui": "npm run dev --workspace=@valist/ui",
+    "dev:web": "npm run dev --workspace=@valist/relay",
+    "dev": "concurrently --kill-others npm:dev:*",
+    "storybook": "npm run storybook --workspace=@valist/ui"
+  },
+  "devDependencies": {
+    "concurrently": "^7.2.2",
+    "@capacitor-community/electron": "latest",
+    "@capacitor/android": "^3.6.0",
+    "@capacitor/cli": "^3.6.0",
+    "@capacitor/core": "^3.6.0"
   }
 }
