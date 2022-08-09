@@ -1,0 +1,7 @@
+fragment AccountProjects on Account {
+  projects {
+    id
+    metaURI
+    name
+  }
+}

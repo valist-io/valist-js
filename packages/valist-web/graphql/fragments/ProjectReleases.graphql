@@ -1,0 +1,7 @@
+fragment ProjectReleases on Project {
+  releases {
+    id
+    metaURI
+    name
+  }
+}

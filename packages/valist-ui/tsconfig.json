@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "lib": ["es6", "dom"],
+    "outDir": "dist",
+    "module": "es6",
+    "target": "es6",
+    "jsx": "react-jsx",
+    "allowJs": true,
+    "noImplicitAny": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "sourceMap": true,
+    "declaration": true,
+  },
+  "include": ["src"]
+}

@@ -1,4 +1,4 @@
-# Valist Relay Frontend UI
+# Valist Web App
 
 ## Usage 
 

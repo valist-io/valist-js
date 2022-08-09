@@ -1,0 +1,29 @@
+query AccountPage($accountId: String!){
+  account(id: $accountId){
+    id
+    metaURI
+    projects {
+      id
+      name
+      metaURI
+    }
+    members {
+      id
+    }
+    logs(orderBy: blockTime, orderDirection: "desc"){
+      id
+      type
+      sender
+      member
+      account {
+        name
+      }
+      project {
+        name
+      }
+      release {
+        name
+      }
+    }
+  }
+}

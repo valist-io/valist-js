@@ -1,0 +1,8 @@
+query CreateProjectPage($id: String!){
+  account(id: $id) {
+    id
+    members {
+      id
+    }
+  }
+}

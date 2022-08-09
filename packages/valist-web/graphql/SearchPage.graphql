@@ -1,0 +1,17 @@
+query Search($search: String, $order: String){
+  projects(where:{name_contains: $search}, orderBy: blockTime, orderDirection: $order){
+    id
+    name
+    metaURI
+    account {
+      name
+    }
+    blockTime
+  }
+  accounts(where:{name_contains: $search}, orderBy: blockTime, orderDirection: $order){
+    id
+    name
+    metaURI
+    blockTime
+  }
+}

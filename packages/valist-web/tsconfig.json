@@ -17,8 +17,9 @@
     "baseUrl": ".",
     "paths": {
       "@/components/*": ["components/*"],
-      "@/features/*": ["features/*"],
-      "@/utils/*": ["utils/*"]
+      "@/forms/*": ["forms/*"],
+      "@/graphql/*": ["graphql/*"],
+      "@/utils/*": ["utils/*"],
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],

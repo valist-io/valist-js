@@ -1,0 +1,31 @@
+query DashboardPage($accountId: String!){
+  account(id: $accountId){
+    id
+    projects {
+      id
+      name
+      metaURI
+    }
+    members {
+      id
+    }
+    logs(orderBy: blockTime, orderDirection: "desc"){
+      id
+      type
+      sender
+      member
+      account {
+        id
+        name
+      }
+      project {
+        id
+        name
+      }
+      release {
+        id
+        name
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+query PricingPage($projectId: String!){
+  product(id: $projectId){
+    id
+    limit
+    royaltyAmount
+    royaltyRecipient
+    currencies {
+      id
+      balance
+      token
+      price
+    }
+  }
+}
