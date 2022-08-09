@@ -69,6 +69,8 @@ const ProjectPage: NextPage = () => {
   const { data: projectMeta } = useSWRImmutable(data?.project?.metaURI);
   const { data: releaseMeta } = useSWRImmutable(latestRelease?.metaURI);
 
+  const launchUrl = projectMeta?.launch_external ? projectMeta?.external_url : releaseMeta?.external_url  ?? '';
+
   if (!loading && !data?.project) {
     return (
       <Layout>
@@ -132,7 +134,7 @@ const ProjectPage: NextPage = () => {
                   <Purchase 
                     projectId={projectId}
                     name={projectMeta?.name ?? projectName}
-                    href={releaseMeta.external_url ?? ''}
+                    href={launchUrl}
                   />
                 }
                 <Card>                

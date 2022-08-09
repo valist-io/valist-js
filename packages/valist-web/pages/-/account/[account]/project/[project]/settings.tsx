@@ -77,6 +77,7 @@ const Project: NextPage = () => {
       youTubeLink: '',
       type: '',
       tags: [],
+      launchExternal: false,
     },
   });
 
@@ -92,6 +93,7 @@ const Project: NextPage = () => {
       form.setFieldValue('youTubeLink', youTubeLink?.src ?? '');
       form.setFieldValue('tags', meta.tags ?? []);
       form.setFieldValue('type', meta.type ?? '');
+      form.setFieldValue('launchExternal', meta.launch_external ?? false);
 
       setGallery(galleryLinks?.map((item: any) => item.src) ?? []);
       setMainCapsule(meta.main_capsule);
@@ -219,6 +221,11 @@ const Project: NextPage = () => {
                 creatable
                 getCreateLabel={(query) => `+ Create ${query}`}
                 {...form.getInputProps('tags')}
+              />
+              <Select
+                label="Launch External"
+                data={[{ label: "true", value: true }, { label: "false", value: false }]}
+                {...form.getInputProps('launchExternal')}
               />
             </Stack>
             <Group mt="lg">
