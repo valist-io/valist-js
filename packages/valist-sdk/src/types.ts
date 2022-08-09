@@ -29,6 +29,8 @@ export class ProjectMeta {
 	public tags?: string[];
 	/** videos and graphics of the project */
 	public gallery?: GalleryMeta[];
+	/** launch project from external_url*/
+	public launch_external?: boolean;
 }
 
 export class GalleryMeta {

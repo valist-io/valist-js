@@ -1,0 +1,38 @@
+query ProjectPage($projectId: String!){
+  project(id: $projectId){
+    id
+    metaURI
+    account {
+      id
+      members {
+        id
+      }
+    }
+    releases(orderBy: blockTime, orderDirection: "desc") {
+      id
+      name
+      metaURI
+    }
+    members {
+      id
+    }
+    logs(orderBy: blockTime, orderDirection: "desc"){
+      id
+      type
+      sender
+      member
+      account {
+        id
+        name
+      }
+      project {
+        id
+        name
+      }
+      release {
+        id
+        name
+      }
+    }
+  }
+}

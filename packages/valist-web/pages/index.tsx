@@ -1,94 +1,141 @@
-import { 
-  selectCurrentAccount,
-} from '@/features/accounts/accountsSlice';
-
-import { useState, useEffect } from 'react';
-import { useQuery, gql } from '@apollo/client';
 import type { NextPage } from 'next';
-import { useAppSelector } from '../app/hooks';
-import Layout from '@/components/Layouts/Main';
-import EmptyAccounts from '@/features/accounts/EmptyAccounts';
-import { Log, Project, Member } from '@/utils/Apollo/types';
-import { AccountMeta } from '@/utils/Valist/types';
-import { ACCOUNT_PROFILE_QUERY } from '@valist/sdk/dist/graphql';
+import { useContext, useState } from 'react';
+import { useAccount } from 'wagmi';
+import { useRouter } from 'next/router';
+import { useQuery } from '@apollo/client';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
+import { NextLink } from '@mantine/next';
+import { Layout } from '@/components/Layout';
+import { Metadata } from '@/components/Metadata';
+import { AccountContext } from '@/components/AccountProvider';
+import { Activity } from '@/components/Activity';
+import { CreateAccount } from '@/components/CreateAccount';
+import { CreateProject } from '@/components/CreateProject';
+import query from '@/graphql/DashboardPage.graphql';
 
-import LogTable from '@/features/logs/LogTable';
-import LogCard from '@/features/logs/LogCard';
-import TeamProfileCard from '@/features/accounts/AccountProfileCard';
-import TeamProjectList from '@/features/accounts/AccountProjectList';
-import TeamMemberList from '@/features/accounts/AccountMemberList';
-import TeamProfileCardActions from '@/features/accounts/AccountProfileCardActions';
+import { 
+  Title, 
+  Group,
+  Stack,
+  Grid,
+  Text,
+} from '@mantine/core';
 
-const Dashboard: NextPage = () => {
-  const currentAccount = useAppSelector(selectCurrentAccount);
-  const [view, setView] = useState<string>('Projects');
-  const [meta, setMeta] = useState<AccountMeta>({
-    image: '',
+import {
+  Button,
+  Card,
+  CardGrid,
+  Dashboard,
+  ProjectCard,
+  MemberStack,
+  List,
+  NoProjects,
+  Welcome,
+  CheckboxList,
+} from '@valist/ui';
+
+const IndexPage: NextPage = () => {
+  const router = useRouter();
+  const { account } = useContext(AccountContext);
+  const { openConnectModal } = useConnectModal();
+  const { isConnected } = useAccount();
+  const [continueOnboarding, setContinueOnboarding] = useState<boolean>(false);
+
+  const { data, loading } = useQuery(query, { 
+    variables: { accountId: account?.id ?? '' },
   });
-  const [members, setMembers] = useState<Member[]>([]);
-  const [logs, setLogs] = useState<Log[]>([]);
-  const [projects, setProjects] = useState<Project[]>([]);
 
-  const { data, loading, error } = useQuery(gql(ACCOUNT_PROFILE_QUERY), {
-    variables: { account: currentAccount },
-  });
+  const projects = data?.account?.projects ?? [];
+  const members = data?.account?.members ?? [];
+  const logs = data?.account?.logs ?? [];
 
-  useEffect(() => {
-    if (data && data.accounts && data.accounts[0] && data.accounts[0].metaURI) {
-      fetch(data.accounts[0].metaURI)
-        .then(res => res.json())
-        .then(setMeta);
-      setProjects(data.accounts[0].projects);
-      setMembers(data.accounts[0].members);
-      setLogs(data.accounts[0].logs);
-    }
-  }, [data, loading, error, setMeta]);
-
-  const tabs = [
-    {
-      text: 'Projects',
-      disabled: false,
-    },
-    {
-      text: 'Activity',
-      disabled: false,
-    },
+  const steps = [
+    { label: 'Connect Wallet', checked: isConnected },
+    { label: 'Create Account', checked: continueOnboarding || (account !== undefined) },
+    { label: 'Create Project (Optional)', checked: false },
   ];
 
-  if (currentAccount === '') {
-    return (
-      <Layout title="Valist | Dashboard">
-        <EmptyAccounts />
-      </Layout>
-    );
-  }
-
   return (
-    <Layout title="Valist | Dashboard">
-      <div className="grid grid-cols-1 gap-4 items-start lg:grid-cols-6 lg:gap-8">
-        <div className="grid grid-cols-1 gap-4 lg:col-span-4">
-          <TeamProfileCard
-            view={view}
-            setView={setView}
-            accountName={currentAccount}
-            accountImage={meta.image ? meta.image : ''}
-            meta={meta}
-            tabs={tabs}          
-          />
-          {view === 'Projects' && <TeamProjectList projects={projects} linksDisabled={false} />}
-          {view === 'Activity' && <LogTable logs={logs} />}
-        </div>
-        <div className="grid grid-cols-1 gap-4 lg:col-span-2">
-          <TeamProfileCardActions accountName={currentAccount} />
-          <TeamMemberList
-            accountMembers={members} 
-            accountName={currentAccount}          
-          />
-          <LogCard logs={logs} />
-        </div>
-      </div> 
+    <Layout>
+      {account && !continueOnboarding &&
+        <>
+          <Group position="apart" mb="xl" style={{ marginBottom: 10 }}>
+            <Title style={{ display: "block" }}>Hello & Welcome 👋🏽</Title>
+            <NextLink href={`/-/account/${account?.name}/create/project`}>
+              <Button>Create Project</Button>
+            </NextLink>
+          </Group>
+          <Text style={{ display: "block", marginBottom: 32 }}>Explore your recently Published or Edited projects.</Text>
+        </>
+      }
+      <Dashboard>
+        <Dashboard.Main>
+          {(!loading && !account || continueOnboarding) &&
+            <Grid>
+              <Grid.Col md={4}>
+                <CheckboxList items={steps} />
+              </Grid.Col>
+              <Grid.Col md={8}>
+                {!isConnected && 
+                  <Welcome button={
+                    <Button onClick={openConnectModal}>Connect Wallet</Button>
+                  } />
+                }
+                {isConnected && !continueOnboarding && 
+                  <CreateAccount afterCreate={() => setContinueOnboarding(true)} />
+                }
+                {isConnected && continueOnboarding && 
+                  <CreateProject afterCreate={() => setContinueOnboarding(false)} />
+                }
+              </Grid.Col>
+            </Grid>
+          }
+
+          {(!loading && account && !continueOnboarding && projects.length === 0) && 
+             <NoProjects action={() => router.push(`/-/account/${account?.name}/create/project`)} />
+          }
+
+          {projects && <CardGrid>
+            {projects.map((project: any, index: number) =>
+               <Metadata key={index} url={project.metaURI}>
+                {(data: any) =>
+                  <NextLink
+                    style={{ textDecoration: 'none' }}
+                    href={`/${account?.name}/${project.name}`}
+                  >
+                    <ProjectCard
+                      title={project.name} 
+                      secondary={data?.name}
+                      description={data?.description} 
+                      image={data?.image} 
+                    />
+                  </NextLink>
+                }
+              </Metadata>,
+            )}
+          </CardGrid>}
+        </Dashboard.Main>
+        {account && !continueOnboarding && <Dashboard.Side>
+          <Card>
+            <Stack spacing={24}>
+              <Title order={5}>Members</Title>
+              <MemberStack members={members.map((member: any) => member.id)} />
+            </Stack>
+          </Card>
+          <Card>
+            <Stack spacing={24}>
+              <Title order={5}>Recent Activity</Title>
+              <List>
+                {logs.slice(0, 4).map((log: any, index: number) => 
+                  <Activity key={index} {...log} />,
+                )}
+              </List>
+            </Stack>
+          </Card>
+        </Dashboard.Side>}
+      </Dashboard>
     </Layout>
   );
 };
 
-export default Dashboard;
+export default IndexPage;
