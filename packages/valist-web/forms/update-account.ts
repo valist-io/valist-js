@@ -22,7 +22,7 @@ export const schema = z.object({
 export async function updateAccount(
   address: string | undefined,
   accountId: string,
-  image: File | string | undefined,
+  image: File | undefined,
   values: FormValues,
   valist: Client,
   cache: ApolloCache<any>,
@@ -42,7 +42,7 @@ export async function updateAccount(
 
     utils.showLoading('Uploading files');
     if (image) {
-      meta.image = await utils.writeFile(image, valist);
+      meta.image = await valist.writeFile(image);
     }
 
     utils.updateLoading('Waiting for transaction');

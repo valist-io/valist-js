@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import { urlSource } from 'ipfs-http-client';
-import { getFilesFromPath as getFiles, File as NodeFile } from 'web3.storage';
+import { getFilesFromPath as getFiles } from 'files-from-path';
 
 /**
  * Generate account, project, and release IDs.
@@ -42,4 +42,3 @@ export function archiveSource(source: string) {
 }
 
 export const getFilesFromPath = getFiles;
-export const File = NodeFile;

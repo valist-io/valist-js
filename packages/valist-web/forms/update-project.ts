@@ -34,9 +34,9 @@ export const schema = z.object({
 export async function updateProject(
   address: string | undefined,
   projectId: string,
-  image: File | string | undefined,
-  mainCapsule: File | string | undefined,
-  gallery: (File | string)[],
+  image: File | undefined,
+  mainCapsule: File | undefined,
+  gallery: File[],
   values: FormValues,
   valist: Client,
   cache: ApolloCache<any>,
@@ -60,11 +60,11 @@ export async function updateProject(
 
     utils.showLoading('Uploading files');
     if (image) {
-      meta.image = await utils.writeFile(image, valist);
+      meta.image = await valist.writeFile(image);
     }
 
     if (mainCapsule) {
-      meta.main_capsule = await utils.writeFile(mainCapsule, valist);
+      meta.main_capsule = await valist.writeFile(mainCapsule);
     }
 
     if (values.youTubeLink) {
@@ -73,7 +73,7 @@ export async function updateProject(
     }
 
     for (const item of gallery) {
-      const src = await utils.writeFile(item, valist);
+      const src = await valist.writeFile(item);
       meta.gallery?.push({ name: '', type: 'image', src });
     }
 

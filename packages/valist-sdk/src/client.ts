@@ -3,25 +3,44 @@ import { BigNumber, ethers } from 'ethers';
 import { ContractTransaction } from '@ethersproject/contracts';
 import { IPFS } from 'ipfs-core-types';
 import { IPFSHTTPClient } from 'ipfs-http-client';
-import { Web3Storage, File, Filelike } from 'web3.storage';
-import { FileObject } from 'files-from-path';
-import { ImportCandidateStream } from 'ipfs-core-types/src/utils';
+import { MemoryBlockStore } from 'ipfs-car/blockstore/memory';
+import { packToBlob } from 'ipfs-car/pack/blob'
+import { ImportCandidate, ImportCandidateStream } from 'ipfs-core-types/src/utils';
 
 import { AccountMeta, ProjectMeta, ReleaseMeta } from './types';
 import { fetchGraphQL, Account, Project, Release } from './graphql';
 import { generateID } from './utils';
 import * as queries from './graphql/queries';
+import { FileObject } from 'files-from-path';
 
 // minimal ABI for interacting with erc20 tokens
 const erc20ABI = [
 	'function approve(address spender, uint256 amount) returns (bool)'
 ];
 
+/**
+ * Convert the passed file to an "import candidate" - an object suitable for
+ * passing to the ipfs-unixfs-importer. Note: content is an accessor so that
+ * the stream is only created when needed.
+ *
+ * @param {Filelike} file
+ */
+ function toImportCandidate (file: File) {
+	/** @type {ReadableStream} */
+	let stream: any;
+	return {
+	  path: file.name,
+	  get content () {
+		stream = stream || file.stream()
+		return stream
+	  }
+	}
+  }
+
 export default class Client {
 	constructor(
 		private registry: ethers.Contract,
 		private license: ethers.Contract,
-		private w3sClient: Web3Storage,
 		private ipfs: IPFS | IPFSHTTPClient,
 		private ipfsGateway: string,
 		private subgraphUrl: string
@@ -275,40 +294,69 @@ export default class Client {
 	}
 
 	async writeJSON(data: string): Promise<string> {
-		let buffer: Blob | Buffer;
+		let buffer: Buffer | Blob;
 		if (typeof window === 'undefined') {
 			buffer = Buffer.from(data);
 
 		} else {
 			buffer = new Blob([data], { type: 'application/json' });
 		}
-		const file = new File([buffer], 'data.json');
-		const cid = await this.w3sClient.put([file], { wrapWithDirectory: false });
+
+		const auth = await axios.post(`https://pin-new.valist.io`);
+
+		const { root: cid, car } = await packToBlob({
+			input: buffer,
+			blockstore: new MemoryBlockStore(),
+			wrapWithDirectory: false,
+		});
+
+		const upload = await axios.put(auth.data, await car.arrayBuffer(), {
+			headers: { 'x-amz-meta-import': 'car' },
+		});
+
+		if (upload.headers['x-amz-meta-cid'] !== cid.toString()) {
+			throw new Error(`Generated CID ${cid} did not match response ${upload.headers['x-amz-meta-cid']}`);
+		}
+
 		return `${this.ipfsGateway}/ipfs/${cid.toString()}`;
 	}
 
-	async writeFile(file: File | FileObject | Filelike, wrapWithDirectory = false): Promise<string> {
-		const opts = { wrapWithDirectory };
-		const cid = await this.w3sClient.put([file as Filelike], opts);
+	async writeFile(file: ImportCandidate | ImportCandidateStream | FileObject, wrapWithDirectory = false): Promise<string> {
+		const { root: cid, car } = await packToBlob({
+			input: typeof window === 'undefined' ? toImportCandidate(file as File) : file as File,
+			blockstore: new MemoryBlockStore(), // @TODO make this fs-based in node.js
+			wrapWithDirectory,
+		});
+
+		const auth = await axios.post(`https://pin-new.valist.io`);
+		const upload = await axios.put(auth.data, car, {
+			headers: { 'x-amz-meta-import': 'car' },
+		});
+
+		if (upload.headers['x-amz-meta-cid'] !== cid.toString()) {
+			throw new Error(`Generated CID ${cid} did not match response ${upload.headers['x-amz-meta-cid']}`);
+		}
+
 		return `${this.ipfsGateway}/ipfs/${cid.toString()}`;
 	}
 
-	async writeFolder(files: File[] | FileObject[] | Iterable<Filelike>, wrapWithDirectory = false): Promise<string> {
-		const onRootCidReady = (cid: string) => {
-			console.log('uploading files with cid:', cid);
-		}
-		const opts = { wrapWithDirectory, onRootCidReady };
-		const cid = await this.w3sClient.put(files as Filelike[], opts);
-		return `${this.ipfsGateway}/ipfs/${cid}`;
-	}
+	async writeFolder(files: ImportCandidate | ImportCandidateStream | FileObject[], wrapWithDirectory = false): Promise<string> {
+		const { root: cid, car } = await packToBlob({
+			input: typeof window === 'undefined' ? (files as File[]).map(toImportCandidate) : files as File[],
+			blockstore: new MemoryBlockStore(), // @TODO make this fs-based in node.js
+			wrapWithDirectory,
+		});
 
-	async writeFolderClassic(data: ImportCandidateStream): Promise<string> {
-		const opts = { wrapWithDirectory: true };
-		const cids: string[] = [];
-		for await (const res of this.ipfs.addAll(data, opts)) {
-			cids.push(res.cid.toString());
+		const auth = await axios.post(`https://pin-new.valist.io`);
+		const upload = await axios.put(auth.data, await car.arrayBuffer(), {
+			headers: { 'x-amz-meta-import': 'car' },
+		});
+
+		if (upload.headers['x-amz-meta-cid'] !== cid.toString()) {
+			throw new Error(`Generated CID ${cid} did not match response ${upload.headers['x-amz-meta-cid']}`);
 		}
-		return `${this.ipfsGateway}/ipfs/${cids[cids.length - 1]}`;
+
+		return `${this.ipfsGateway}/ipfs/${cid.toString()}`;
 	}
 
 	generateID = generateID

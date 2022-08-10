@@ -1,4 +1,4 @@
-import { Command, CliUx, Flags } from '@oclif/core';
+import { Command, CliUx } from '@oclif/core';
 import { ethers } from 'ethers';
 import { create, ReleaseMeta, Provider, getFilesFromPath } from '@valist/sdk';
 import YAML from 'yaml';
@@ -23,10 +23,6 @@ export default class Publish extends Command {
     'meta-tx': flags.metaTx,
     'network': flags.network,
     'private-key': flags.privateKey,
-    // 'include-dot-files': Flags.boolean({
-    //   description: 'Include hidden dot files',
-    //   default: false,
-    // }),
   }
 
   static args = [

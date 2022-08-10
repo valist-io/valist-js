@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { ApolloCache } from '@apollo/client';
 import { ReleaseMeta, Client } from '@valist/sdk';
 import type { FileWithPath } from 'file-selector';
+import { Event } from 'ethers';
 import { handleEvent } from './events';
 import * as utils from './utils';
 import { versionRegex } from './common';
@@ -17,7 +18,7 @@ export const schema = z.object({
     .min(3, { message: 'Release name should have at least 3 characters' })
     .max(24, { message: 'Release name should not be longer than 24 characters' })
     .regex(versionRegex, { message: 'Release name can only contain letters, numbers, and dashes' })
-    .refine((val) => val.toLocaleLowerCase() === val, { message: 'Release name can only contain lowercase letters' }),
+    .refine((val: string) => val.toLocaleLowerCase() === val, { message: 'Release name can only contain lowercase letters' }),
   displayName: z.string()
     .min(3, { message: 'Display name should have at least 3 characters' })
     .max(24, { message: 'Display name should not be longer than 32 characters' }),
@@ -52,8 +53,7 @@ export async function createRelease(
 
     utils.showLoading('Uploading files');
     if (image) {
-      const content = { path: image.name, content: image};
-      meta.image = await valist.writeFile(content);
+      meta.image = await valist.writeFile(image);
     }
 
     const content = files.map(file => ({ path: file.path, content: file }));
@@ -62,7 +62,7 @@ export async function createRelease(
     utils.updateLoading('Waiting for transaction');
     const transaction = await valist.createRelease(projectId, values.releaseName, meta);
     const receipt = await transaction.wait();
-    receipt.events?.forEach(event => handleEvent(event, cache));
+    receipt.events?.forEach((event: Event) => handleEvent(event, cache));
 
     return true;
   } catch (error: any) {

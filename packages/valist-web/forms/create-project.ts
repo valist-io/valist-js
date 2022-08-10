@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { ApolloCache } from '@apollo/client';
 import { ProjectMeta, GalleryMeta, Client } from '@valist/sdk';
+import { Event } from 'ethers';
 import { handleEvent } from './events';
 import * as utils from './utils';
 import { shortnameRegex, refineYouTube } from './common';
@@ -21,7 +22,7 @@ export const schema = z.object({
     .min(3, { message: 'Project name should have at least 3 characters' })
     .max(24, { message: 'Project name should not be longer than 24 characters' })
     .regex(shortnameRegex, { message: 'Project name can only contain letters, numbers, and dashes' })
-    .refine((val) => val.toLocaleLowerCase() === val, { message: 'Project name can only contain lowercase letters' }),
+    .refine((val: string) => val.toLocaleLowerCase() === val, { message: 'Project name can only contain lowercase letters' }),
   displayName: z.string()
     .min(3, { message: 'Display name should have at least 3 characters' })
     .max(24, { message: 'Display name should not be longer than 32 characters' }),
@@ -38,9 +39,9 @@ export const schema = z.object({
 export async function createProject(
   address: string | undefined,
   accountId: string | undefined,
-  image: File | string | undefined,
-  mainCapsule: File | string | undefined,
-  gallery: (File | string)[],
+  image: File | undefined,
+  mainCapsule: File | undefined,
+  gallery: File[],
   members: string[],
   values: FormValues,
   valist: Client,
@@ -72,7 +73,7 @@ export async function createProject(
     }
 
     if (mainCapsule) {
-      meta.main_capsule = await utils.writeFile(mainCapsule, valist);
+      meta.main_capsule = await valist.writeFile(mainCapsule);
     }
 
     if (values.youTubeLink) {
@@ -81,14 +82,14 @@ export async function createProject(
     }
 
     for (const item of gallery) {
-      const src = await utils.writeFile(item, valist);
+      const src = await valist.writeFile(item as File);
       meta.gallery?.push({ name: '', type: 'image', src });
     }
 
     utils.updateLoading('Waiting for transaction');
     const transaction = await valist.createProject(accountId, values.projectName, meta, members);
     const receipt = await transaction.wait();
-    receipt.events?.forEach(event => handleEvent(event, cache));
+    receipt.events?.forEach((event: Event) => handleEvent(event, cache));
 
     return true;
   } catch(error: any) {

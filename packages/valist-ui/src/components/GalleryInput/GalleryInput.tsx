@@ -13,8 +13,8 @@ import { ImageInput } from '../ImageInput';
 import useStyles from './GalleryInput.styles';
 
 export interface GalleryInputProps {
-  onChange: (files: (File | string)[]) => void;
-  value?: (File | string)[];
+  onChange: (files: File[]) => void;
+  value?: File[];
   disabled?: boolean;
 }
 
