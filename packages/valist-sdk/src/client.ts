@@ -6,36 +6,19 @@ import { IPFSHTTPClient } from 'ipfs-http-client';
 import { MemoryBlockStore } from 'ipfs-car/blockstore/memory';
 import { packToBlob } from 'ipfs-car/pack/blob'
 import { ImportCandidate, ImportCandidateStream } from 'ipfs-core-types/src/utils';
+import { FileObject } from 'files-from-path';
+import { toImportCandidate } from './utils';
 
 import { AccountMeta, ProjectMeta, ReleaseMeta } from './types';
 import { fetchGraphQL, Account, Project, Release } from './graphql';
 import { generateID } from './utils';
 import * as queries from './graphql/queries';
-import { FileObject } from 'files-from-path';
+
 
 // minimal ABI for interacting with erc20 tokens
 const erc20ABI = [
 	'function approve(address spender, uint256 amount) returns (bool)'
 ];
-
-/**
- * Convert the passed file to an "import candidate" - an object suitable for
- * passing to the ipfs-unixfs-importer. Note: content is an accessor so that
- * the stream is only created when needed.
- *
- * @param {Filelike} file
- */
- function toImportCandidate (file: File) {
-	/** @type {ReadableStream} */
-	let stream: any;
-	return {
-	  path: file.name,
-	  get content () {
-		stream = stream || file.stream()
-		return stream
-	  }
-	}
-  }
 
 export default class Client {
 	constructor(
