@@ -24,11 +24,11 @@ import {
   TabsListCard,
 } from '@valist/ui';
 
-import { 
+import {
   Anchor,
   Title,
   Text,
-  Group, 
+  Group,
   Stack,
   Tabs,
 } from '@mantine/core';
@@ -147,7 +147,7 @@ const ProjectPage: NextPage = () => {
             <Tabs.Panel value="versions">
               <Card>
                 <List>
-                  {releases.map((release: any, index: number) => 
+                  {releases.map((release: any, index: number) =>
                     <Group key={index} position="apart">
                       <Text>{release.name}</Text>
                       <a target="_blank" href={release.metaURI} rel="noreferrer">view metadata</a>
@@ -159,7 +159,7 @@ const ProjectPage: NextPage = () => {
             <Tabs.Panel value="activity">
               <Card>
                 <List>
-                  {logs.map((log: any, index: number) => 
+                  {logs.map((log: any, index: number) =>
                     <Activity key={index} {...log} />,
                   )}
                 </List>
@@ -192,9 +192,9 @@ const ProjectPage: NextPage = () => {
                 </Group>
                 <Group position="apart">
                   <Text>Members</Text>
-                  <MemberStack 
-                    size={28} 
-                    members={members.map(member => member.id)} 
+                  <MemberStack
+                    size={28}
+                    members={members.map(member => member.id)}
                   />
                 </Group>
                 <Group position="apart">
@@ -214,7 +214,7 @@ const ProjectPage: NextPage = () => {
             <Stack spacing={24}>
               <Title order={5}>Recent Activity</Title>
               <List>
-                {logs.slice(0, 4).map((log: any, index: number) => 
+                {logs.slice(0, 4).map((log: any, index: number) =>
                   <Activity key={index} {...log} />,
                 )}
               </List>
