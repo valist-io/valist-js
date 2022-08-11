@@ -18,6 +18,7 @@ import {
 
 import {
   Button,
+  Breadcrumbs,
   ImageInput,
   FileInput,
   File,
@@ -90,15 +91,18 @@ const CreateReleasePage: NextPage = () => {
     });
   };
 
+  const breadcrumbs = [
+    { title: accountName, href: `/${accountName}` },
+    { title: projectName, href: `/${accountName}/${projectName}` },
+    { title: 'Create Release', href: `/-/account/${accountName}/project/${projectName}/create/release` },
+  ];
+
   return (
     <form onSubmit={form.onSubmit(submit)}>
-      <Layout
-        breadcrumbs={[
-          { title: accountName, href: `/${accountName}` },
-          { title: projectName, href: `/${accountName}/${projectName}` },
-          { title: 'Create Release', href: `/-/account/${accountName}/project/${projectName}/create/release` },
-        ]}
-      >
+      <Layout>
+        <div style={{ paddingBottom: 32 }}>
+          <Breadcrumbs items={breadcrumbs} />
+        </div>
         <Tabs
           defaultValue="basic"
           value={activeTab}

@@ -30,6 +30,7 @@ import {
 
 import { 
   Button,
+  Breadcrumbs,
 } from '@valist/ui';
 
 const zeroAddress = '0x0000000000000000000000000000000000000000';
@@ -143,14 +144,17 @@ const Pricing: NextPage = () => {
     }
   }, [data]);
 
+  const breadcrumbs = [
+    { title: accountName, href: `/${accountName}` },
+    { title: projectName, href: `/${accountName}/${projectName}` },
+    { title: 'Pricing', href: `/-/account/${accountName}/project/${projectName}/pricing` },
+  ];
+
   return (
-    <Layout
-      breadcrumbs={[
-        { title: accountName, href: `/${accountName}` },
-        { title: projectName, href: `/${accountName}/${projectName}` },
-        { title: 'Pricing', href: `/-/account/${accountName}/project/${projectName}/pricing` },
-      ]}
-    >
+    <Layout>
+      <div style={{ paddingBottom: 32 }}>
+        <Breadcrumbs items={breadcrumbs} />
+      </div>
       <Tabs defaultValue="pricing">
         <Tabs.List grow>
           <Tabs.Tab value="pricing">Pricing</Tabs.Tab>

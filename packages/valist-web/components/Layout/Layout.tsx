@@ -1,4 +1,5 @@
 import React, { useState, useContext } from 'react';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useNetwork, useProvider } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
@@ -15,7 +16,6 @@ import {
 
 import { 
   AppShell,
-  Breadcrumbs,
   Footer,
   Navbar,
   Header,
@@ -23,14 +23,9 @@ import {
   ThemeButton,
 } from '@valist/ui';
 
-export interface Breadcrumb {
-  title: string;
-  href: string;
-}
-
 export interface LayoutProps {
+  title?: string;
   children?: React.ReactNode;
-  breadcrumbs?: Breadcrumb[];
   hideNavbar?: boolean;
   padding?: number;
 }
@@ -55,13 +50,10 @@ export function Layout(props: LayoutProps) {
           onClick={() => setOpened(!opened)}
           onSearch={value => router.push(`/-/search/${value}`)}
         >
+          <ThemeButton />
           <Anchor target="_blank" href="https://docs.valist.io">Docs</Anchor>
           <Anchor href="/-/discover">Discover</Anchor>
-          <ConnectButton showBalance={false} />
-          <ActionIcon component={NextLink} href="/-/gas" variant="transparent">
-            <Icons.GasStation size={18} />
-          </ActionIcon>
-          <ThemeButton />
+          <ConnectButton chainStatus="icon" showBalance={false} />
         </Header>
       }
       navbar={
@@ -82,6 +74,12 @@ export function Layout(props: LayoutProps) {
               href={`/-/account/${account?.name}/settings`}
               active={router.asPath === `/-/account/${account?.name}/settings`} 
             />
+            <Navbar.Link 
+              icon={Icons.GasStation} 
+              text="Gas Tank"
+              href="/-/gas"
+              active={router.asPath === '/-/gas'} 
+            />
           </Navbar.Section>
           <Navbar.Section px={30} py="md">
             <div style={{ display: 'flex', gap: 30 }}>
@@ -95,16 +93,16 @@ export function Layout(props: LayoutProps) {
       footer={
         <Footer>
           <Group>
-            <ConnectButton showBalance={false} />
+            <ConnectButton chainStatus="full" showBalance={false} />
           </Group>
         </Footer>
       }
     >
-      {props.breadcrumbs && 
-        <div style={{ paddingBottom: 32 }}>
-          <Breadcrumbs items={props.breadcrumbs} />
-        </div>
-      }
+      <Head>
+        <title>{props.title ?? 'Valist'}</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       {props.children}
     </AppShell>
   ); 
