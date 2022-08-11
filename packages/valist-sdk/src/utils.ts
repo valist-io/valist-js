@@ -13,6 +13,18 @@ export function generateID(parentID: ethers.BigNumberish, name: string): string 
   return ethers.utils.solidityKeccak256(["uint256", "bytes32"], [parentID, nameHash]);
 }
 
+export function getAccountID(chainId: ethers.BigNumberish, account: string): string {
+	return generateID(chainId, account);
+}
+
+export function getProjectID(chainId: ethers.BigNumberish, account: string, project: string): string {
+	return generateID(generateID(chainId, account), project);
+}
+
+export function getReleaseID(chainId: ethers.BigNumberish, account: string, project: string, release: string): string {
+	return generateID(generateID(generateID(chainId, account), project), release);
+}
+
 /**
  * Import a source archive from an external URL.
  * 

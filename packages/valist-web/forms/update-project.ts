@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { boolean, z } from 'zod';
 import { ApolloCache } from '@apollo/client';
 import { ProjectMeta, GalleryMeta, Client } from '@valist/sdk';
 import { handleEvent } from './events';
@@ -13,6 +13,7 @@ export interface FormValues {
   youTubeLink: string;
   type: string;
   tags: string[];
+  launchExternal: boolean;
 }
 
 export const schema = z.object({
@@ -27,6 +28,7 @@ export const schema = z.object({
     .max(100, { message: 'Description should be shorter than 100 characters' }),
   type: z.string(),
   tags: z.string().array(),
+  launchExternal: z.boolean(),
 });
 
 export async function updateProject(
@@ -53,6 +55,7 @@ export async function updateProject(
       type: values.type,
       tags: values.tags,
       gallery: [],
+      launch_external: values.launchExternal,
     };
 
     utils.showLoading('Uploading files');

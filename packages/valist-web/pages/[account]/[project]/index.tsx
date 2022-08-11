@@ -27,7 +27,7 @@ import {
   TabsListCard,
 } from '@valist/ui';
 
-import { 
+import {
   Anchor,
   Title,
   Text,
@@ -89,6 +89,10 @@ const ProjectPage: NextPage = () => {
     (other: any) => other.id.toLowerCase() === address?.toLowerCase(),
   );
 
+  const launchUrl = projectMeta?.launch_external 
+    ? projectMeta?.external_url 
+    : releaseMeta?.external_url;
+
   const leftActions: ItemHeaderAction[] = [
     {
       label: 'Settings', 
@@ -125,7 +129,7 @@ const ProjectPage: NextPage = () => {
     rightActions.push({
       label: 'Launch',
       icon: Icon.Rocket,
-      href: releaseMeta?.external_url ?? '',
+      href: launchUrl ?? '',
       target: '_blank',
       variant: 'primary',
     });
