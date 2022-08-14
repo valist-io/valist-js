@@ -60,11 +60,11 @@ export async function updateProject(
 
     utils.showLoading('Uploading files');
     if (image) {
-      meta.image = await valist.writeFile(image);
+      meta.image = await utils.writeFile(image, valist);
     }
 
     if (mainCapsule) {
-      meta.main_capsule = await valist.writeFile(mainCapsule);
+      meta.main_capsule = await utils.writeFile(mainCapsule, valist);
     }
 
     if (values.youTubeLink) {
@@ -73,7 +73,7 @@ export async function updateProject(
     }
 
     for (const item of gallery) {
-      const src = await valist.writeFile(item);
+      const src = await utils.writeFile(item, valist);
       meta.gallery?.push({ name: '', type: 'image', src });
     }
 

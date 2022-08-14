@@ -40,10 +40,10 @@ export const hideError = () => hideNotification(ERROR_ID);
 export const hideLoading = () => hideNotification(LOADING_ID);
 
 export async function writeFile(source: File, valist: Client): Promise<string> {
-  if (typeof source === 'object') {
+  if (typeof source === 'string') {
+    return source as string;
+  } else {
     const file = source as File;
     return await valist.writeFile(file);
-  } else {
-    return source as string;
   }
 }
