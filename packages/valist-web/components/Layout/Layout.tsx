@@ -47,10 +47,10 @@ export function Layout(props: LayoutProps) {
   return (
     <AppShell
       padding={props.padding}
-      showNavbar={hideNavbar}
+      hideNavbar={hideNavbar}
       header={
         <Header
-          showNavbar={hideNavbar}
+          hideNavbar={hideNavbar}
           opened={opened} 
           onClick={() => setOpened(!opened)}
           onSearch={value => router.push(`/-/search/${value}`)}

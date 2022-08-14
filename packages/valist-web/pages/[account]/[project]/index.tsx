@@ -71,6 +71,22 @@ const ProjectPage: NextPage = () => {
 
   const launchUrl = projectMeta?.launch_external ? projectMeta?.external_url : releaseMeta?.external_url  ?? '';
 
+  const testInstall = async () => {
+    const accountID = valist.generateID(137, accountName);
+    const projectID = valist.generateID(accountID, projectName);
+    const releaseID = await valist.getLatestReleaseID(projectID);
+    const release = await valist.getReleaseMeta(releaseID);
+
+    if (window?.valist) {
+      const resp = await window.valist.install(
+        { name: `${accountName}/${projectName}`, release: release, projectID },
+      );
+      if (resp?.includes('successfully installed!')) {
+        alert(resp);
+      };
+    };
+  };
+
   if (!loading && !data?.project) {
     return (
       <Layout>
@@ -99,6 +115,7 @@ const ProjectPage: NextPage = () => {
           large
         />
         <Group>
+          <Button onClick={() => testInstall()}>Install</Button>
           { isAccountMember &&
             <NextLink href={`/-/account/${accountName}/project/${projectName}/pricing`}>
               <Button variant="secondary">Pricing</Button>

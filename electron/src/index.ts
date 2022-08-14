@@ -70,16 +70,66 @@ app.on('activate', async function () {
 // Place all ipc or other electron api calls and custom functionality under this line
 import path from 'path';
 import os from 'os';
-import fs from "fs/promises";
+import fs from "fs";
+import axios from 'axios';
+import { exec } from 'node:child_process';
+import { getInstallPath } from './install/install';
 
 ipcMain.handle("getApps", async (event, args) => {
   const configPath = path.join(os.homedir(), '.valist/apps/library.json');
-
-  const data = await fs.readFile(configPath);
+  const data = await fs.promises.readFile(configPath);
   return JSON.parse(Buffer.from(data).toString('ascii'));
 });
 
-import { exec, spawn } from 'node:child_process';
+ipcMain.handle("install", async (event, args) => {
+  if (!args.release.external_url) {
+    return Error('invalid release url');
+  }
+
+  const valistDir = path.join(os.homedir(), '.valist', 'apps');
+  const libraryJSONPath = path.join(valistDir, 'library.json');
+
+  if (args?.release?.type?.includes("executable")) {
+    if (!args.release.install) {
+      return Error('package is not installable');
+    }
+  
+    const installPath = getInstallPath(args.release.install);
+    if (!installPath) {
+      console.log(`this project supports the following: ${Object.keys(args.release.install).toString().replace('name,', '')}`);
+      return Error(`unsupported platform/arch: ${process.platform}/${process.arch}`);
+    }
+  
+    await fs.promises.mkdir(valistDir, { recursive: true });
+  
+    const filePath = path.join(valistDir, args.release.install.name ?? args.name);
+  
+    const resp = await axios({
+      method: "get",
+      url: `${args.release.external_url}/${installPath}`,
+      responseType: "stream",
+    });
+    resp.data.pipe(fs.createWriteStream(filePath, { flags: 'w' }));
+    await fs.promises.chmod(filePath, 755);
+  } else {
+    const data = await fs.promises.readFile(libraryJSONPath, 'utf-8');
+    var appsObject = JSON.parse(data);
+    appsObject[args.name] = {
+      "projectID": args.projectID,
+      "version": args.version,
+      "type": "web",
+      "path": args.release.external_url,
+    };
+
+    fs.writeFile(libraryJSONPath, JSON.stringify(appsObject), 'utf-8', function(err) {
+      if (err) throw err
+      console.log('Done!')
+    });
+  };
+
+  return 'successfully installed!';
+});
+
 
 ipcMain.handle("launchApp", async (event, args) => {
   console.log('args', args);
@@ -94,4 +144,20 @@ ipcMain.handle("launchApp", async (event, args) => {
   });
 
   return binPath;
+});
+
+ipcMain.handle("uninstall", async (event, args) => {
+  const valistDir = path.join(os.homedir(), '.valist', 'apps');
+  const libraryJSONPath = path.join(valistDir, 'library.json');
+    const data = await fs.promises.readFile(libraryJSONPath, 'utf-8');
+
+    var appsObject = JSON.parse(data);
+    if (appsObject[args]) delete appsObject[args];
+
+    fs.writeFile(libraryJSONPath, JSON.stringify(appsObject), 'utf-8', function(err) {
+      if (err) throw err;
+      return 'Successfully Uninstalled!';
+    });
+
+  return 'app not found/not installed!';
 });

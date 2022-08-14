@@ -10,7 +10,7 @@ declare global {
 }
 
 const LibraryPage: NextPage = () => {
-  const [appNames, setAppNames] = useState<AppConfig[]>([]);
+  const [appNames, setAppNames] = useState<Record<string, AppConfig>>({});
   
   useEffect(() => {
     (async () => {
@@ -23,7 +23,7 @@ const LibraryPage: NextPage = () => {
   
   return (
     <Layout hideNavbar={true} padding={0}>
-      <Library appNames={appNames} />
+      <Library apps={appNames} />
     </Layout>
   );
 };
