@@ -285,14 +285,13 @@ export default class Client {
 			buffer = new Blob([data], { type: 'application/json' });
 		}
 
-		const auth = await axios.post(`https://pin-new.valist.io`);
-
 		const { root: cid, car } = await packToBlob({
 			input: buffer,
 			blockstore: new MemoryBlockStore(),
 			wrapWithDirectory: false,
 		});
 
+		const auth = await axios.post(`https://pin-new.valist.io`);
 		const upload = await axios.put(auth.data, await car.arrayBuffer(), {
 			headers: { 'x-amz-meta-import': 'car' },
 		});
@@ -306,13 +305,15 @@ export default class Client {
 
 	async writeFile(file: ImportCandidate | ImportCandidateStream | FileObject, wrapWithDirectory = false): Promise<string> {
 		const { root: cid, car } = await packToBlob({
-			input: typeof window === 'undefined' ? toImportCandidate(file as File) : file as File,
+			input: typeof window === 'undefined'
+				? toImportCandidate(file as File)
+				: [({ path: (file as any).path, content: file })] as ImportCandidate,
 			blockstore: new MemoryBlockStore(), // @TODO make this fs-based in node.js
 			wrapWithDirectory,
 		});
 
 		const auth = await axios.post(`https://pin-new.valist.io`);
-		const upload = await axios.put(auth.data, car, {
+		const upload = await axios.put(auth.data, await car.arrayBuffer(), {
 			headers: { 'x-amz-meta-import': 'car' },
 		});
 
@@ -325,7 +326,9 @@ export default class Client {
 
 	async writeFolder(files: ImportCandidate | ImportCandidateStream | FileObject[], wrapWithDirectory = false): Promise<string> {
 		const { root: cid, car } = await packToBlob({
-			input: typeof window === 'undefined' ? (files as File[]).map(toImportCandidate) : files as File[],
+			input: typeof window === 'undefined'
+				? (files as File[]).map(toImportCandidate)
+				: (files as ImportCandidate[]).map((file: any) => ({ path: file.path, content: file })),
 			blockstore: new MemoryBlockStore(), // @TODO make this fs-based in node.js
 			wrapWithDirectory,
 		});

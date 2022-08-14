@@ -56,8 +56,7 @@ export async function createRelease(
       meta.image = await valist.writeFile(image);
     }
 
-    const content = files.map(file => ({ path: file.path, content: file }));
-    meta.external_url = await valist.writeFolder(content);
+    meta.external_url = await valist.writeFolder(files);
 
     utils.updateLoading('Waiting for transaction');
     const transaction = await valist.createRelease(projectId, values.releaseName, meta);
