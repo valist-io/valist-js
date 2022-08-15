@@ -34,9 +34,9 @@ export const schema = z.object({
 export async function updateProject(
   address: string | undefined,
   projectId: string,
-  image: File | string | undefined,
-  mainCapsule: File | string | undefined,
-  gallery: (File | string)[],
+  image: File | undefined,
+  mainCapsule: File | undefined,
+  gallery: File[],
   values: FormValues,
   valist: Client,
   cache: ApolloCache<any>,

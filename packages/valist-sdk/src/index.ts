@@ -129,7 +129,7 @@ export async function create(provider: Provider, options: Partial<Options>): Pro
   }
 
   const ipfsHost = options.ipfsHost || 'https://pin.valist.io';
-  const ipfsGateway = options.ipfsGateway || 'https://gateway.valist.io';
+  const ipfsGateway = options.ipfsGateway || 'https://gateway-new.valist.io';
   const ipfs = createIPFS({ url: ipfsHost });
 
   return new Client(registry, license, ipfs, ipfsGateway, subgraphUrl);
