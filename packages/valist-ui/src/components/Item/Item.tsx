@@ -6,18 +6,18 @@ import {
   Group,
 } from '@mantine/core';
 
-import useStyles from './Account.styles';
+import useStyles from './Item.styles';
 
-export interface AccountProps {
+export interface ItemProps {
   name: string;
   image?: string;
   label?: string;
   large?: boolean;
 }
 
-export function Account(props: AccountProps) {
+export function Item(props: ItemProps) {
   const { classes } = useStyles({ large: props.large });
-	return (
+  return (
     <Group>
       <Avatar 
         radius="xl"

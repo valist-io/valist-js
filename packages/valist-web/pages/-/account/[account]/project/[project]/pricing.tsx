@@ -4,7 +4,7 @@ import { useAccount, useNetwork } from 'wagmi';
 import { useRouter } from 'next/router';
 import { useApolloClient, useQuery } from '@apollo/client';
 import * as Icon from 'tabler-icons-react';
-import { Button, TokenInput } from '@valist/ui';
+import { Breadcrumbs, Button, TokenInput } from '@valist/ui';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
 import { ProductPrice } from '@/components/ProductPrice';
@@ -142,20 +142,23 @@ const Pricing: NextPage = () => {
     }
   }, [data]);
 
+  const breadcrumbs = [
+    { title: accountName, href: `/${accountName}` },
+    { title: projectName, href: `/${accountName}/${projectName}` },
+    { title: 'Pricing', href: `/-/account/${accountName}/project/${projectName}/pricing` },
+  ];
+
   return (
-    <Layout
-      breadcrumbs={[
-        { title: accountName, href: `/${accountName}` },
-        { title: projectName, href: `/${accountName}/${projectName}` },
-        { title: 'Pricing', href: `/-/account/${accountName}/project/${projectName}/pricing` },
-      ]}
-    >
+    <Layout>
       <TokenModal
         values={tokens}
         onChange={setTokens}
         opened={tokenOpened} 
         onClose={() => setTokenOpened(false)} 
       />
+      <div style={{ paddingBottom: 32 }}>
+        <Breadcrumbs items={breadcrumbs} />
+      </div>
       <Tabs defaultValue="pricing">
         <Tabs.List grow>
           <Tabs.Tab value="pricing">Pricing</Tabs.Tab>

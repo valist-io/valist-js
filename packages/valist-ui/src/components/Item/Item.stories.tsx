@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import * as Icon from 'tabler-icons-react';
-import { Account } from './Account';
+import { Item } from './Item';
 
 export default {
-  title: 'Account',
-  component: Account,
-} as ComponentMeta<typeof Account>;
+  title: 'Item',
+  component: Item,
+} as ComponentMeta<typeof Item>;
 
-const Template: ComponentStory<typeof Account> = (args) => (
-  <Account {...args} />
+const Template: ComponentStory<typeof Item> = (args) => (
+  <Item {...args} />
 );
 
 export const Primary = Template.bind({});

@@ -12,7 +12,7 @@ import {
 import { 
   Modal,
   List,
-  Account,
+  Item,
   Button,
 } from '@valist/ui';
 
@@ -49,7 +49,7 @@ export function TokenModal(props: TokenModalProps) {
           <List>
             {tokens.map((token: any, index: number) => 
               <Group key={index} position="apart" pr={20}>
-                <Account 
+                <Item 
                   name={token.symbol}
                   label={token.name}
                   image={token.logoURI} 
