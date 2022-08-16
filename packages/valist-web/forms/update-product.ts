@@ -1,4 +1,5 @@
 import { ApolloCache } from '@apollo/client';
+import { ethers } from 'ethers';
 import { Client } from '@valist/sdk';
 import { handleEvent } from './events';
 import * as utils from './utils';
@@ -63,7 +64,8 @@ export async function setProductLimit(
 export async function setProductPrice(
   address: string | undefined,
   projectId: string,
-  price: number,
+  token: string,
+  price: string,
   valist: Client,
   cache: ApolloCache<any>,
 ): Promise<boolean | undefined> {
@@ -75,7 +77,9 @@ export async function setProductPrice(
     }
 
     utils.showLoading('Waiting for transaction');
-    const transaction = await valist.setProductPrice(projectId, price);
+    const transaction = token === ethers.constants.AddressZero
+      ? await valist.setProductPrice(projectId, price)
+      : await valist.setProductTokenPrice(token, projectId, price);
     const receipt = await transaction.wait();
     receipt.events?.forEach(event => handleEvent(event, cache));
 
@@ -91,6 +95,7 @@ export async function setProductPrice(
 export async function withdrawProductBalance(
   address: string | undefined,
   projectId: string,
+  token: string,
   recipient: string,
   valist: Client,
   cache: ApolloCache<any>,
@@ -103,7 +108,9 @@ export async function withdrawProductBalance(
     }
 
     utils.showLoading('Waiting for transaction');
-    const transaction = await valist.withdrawProductBalance(projectId, recipient);
+    const transaction = token === ethers.constants.AddressZero
+      ? await valist.withdrawProductBalance(projectId, recipient)
+      : await valist.withdrawProductTokenBalance(token, projectId, recipient);
     const receipt = await transaction.wait();
     receipt.events?.forEach(event => handleEvent(event, cache));
 
