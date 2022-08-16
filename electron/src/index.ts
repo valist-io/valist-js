@@ -8,6 +8,13 @@ import { autoUpdater } from 'electron-updater';
 
 import { ElectronCapacitorApp, setupContentSecurityPolicy, setupReloadWatcher } from './setup';
 
+import path from 'path';
+import os from 'os';
+import fs from "fs";
+import axios from 'axios';
+import { exec } from 'node:child_process';
+import { getInstallPath } from './install/install';
+
 // Graceful handling of unhandled errors.
 unhandled();
 
@@ -68,14 +75,7 @@ app.on('activate', async function () {
 });
 
 // Place all ipc or other electron api calls and custom functionality under this line
-import path from 'path';
-import os from 'os';
-import fs from "fs";
-import axios from 'axios';
-import { exec } from 'node:child_process';
-import { getInstallPath } from './install/install';
-
-ipcMain.handle("getApps", async (event, args) => {
+ipcMain.handle("getApps", async () => {
   const configPath = path.join(os.homedir(), '.valist/apps/library.json');
   const data = await fs.promises.readFile(configPath);
   return JSON.parse(Buffer.from(data).toString('ascii'));
@@ -114,8 +114,8 @@ ipcMain.handle("install", async (event, args) => {
   } else {
     const data = await fs.promises.readFile(libraryJSONPath, 'utf-8');
     var appsObject = JSON.parse(data);
-    appsObject[args.name] = {
-      "projectID": args.projectID,
+    appsObject[args.projectID] = {
+      "name": args.name,
       "version": args.version,
       "type": "web",
       "path": args.release.external_url,
@@ -123,9 +123,12 @@ ipcMain.handle("install", async (event, args) => {
 
     fs.writeFile(libraryJSONPath, JSON.stringify(appsObject), 'utf-8', function(err) {
       if (err) throw err
-      console.log('Done!')
+      console.log('Done!');
     });
-  };
+  } 
+  // else {
+  //   return 'Could not find project type and failed to install';
+  // };
 
   return 'successfully installed!';
 });

@@ -21,9 +21,11 @@
     "target": "nsis",
     "icon": "assets/appIcon.ico"
   },
+  "afterSign": "electron-builder-notarize",
   "mac": {
-    "category": "your.app.category.type",
     "icon": "assets/valist.png",
-    "target": "dmg"
+    "target": "dmg",
+    "hardenedRuntime": true,
+		"entitlements": "./node_modules/electron-builder-notarize/entitlements.mac.inherit.plist"
   }
 }
