@@ -1,4 +1,5 @@
 import { ApolloCache } from '@apollo/client';
+import { ethers } from 'ethers';
 import { Client } from '@valist/sdk';
 import { handleEvent } from './events';
 import * as utils from './utils';
@@ -6,6 +7,7 @@ import * as utils from './utils';
 export async function purchaseProduct(
   address: string | undefined,
   projectId: string,
+  token: string,
   valist: Client,
   cache: ApolloCache<any>,
 ): Promise<boolean | undefined> {
@@ -17,7 +19,9 @@ export async function purchaseProduct(
     }
 
     utils.showLoading('Waiting for transaction');
-    const transaction = await valist.purchaseProduct(projectId, address);
+    const transaction = token === ethers.constants.AddressZero
+      ? await valist.purchaseProduct(projectId, address)
+      : await valist.purchaseProductToken(token, projectId, address);
     const receipt = await transaction.wait();
     receipt.events?.forEach(event => handleEvent(event, cache));
 

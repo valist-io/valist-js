@@ -8,6 +8,7 @@ import { useQuery, useApolloClient } from '@apollo/client';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
 import { purchaseProduct } from '@/forms/purchase';
+import { tokens } from '@/utils/tokens';
 import query from '@/graphql/ProjectPage.graphql';
 
 import {
@@ -18,6 +19,7 @@ import {
 
 import {
   Group,
+  Select,
   Stack,
   Title,
   Text,
@@ -51,17 +53,37 @@ const Checkout: NextPage = () => {
 
   const supply = data?.product?.supply ?? 0;
   const limit = data?.product?.limit ?? 0;
+  const currencies = data?.product?.currencies ?? [];
 
-  const currency = data?.product?.currencies.find((curr: any) => 
-    curr.token === '0x0000000000000000000000000000000000000000',
+  const [token, setToken] = useState('0x0000000000000000000000000000000000000000');
+
+  // update token to first currency
+  useEffect(() => {
+    if (data && currencies.length > 0) {
+      setToken(currencies[0].token);
+    }
+  }, [data]);
+
+  const getToken = (address: string) => tokens.find(
+    (token: any) => token.address.toLowerCase() === address.toLowerCase(),
   );
-  const price = ethers.utils.formatUnits(currency?.price ?? '0');
+
+  const values = currencies.map((curr: any) => {
+    const price = ethers.utils.formatUnits(curr.price);
+    const info = getToken(token);
+
+    return {
+      value: info?.address.toLowerCase(),
+      label: `${price} ${info?.symbol}`,
+    };
+  });
 
   const purchase = () => {
     setLoading(true);
     purchaseProduct(
       recipient,
       projectId,
+      token,
       valist,
       cache,
     ).then(success => {
@@ -93,7 +115,11 @@ const Checkout: NextPage = () => {
             label={projectMeta?.name}
             image={projectMeta?.image}
           />
-          <Text>{price} MATIC</Text>
+          <Select 
+            data={values} 
+            value={token}
+            onChange={(val) => setToken(val ?? '')}
+          />
         </Group>
         <TextInput 
           label="Recipient"
