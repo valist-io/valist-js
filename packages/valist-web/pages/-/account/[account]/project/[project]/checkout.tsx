@@ -1,5 +1,4 @@
 import type { NextPage } from 'next';
-import { ethers } from 'ethers';
 import { useContext, useState, useEffect } from 'react';
 import { useAccount, useNetwork } from 'wagmi';
 import { useRouter } from 'next/router';
@@ -8,7 +7,7 @@ import { useQuery, useApolloClient } from '@apollo/client';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
 import { purchaseProduct } from '@/forms/purchase';
-import { tokens } from '@/utils/tokens';
+import { tokens, findToken, formatUnits } from '@/utils/tokens';
 import query from '@/graphql/ProjectPage.graphql';
 
 import {
@@ -64,17 +63,13 @@ const Checkout: NextPage = () => {
     }
   }, [data]);
 
-  const getToken = (address: string) => tokens.find(
-    (token: any) => token.address.toLowerCase() === address.toLowerCase(),
-  );
-
   const values = currencies.map((curr: any) => {
-    const price = ethers.utils.formatUnits(curr.price);
-    const info = getToken(token);
+    const price = formatUnits(curr.token, curr.price);
+    const token = findToken(curr.token);
 
     return {
-      value: info?.address.toLowerCase(),
-      label: `${price} ${info?.symbol}`,
+      value: token?.address.toLowerCase(),
+      label: `${price} ${token?.symbol}`,
     };
   });
 

@@ -10,6 +10,7 @@ import { ValistContext } from '@/components/ValistProvider';
 import { ProductPrice } from '@/components/ProductPrice';
 import { ProductBalance } from '@/components/ProductBalance';
 import { TokenModal } from '@/components/TokenModal';
+import { formatUnits } from '@/utils/tokens';
 import query from '@/graphql/PricingPage.graphql';
 
 import {
@@ -65,12 +66,12 @@ const Pricing: NextPage = () => {
 
   const getCurrencyBalance = (address: string) => {
     const currency = getCurrency(address);
-    return parseInt(currency?.balance ?? '0');
+    return formatUnits(address, currency?.balance ?? '0');
   };
 
   const getCurrencyPrice = (address: string) => {
     const currency = getCurrency(address);
-    return parseInt(currency?.price ?? '0');
+    return formatUnits(address, currency?.price ?? '0');
   };
 
   const updateLimit = () => {

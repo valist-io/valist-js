@@ -1,3 +1,5 @@
+import { ethers } from 'ethers';
+
 export const tokens = [
   {
     "address": "0x0000000000000000000000000000000000000000",
@@ -63,3 +65,21 @@ export const tokens = [
     "logoURI": "https://assets-cdn.trustwallet.com/blockchains/polygon/assets/0xD6DF932A45C0f255f85145f286eA0b292B21C90B/logo.png",
   },
 ];
+
+export function findToken(address: string) {
+  return tokens.find((token: any) => 
+    token.address.toLowerCase() === address.toLowerCase(),
+  );
+}
+
+export function formatUnits(address: string, value: string) {
+  const token = findToken(address);
+  const decimals = token?.decimals ?? 18;
+  return parseInt(ethers.utils.formatUnits(value, decimals));
+}
+
+export function parseUnits(address: string, value: string) {
+  const token = findToken(address);
+  const decimals = token?.decimals ?? 18;
+  return ethers.utils.parseUnits(value, decimals);
+}
