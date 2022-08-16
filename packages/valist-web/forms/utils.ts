@@ -39,11 +39,11 @@ export const updateLoading = (message: string) => updateNotification({
 export const hideError = () => hideNotification(ERROR_ID);
 export const hideLoading = () => hideNotification(LOADING_ID);
 
-export async function writeFile(source: File | string, valist: Client): Promise<string> {
-  if (typeof source === 'object') {
-    const file = source as File;
-    return await valist.writeFile({ path: file.name, content: file });
-  } else {
+export async function writeFile(source: File, valist: Client): Promise<string> {
+  if (typeof source === 'string') {
     return source as string;
+  } else {
+    const file = source as File;
+    return await valist.writeFile(file);
   }
 }

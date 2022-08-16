@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 import { urlSource } from 'ipfs-http-client';
+import { getFilesFromPath as getFiles } from 'files-from-path';
 
 /**
  * Generate account, project, and release IDs.
@@ -50,4 +51,25 @@ export function archiveSource(source: string) {
 	}
 
 	return urlSource(url);
+}
+
+export const getFilesFromPath = getFiles;
+
+/**
+ * Convert the passed file to an "import candidate" - an object suitable for
+ * passing to the ipfs-unixfs-importer. Note: content is an accessor so that
+ * the stream is only created when needed.
+ *
+ * @param {Filelike} file
+ */
+ export const toImportCandidate = (file: File) => {
+	/** @type {ReadableStream} */
+	let stream: any;
+	return {
+		path: file.name,
+		get content () {
+		stream = stream || file.stream()
+		return stream
+		}
+	}
 }

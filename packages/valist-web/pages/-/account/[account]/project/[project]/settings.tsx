@@ -62,9 +62,9 @@ const Project: NextPage = () => {
 
   // form values
   const [loading, setLoading] = useState(true);
-  const [image, setImage] = useState<File | string>();
-  const [mainCapsule, setMainCapsule] = useState<File | string>();
-  const [gallery, setGallery] = useState<(File | string)[]>([]);
+  const [image, setImage] = useState<File>();
+  const [mainCapsule, setMainCapsule] = useState<File>();
+  const [gallery, setGallery] = useState<File[]>([]);
 
   const form = useForm<FormValues>({
     validate: zodResolver(schema),

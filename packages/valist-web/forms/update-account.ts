@@ -22,7 +22,7 @@ export const schema = z.object({
 export async function updateAccount(
   address: string | undefined,
   accountId: string,
-  image: File | string | undefined,
+  image: File | undefined,
   values: FormValues,
   valist: Client,
   cache: ApolloCache<any>,

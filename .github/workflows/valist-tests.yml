@@ -15,11 +15,6 @@ jobs:
         with:
           node-version: '16'
       - uses: actions/checkout@v2
-      - name: restore node_modules
-        uses: actions/cache@v3
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
       - run: |
           npm install
           npm run build
