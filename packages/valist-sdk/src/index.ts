@@ -54,6 +54,9 @@ export async function createRelaySigner({ provider }: ethers.providers.Web3Provi
 		relayLookupWindowBlocks: 990,
 		relayRegistrationLookupBlocks: 990,
 		pastEventsQueryMaxPageSize: 990,
+    loggerConfiguration: {
+      logLevel: 'error'
+    }
 	};
 
   // fix for wallet connect provider not returning standard responses

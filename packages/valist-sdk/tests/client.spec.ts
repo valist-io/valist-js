@@ -30,7 +30,10 @@ describe('valist client', async function() {
 		const ipfs = create({ url: 'https://pin.valist.io' });
 		const ipfsGateway = 'https://gateway.valist.io';
 		const subgraphAddress = 'https://api.thegraph.com/subgraphs/name/valist-io/valistmumbai';
+
 		const valist = new Client(registry, license, ipfs, ipfsGateway, subgraphAddress);
+
+		console.log(await valist.writeJSON(JSON.stringify({"test":"test"})));
 
 		const address = await signer.getAddress();
 		const members = [address];

@@ -47,7 +47,7 @@ export function CreateAccount(props: CreateAccountProps) {
 
   // form values
   const [loading, setLoading] = useState(false);
-  const [image, setImage] = useState<File | string>();
+  const [image, setImage] = useState<File>();
   const [members, membersHandlers] = useListState<string>([]);
   const [activeTab, setActiveTab] = useState<string | null>();
 

@@ -28,7 +28,7 @@ export const schema = z.object({
 
 export async function createAccount(
   address: string | undefined,
-  image: File | string | undefined,
+  image: File | undefined,
   members: string[],
   values: FormValues,
   valist: Client,
@@ -53,7 +53,7 @@ export async function createAccount(
 
     utils.showLoading('Uploading files');
     if (image) {
-      meta.image = await utils.writeFile(image, valist);
+      meta.image = await valist.writeFile(image);
     }
 
     utils.updateLoading('Waiting for transaction');

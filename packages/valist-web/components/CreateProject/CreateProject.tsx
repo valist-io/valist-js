@@ -61,9 +61,9 @@ export function CreateProject(props: CreateProjectProps) {
 
   // form values
   const [loading, setLoading] = useState(false);
-  const [image, setImage] = useState<File | string>();
-  const [mainCapsule, setMainCapsule] = useState<File | string>();
-  const [gallery, setGallery] = useState<(File | string)[]>([]);
+  const [image, setImage] = useState<File>();
+  const [mainCapsule, setMainCapsule] = useState<File>();
+  const [gallery, setGallery] = useState<File[]>([]);
   const [members, membersHandlers] = useListState<string>([]);
   const [activeTab, setActiveTab] = useState<string | null>();
 

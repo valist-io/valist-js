@@ -54,7 +54,7 @@ const SettingsPage: NextPage = () => {
 
   // form values
   const [loading, setLoading] = useState(true);
-  const [image, setImage] = useState<File | string>();
+  const [image, setImage] = useState<File>();
 
   const form = useForm<FormValues>({
     validate: zodResolver(schema),

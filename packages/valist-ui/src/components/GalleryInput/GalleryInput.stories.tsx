@@ -8,7 +8,7 @@ export default {
 } as ComponentMeta<typeof GalleryInput>;
 
 const Template: ComponentStory<typeof GalleryInput> = (args) => {
-  const [files, setFiles] = useState<(File | string)[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
   return (
     <GalleryInput value={files} onChange={setFiles} />
   );
