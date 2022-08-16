@@ -1,6 +1,7 @@
 query CreateReleasePage($projectId: String!){
   project(id: $projectId){
     id
+    metaURI
     releases(orderBy: blockTime, orderDirection: "desc", limit: 1) {
       id
       name
