@@ -210,19 +210,9 @@ const CreateReleasePage: NextPage = () => {
                           }
                         </div>
                       ))}
+                      <br />
                    </>
                   }
-                  <ScrollArea style={{ height: 300 }}>
-                    <Stack spacing={12}>
-                      {files.map((file: FileWithPath, index: number) => 
-                        <File 
-                          key={index} 
-                          path={file.path ?? file.name} 
-                          size={file.size} 
-                        />,
-                      )}
-                    </Stack>
-                  </ScrollArea>
                 </Stack>
                 <Group mt="lg">
                   <Button
