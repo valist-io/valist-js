@@ -192,6 +192,17 @@ const CreateReleasePage: NextPage = () => {
                       value={files}
                       disabled={loading}
                     />
+                    <ScrollArea style={{ height: 300 }}>
+                    <Stack spacing={12}>
+                      {files.map((file: FileWithPath, index: number) => 
+                        <File
+                          key={index} 
+                          path={file.path ?? file.name} 
+                          size={file.size} 
+                        />,
+                      )}
+                    </Stack>
+                  </ScrollArea>
                   </>
                   }
                   {['native', 'cli'].includes(data?.type as string) &&
