@@ -95,7 +95,6 @@ const CreateReleasePage: NextPage = () => {
       });
     };
 
-    console.log('files going in', platformFiles, files);
     const _files =  isInstall ? platformFiles : files;
 
     createRelease(
