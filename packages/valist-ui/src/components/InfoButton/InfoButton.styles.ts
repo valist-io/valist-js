@@ -7,8 +7,12 @@ export default createStyles((theme, _params, getRef) => {
       height: 34,
       padding: 4,
 
-      border: '1px solid #F0F0F9',
-      background: theme.white,
+      border: theme.colorScheme === 'dark'
+        ? 'none'
+        : '1px solid #F0F0F9',
+      background: theme.colorScheme === 'dark'
+        ? theme.colors.dark[6]
+        : theme.white,
       borderTopLeftRadius: 20,
       borderBottomLeftRadius: 20,
     },
