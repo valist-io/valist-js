@@ -75,7 +75,7 @@ export function findToken(address: string) {
 export function formatUnits(address: string, value: string) {
   const token = findToken(address);
   const decimals = token?.decimals ?? 18;
-  return parseInt(ethers.utils.formatUnits(value, decimals));
+  return parseFloat(ethers.utils.formatUnits(value, decimals));
 }
 
 export function parseUnits(address: string, value: string) {
