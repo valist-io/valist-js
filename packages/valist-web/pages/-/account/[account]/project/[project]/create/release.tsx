@@ -75,6 +75,10 @@ const CreateReleasePage: NextPage = () => {
     },
   });
 
+  const tabProps = { 
+    disabled: !(form.values.releaseName && form.values.displayName) ? true : false,
+  };
+
   const submit = (values: FormValues) => {
     setLoading(true);
     const platformFiles = Object.values(filesObject);
@@ -130,7 +134,7 @@ const CreateReleasePage: NextPage = () => {
             >
               <Tabs.List grow>
                 <Tabs.Tab value="basic">Basic Info</Tabs.Tab>
-                <Tabs.Tab value="files">Files</Tabs.Tab>
+                <Tabs.Tab {...tabProps} value="files">Files</Tabs.Tab>
               </Tabs.List>
               <Tabs.Panel value="basic">
                 <Stack style={{ maxWidth: 784 }}>
@@ -178,7 +182,7 @@ const CreateReleasePage: NextPage = () => {
                   </Button>
                 </Group>
               </Tabs.Panel>
-              <Tabs.Panel value="files"  disabled={!(form.values.releaseName && form.values.displayName)}>
+              <Tabs.Panel value="files">
                 <Stack style={{ maxWidth: 784 }}>
                   <Title mt="lg">Files</Title>
                   {!['native', 'cli'].includes(data?.type as string) &&
