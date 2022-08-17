@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import type { FileWithPath } from 'file-selector';
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext } from 'react';
 import { useRouter } from 'next/router';
 import { useAccount, useNetwork } from 'wagmi';
 import { useForm, zodResolver } from '@mantine/form';
@@ -19,6 +19,7 @@ import {
 import {
   Button,
   ImageInput,
+  FileButton,
   FileInput,
   File,
 } from '@valist/ui';
@@ -33,7 +34,7 @@ import {
   ScrollArea,
   Tabs,
 } from '@mantine/core';
-import { ProjectMeta } from '@valist/sdk';
+import { InstallMeta, ProjectMeta } from '@valist/sdk';
 import { Metadata } from '@/components/Metadata';
 
 const CreateReleasePage: NextPage = () => {
@@ -60,8 +61,10 @@ const CreateReleasePage: NextPage = () => {
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState<File>();
   const [files, setFiles] = useState<FileWithPath[]>([]);
+  const [filesObject, setFilesObject] = useState<Record<string, any>>({});
+  const [platforms, setPlatforms] = useState<string[]>(["windows_arm64", "windows_amd64", "linux_arm64", "linux_amd64", "darwin_arm64", "darwin_amd64"]);
   const [activeTab, setActiveTab] = useState<string | null>();
-
+  
   const form = useForm<FormValues>({
     validate: zodResolver(schema),
     validateInputOnChange: true,
@@ -74,11 +77,29 @@ const CreateReleasePage: NextPage = () => {
 
   const submit = (values: FormValues) => {
     setLoading(true);
+    const platformFiles = Object.values(filesObject);
+    const isInstall = Object.keys(filesObject).length !== 0;
+    let installMeta: InstallMeta | undefined = undefined;
+
+    if (isInstall) {
+      installMeta = new InstallMeta();
+      Object.keys(filesObject).forEach((platform) => {
+        if (filesObject[platform]) {
+          // @ts-ignore
+          installMeta[platform] = filesObject[platform].name;
+        }
+      });
+    };
+
+    console.log('files going in', platformFiles, files);
+    const _files =  isInstall ? platformFiles : files;
+
     createRelease(
       address,
       projectId,
       image,
-      files,
+      _files,
+      installMeta,
       values,
       valist,
       cache,
@@ -93,7 +114,7 @@ const CreateReleasePage: NextPage = () => {
 
   return (
     <Metadata url={data?.project?.metaURI}>
-      {(data: any) => (
+      {(data: ProjectMeta) => (
         <form onSubmit={form.onSubmit(submit)}>
           <Layout
             breadcrumbs={[
@@ -157,15 +178,37 @@ const CreateReleasePage: NextPage = () => {
                   </Button>
                 </Group>
               </Tabs.Panel>
-              <Tabs.Panel value="files">
+              <Tabs.Panel value="files"  disabled={!(form.values.releaseName && form.values.displayName)}>
                 <Stack style={{ maxWidth: 784 }}>
                   <Title mt="lg">Files</Title>
-                  <Text color="dimmed">Upload your release files.</Text>
-                  <FileInput
-                    onChange={setFiles}
-                    value={files}
-                    disabled={loading}
-                  />
+                  {!['native', 'cli'].includes(data?.type as string) &&
+                  <>
+                    <Text color="dimmed">Upload your release files.</Text>
+                    <FileInput
+                      onChange={setFiles}
+                      value={files}
+                      disabled={loading}
+                    />
+                  </>
+                  }
+                  {['native', 'cli'].includes(data?.type as string) &&
+                    <>
+                      <Text color="dimmed">Upload your release files to the designated platform target.</Text>
+                      <Text weight={900} color="dimmed">At least one platform is required.</Text>
+                      <br/>
+                      {platforms.map((platform, index) => (
+                        <div key={index}>
+                          <Text style={{ display: 'inline-block', width: 150 }}>{platform}</Text>
+                          <FileButton setFiles={(_files: File[]) => {
+                            setFilesObject({ ...filesObject, [platform]: _files });
+                          }} />
+                          {filesObject[platform] && filesObject[platform].length !== 0 && 
+                            <span style={{ marginLeft: 20 }}>- {filesObject[platform].name}</span>
+                          }
+                        </div>
+                      ))}
+                   </>
+                  }
                   <ScrollArea style={{ height: 300 }}>
                     <Stack spacing={12}>
                       {files.map((file: FileWithPath, index: number) => 
@@ -179,7 +222,7 @@ const CreateReleasePage: NextPage = () => {
                   </ScrollArea>
                 </Stack>
                 <Group mt="lg">
-                  <Button 
+                  <Button
                     onClick={() => setActiveTab('basic')} 
                     variant="secondary"
                   >

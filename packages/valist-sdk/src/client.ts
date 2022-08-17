@@ -328,10 +328,10 @@ export default class Client {
 
 		let toWrap = wrapWithDirectory;
 		const toPush = typeof window === 'undefined'
-		? (files as File[]).map(toImportCandidate)
-		: (files as ImportCandidate[]).map((file: any) => { 
-			if (!file.path || file.path[0] !== '/') toWrap = true;
-			return ({ path: file.path || file.name, content: file });
+			? (files as File[]).map(toImportCandidate)
+			: (files as ImportCandidate[]).map((file: any) => { 
+				if (!file.path || file.path[0] !== '/') toWrap = true;
+				return ({ path: file.path || file.name, content: file });
 		});
 
 		const { root: cid, car } = await packToBlob({
