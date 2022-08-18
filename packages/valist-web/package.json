@@ -1,5 +1,5 @@
 {
-  "name": "@valist/relay",
+  "name": "@valist/web",
   "private": true,
   "scripts": {
     "dev": "next dev",
