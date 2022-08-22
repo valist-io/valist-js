@@ -1,16 +1,15 @@
 import React, { useState, useContext } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useNetwork, useProvider } from 'wagmi';
+import { useMediaQuery } from '@mantine/hooks';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import * as Icons from 'tabler-icons-react';
-import { NextLink } from '@mantine/next';
 import { AccountSelect } from '@/components/AccountSelect';
 import { AccountContext } from '@/components/AccountProvider';
 
 import { 
-  Anchor,
   ActionIcon,
+  Anchor,
   Group,
 } from '@mantine/core';
 
@@ -22,6 +21,7 @@ import {
   Social,
   ThemeButton,
 } from '@valist/ui';
+import { NextLink } from '@mantine/next';
 
 export interface LayoutProps {
   title?: string;
@@ -34,9 +34,9 @@ export function Layout(props: LayoutProps) {
   const router = useRouter();
   const [opened, setOpened] = useState(false);
 
-  const { chain } = useNetwork();
   const { account } = useContext(AccountContext);
 
+  const isMobile = useMediaQuery('(max-width: 800px)', false);
   const hideNavbar = !account || props.hideNavbar;
 
   return (
@@ -54,6 +54,11 @@ export function Layout(props: LayoutProps) {
           <Anchor target="_blank" href="https://docs.valist.io">Docs</Anchor>
           <Anchor href="/-/discover">Discover</Anchor>
           <ConnectButton chainStatus="icon" showBalance={false} />
+          {!isMobile && 
+            <ActionIcon component={NextLink} href="/-/gas" variant="transparent">
+              <Icons.GasStation size={18} />
+            </ActionIcon>
+          }
         </Header>
       }
       navbar={
@@ -74,12 +79,22 @@ export function Layout(props: LayoutProps) {
               href={`/-/account/${account?.name}/settings`}
               active={router.asPath === `/-/account/${account?.name}/settings`} 
             />
-            <Navbar.Link 
-              icon={Icons.GasStation} 
-              text="Gas Tank"
-              href="/-/gas"
-              active={router.asPath === '/-/gas'} 
-            />
+            {isMobile &&
+              <>
+                <Navbar.Link 
+                  icon={Icons.DeviceGamepad2} 
+                  text="Discover"
+                  href="/-/discover"
+                  active={router.asPath === '/-/discover'} 
+                />
+                <Navbar.Link 
+                  icon={Icons.GasStation} 
+                  text="Gas Tank"
+                  href="/-/gas"
+                  active={router.asPath === '/-/gas'} 
+                />
+              </>
+            }
           </Navbar.Section>
           <Navbar.Section px={30} py="md">
             <div style={{ display: 'flex', gap: 30 }}>
