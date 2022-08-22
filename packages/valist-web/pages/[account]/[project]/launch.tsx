@@ -4,9 +4,11 @@ import { useNetwork } from 'wagmi';
 import { useRouter } from 'next/router';
 import useSWRImmutable from 'swr/immutable';
 import { useQuery } from '@apollo/client';
+import { Breadcrumbs } from '@valist/ui';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
 import query from '@/graphql/ProjectPage.graphql';
+
 import {
   Loader,
   Center,
@@ -38,13 +40,14 @@ const ProjectPage: NextPage = () => {
     }
   }, [releaseMeta]);
 
+  const breadcrumbs = [
+    { title: accountName, href: `/${accountName}` },
+    { title: projectName, href: `/${accountName}/${projectName}` },
+  ];
+
   return (
-    <Layout
-      breadcrumbs={[
-        { title: accountName, href: `/${accountName}` },
-        { title: projectName, href: `/${accountName}/${projectName}` },
-      ]}
-    >
+    <Layout>
+      <Breadcrumbs items={breadcrumbs} />
       <Center mt={150}>
         <Loader size={100} />
       </Center>

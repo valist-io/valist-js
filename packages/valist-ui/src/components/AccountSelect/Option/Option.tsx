@@ -5,7 +5,7 @@ import {
 
 import { useContext } from 'react';
 import * as Icon from 'tabler-icons-react';
-import { Account } from '../../Account';
+import { Item } from '../../Item';
 import { AccountSelectContext } from '../AccountSelect';
 
 export interface OptionProps {
@@ -20,7 +20,7 @@ export function Option(props: OptionProps) {
   return (
     <UnstyledButton onClick={() => setValue(props.name)}>
       <Group position="apart">
-        <Account {...props} />
+        <Item {...props} />
         {value === props.name && 
           <Icon.Check color="#669F2A" /> 
         }

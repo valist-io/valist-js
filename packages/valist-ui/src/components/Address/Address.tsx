@@ -5,7 +5,7 @@ import {
 } from '@mantine/core';
 
 import React from 'react';
-import { useClipboard, useHover } from '@mantine/hooks';
+import { useClipboard, useHover, useMediaQuery } from '@mantine/hooks';
 import * as Icon from 'tabler-icons-react';
 
 export interface AddressProps {
@@ -19,6 +19,9 @@ export function Address(props: AddressProps) {
   const { hovered, ref } = useHover();
   const clipboard = useClipboard();
 
+  const isMobile = useMediaQuery('(max-width: 800px)', false);
+  const truncate = props.truncate || isMobile;
+
   return (
     <UnstyledButton 
       style={props.style} 
@@ -26,7 +29,7 @@ export function Address(props: AddressProps) {
     >
       <Group spacing={2} ref={ref} noWrap>
         <Text style={{ fontSize: props.size }}>
-          {props.truncate 
+          { truncate
             ? `${props.address.slice(0, 6)}..${props.address.slice(-4)}`
             : props.address
           }

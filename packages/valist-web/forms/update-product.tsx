@@ -1,5 +1,6 @@
 import { getBlockExplorer } from '@/components/Activity';
 import { ApolloCache } from '@apollo/client';
+import { ethers } from 'ethers';
 import { Anchor } from '@mantine/core';
 import { Client } from '@valist/sdk';
 import { handleEvent } from './events';
@@ -75,7 +76,8 @@ export async function setProductLimit(
 export async function setProductPrice(
   address: string | undefined,
   projectId: string,
-  price: number,
+  token: string,
+  price: string,
   valist: Client,
   cache: ApolloCache<any>,
   chainId: number,
@@ -88,7 +90,9 @@ export async function setProductPrice(
     }
 
     utils.showLoading('Creating transaction');
-    const transaction = await valist.setProductPrice(projectId, price);
+    const transaction = token === ethers.constants.AddressZero
+      ? await valist.setProductPrice(projectId, price)
+      : await valist.setProductTokenPrice(token, projectId, price);
     
     const message = <Anchor target="_blank"  href={getBlockExplorer(chainId, transaction.hash)}>Waiting for transaction - View transaction</Anchor>;
     utils.updateLoading(message);
@@ -108,6 +112,7 @@ export async function setProductPrice(
 export async function withdrawProductBalance(
   address: string | undefined,
   projectId: string,
+  token: string,
   recipient: string,
   valist: Client,
   cache: ApolloCache<any>,
@@ -121,7 +126,9 @@ export async function withdrawProductBalance(
     }
 
     utils.showLoading('Waiting for transaction');
-    const transaction = await valist.withdrawProductBalance(projectId, recipient);
+    const transaction = token === ethers.constants.AddressZero
+      ? await valist.withdrawProductBalance(projectId, recipient)
+      : await valist.withdrawProductTokenBalance(token, projectId, recipient);
     
     const message = <Anchor target="_blank"  href={getBlockExplorer(chainId, transaction.hash)}>Waiting for transaction - View transaction</Anchor>;
     utils.updateLoading(message);

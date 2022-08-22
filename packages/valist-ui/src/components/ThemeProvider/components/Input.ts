@@ -31,6 +31,9 @@ export const Input = {
     },
     invalid: {
       color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
-    }
+    },
+    rightSection: {
+      right: 10,
+    },
   }),
 };

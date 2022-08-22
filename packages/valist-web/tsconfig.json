@@ -16,6 +16,7 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
+      "@/blockchains/*": ["blockchains/*"],
       "@/components/*": ["components/*"],
       "@/forms/*": ["forms/*"],
       "@/graphql/*": ["graphql/*"],

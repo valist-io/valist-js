@@ -1,55 +1,43 @@
 SHELL=/bin/bash
 
-all: install frontend
+all: install frontend cli
 
 install:
-	npx lerna bootstrap
+	npm install
 
 sdk:
-	npm run build --prefix ./packages/valist-sdk
+	npm run build --workspace @valist/sdk
+
+ui:
+	npm run build --workspace @valist/ui
 
 web:
 	rm -rf ./packages/valist-web/out
-	npm run build --prefix ./packages/valist-web
-	npm run export --prefix ./packages/valist-web
+	npm run build --workspace @valist/web
+	npm run export --workspace @valist/web
 
-frontend: sdk web
+cli:
+	npm run build --workspace @valist/cli
 
-serve-frontend: sdk
-	npm run start --prefix ./packages/valist-web
+electron: web
+	npm run electron:sync
+	npm run electron:open
 
-dev-sdk:
-	npm run dev --prefix ./packages/valist-sdk
-
-dev-web:
-	npm run dev --prefix ./packages/valist-web
-
-dev-frontend:
-	$(MAKE) -j 2 dev-sdk dev-web
+frontend: sdk ui web
 
 dev:
-	$(MAKE) -j 3 up dev-sdk dev-web
+	npm run dev
 
-lint-sdk:
-	npm run lint --prefix ./packages/valist-sdk
+start: frontend
+	npm run start --workspace @valist/web
 
-lint-web:
-	npm run lint --prefix ./packages/valist-web
-
-lint-fix-sdk:
-	npm run lint:fix --prefix ./packages/valist-sdk
-
-lint-fix-web:
-	npm run lint:fix --prefix ./packages/valist-web
-
-lint: lint-sdk lint-web
-
-lint-fix: lint-fix-sdk lint-fix-web
+lint:
+	npm run lint
 
 test:
-	npx lerna run test
+	npm run test
 
 clean:
 	git clean -dfx
 
-.PHONY: packages
+.PHONY: packages electron

@@ -34,6 +34,7 @@ import {
 
 import { 
   Button,
+  Breadcrumbs,
   ImageInput,
   MemberList,
   GalleryInput,
@@ -160,14 +161,17 @@ const Project: NextPage = () => {
     );
   };
 
+  const breadcrumbs = [
+    { title: accountName, href: `/${accountName}` },
+    { title: projectName, href: `/${accountName}/${projectName}` },
+    { title: 'Settings', href: `/-/account/${accountName}/project/${projectName}/settings` },
+  ];
+
   return (
-    <Layout
-      breadcrumbs={[
-        { title: accountName, href: `/${accountName}` },
-        { title: projectName, href: `/${accountName}/${projectName}` },
-        { title: 'Settings', href: `/-/account/${accountName}/project/${projectName}/settings` },
-      ]}
-    >
+    <Layout>
+      <div style={{ paddingBottom: 32 }}>
+        <Breadcrumbs items={breadcrumbs} />
+      </div>
       <Tabs defaultValue="basic">
         <Tabs.List grow>
           <Tabs.Tab value="basic">Basic Info</Tabs.Tab>

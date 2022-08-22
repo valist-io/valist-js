@@ -12,7 +12,7 @@ import {
 import React, { useState } from 'react';
 import * as Icon from 'tabler-icons-react';
 import useStyles from './AccountSelect.styles'
-import { Account, AccountProps } from '../Account';
+import { Item } from '../Item';
 import { Divider } from '../Divider';
 import { Option } from './Option/Option';
 
@@ -56,7 +56,7 @@ export const AccountSelect: AccountSelectComponent = (props: AccountSelectProps)
       <Popover.Target>
         <UnstyledButton style={props.style} onClick={() => setOpened(!opened)}>
           <Group spacing={10}>
-            <Account 
+            <Item 
               name={props.value} 
               label="change account" 
               image={props.image} 
