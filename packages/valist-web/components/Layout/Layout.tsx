@@ -82,12 +82,12 @@ export function Layout(props: LayoutProps) {
               href={`/-/account/${account?.name}/settings`}
               active={router.asPath === `/-/account/${account?.name}/settings`} 
             />
-            <Navbar.Link 
+            {window?.valist && <Navbar.Link 
               icon={Icons.Apps} 
               text="Library"
               href={`/-/library`}
               active={router.asPath === `/-/library`} 
-            />
+            />}
           </Navbar.Section>
           <Navbar.Section px={30} py="md">
             <div style={{ display: 'flex', gap: 30 }}>
