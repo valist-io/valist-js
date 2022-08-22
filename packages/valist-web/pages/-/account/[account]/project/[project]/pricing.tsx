@@ -3,7 +3,6 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useAccount, useNetwork } from 'wagmi';
 import { useRouter } from 'next/router';
 import { useApolloClient, useQuery } from '@apollo/client';
-import * as Icon from 'tabler-icons-react';
 import { Breadcrumbs, Button, TokenInput } from '@valist/ui';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
@@ -42,7 +41,7 @@ const Pricing: NextPage = () => {
   const valist = useContext(ValistContext);
 
   const accountName = `${router.query.account}`;
-  const accountId = valist.generateID(chain?.id ?? 137, accountName);
+  const accountId = valist.generateID(chain?.id || 137, accountName);
 
   const projectName = `${router.query.project}`;
   const projectId = valist.generateID(accountId, projectName);
@@ -82,11 +81,11 @@ const Pricing: NextPage = () => {
       limit,
       valist,
       cache,
-      chain?.id ?? 137,
+      chain?.id || 137,
     ).finally(() => {
       setLoading(false);
     });
-
+  };
 
   const updatePrice = (token: string, price: string) => {
     setLoading(true);
@@ -97,7 +96,7 @@ const Pricing: NextPage = () => {
       price,
       valist,
       cache,
-      chain?.id ?? 137,
+      chain?.id || 137,
     ).finally(() => {
       setLoading(false);
     });
@@ -112,7 +111,7 @@ const Pricing: NextPage = () => {
       royaltyAmount * 10000,
       valist,
       cache,
-      chain?.id ?? 137,
+      chain?.id || 137,
     ).finally(() => {
       setLoading(false);
     });
@@ -127,7 +126,7 @@ const Pricing: NextPage = () => {
       withdrawRecipient,
       valist,
       cache,
-      chain?.id ?? 137,
+      chain?.id || 137,
     ).finally(() => {
       setLoading(false);
     });

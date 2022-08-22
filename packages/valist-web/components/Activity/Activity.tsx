@@ -29,7 +29,7 @@ export function Activity(props: ActivityProps) {
   const projectURL = `/${account}/${project}`;
   const releaseURL = `/${account}/${project}/${release}`;
 
-  const href = getBlockExplorer(chain?.id ?? 137, props.id);
+  const href = getBlockExplorer(chain?.id || 137, props.id);
   const children = () => {
     switch (props.type) {
       case 'AccountCreated':

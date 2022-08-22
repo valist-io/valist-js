@@ -47,7 +47,7 @@ const CreateReleasePage: NextPage = () => {
   const { chain } = useNetwork();  
 
   const accountName = `${router.query.account}`;
-  const accountId = valist.generateID(chain?.id ?? 137, accountName);
+  const accountId = valist.generateID(chain?.id || 137, accountName);
 
   const projectName = `${router.query.project}`;
   const projectId = valist.generateID(accountId, projectName);
@@ -107,7 +107,7 @@ const CreateReleasePage: NextPage = () => {
       values,
       valist,
       cache,
-      chain?.id ?? 137,
+      chain?.id || 137,
     ).then(success => {
       if (success) {
         router.push(`/${accountName}/${projectName}`);  

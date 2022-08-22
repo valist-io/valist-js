@@ -45,7 +45,7 @@ const SettingsPage: NextPage = () => {
   const valist = useContext(ValistContext);
 
   const accountName = `${router.query.account}`;
-  const accountId = valist.generateID(chain?.id ?? 137, accountName);
+  const accountId = valist.generateID(chain?.id || 137, accountName);
 
   const { data, loading:gqLoading } = useQuery(query, { variables: { accountId } });
   const { data: meta } = useSWRImmutable(data?.account?.metaURI);
@@ -85,7 +85,7 @@ const SettingsPage: NextPage = () => {
       member,
       valist,
       cache,
-      chain?.id ?? 137,
+      chain?.id || 137,
     ).finally(() => {
       setLoading(false);
     });
@@ -99,7 +99,7 @@ const SettingsPage: NextPage = () => {
       member,
       valist,
       cache,
-      chain?.id ?? 137,
+      chain?.id || 137,
     ).finally(() => {
       setLoading(false);
     });
@@ -114,7 +114,7 @@ const SettingsPage: NextPage = () => {
       values,
       valist,
       cache,
-      chain?.id ?? 137,
+      chain?.id || 137,
     ).finally(() => {
       setLoading(false);  
     });
