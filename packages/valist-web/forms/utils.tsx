@@ -1,5 +1,4 @@
 import { Client } from '@valist/sdk';
-import { ExternalLink } from "tabler-icons-react";
 import { 
   showNotification, 
   hideNotification,

@@ -4,6 +4,7 @@ import { AccountMeta, Client } from '@valist/sdk';
 import { handleEvent } from './events';
 import * as utils from './utils';
 import { shortnameRegex } from './common';
+import { Anchor } from '@mantine/core';
 
 export interface FormValues {
   accountName: string;
@@ -60,7 +61,7 @@ export async function createAccount(
     const transaction = await valist.createAccount(values.accountName, meta, members);
     const receipt = await transaction.wait();
 
-    const message = <a href={`https://polygonscan.com/tx/${transaction.hash}`} rel="noreferrer" target="_blank">Waiting for transaction - View transaction</a>;
+    const message = <Anchor target="_blank"  href={`https://polygonscan.com/tx/${transaction.hash}`}>Waiting for transaction - View transaction</Anchor>;
     utils.updateLoading(message);
     receipt.events?.forEach(event => handleEvent(event, cache));
 

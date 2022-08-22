@@ -4,6 +4,7 @@ import { ProjectMeta, GalleryMeta, Client } from '@valist/sdk';
 import { handleEvent } from './events';
 import * as utils from './utils';
 import { refineYouTube } from './common';
+import { Anchor } from '@mantine/core';
 
 export interface FormValues {
   displayName: string;
@@ -79,8 +80,8 @@ export async function updateProject(
 
     utils.updateLoading('Creating transaction');
     const transaction = await valist.setProjectMeta(projectId, meta);
-
-    const message = <a href={`https://polygonscan.com/tx/${transaction.hash}`} rel="noreferrer" target="_blank">Waiting for transaction - View transaction</a>;
+    
+    const message = <Anchor target="_blank"  href={`https://polygonscan.com/tx/${transaction.hash}`}>Waiting for transaction - View transaction</Anchor>;
     utils.updateLoading(message);
     const receipt = await transaction.wait();
     receipt.events?.forEach(event => handleEvent(event, cache));

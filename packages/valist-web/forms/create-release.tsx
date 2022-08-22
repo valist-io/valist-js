@@ -6,6 +6,7 @@ import { Event } from 'ethers';
 import { handleEvent } from './events';
 import * as utils from './utils';
 import { versionRegex } from './common';
+import { Anchor } from '@mantine/core';
 
 export interface FormValues {
   releaseName: string;
@@ -61,7 +62,7 @@ export async function createRelease(
     utils.updateLoading('Creating transaction');
     const transaction = await valist.createRelease(projectId, values.releaseName, meta);
 
-    const message = <a href={`https://polygonscan.com/tx/${transaction.hash}`} rel="noreferrer" target="_blank">Waiting for transaction - View transaction</a>;
+    const message = <Anchor target="_blank"  href={`https://polygonscan.com/tx/${transaction.hash}`}>Waiting for transaction - View transaction</Anchor>;
     utils.updateLoading(message);
     const receipt = await transaction.wait();
     receipt.events?.forEach((event: Event) => handleEvent(event, cache));
