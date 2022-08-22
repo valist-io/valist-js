@@ -87,14 +87,14 @@ const IndexPage: NextPage = () => {
 
   return (
     <Layout padding={0}>
-      <Group style={{ height: 66 }} position="right">
-        { showInfo &&
-          <InfoButton 
-            opened={infoOpened}
-            onClick={() => setInfoOpened(!infoOpened)} 
-          />
-        }
-      </Group>
+      { showInfo &&
+        <Group style={{ height: 66 }} position="right">
+            <InfoButton 
+              opened={infoOpened}
+              onClick={() => setInfoOpened(!infoOpened)} 
+            />
+        </Group>
+      }
       <div style={{ padding: 40 }}>
         <Group position="apart" mb="xl" style={{ marginBottom: 10 }}>
           <Title style={{ display: "block" }}>Hello & Welcome 👋🏽</Title>
