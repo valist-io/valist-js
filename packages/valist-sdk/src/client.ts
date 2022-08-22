@@ -293,6 +293,7 @@ export default class Client {
 
 		const auth = await axios.post(`https://pin-new.valist.io`);
 		const upload = await axios.put(auth.data, await car.arrayBuffer(), {
+			maxBodyLength: Infinity,
 			headers: { 'x-amz-meta-import': 'car' },
 		});
 
@@ -314,6 +315,7 @@ export default class Client {
 
 		const auth = await axios.post(`https://pin-new.valist.io`);
 		const upload = await axios.put(auth.data, await car.arrayBuffer(), {
+			maxBodyLength: Infinity,
 			headers: { 'x-amz-meta-import': 'car' },
 		});
 
@@ -325,16 +327,24 @@ export default class Client {
 	}
 
 	async writeFolder(files: ImportCandidate | ImportCandidateStream | FileObject[], wrapWithDirectory = false): Promise<string> {
+
+		let toWrap = wrapWithDirectory;
+		const toPush = typeof window === 'undefined'
+			? (files as File[]).map(toImportCandidate)
+			: (files as ImportCandidate[]).map((file: any) => { 
+				if (!file.path || file.path[0] !== '/') toWrap = true;
+				return ({ path: file.path || file.name, content: file });
+		});
+
 		const { root: cid, car } = await packToBlob({
-			input: typeof window === 'undefined'
-				? (files as File[]).map(toImportCandidate)
-				: (files as ImportCandidate[]).map((file: any) => ({ path: file.path, content: file })),
+			input: toPush,
 			blockstore: new MemoryBlockStore(), // @TODO make this fs-based in node.js
-			wrapWithDirectory,
+			wrapWithDirectory: toWrap,
 		});
 
 		const auth = await axios.post(`https://pin-new.valist.io`);
 		const upload = await axios.put(auth.data, await car.arrayBuffer(), {
+			maxBodyLength: Infinity,
 			headers: { 'x-amz-meta-import': 'car' },
 		});
 

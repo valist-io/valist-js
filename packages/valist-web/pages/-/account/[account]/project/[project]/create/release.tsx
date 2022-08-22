@@ -20,9 +20,9 @@ import {
   Button,
   Breadcrumbs,
   ImageInput,
+  FileButton,
   FileInput,
   File,
-  Card,
 } from '@valist/ui';
 
 import { 
@@ -35,6 +35,8 @@ import {
   ScrollArea,
   Tabs,
 } from '@mantine/core';
+import { InstallMeta, ProjectMeta } from '@valist/sdk';
+import { Metadata } from '@/components/Metadata';
 
 const CreateReleasePage: NextPage = () => {
   const router = useRouter();
@@ -60,8 +62,10 @@ const CreateReleasePage: NextPage = () => {
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState<File>();
   const [files, setFiles] = useState<FileWithPath[]>([]);
+  const [filesObject, setFilesObject] = useState<Record<string, any>>({});
+  const [platforms, setPlatforms] = useState<string[]>(["windows_arm64", "windows_amd64", "linux_arm64", "linux_amd64", "darwin_arm64", "darwin_amd64"]);
   const [activeTab, setActiveTab] = useState<string | null>();
-
+  
   const form = useForm<FormValues>({
     validate: zodResolver(schema),
     validateInputOnChange: true,
@@ -72,13 +76,34 @@ const CreateReleasePage: NextPage = () => {
     },
   });
 
+  const tabProps = { 
+    disabled: !(form.values.releaseName && form.values.displayName) ? true : false,
+  };
+
   const submit = (values: FormValues) => {
     setLoading(true);
+    const platformFiles = Object.values(filesObject);
+    const isInstall = Object.keys(filesObject).length !== 0;
+    let installMeta: InstallMeta | undefined = undefined;
+
+    if (isInstall) {
+      installMeta = new InstallMeta();
+      Object.keys(filesObject).forEach((platform) => {
+        if (filesObject[platform]) {
+          // @ts-ignore
+          installMeta[platform] = filesObject[platform].name;
+        }
+      });
+    };
+
+    const _files =  isInstall ? platformFiles : files;
+
     createRelease(
       address,
       projectId,
       image,
-      files,
+      _files,
+      installMeta,
       values,
       valist,
       cache,

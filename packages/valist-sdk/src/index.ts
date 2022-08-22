@@ -54,6 +54,9 @@ export async function createRelaySigner({ provider }: ethers.providers.Web3Provi
 		relayLookupWindowBlocks: 990,
 		relayRegistrationLookupBlocks: 990,
 		pastEventsQueryMaxPageSize: 990,
+    loggerConfiguration: {
+      logLevel: 'error'
+    }
 	};
 
   // fix for wallet connect provider not returning standard responses
@@ -129,7 +132,7 @@ export async function create(provider: Provider, options: Partial<Options>): Pro
   }
 
   const ipfsHost = options.ipfsHost || 'https://pin.valist.io';
-  const ipfsGateway = options.ipfsGateway || 'https://gateway-new.valist.io';
+  const ipfsGateway = options.ipfsGateway || 'https://gateway.valist.io';
   const ipfs = createIPFS({ url: ipfsHost });
 
   return new Client(registry, license, ipfs, ipfsGateway, subgraphUrl);

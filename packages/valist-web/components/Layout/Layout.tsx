@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useMediaQuery } from '@mantine/hooks';
@@ -39,12 +39,15 @@ export function Layout(props: LayoutProps) {
   const isMobile = useMediaQuery('(max-width: 800px)', false);
   const hideNavbar = !account || props.hideNavbar;
 
+  const [isElectron, setIsElectron] = useState(false);
+  useEffect(() => {if(window?.valist) setIsElectron(true);}, []);
+
   return (
     <AppShell
       padding={props.padding}
       hideNavbar={hideNavbar}
       header={
-        <Header 
+        <Header
           hideNavbar={hideNavbar}
           opened={opened} 
           onClick={() => setOpened(!opened)}
@@ -79,6 +82,12 @@ export function Layout(props: LayoutProps) {
               href={`/-/account/${account?.name}/settings`}
               active={router.asPath === `/-/account/${account?.name}/settings`} 
             />
+            {isElectron && <Navbar.Link 
+              icon={Icons.Apps} 
+              text="Library"
+              href={`/-/library`}
+              active={router.asPath === `/-/library`} 
+            />}
             {isMobile &&
               <>
                 <Navbar.Link 

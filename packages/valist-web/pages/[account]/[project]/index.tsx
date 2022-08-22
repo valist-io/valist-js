@@ -140,6 +140,22 @@ const ProjectPage: NextPage = () => {
     { title: projectName, href: `/${accountName}/${projectName}` },
   ];
 
+  const testInstall = async () => {
+    const accountID = valist.generateID(137, accountName);
+    const projectID = valist.generateID(accountID, projectName);
+    const releaseID = await valist.getLatestReleaseID(projectID);
+    const release = await valist.getReleaseMeta(releaseID);
+
+    if (window?.valist) {
+      const resp = await window.valist.install(
+        { name: `${accountName}/${projectName}`, release: release, projectID },
+      );
+      if (resp?.includes('successfully installed!')) {
+        alert(resp);
+      };
+    };
+  };
+
   if (!loading && !data?.project) {
     return (
       <Layout>

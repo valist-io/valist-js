@@ -1,0 +1,31 @@
+{
+  "appId": "com.yourdoamnin.yourapp",
+  "directories": {
+    "buildResources": "resources"
+  },
+  "files": [
+    "assets/**/*",
+    "build/**/*",
+    "capacitor.config.*",
+    "app/**/*"
+  ],
+  "publish": {
+    "provider": "github"
+  },
+  "nsis": {
+    "allowElevation": true,
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true
+  },
+  "win": {
+    "target": "nsis",
+    "icon": "assets/appIcon.ico"
+  },
+  "afterSign": "electron-builder-notarize",
+  "mac": {
+    "icon": "assets/valist.png",
+    "target": "dmg",
+    "hardenedRuntime": true,
+		"entitlements": "./node_modules/electron-builder-notarize/entitlements.mac.inherit.plist"
+  }
+}
