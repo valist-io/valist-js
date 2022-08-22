@@ -293,6 +293,7 @@ export default class Client {
 
 		const auth = await axios.post(`https://pin-new.valist.io`);
 		const upload = await axios.put(auth.data, await car.arrayBuffer(), {
+			maxBodyLength: Infinity,
 			headers: { 'x-amz-meta-import': 'car' },
 		});
 
@@ -314,6 +315,7 @@ export default class Client {
 
 		const auth = await axios.post(`https://pin-new.valist.io`);
 		const upload = await axios.put(auth.data, await car.arrayBuffer(), {
+			maxBodyLength: Infinity,
 			headers: { 'x-amz-meta-import': 'car' },
 		});
 
@@ -342,6 +344,7 @@ export default class Client {
 
 		const auth = await axios.post(`https://pin-new.valist.io`);
 		const upload = await axios.put(auth.data, await car.arrayBuffer(), {
+			maxBodyLength: Infinity,
 			headers: { 'x-amz-meta-import': 'car' },
 		});
 
