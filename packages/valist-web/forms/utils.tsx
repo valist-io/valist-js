@@ -5,6 +5,7 @@ import {
   hideNotification,
   updateNotification,
 } from '@mantine/notifications';
+import { ReactNode } from 'react';
 
 // notification IDs
 const LOADING_ID = 'valist-loading-notification';
@@ -18,24 +19,22 @@ export const showError = (error: any) => showNotification({
   message: error.data?.message ?? error.message,
 });
 
-export const showLoading = (message: string, hash?: string) => showNotification({
+export const showLoading = (message: ReactNode) => showNotification({
   id: LOADING_ID,
   autoClose: false,
   disallowClose: true,
-  loading: hash ? false : true,
+  loading: true,
   title: 'Loading',
   message: message,
-  icon: hash ? <a href={`https://polygonscan.com/tx/${hash}`} rel="noreferrer" target="_blank"><ExternalLink /></a> : undefined,
 });
 
-export const updateLoading = (message: string, hash?: string) => updateNotification({
+export const updateLoading = (message: ReactNode) => updateNotification({
   id: LOADING_ID,
   autoClose: false,
   disallowClose: true,
-  loading: hash ? false : true,
+  loading: true,
   title: 'Loading',
   message: message,
-  icon: hash ? <a href={`https://polygonscan.com/tx/${hash}`} rel="noreferrer" target="_blank"><ExternalLink /></a> : undefined,
 });
 
 export const hideError = () => hideNotification(ERROR_ID);

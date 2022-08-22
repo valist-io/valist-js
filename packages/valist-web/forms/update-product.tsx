@@ -1,29 +1,13 @@
-import { z } from 'zod';
 import { ApolloCache } from '@apollo/client';
-import { AccountMeta, Client } from '@valist/sdk';
+import { Client } from '@valist/sdk';
 import { handleEvent } from './events';
 import * as utils from './utils';
 
-export interface FormValues {
-  displayName: string;
-  website: string;
-  description: string;
-}
-
-export const schema = z.object({
-  displayName: z.string()
-    .min(3, { message: 'Display name should have at least 3 characters' })
-    .max(24, { message: 'Display name should not be longer than 32 characters' }),
-  website: z.string(),
-  description: z.string()
-    .max(100, { message: 'Description should be shorter than 100 characters' }),
-});
-
-export async function updateAccount(
+export async function setProductRoyalty(
   address: string | undefined,
-  accountId: string,
-  image: File | undefined,
-  values: FormValues,
+  projectId: string,
+  recipient: string,
+  amount: number,
   valist: Client,
   cache: ApolloCache<any>,
 ): Promise<boolean | undefined> {
@@ -34,21 +18,8 @@ export async function updateAccount(
       throw new Error('connect your wallet to continue');
     }
 
-    const meta: AccountMeta = {
-      name: values.displayName,
-      description: values.description,
-      external_url: values.website,
-    };
-
-    utils.showLoading('Uploading files');
-    if (image) {
-      meta.image = await utils.writeFile(image, valist);
-    }
-
-    utils.updateLoading('Creating transaction');
-    const transaction = await valist.setAccountMeta(accountId, meta);
-
-    utils.updateLoading('Waiting for transaction', transaction.hash);
+    utils.showLoading('Waiting for transaction');
+    const transaction = await valist.setProductRoyalty(projectId, recipient, amount);
     const receipt = await transaction.wait();
     receipt.events?.forEach(event => handleEvent(event, cache));
 
@@ -61,10 +32,10 @@ export async function updateAccount(
   }
 }
 
-export async function addAccountMember(
+export async function setProductLimit(
   address: string | undefined,
-  accountId: string,
-  member: string,
+  projectId: string,
+  limit: number,
   valist: Client,
   cache: ApolloCache<any>,
 ): Promise<boolean | undefined> {
@@ -75,8 +46,11 @@ export async function addAccountMember(
       throw new Error('connect your wallet to continue');
     }
 
-    utils.showLoading('Waiting for transaction');
-    const transaction = await valist.addAccountMember(accountId, member);
+    utils.showLoading('Creating transaction');
+    const transaction = await valist.setProductLimit(projectId, limit);
+
+    const message = <a href={`https://polygonscan.com/tx/${transaction.hash}`} rel="noreferrer" target="_blank">Waiting for transaction - View transaction</a>;
+    utils.updateLoading(message);
     const receipt = await transaction.wait();
     receipt.events?.forEach(event => handleEvent(event, cache));
 
@@ -89,10 +63,10 @@ export async function addAccountMember(
   }
 }
 
-export async function removeAccountMember(
+export async function setProductPrice(
   address: string | undefined,
-  accountId: string,
-  member: string,
+  projectId: string,
+  price: number,
   valist: Client,
   cache: ApolloCache<any>,
 ): Promise<boolean | undefined> {
@@ -104,7 +78,35 @@ export async function removeAccountMember(
     }
 
     utils.showLoading('Waiting for transaction');
-    const transaction = await valist.removeAccountMember(accountId, member);
+    const transaction = await valist.setProductPrice(projectId, price);
+    const receipt = await transaction.wait();
+    receipt.events?.forEach(event => handleEvent(event, cache));
+
+    return true;
+  } catch (error: any) {
+    utils.showError(error);
+    console.log(error);
+  } finally {
+    utils.hideLoading();
+  }
+}
+
+export async function withdrawProductBalance(
+  address: string | undefined,
+  projectId: string,
+  recipient: string,
+  valist: Client,
+  cache: ApolloCache<any>,
+): Promise<boolean | undefined> {
+    try {
+    utils.hideError();
+
+    if (!address) {
+      throw new Error('connect your wallet to continue');
+    }
+
+    utils.showLoading('Waiting for transaction');
+    const transaction = await valist.withdrawProductBalance(projectId, recipient);
     const receipt = await transaction.wait();
     receipt.events?.forEach(event => handleEvent(event, cache));
 
