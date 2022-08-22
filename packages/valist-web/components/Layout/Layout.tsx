@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useNetwork, useProvider } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
@@ -44,6 +44,9 @@ export function Layout(props: LayoutProps) {
 
   const hideNavbar = !account || props.hideNavbar;
 
+  const [isElectron, setIsElectron] = useState(false);
+  useEffect(() => {if(window?.valist) setIsElectron(true);}, []);
+
   return (
     <AppShell
       padding={props.padding}
@@ -82,7 +85,7 @@ export function Layout(props: LayoutProps) {
               href={`/-/account/${account?.name}/settings`}
               active={router.asPath === `/-/account/${account?.name}/settings`} 
             />
-            {window?.valist && <Navbar.Link 
+            {isElectron && <Navbar.Link 
               icon={Icons.Apps} 
               text="Library"
               href={`/-/library`}
