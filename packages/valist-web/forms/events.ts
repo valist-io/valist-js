@@ -197,7 +197,7 @@ function releaseCreated(event: Event, cache: ApolloCache<any>) {
     fragment: ProjectReleases,
   }, (data) => {
     const releases = data?.releases ?? [];
-    return { releases: [...releases, release] };
+    return { releases: [release, ...releases] };
   });
 }
 
