@@ -56,7 +56,7 @@ export function CreateProject(props: CreateProjectProps) {
   });
 
   const accountName = `${router.query.account}`;
-  const accountId = valist.generateID(chain?.id ?? 137, accountName);
+  const accountId = valist.generateID(chain?.id || 137, accountName);
   const accountMembers = data?.account?.members ?? [];
 
   // form values
@@ -105,6 +105,7 @@ export function CreateProject(props: CreateProjectProps) {
       values,
       valist,
       cache,
+      chain?.id || 137,
     ).then(success => {
       if (success) {
         props.afterCreate?.();

@@ -87,6 +87,7 @@ export function CreateAccount(props: CreateAccountProps) {
       values,
       valist,
       cache,
+      chain?.id || 137,
     ).then((success) => {
       if (success) {
         setAccount(values.accountName);
@@ -124,7 +125,7 @@ export function CreateAccount(props: CreateAccountProps) {
             <NameInput 
               label="Account Name (cannot be changed)"
               disabled={loading}
-              parentId={chain?.id ?? 137}
+              parentId={chain?.id || 137}
               required
               {...form.getInputProps('accountName')}
             />

@@ -4,6 +4,8 @@ import { AccountMeta, Client } from '@valist/sdk';
 import { handleEvent } from './events';
 import * as utils from './utils';
 import { shortnameRegex } from './common';
+import { Anchor } from '@mantine/core';
+import { getBlockExplorer } from '@/components/Activity';
 
 export interface FormValues {
   accountName: string;
@@ -33,6 +35,7 @@ export async function createAccount(
   values: FormValues,
   valist: Client,
   cache: ApolloCache<any>,
+  chainId: number,
 ): Promise<boolean | undefined> {
   try {
     utils.hideError();
@@ -56,8 +59,12 @@ export async function createAccount(
       meta.image = await valist.writeFile(image);
     }
 
-    utils.updateLoading('Waiting for transaction');
+    utils.updateLoading('Creating transaction');
     const transaction = await valist.createAccount(values.accountName, meta, members);
+
+    const message = <Anchor target="_blank"  href={getBlockExplorer(chainId, transaction.hash)}>Waiting for transaction - View transaction</Anchor>;
+    utils.updateLoading(message);
+
     const receipt = await transaction.wait();
     receipt.events?.forEach(event => handleEvent(event, cache));
 

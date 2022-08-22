@@ -6,6 +6,8 @@ import { Event } from 'ethers';
 import { handleEvent } from './events';
 import * as utils from './utils';
 import { versionRegex } from './common';
+import { Anchor } from '@mantine/core';
+import { getBlockExplorer } from '@/components/Activity';
 
 export interface FormValues {
   releaseName: string;
@@ -35,6 +37,7 @@ export async function createRelease(
   values: FormValues,
   valist: Client,
   cache: ApolloCache<any>,
+  chainId: number,
 ): Promise<boolean | undefined> {
   try {
   	utils.hideError();
@@ -61,8 +64,12 @@ export async function createRelease(
 
     meta.external_url = await valist.writeFolder(files);
 
-    utils.updateLoading('Waiting for transaction');
+    utils.updateLoading('Creating transaction');
     const transaction = await valist.createRelease(projectId, values.releaseName, meta);
+
+    const message = <Anchor target="_blank"  href={getBlockExplorer(chainId, transaction.hash)}>Waiting for transaction - View transaction</Anchor>;
+    utils.updateLoading(message);
+
     const receipt = await transaction.wait();
     receipt.events?.forEach((event: Event) => handleEvent(event, cache));
 

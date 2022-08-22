@@ -50,7 +50,7 @@ const Project: NextPage = () => {
   const valist = useContext(ValistContext);
 
   const accountName = `${router.query.account}`;
-  const accountId = valist.generateID(chain?.id ?? 137, accountName);
+  const accountId = valist.generateID(chain?.id || 137, accountName);
 
   const projectName = `${router.query.project}`;
   const projectId = valist.generateID(accountId, projectName);
@@ -111,6 +111,7 @@ const Project: NextPage = () => {
       member,
       valist,
       cache,
+      chain?.id || 137,
     ).finally(() => {
       setLoading(false);
     });
@@ -124,6 +125,7 @@ const Project: NextPage = () => {
       member,
       valist,
       cache,
+      chain?.id || 137,
     ).finally(() => {
       setLoading(false);
     });
@@ -140,6 +142,7 @@ const Project: NextPage = () => {
       values,
       valist,
       cache,
+      chain?.id || 137,
     ).finally(() => {
       setLoading(false);  
     });

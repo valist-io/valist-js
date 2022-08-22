@@ -1,10 +1,10 @@
 import { Client } from '@valist/sdk';
-
 import { 
   showNotification, 
   hideNotification,
   updateNotification,
 } from '@mantine/notifications';
+import { ReactNode } from 'react';
 
 // notification IDs
 const LOADING_ID = 'valist-loading-notification';
@@ -18,7 +18,7 @@ export const showError = (error: any) => showNotification({
   message: error.data?.message ?? error.message,
 });
 
-export const showLoading = (message: string) => showNotification({
+export const showLoading = (message: ReactNode) => showNotification({
   id: LOADING_ID,
   autoClose: false,
   disallowClose: true,
@@ -27,7 +27,7 @@ export const showLoading = (message: string) => showNotification({
   message: message,
 });
 
-export const updateLoading = (message: string) => updateNotification({
+export const updateLoading = (message: ReactNode) => updateNotification({
   id: LOADING_ID,
   autoClose: false,
   disallowClose: true,

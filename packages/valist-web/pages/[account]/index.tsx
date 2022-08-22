@@ -47,7 +47,7 @@ const AccountPage: NextPage = () => {
   const valist = useContext(ValistContext);
 
   const accountName = `${router.query.account}`;
-  const accountId = valist.generateID(chain?.id ?? 137, accountName);
+  const accountId = valist.generateID(chain?.id || 137, accountName);
 
   const { data, loading } = useQuery(query, { variables: { accountId } });
   const { data: meta } = useSWRImmutable(data?.account?.metaURI);

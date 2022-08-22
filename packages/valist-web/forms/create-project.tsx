@@ -1,10 +1,12 @@
 import { z } from 'zod';
 import { ApolloCache } from '@apollo/client';
-import { ProjectMeta, GalleryMeta, Client } from '@valist/sdk';
+import { ProjectMeta, Client } from '@valist/sdk';
 import { Event } from 'ethers';
 import { handleEvent } from './events';
 import * as utils from './utils';
 import { shortnameRegex, refineYouTube } from './common';
+import { Anchor } from '@mantine/core';
+import { getBlockExplorer } from '@/components/Activity';
 
 export interface FormValues {
   projectName: string;
@@ -46,6 +48,7 @@ export async function createProject(
   values: FormValues,
   valist: Client,
   cache: ApolloCache<any>,
+  chainId: number,
 ): Promise<boolean | undefined> {
   try {
     utils.hideError();
@@ -86,8 +89,12 @@ export async function createProject(
       meta.gallery?.push({ name: '', type: 'image', src });
     }
 
-    utils.updateLoading('Waiting for transaction');
+    utils.updateLoading('Creating transaction');
     const transaction = await valist.createProject(accountId, values.projectName, meta, members);
+    
+    const message = <Anchor target="_blank"  href={getBlockExplorer(chainId, transaction.hash)}>Waiting for transaction - View transaction</Anchor>;
+    utils.updateLoading(message);
+
     const receipt = await transaction.wait();
     receipt.events?.forEach((event: Event) => handleEvent(event, cache));
 
