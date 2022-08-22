@@ -56,9 +56,11 @@ export async function createAccount(
       meta.image = await valist.writeFile(image);
     }
 
-    utils.updateLoading('Waiting for transaction');
+    utils.updateLoading('Creating transaction');
     const transaction = await valist.createAccount(values.accountName, meta, members);
     const receipt = await transaction.wait();
+
+    utils.updateLoading('Waiting for transaction', transaction.hash);
     receipt.events?.forEach(event => handleEvent(event, cache));
 
     return true;

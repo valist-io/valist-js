@@ -46,8 +46,10 @@ export async function setProductLimit(
       throw new Error('connect your wallet to continue');
     }
 
-    utils.showLoading('Waiting for transaction');
+    utils.showLoading('Creating transaction');
     const transaction = await valist.setProductLimit(projectId, limit);
+
+    utils.updateLoading('Waiting for transaction', transaction.hash);
     const receipt = await transaction.wait();
     receipt.events?.forEach(event => handleEvent(event, cache));
 

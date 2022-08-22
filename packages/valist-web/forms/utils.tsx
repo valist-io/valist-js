@@ -1,5 +1,5 @@
 import { Client } from '@valist/sdk';
-
+import { ExternalLink } from "tabler-icons-react";
 import { 
   showNotification, 
   hideNotification,
@@ -18,22 +18,24 @@ export const showError = (error: any) => showNotification({
   message: error.data?.message ?? error.message,
 });
 
-export const showLoading = (message: string) => showNotification({
+export const showLoading = (message: string, hash?: string) => showNotification({
   id: LOADING_ID,
   autoClose: false,
   disallowClose: true,
-  loading: true,
+  loading: hash ? false : true,
   title: 'Loading',
   message: message,
+  icon: hash ? <a href={`https://polygonscan.com/tx/${hash}`} rel="noreferrer" target="_blank"><ExternalLink /></a> : undefined,
 });
 
-export const updateLoading = (message: string) => updateNotification({
+export const updateLoading = (message: string, hash?: string) => updateNotification({
   id: LOADING_ID,
   autoClose: false,
   disallowClose: true,
-  loading: true,
+  loading: hash ? false : true,
   title: 'Loading',
   message: message,
+  icon: hash ? <a href={`https://polygonscan.com/tx/${hash}`} rel="noreferrer" target="_blank"><ExternalLink /></a> : undefined,
 });
 
 export const hideError = () => hideNotification(ERROR_ID);

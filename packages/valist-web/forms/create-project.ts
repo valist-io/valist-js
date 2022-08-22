@@ -86,8 +86,10 @@ export async function createProject(
       meta.gallery?.push({ name: '', type: 'image', src });
     }
 
-    utils.updateLoading('Waiting for transaction');
+    utils.updateLoading('Creating transaction');
     const transaction = await valist.createProject(accountId, values.projectName, meta, members);
+
+    utils.updateLoading('Waiting for transaction', transaction.hash);
     const receipt = await transaction.wait();
     receipt.events?.forEach((event: Event) => handleEvent(event, cache));
 

@@ -58,8 +58,10 @@ export async function createRelease(
 
     meta.external_url = await valist.writeFolder(files);
 
-    utils.updateLoading('Waiting for transaction');
+    utils.updateLoading('Creating transaction');
     const transaction = await valist.createRelease(projectId, values.releaseName, meta);
+
+    utils.updateLoading('Waiting for transaction', transaction.hash);
     const receipt = await transaction.wait();
     receipt.events?.forEach((event: Event) => handleEvent(event, cache));
 
