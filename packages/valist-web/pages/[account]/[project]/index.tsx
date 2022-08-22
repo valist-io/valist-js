@@ -1,22 +1,25 @@
 import type { NextPage } from 'next';
-import { useContext } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { useAccount, useNetwork } from 'wagmi';
 import { useRouter } from 'next/router';
 import useSWRImmutable from 'swr/immutable';
+import * as Icon from 'tabler-icons-react';
 import { useQuery } from '@apollo/client';
-import { NextLink } from '@mantine/next';
+import { useMediaQuery } from '@mantine/hooks';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
 import { Activity } from '@/components/Activity';
-import { Purchase } from '@/components/Purchase';
 import query from '@/graphql/ProjectPage.graphql';
-import { Gallery, _404 } from '@valist/ui';
 
 import {
-  Account,
+  _404,
   Button,
-  Dashboard,
+  Breadcrumbs,
   Card,
+  InfoButton,
+  ItemHeader,
+  ItemHeaderAction,
+  Gallery,
   List,
   Markdown,
   MemberList,
@@ -31,6 +34,7 @@ import {
   Group,
   Stack,
   Tabs,
+  Grid,
 } from '@mantine/core';
 
 const ProjectPage: NextPage = () => {
@@ -52,16 +56,6 @@ const ProjectPage: NextPage = () => {
   const projectMembers = data?.project?.members ?? [];
   const members = [...accountMembers, ...projectMembers];
 
-  const isAccountMember = accountMembers.find(
-    (other: any) => other.id.toLowerCase() === address?.toLowerCase(),
-  );
-
-  const isProjectMember = projectMembers.find(
-    (other: any) => other.id.toLowerCase() === address?.toLowerCase(),
-  );
-
-  const isMember = isAccountMember || isProjectMember;
-
   const logs = data?.project?.logs ?? [];
   const releases = data?.project?.releases ?? [];
   const latestRelease = data?.project?.releases?.[0];
@@ -69,7 +63,82 @@ const ProjectPage: NextPage = () => {
   const { data: projectMeta } = useSWRImmutable(data?.project?.metaURI);
   const { data: releaseMeta } = useSWRImmutable(latestRelease?.metaURI);
 
-  const launchUrl = projectMeta?.launch_external ? projectMeta?.external_url : releaseMeta?.external_url  ?? '';
+  const [infoOpened, setInfoOpened] = useState(false);
+  const showInfo = useMediaQuery('(max-width: 1400px)', false);
+
+  const [balance, setBalance] = useState(0);
+
+  // update balance when address or projectId changes
+  useEffect(() => {
+    if (address) {
+      valist.getProductBalance(address, projectId)
+        .catch(_err => setBalance(0))
+        .then(value => setBalance(value?.toNumber() ?? 0));  
+    }
+  }, [address, projectId]);
+
+  const isPriced = !!data?.product?.currencies?.find(
+    (curr: any) => curr.price !== '0',
+  );
+
+  const isAccountMember = !!accountMembers.find(
+    (other: any) => other.id.toLowerCase() === address?.toLowerCase(),
+  );
+
+  const isProjectMember = !!projectMembers.find(
+    (other: any) => other.id.toLowerCase() === address?.toLowerCase(),
+  );
+
+  const launchUrl = projectMeta?.launch_external 
+    ? projectMeta?.external_url 
+    : releaseMeta?.external_url;
+
+  const leftActions: ItemHeaderAction[] = [
+    {
+      label: 'Settings', 
+      icon: Icon.Settings, 
+      href: `/-/account/${accountName}/project/${projectName}/settings`, 
+      hide: !(isAccountMember || isProjectMember),
+    },
+    {
+      label: 'Pricing', 
+      icon: Icon.Tag, 
+      href: `/-/account/${accountName}/project/${projectName}/pricing`, 
+      hide: !(isAccountMember || isProjectMember),
+    },
+  ];
+
+  const rightActions: ItemHeaderAction[] = [
+    {
+      label: 'New Release',
+      icon: Icon.News,
+      href: `/-/account/${accountName}/project/${projectName}/create/release`,
+      variant: 'subtle',
+      hide: !(isAccountMember || isProjectMember),
+    },
+  ];
+
+  if (isPriced && balance === 0) {
+    rightActions.push({
+      label: 'Purchase',
+      icon: Icon.ShoppingCart,
+      href: `/-/account/${accountName}/project/${projectName}/checkout`,
+      variant: 'primary',
+    });
+  } else {
+    rightActions.push({
+      label: 'Launch',
+      icon: Icon.Rocket,
+      href: launchUrl ?? '',
+      target: '_blank',
+      variant: 'primary',
+    });
+  }
+
+  const breadcrumbs = [
+    { title: accountName, href: `/${accountName}` },
+    { title: projectName, href: `/${accountName}/${projectName}` },
+  ];
 
   const testInstall = async () => {
     const accountID = valist.generateID(137, accountName);
@@ -101,144 +170,130 @@ const ProjectPage: NextPage = () => {
   };
 
   return (
-    <Layout
-      breadcrumbs={[
-        { title: accountName, href: `/${accountName}` },
-        { title: projectName, href: `/${accountName}/${projectName}` },
-      ]}
-    >
-      <Group mb="xl" position="apart">
-        <Account
+    <Layout padding={0}>
+      <Group mt={40} pl={40} position="apart">
+        <Breadcrumbs items={breadcrumbs} />
+        { showInfo &&
+          <InfoButton 
+            opened={infoOpened}
+            onClick={() => setInfoOpened(!infoOpened)} 
+          />
+        }
+      </Group>
+      <div style={{ padding: 40 }}>
+        <ItemHeader 
           name={projectName}
           label={projectMeta?.name}
           image={projectMeta?.image}
-          large
+          leftActions={leftActions}
+          rightActions={rightActions}
         />
-        <Group>
-          <Button onClick={() => testInstall()}>Install</Button>
-          { isAccountMember &&
-            <NextLink href={`/-/account/${accountName}/project/${projectName}/pricing`}>
-              <Button variant="secondary">Pricing</Button>
-            </NextLink>
+        <Grid>
+          { (!showInfo || !infoOpened) &&
+            <Grid.Col xl={8}>
+              <Tabs defaultValue="readme">
+                <TabsListCard>
+                  <Tabs.Tab value="readme">Readme</Tabs.Tab>
+                  <Tabs.Tab value="versions">Versions</Tabs.Tab>
+                  <Tabs.Tab value="activity">Activity</Tabs.Tab>
+                  <Tabs.Tab value="members">Members</Tabs.Tab>
+                </TabsListCard>
+                <Tabs.Panel value="readme">
+                  <Stack spacing={24}>
+                    { (projectMeta?.gallery && projectMeta?.gallery?.length !== 0) &&
+                      <Gallery assets={projectMeta?.gallery} />
+                    }
+                    <Card>                
+                      <Markdown>
+                        {projectMeta?.description}
+                      </Markdown>
+                    </Card>
+                  </Stack>
+                </Tabs.Panel>
+                <Tabs.Panel value="versions">
+                  <Card>
+                    <List>
+                      {releases.map((release: any, index: number) => 
+                        <Group key={index} position="apart">
+                          <Text>{release.name}</Text>
+                          <a target="_blank" href={release.metaURI} rel="noreferrer">view metadata</a>
+                        </Group>,
+                      )}
+                    </List>
+                  </Card>
+                </Tabs.Panel>
+                <Tabs.Panel value="activity">
+                  <Card>
+                    <List>
+                      {logs.map((log: any, index: number) => 
+                        <Activity key={index} {...log} />,
+                      )}
+                    </List>
+                  </Card>
+                </Tabs.Panel>
+                <Tabs.Panel value="members">
+                  <Card>
+                    <List>
+                      <MemberList
+                        label="Account Admin"
+                        members={accountMembers.map((member: any) => member.id)}
+                      />
+                      <MemberList
+                        label="Project Admin"
+                        members={projectMembers.map((member: any) => member.id)}
+                      />
+                    </List>
+                  </Card>
+                </Tabs.Panel>
+              </Tabs>
+            </Grid.Col>
           }
-          { isMember &&
-            <>
-              <NextLink href={`/-/account/${accountName}/project/${projectName}/settings`}>
-                <Button variant="subtle">Settings</Button>
-              </NextLink>
-              <NextLink href={`/-/account/${accountName}/project/${projectName}/create/release`}>
-                <Button>New Release</Button>
-              </NextLink>
-            </>
-          }
-        </Group>
-      </Group>
-      <Dashboard>
-        <Dashboard.Main>
-          <Tabs defaultValue="readme">
-            <TabsListCard>
-              <Tabs.Tab value="readme">Readme</Tabs.Tab>
-              <Tabs.Tab value="versions">Versions</Tabs.Tab>
-              <Tabs.Tab value="activity">Activity</Tabs.Tab>
-              <Tabs.Tab value="members">Members</Tabs.Tab>
-            </TabsListCard>
-            <Tabs.Panel value="readme">
+          { (!showInfo || infoOpened) &&
+            <Grid.Col xl={4}>
               <Stack spacing={24}>
-                { (projectMeta?.gallery && projectMeta?.gallery?.length !== 0) &&
-                  <Gallery assets={projectMeta?.gallery} />
-                }
-                { releaseMeta &&
-                  <Purchase 
-                    projectId={projectId}
-                    name={projectMeta?.name ?? projectName}
-                    href={launchUrl}
-                  />
-                }
-                <Card>                
-                  <Markdown>
-                    {projectMeta?.description}
-                  </Markdown>
+                <Card>
+                  <Stack spacing={24}>
+                    <Title order={5}>Project Info</Title>
+                    <List>
+                      <Group position="apart">
+                        <Text>Downloads</Text>
+                        <Text>0</Text>
+                      </Group>
+                      <Group position="apart">
+                        <Text>Members</Text>
+                        <MemberStack 
+                          size={28} 
+                          members={members.map(member => member.id)} 
+                        />
+                      </Group>
+                      <Group position="apart">
+                        <Text>Version</Text>
+                        <Text>{latestRelease?.name}</Text>
+                      </Group>
+                      <Group position="apart">
+                        <Text>Website</Text>
+                        <Anchor href={projectMeta?.external_url ?? ''}>
+                          {projectMeta?.external_url}
+                        </Anchor>
+                      </Group>
+                    </List>
+                  </Stack>
+                </Card>
+                <Card>
+                  <Stack spacing={24}>
+                    <Title order={5}>Recent Activity</Title>
+                    <List>
+                      {logs.slice(0, 4).map((log: any, index: number) => 
+                        <Activity key={index} {...log} />,
+                      )}
+                    </List>
+                  </Stack>
                 </Card>
               </Stack>
-            </Tabs.Panel>
-            <Tabs.Panel value="versions">
-              <Card>
-                <List>
-                  {releases.map((release: any, index: number) =>
-                    <Group key={index} position="apart">
-                      <Text>{release.name}</Text>
-                      <a target="_blank" href={release.metaURI} rel="noreferrer">view metadata</a>
-                    </Group>,
-                  )}
-                </List>
-              </Card>
-            </Tabs.Panel>
-            <Tabs.Panel value="activity">
-              <Card>
-                <List>
-                  {logs.map((log: any, index: number) =>
-                    <Activity key={index} {...log} />,
-                  )}
-                </List>
-              </Card>
-            </Tabs.Panel>
-            <Tabs.Panel value="members">
-              <Card>
-                <List>
-                  <MemberList
-                    label="Account Admin"
-                    members={accountMembers.map((member: any) => member.id)}
-                  />
-                  <MemberList
-                    label="Project Admin"
-                    members={projectMembers.map((member: any) => member.id)}
-                  />
-                </List>
-              </Card>
-            </Tabs.Panel>
-          </Tabs>
-        </Dashboard.Main>
-        <Dashboard.Side>
-          <Card>
-            <Stack spacing={24}>
-              <Title order={5}>Project Info</Title>
-              <List>
-                <Group position="apart">
-                  <Text>Downloads</Text>
-                  <Text>0</Text>
-                </Group>
-                <Group position="apart">
-                  <Text>Members</Text>
-                  <MemberStack
-                    size={28}
-                    members={members.map(member => member.id)}
-                  />
-                </Group>
-                <Group position="apart">
-                  <Text>Version</Text>
-                  <Text>{latestRelease?.name}</Text>
-                </Group>
-                <Group position="apart">
-                  <Text>Website</Text>
-                  <Anchor href={projectMeta?.external_url ?? ''}>
-                    {projectMeta?.external_url}
-                  </Anchor>
-                </Group>
-              </List>
-            </Stack>
-          </Card>
-          <Card>
-            <Stack spacing={24}>
-              <Title order={5}>Recent Activity</Title>
-              <List>
-                {logs.slice(0, 4).map((log: any, index: number) =>
-                  <Activity key={index} {...log} />,
-                )}
-              </List>
-            </Stack>
-          </Card>
-        </Dashboard.Side>
-      </Dashboard>
+            </Grid.Col>
+          }
+        </Grid>
+      </div>
     </Layout>
   );
 };

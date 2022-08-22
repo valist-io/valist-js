@@ -18,6 +18,7 @@ import {
 
 import {
   Button,
+  Breadcrumbs,
   ImageInput,
   FileButton,
   FileInput,
@@ -115,136 +116,112 @@ const CreateReleasePage: NextPage = () => {
     });
   };
 
+  const breadcrumbs = [
+    { title: accountName, href: `/${accountName}` },
+    { title: projectName, href: `/${accountName}/${projectName}` },
+    { title: 'Create Release', href: `/-/account/${accountName}/project/${projectName}/create/release` },
+  ];
+
   return (
-    <Metadata url={data?.project?.metaURI}>
-      {(data: ProjectMeta) => (
-        <form onSubmit={form.onSubmit(submit)}>
-          <Layout
-            breadcrumbs={[
-              { title: accountName, href: `/${accountName}` },
-              { title: projectName, href: `/${accountName}/${projectName}` },
-              { title: 'Create Release', href: `/-/account/${accountName}/project/${projectName}/create/release` },
-            ]}
-          >
-            <Tabs
-              defaultValue="basic"
-              value={activeTab}
-              onTabChange={setActiveTab}
-            >
-              <Tabs.List grow>
-                <Tabs.Tab value="basic">Basic Info</Tabs.Tab>
-                <Tabs.Tab {...tabProps} value="files">Files</Tabs.Tab>
-              </Tabs.List>
-              <Tabs.Panel value="basic">
-                <Stack style={{ maxWidth: 784 }}>
-                  <Title mt="lg">Basic Info</Title>
-                  <Text color="dimmed">This is your public release info.</Text>
-                  <Title order={2}>Release Image</Title>
-                  <ImageInput 
-                    width={300}
-                    height={300}
-                    onChange={setImage} 
-                    value={image}
-                    disabled={loading}
-                  />
-                  <Title order={2}>Release Details</Title>
-                  <NameInput 
-                    label="Release Name (cannot be changed)"
-                    placeholder={latestReleaseName}
-                    disabled={loading}
-                    parentId={projectId}
-                    required
-                    {...form.getInputProps('releaseName')}
-                  />
-                  <TextInput 
-                    label="Display Name"
-                    disabled={loading}
-                    required
-                    {...form.getInputProps('displayName')}
-                  />
-                  <Textarea
-                    label="Description"
-                    disabled={loading}
-                    autosize={true}
-                    minRows={4}
-                    maxRows={12}
-                    {...form.getInputProps('description')}
-                  />
+    <form onSubmit={form.onSubmit(submit)}>
+      <Layout>
+        <div style={{ paddingBottom: 32 }}>
+          <Breadcrumbs items={breadcrumbs} />
+        </div>
+        <Tabs
+          defaultValue="basic"
+          value={activeTab}
+          onTabChange={setActiveTab}
+        >
+          <Tabs.List grow>
+            <Tabs.Tab value="basic">Basic Info</Tabs.Tab>
+            <Tabs.Tab value="files">Files</Tabs.Tab>
+          </Tabs.List>
+          <Tabs.Panel value="basic">
+            <Stack style={{ maxWidth: 784 }}>
+              <Title mt="lg">Basic Info</Title>
+              <Text color="dimmed">This is your public release info.</Text>
+              <Title order={2}>Release Image</Title>
+              <ImageInput 
+                width={300}
+                height={300}
+                onChange={setImage} 
+                value={image}
+                disabled={loading}
+              />
+              <Title order={2}>Release Details</Title>
+              <NameInput 
+                label="Release Name (cannot be changed)"
+                placeholder={latestReleaseName}
+                disabled={loading}
+                parentId={projectId}
+                required
+                {...form.getInputProps('releaseName')}
+              />
+              <TextInput 
+                label="Display Name"
+                disabled={loading}
+                required
+                {...form.getInputProps('displayName')}
+              />
+              <Textarea
+                label="Description"
+                disabled={loading}
+                autosize={true}
+                minRows={4}
+                maxRows={12}
+                {...form.getInputProps('description')}
+              />
+            </Stack>
+            <Group mt="lg">
+              <Button 
+                onClick={() => setActiveTab('files')}
+                variant="primary"
+                disabled={!(form.values.releaseName && form.values.displayName)}
+              >
+                Continue
+              </Button>
+            </Group>
+          </Tabs.Panel>
+          <Tabs.Panel value="files">
+            <Stack style={{ maxWidth: 784 }}>
+              <Title mt="lg">Files</Title>
+              <Text color="dimmed">Upload your release files.</Text>
+              <FileInput
+                onChange={setFiles}
+                value={files}
+                disabled={loading}
+              />
+              <ScrollArea style={{ height: 300 }}>
+                <Stack spacing={12}>
+                  {files.map((file: FileWithPath, index: number) => 
+                    <File 
+                      key={index} 
+                      path={file.path ?? file.name} 
+                      size={file.size} 
+                    />,
+                  )}
                 </Stack>
-                <Group mt="lg">
-                  <Button 
-                    onClick={() => setActiveTab('files')}
-                    variant="primary"
-                    disabled={!(form.values.releaseName && form.values.displayName)}
-                  >
-                    Continue
-                  </Button>
-                </Group>
-              </Tabs.Panel>
-              <Tabs.Panel value="files">
-                <Stack style={{ maxWidth: 784 }}>
-                  <Title mt="lg">Files</Title>
-                  {!['native', 'cli'].includes(data?.type as string) &&
-                  <>
-                    <Text color="dimmed">Upload your release files.</Text>
-                    <FileInput
-                      onChange={setFiles}
-                      value={files}
-                      disabled={loading}
-                    />
-                    <ScrollArea style={{ height: 300 }}>
-                    <Stack spacing={12}>
-                      {files.map((file: FileWithPath, index: number) => 
-                        <File
-                          key={index} 
-                          path={file.path ?? file.name} 
-                          size={file.size} 
-                        />,
-                      )}
-                    </Stack>
-                  </ScrollArea>
-                  </>
-                  }
-                  {['native', 'cli'].includes(data?.type as string) &&
-                    <>
-                      <Text color="dimmed">Upload your release files to the designated platform target.</Text>
-                      <Text weight={900} color="dimmed">At least one platform is required.</Text>
-                      <br/>
-                      {platforms.map((platform, index) => (
-                        <div key={index}>
-                          <Text style={{ display: 'inline-block', width: 150 }}>{platform}</Text>
-                          <FileButton setFiles={(_files: File[]) => {
-                            setFilesObject({ ...filesObject, [platform]: _files });
-                          }} />
-                          {filesObject[platform] && filesObject[platform].length !== 0 && 
-                            <span style={{ marginLeft: 20 }}>- {filesObject[platform].name}</span>
-                          }
-                        </div>
-                      ))}
-                      <br />
-                   </>
-                  }
-                </Stack>
-                <Group mt="lg">
-                  <Button
-                    onClick={() => setActiveTab('basic')} 
-                    variant="secondary"
-                  >
-                    Back
-                  </Button>
-                  <Button 
-                    type="submit"
-                    disabled={loading}
-                  >
-                    Create
-                  </Button>
-                </Group>
-              </Tabs.Panel>
-            </Tabs>
-          </Layout>
-        </form>
-      )}
-    </Metadata>
+              </ScrollArea>
+            </Stack>
+            <Group mt="lg">
+              <Button 
+                onClick={() => setActiveTab('basic')} 
+                variant="secondary"
+              >
+                Back
+              </Button>
+              <Button 
+                type="submit"
+                disabled={loading}
+              >
+                Create
+              </Button>
+            </Group>
+          </Tabs.Panel>
+        </Tabs>
+      </Layout>
+    </form>
   );
 };
 

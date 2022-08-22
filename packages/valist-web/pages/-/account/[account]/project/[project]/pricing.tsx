@@ -4,8 +4,13 @@ import { useAccount, useNetwork } from 'wagmi';
 import { useRouter } from 'next/router';
 import { useApolloClient, useQuery } from '@apollo/client';
 import * as Icon from 'tabler-icons-react';
+import { Breadcrumbs, Button, TokenInput } from '@valist/ui';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
+import { ProductPrice } from '@/components/ProductPrice';
+import { ProductBalance } from '@/components/ProductBalance';
+import { TokenModal } from '@/components/TokenModal';
+import { formatUnits } from '@/utils/tokens';
 import query from '@/graphql/PricingPage.graphql';
 
 import {
@@ -28,12 +33,6 @@ import {
   Tabs,
 } from '@mantine/core';
 
-import { 
-  Button,
-} from '@valist/ui';
-
-const zeroAddress = '0x0000000000000000000000000000000000000000';
-
 const Pricing: NextPage = () => {
   const router = useRouter();
   const { cache } = useApolloClient();
@@ -52,40 +51,27 @@ const Pricing: NextPage = () => {
 
   // form values
   const [loading, setLoading] = useState(true);
-  const [price, setPrice] = useState(0);
   const [limit, setLimit] = useState(0);
-  const [balance, setBalance] = useState(0);
   const [royaltyAmount, setRoyaltyAmount] = useState(0);
   const [royaltyRecipient, setRoyaltyRecipient] = useState('');
   const [withdrawRecipient, setWithdrawRecipient] = useState('');
 
+  const [tokens, setTokens] = useState<string[]>([]);
+  const [tokenOpened, setTokenOpened] = useState(false);
   const currencies = data?.product?.currencies ?? [];
 
-  const getTokenBalance = (token: string) => {
-    const currency = currencies.find(
-      (curr: any) => curr.token === token.toLowerCase(),
-    );
-    return parseInt(currency?.balance ?? '0');
+  const getCurrency = (address: string) => currencies.find(
+    (curr: any) => curr.token?.toLowerCase() === address.toLowerCase(),
+  );
+
+  const getCurrencyBalance = (address: string) => {
+    const currency = getCurrency(address);
+    return formatUnits(address, currency?.balance ?? '0');
   };
 
-  const getTokenPrice = (token: string) => {
-    const currency = currencies.find(
-      (curr: any) => curr.token === token.toLowerCase(),
-    );
-    return parseInt(currency?.price ?? '0');
-  };
-
-  const updatePrice = () => {
-    setLoading(true);
-    setProductPrice(
-      address,
-      projectId,
-      price,
-      valist,
-      cache,
-    ).finally(() => {
-      setLoading(false);
-    });
+  const getCurrencyPrice = (address: string) => {
+    const currency = getCurrency(address);
+    return formatUnits(address, currency?.price ?? '0');
   };
 
   const updateLimit = () => {
@@ -101,13 +87,13 @@ const Pricing: NextPage = () => {
     });
   };
 
-  const updateRoyalty = () => {
+  const updatePrice = (token: string, price: string) => {
     setLoading(true);
-    setProductRoyalty(
+    setProductPrice(
       address,
       projectId,
-      royaltyRecipient,
-      royaltyAmount,
+      token,
+      price,
       valist,
       cache,
     ).finally(() => {
@@ -115,11 +101,26 @@ const Pricing: NextPage = () => {
     });
   };
 
-  const withdrawBalance = () => {
+  const updateRoyalty = () => {
+    setLoading(true);
+    setProductRoyalty(
+      address,
+      projectId,
+      royaltyRecipient,
+      royaltyAmount * 10000,
+      valist,
+      cache,
+    ).finally(() => {
+      setLoading(false);
+    });
+  };
+
+  const withdrawBalance = (token: string) => {
     setLoading(true);
     withdrawProductBalance(
       address,
       projectId,
+      token,
       withdrawRecipient,
       valist,
       cache,
@@ -135,22 +136,30 @@ const Pricing: NextPage = () => {
       const _royalty = parseInt(data?.product?.royaltyAmount ?? '0');
 
       setLimit(_limit);
-      setPrice(getTokenPrice(zeroAddress));
-      setBalance(getTokenBalance(zeroAddress));
       setRoyaltyAmount(_royalty / 10000);
       setRoyaltyRecipient(data?.product?.royaltyRecipient ?? '');
+      setTokens(currencies.map((currency: any) => currency.token));
       setLoading(false);
     }
   }, [data]);
 
+  const breadcrumbs = [
+    { title: accountName, href: `/${accountName}` },
+    { title: projectName, href: `/${accountName}/${projectName}` },
+    { title: 'Pricing', href: `/-/account/${accountName}/project/${projectName}/pricing` },
+  ];
+
   return (
-    <Layout
-      breadcrumbs={[
-        { title: accountName, href: `/${accountName}` },
-        { title: projectName, href: `/${accountName}/${projectName}` },
-        { title: 'Pricing', href: `/-/account/${accountName}/project/${projectName}/pricing` },
-      ]}
-    >
+    <Layout>
+      <TokenModal
+        values={tokens}
+        onChange={setTokens}
+        opened={tokenOpened} 
+        onClose={() => setTokenOpened(false)} 
+      />
+      <div style={{ paddingBottom: 32 }}>
+        <Breadcrumbs items={breadcrumbs} />
+      </div>
       <Tabs defaultValue="pricing">
         <Tabs.List grow>
           <Tabs.Tab value="pricing">Pricing</Tabs.Tab>
@@ -164,26 +173,7 @@ const Pricing: NextPage = () => {
             <Group>
               <NumberInput
                 style={{ flex: '1 1 0px' }}
-                label="Price"
-                min={0}
-                precision={2}
-                disabled={loading}
-                hideControls
-                value={price}
-                onChange={val => setPrice(val ?? 0)}
-              />
-              <Button 
-                style={{ height: 44, alignSelf: 'flex-end' }}
-                disabled={loading}
-                onClick={updatePrice}
-              >
-                Save
-              </Button>
-            </Group>
-            <Group>
-              <NumberInput
-                style={{ flex: '1 1 0px' }}
-                label="Limit"
+                label="Max License Limit"
                 min={0}
                 disabled={loading}
                 hideControls
@@ -195,9 +185,26 @@ const Pricing: NextPage = () => {
                 disabled={loading}
                 onClick={updateLimit}
               >
-                Save
+                Set Limit
               </Button>
             </Group>
+            { tokens.map((address: string, index: number) => 
+              <ProductPrice 
+                key={index}
+                address={address}
+                loading={loading}
+                price={getCurrencyPrice(address)}
+                onSubmit={updatePrice}
+              />,
+            )}
+            <div>
+              <Button 
+                variant="subtle" 
+                onClick={() => setTokenOpened(true)}
+              >
+                Add Currency
+              </Button>
+            </div>
           </Stack>
         </Tabs.Panel>
         <Tabs.Panel value="royalty">
@@ -237,12 +244,6 @@ const Pricing: NextPage = () => {
           <Stack style={{ maxWidth: 784 }}>
             <Title mt="lg">Withdraw</Title>
             <Text color="dimmed">Withdraw funds from product sales.</Text>
-            <NumberInput
-              label="Balance"
-              disabled={true}
-              hideControls
-              value={balance}
-            />
             <TextInput
               label="Recipient"
               placeholder="Address or ENS"
@@ -250,15 +251,16 @@ const Pricing: NextPage = () => {
               value={withdrawRecipient}
               onChange={e => setWithdrawRecipient(e.currentTarget.value)}
             />
+            { tokens.map((address: string, index: number) => 
+              <ProductBalance 
+                key={index}
+                address={address}
+                balance={getCurrencyBalance(address)}
+                loading={loading}
+                onSubmit={withdrawBalance}
+              />,
+            )}
           </Stack>
-          <Group mt="lg">
-            <Button 
-              onClick={withdrawBalance}
-              disabled={loading}
-            >
-              Withdraw
-            </Button>
-          </Group>
         </Tabs.Panel>
       </Tabs>
     </Layout>

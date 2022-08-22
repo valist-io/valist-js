@@ -30,6 +30,7 @@ import {
 
 import { 
   Button,
+  Breadcrumbs,
   ImageInput,
   MemberList,
   _404,
@@ -116,6 +117,11 @@ const SettingsPage: NextPage = () => {
     });
   };
 
+  const breadcrumbs = [
+    { title: accountName, href: `/${accountName}` },
+    { title: 'Settings', href: `/-/${accountName}/settings` },
+  ];
+
   if (!gqLoading && !data?.account) {
     return (
       <Layout>
@@ -130,12 +136,10 @@ const SettingsPage: NextPage = () => {
   };
 
   return (
-    <Layout
-      breadcrumbs={[
-        { title: accountName, href: `/${accountName}` },
-        { title: 'Settings', href: `/-/${accountName}/settings` },
-      ]}
-    >
+    <Layout>
+      <div style={{ paddingBottom: 32 }}>
+        <Breadcrumbs items={breadcrumbs} />
+      </div>
       <Tabs defaultValue="basic">
         <Tabs.List grow>
           <Tabs.Tab value="basic">Basic Info</Tabs.Tab>
