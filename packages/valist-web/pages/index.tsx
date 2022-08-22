@@ -35,9 +35,11 @@ import {
   Welcome,
   CheckboxList,
 } from '@valist/ui';
+import { ValistContext } from '@/components/ValistProvider';
 
 const IndexPage: NextPage = () => {
   const router = useRouter();
+  const valist = useContext(ValistContext);
   const { account } = useContext(AccountContext);
   const { openConnectModal } = useConnectModal();
   const { isConnected } = useAccount();

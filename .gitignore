@@ -11,4 +11,3 @@ site
 dist
 .env*
 .parcel-cache
-electron

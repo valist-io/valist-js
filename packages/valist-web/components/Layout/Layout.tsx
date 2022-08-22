@@ -44,7 +44,7 @@ export function Layout(props: LayoutProps) {
       padding={props.padding}
       hideNavbar={hideNavbar}
       header={
-        <Header 
+        <Header
           hideNavbar={hideNavbar}
           opened={opened} 
           onClick={() => setOpened(!opened)}
@@ -73,12 +73,6 @@ export function Layout(props: LayoutProps) {
               text="Settings"
               href={`/-/account/${account?.name}/settings`}
               active={router.asPath === `/-/account/${account?.name}/settings`} 
-            />
-            <Navbar.Link 
-              icon={Icons.GasStation} 
-              text="Gas Tank"
-              href="/-/gas"
-              active={router.asPath === '/-/gas'} 
             />
           </Navbar.Section>
           <Navbar.Section px={30} py="md">
