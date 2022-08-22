@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { ApolloCache } from '@apollo/client';
-import { ReleaseMeta, Client } from '@valist/sdk';
+import { ReleaseMeta, Client, InstallMeta } from '@valist/sdk';
 import type { FileWithPath } from 'file-selector';
 import { Event } from 'ethers';
 import { handleEvent } from './events';
@@ -31,6 +31,7 @@ export async function createRelease(
   projectId: string,
   image: File | undefined,
   files: FileWithPath[],
+  install: InstallMeta | undefined,
   values: FormValues,
   valist: Client,
   cache: ApolloCache<any>,
@@ -50,6 +51,8 @@ export async function createRelease(
       name: values.displayName,
       description: values.description,
     };
+
+    if (install) meta.install = install;
 
     utils.showLoading('Uploading files');
     if (image) {

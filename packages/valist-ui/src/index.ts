@@ -15,6 +15,7 @@ export { Dashboard } from './components/Dashboard';
 export { DiscoveryFooter } from "./components/DiscoveryFooter";
 export { Divider } from './components/Divider';
 export { File } from './components/File';
+export { FileButton } from './components/FileButton';
 export { FileInput } from './components/FileInput';
 export { Footer } from './components/Footer';
 export { Gallery } from './components/Gallery';

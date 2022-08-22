@@ -17,5 +17,5 @@ export const defaultTags = [
 ];
 
 export const defaultTypes = [
-  'web', 'web-game', 'installable-game', 'binary/executable',
+  'web', 'native', 'cli',
 ];
