@@ -4,6 +4,7 @@ import { AccountMeta, Client } from '@valist/sdk';
 import { handleEvent } from './events';
 import * as utils from './utils';
 import { Anchor } from '@mantine/core';
+import { getBlockExplorer } from '@/components/Activity';
 
 export interface FormValues {
   displayName: string;
@@ -27,6 +28,7 @@ export async function updateAccount(
   values: FormValues,
   valist: Client,
   cache: ApolloCache<any>,
+  chainId: number,
 ): Promise<boolean | undefined> {
   try {
     utils.hideError();
@@ -49,8 +51,9 @@ export async function updateAccount(
     utils.updateLoading('Creating transaction');
     const transaction = await valist.setAccountMeta(accountId, meta);
 
-    const message = <Anchor target="_blank"  href={`https://polygonscan.com/tx/${transaction.hash}`}>Waiting for transaction - View transaction</Anchor>;
+    const message = <Anchor target="_blank"  href={getBlockExplorer(chainId, transaction.hash)}>Waiting for transaction - View transaction</Anchor>;
     utils.updateLoading(message);
+
     const receipt = await transaction.wait();
     receipt.events?.forEach(event => handleEvent(event, cache));
 
@@ -69,6 +72,7 @@ export async function addAccountMember(
   member: string,
   valist: Client,
   cache: ApolloCache<any>,
+  chainId: number,
 ): Promise<boolean | undefined> {
   try {
     utils.hideError();
@@ -79,6 +83,10 @@ export async function addAccountMember(
 
     utils.showLoading('Waiting for transaction');
     const transaction = await valist.addAccountMember(accountId, member);
+    
+    const message = <Anchor target="_blank"  href={getBlockExplorer(chainId, transaction.hash)}>Waiting for transaction - View transaction</Anchor>;
+    utils.updateLoading(message);
+    
     const receipt = await transaction.wait();
     receipt.events?.forEach(event => handleEvent(event, cache));
 
@@ -97,6 +105,7 @@ export async function removeAccountMember(
   member: string,
   valist: Client,
   cache: ApolloCache<any>,
+  chainId: number,
 ): Promise<boolean | undefined> {
   try {
     utils.hideError();
@@ -107,6 +116,10 @@ export async function removeAccountMember(
 
     utils.showLoading('Waiting for transaction');
     const transaction = await valist.removeAccountMember(accountId, member);
+    
+    const message = <Anchor target="_blank"  href={getBlockExplorer(chainId, transaction.hash)}>Waiting for transaction - View transaction</Anchor>;
+    utils.updateLoading(message);
+    
     const receipt = await transaction.wait();
     receipt.events?.forEach(event => handleEvent(event, cache));
 

@@ -74,7 +74,7 @@ export function Activity(props: ActivityProps) {
   );
 }
 
-function getBlockExplorer(chainId: number, id: string) {
+export function getBlockExplorer(chainId: number, id: string) {
   const hash = id.split('-')[0];
   switch (chainId) {
     case 1:

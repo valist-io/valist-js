@@ -81,6 +81,7 @@ const CreateReleasePage: NextPage = () => {
       values,
       valist,
       cache,
+      chain?.id ?? 137,
     ).then(success => {
       if (success) {
         router.push(`/${accountName}/${projectName}`);  

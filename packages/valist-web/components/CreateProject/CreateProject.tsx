@@ -105,6 +105,7 @@ export function CreateProject(props: CreateProjectProps) {
       values,
       valist,
       cache,
+      chain?.id ?? 137,
     ).then(success => {
       if (success) {
         props.afterCreate?.();

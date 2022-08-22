@@ -83,6 +83,7 @@ const Pricing: NextPage = () => {
       price,
       valist,
       cache,
+      chain?.id ?? 137,
     ).finally(() => {
       setLoading(false);
     });
@@ -96,6 +97,7 @@ const Pricing: NextPage = () => {
       limit,
       valist,
       cache,
+      chain?.id ?? 137,
     ).finally(() => {
       setLoading(false);
     });
@@ -110,6 +112,7 @@ const Pricing: NextPage = () => {
       royaltyAmount,
       valist,
       cache,
+      chain?.id ?? 137,
     ).finally(() => {
       setLoading(false);
     });
@@ -123,6 +126,7 @@ const Pricing: NextPage = () => {
       withdrawRecipient,
       valist,
       cache,
+      chain?.id ?? 137,
     ).finally(() => {
       setLoading(false);
     });

@@ -1,3 +1,4 @@
+import { getBlockExplorer } from '@/components/Activity';
 import { ApolloCache } from '@apollo/client';
 import { Anchor } from '@mantine/core';
 import { Client } from '@valist/sdk';
@@ -11,6 +12,7 @@ export async function setProductRoyalty(
   amount: number,
   valist: Client,
   cache: ApolloCache<any>,
+  chainId: number,
 ): Promise<boolean | undefined> {
   try {
     utils.hideError();
@@ -19,8 +21,12 @@ export async function setProductRoyalty(
       throw new Error('connect your wallet to continue');
     }
 
-    utils.showLoading('Waiting for transaction');
+    utils.showLoading('Creating transaction');
     const transaction = await valist.setProductRoyalty(projectId, recipient, amount);
+
+    const message = <Anchor target="_blank"  href={getBlockExplorer(chainId, transaction.hash)}>Waiting for transaction - View transaction</Anchor>;
+    utils.updateLoading(message);
+
     const receipt = await transaction.wait();
     receipt.events?.forEach(event => handleEvent(event, cache));
 
@@ -39,6 +45,7 @@ export async function setProductLimit(
   limit: number,
   valist: Client,
   cache: ApolloCache<any>,
+  chainId: number,
 ): Promise<boolean | undefined> {
   try {
     utils.hideError();
@@ -50,8 +57,9 @@ export async function setProductLimit(
     utils.showLoading('Creating transaction');
     const transaction = await valist.setProductLimit(projectId, limit);
 
-    const message = <Anchor target="_blank"  href={`https://polygonscan.com/tx/${transaction.hash}`}>Waiting for transaction - View transaction</Anchor>;
+    const message = <Anchor target="_blank"  href={getBlockExplorer(chainId, transaction.hash)}>Waiting for transaction - View transaction</Anchor>;
     utils.updateLoading(message);
+
     const receipt = await transaction.wait();
     receipt.events?.forEach(event => handleEvent(event, cache));
 
@@ -70,6 +78,7 @@ export async function setProductPrice(
   price: number,
   valist: Client,
   cache: ApolloCache<any>,
+  chainId: number,
 ): Promise<boolean | undefined> {
   try {
     utils.hideError();
@@ -78,8 +87,12 @@ export async function setProductPrice(
       throw new Error('connect your wallet to continue');
     }
 
-    utils.showLoading('Waiting for transaction');
+    utils.showLoading('Creating transaction');
     const transaction = await valist.setProductPrice(projectId, price);
+    
+    const message = <Anchor target="_blank"  href={getBlockExplorer(chainId, transaction.hash)}>Waiting for transaction - View transaction</Anchor>;
+    utils.updateLoading(message);
+
     const receipt = await transaction.wait();
     receipt.events?.forEach(event => handleEvent(event, cache));
 
@@ -98,6 +111,7 @@ export async function withdrawProductBalance(
   recipient: string,
   valist: Client,
   cache: ApolloCache<any>,
+  chainId: number,
 ): Promise<boolean | undefined> {
     try {
     utils.hideError();
@@ -108,6 +122,10 @@ export async function withdrawProductBalance(
 
     utils.showLoading('Waiting for transaction');
     const transaction = await valist.withdrawProductBalance(projectId, recipient);
+    
+    const message = <Anchor target="_blank"  href={getBlockExplorer(chainId, transaction.hash)}>Waiting for transaction - View transaction</Anchor>;
+    utils.updateLoading(message);
+    
     const receipt = await transaction.wait();
     receipt.events?.forEach(event => handleEvent(event, cache));
 

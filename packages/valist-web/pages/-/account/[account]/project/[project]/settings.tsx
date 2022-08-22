@@ -110,6 +110,7 @@ const Project: NextPage = () => {
       member,
       valist,
       cache,
+      chain?.id ?? 137,
     ).finally(() => {
       setLoading(false);
     });
@@ -123,6 +124,7 @@ const Project: NextPage = () => {
       member,
       valist,
       cache,
+      chain?.id ?? 137,
     ).finally(() => {
       setLoading(false);
     });
@@ -139,6 +141,7 @@ const Project: NextPage = () => {
       values,
       valist,
       cache,
+      chain?.id ?? 137,
     ).finally(() => {
       setLoading(false);  
     });

@@ -84,6 +84,7 @@ const SettingsPage: NextPage = () => {
       member,
       valist,
       cache,
+      chain?.id ?? 137,
     ).finally(() => {
       setLoading(false);
     });
@@ -97,6 +98,7 @@ const SettingsPage: NextPage = () => {
       member,
       valist,
       cache,
+      chain?.id ?? 137,
     ).finally(() => {
       setLoading(false);
     });
@@ -111,6 +113,7 @@ const SettingsPage: NextPage = () => {
       values,
       valist,
       cache,
+      chain?.id ?? 137,
     ).finally(() => {
       setLoading(false);  
     });

@@ -87,6 +87,7 @@ export function CreateAccount(props: CreateAccountProps) {
       values,
       valist,
       cache,
+      chain?.id ?? 137,
     ).then((success) => {
       if (success) {
         setAccount(values.accountName);
