@@ -38,7 +38,7 @@ export function MemberList(props: MemberListProps) {
             <Address address={mem} />
             <Text color={color}>{props.label}</Text>
           </Stack>
-          { props.editable &&
+          { props.editable && props.members.length > 1 &&
             <ActionIcon variant="transparent" onClick={() => remove(mem)}>
               <Icon.Trash color={color} />
             </ActionIcon>  
