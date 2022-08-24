@@ -41,3 +41,14 @@ export function getInstallPath(install: InstallMeta) {
       return install.linux_arm64;
   }
 }
+
+export function getExecCommand() {
+  switch (process.platform) {
+    case 'darwin':
+      return 'open';
+    case 'win32':
+      return '';
+    case 'linux':
+      return '';
+  }
+}

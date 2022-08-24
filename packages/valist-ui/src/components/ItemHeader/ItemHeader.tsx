@@ -14,10 +14,11 @@ import useStyles from './ItemHeader.styles';
 export interface ItemHeaderAction {
   label: string;
   icon: Icon;
-  href: string;
+  href?: string;
   target?: '_self' | '_blank' | '_parent' | '_top';
   hide?: boolean;
   variant?: ButtonVariant;
+  action?: () => void
 }
 
 export interface ItemHeaderProps {
@@ -47,32 +48,59 @@ export function ItemHeader(props: ItemHeaderProps) {
         <Group>
           { leftActions.map((action, index) =>
             <Tooltip key={index} label={action.label} position="bottom">
-              <Anchor target={action.target} href={action.href}>
-                <UnstyledButton className={classes.action}>
-                  <action.icon size={28} />
-                </UnstyledButton>
-              </Anchor>
+              <div>
+                {!action.action && action.href && 
+                  <Anchor target={action.target} href={action.href}>
+                    <UnstyledButton className={classes.action}>
+                      <action.icon size={28} />
+                    </UnstyledButton>
+                  </Anchor>
+                }
+                {action?.action && 
+                  <UnstyledButton className={classes.action} onClick={() => action.action()}>
+                    <action.icon size={28} />
+                  </UnstyledButton>
+                }
+              </div>
             </Tooltip>
           )}
         </Group>
         <Group>
           { rightActions.map((action, index) =>
-            <Anchor key={index} target={action.target} href={action.href}>
-              <Button variant={action.variant}>
-                {action.label}
-              </Button>
-            </Anchor>
+            <>
+              {!action.action && action.href &&  
+                <Anchor key={index} target={action.target} href={action.href}>
+                  <Button variant={action.variant}>
+                    {action.label}
+                  </Button>
+                </Anchor>
+              }
+              {action?.action && 
+                <Button variant={action.variant} onClick={() => action.action()}>
+                  {action.label}
+                </Button>
+              }
+            </>
           )}
         </Group>
       </Group>
       { actions.length > 0 && 
         <Fab>
           { actions.map((action, index) =>
-            <Anchor key={index} target={action.target} href={action.href}>
-              <Fab.Button label={action.label}>
+          <>
+            {!action.action && action.href && 
+              <Anchor key={index} target={action.target} href={action.href}>
+                <Fab.Button label={action.label}>
+                  <action.icon size={32} />
+                </Fab.Button>
+              </Anchor>
+            }
+            {action?.action && 
+              <Fab.Button label={action.label} onClick={() => action.action()}>
                 <action.icon size={32} />
               </Fab.Button>
-            </Anchor>
+            }
+          </>
           )}
         </Fab>
       }

@@ -3,33 +3,18 @@ import { Card, Text, Image } from "@mantine/core";
 import query from '@/graphql/LibraryPage.graphql';
 import { useQuery } from '@apollo/client';
 import { Metadata } from '../Metadata';
+import { AppConfig, launchApp } from '@/utils/electron';
 
 interface LibraryProps {
   apps: Record<string, AppConfig>;
 }
 
-export type AppConfig = {
-  "projectID": string;
-  "version": string;
-  "type": string;
-  "path": string;
-}
 
 declare global {
   interface Window {
       valist: any;
   }
 }
-
-export const launchApp = async (appConfig: AppConfig) => {
-  console.log('clicked with config', appConfig);
-  if (appConfig.type === 'executable') {
-    const resp  = await window.valist.launchApp(appConfig.path);
-    console.log('response', resp);
-  } else if (appConfig.type === 'web') {
-    window.open(appConfig.path);
-  }
-};
 
 export function Library(props: LibraryProps): JSX.Element {
   const uninstallApp = async (appName: string) => {

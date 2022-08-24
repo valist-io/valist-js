@@ -10,6 +10,7 @@ import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
 import { Activity } from '@/components/Activity';
 import query from '@/graphql/ProjectPage.graphql';
+import { launchApp } from '@/utils/electron';
 
 import {
   _404,
@@ -36,6 +37,12 @@ import {
   Tabs,
   Grid,
 } from '@mantine/core';
+
+declare global {
+  interface Window {
+      valist: any;
+  }
+}
 
 const ProjectPage: NextPage = () => {
   const { chain } = useNetwork();
@@ -67,6 +74,7 @@ const ProjectPage: NextPage = () => {
   const showInfo = useMediaQuery('(max-width: 1400px)', false);
 
   const [balance, setBalance] = useState(0);
+  const [isInstalled, setIsInstalled] = useState<boolean>(false);
 
   // update balance when address or projectId changes
   useEffect(() => {
@@ -76,6 +84,39 @@ const ProjectPage: NextPage = () => {
         .then(value => setBalance(value?.toNumber() ?? 0));  
     }
   }, [address, projectId]);
+
+  // check if app is installed if project type is meta
+  useEffect(() => {
+    if (window.valist && projectMeta?.type.includes('native')) {
+      window?.valist?.getApps().then((apps: any) => {
+        console.log('List Installed Valist Apps:');
+        console.log(apps);
+
+        if(projectId in apps) {
+          setIsInstalled(true);
+        }
+      });
+    }
+  }, [projectId, projectMeta]);
+
+  const testInstall = async () => {
+    const accountID = valist.generateID(137, accountName);
+    const projectID = valist.generateID(accountID, projectName);
+    const releaseID = await valist.getLatestReleaseID(projectID);
+    const release = await valist.getReleaseMeta(releaseID);
+
+    if (window?.valist) {
+      const resp = await window.valist.install(
+        { 
+          projectID, 
+          name: `${accountName}/${projectName}`,
+          type: projectMeta?.type,
+          release: release, 
+        },
+      );
+      alert(resp);
+    };
+  };
 
   const isPriced = !!data?.product?.currencies?.find(
     (curr: any) => curr.price !== '0',
@@ -125,6 +166,25 @@ const ProjectPage: NextPage = () => {
       href: `/-/account/${accountName}/project/${projectName}/checkout`,
       variant: 'primary',
     });
+  } else if (projectMeta?.type.includes('native') && !isInstalled) {
+    rightActions.push({
+      label: 'Install',
+      icon: Icon.Download,
+      action: testInstall,
+      variant: 'primary',
+    });
+  } else if (projectMeta?.type.includes('native') && isInstalled) {
+    rightActions.push({
+      label: 'Launch',
+      icon: Icon.Rocket,
+      action: () => launchApp({
+        "projectID": projectId,
+        "version": releaseMeta?.version,
+        "type": projectMeta?.type,
+        "path": "",
+      }),
+      variant: 'primary',
+    });
   } else {
     rightActions.push({
       label: 'Launch',
@@ -139,22 +199,6 @@ const ProjectPage: NextPage = () => {
     { title: accountName, href: `/${accountName}` },
     { title: projectName, href: `/${accountName}/${projectName}` },
   ];
-
-  const testInstall = async () => {
-    const accountID = valist.generateID(137, accountName);
-    const projectID = valist.generateID(accountID, projectName);
-    const releaseID = await valist.getLatestReleaseID(projectID);
-    const release = await valist.getReleaseMeta(releaseID);
-
-    if (window?.valist) {
-      const resp = await window.valist.install(
-        { name: `${accountName}/${projectName}`, release: release, projectID },
-      );
-      if (resp?.includes('successfully installed!')) {
-        alert(resp);
-      };
-    };
-  };
 
   if (!loading && !data?.project) {
     return (

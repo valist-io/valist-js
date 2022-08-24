@@ -4,7 +4,7 @@ import { ipcMain, MenuItemConstructorOptions } from 'electron';
 import { app, MenuItem } from 'electron';
 import electronIsDev from 'electron-is-dev';
 import unhandled from 'electron-unhandled';
-import { autoUpdater } from 'electron-updater';
+// import { autoUpdater } from 'electron-updater';
 
 import { ElectronCapacitorApp, setupContentSecurityPolicy, setupReloadWatcher } from './setup';
 
@@ -53,7 +53,7 @@ if (electronIsDev) {
   // Initialize our app, build windows, and load content.
   await myCapacitorApp.init();
   // Check for updates if we are in a packaged app.
-  autoUpdater.checkForUpdatesAndNotify();
+  // autoUpdater.checkForUpdatesAndNotify();
 })();
 
 // Handle when all of our windows are close (platforms have their own expectations).
@@ -81,29 +81,43 @@ ipcMain.handle("getApps", async () => {
   return JSON.parse(Buffer.from(data).toString('ascii'));
 });
 
-ipcMain.handle("install", async (event, args) => {
+interface InstallArgs {
+  projectID: string,
+  name:string,
+  version: string,
+  type: string,
+  release: {
+    external_url: string,
+    type: string,
+    install: any,
+  }
+}
+
+ipcMain.handle("install", async (event, args: InstallArgs) => {
   if (!args.release.external_url) {
     return Error('invalid release url');
   }
 
   const valistDir = path.join(os.homedir(), '.valist', 'apps');
   const libraryJSONPath = path.join(valistDir, 'library.json');
+  let installPath:string;
+  let filePath:string;
 
-  if (args?.release?.type?.includes("executable")) {
+  if (args?.type?.includes("native")) {
     if (!args.release.install) {
       return Error('package is not installable');
     }
   
-    const installPath = getInstallPath(args.release.install);
+    installPath = getInstallPath(args.release.install);
     if (!installPath) {
       console.log(`this project supports the following: ${Object.keys(args.release.install).toString().replace('name,', '')}`);
       return Error(`unsupported platform/arch: ${process.platform}/${process.arch}`);
     }
-  
+    
     await fs.promises.mkdir(valistDir, { recursive: true });
   
-    const filePath = path.join(valistDir, args.release.install.name ?? args.name);
-  
+    filePath = path.join(valistDir, args.release.install.name ?? args.name);
+    
     const resp = await axios({
       method: "get",
       url: `${args.release.external_url}/${installPath}`,
@@ -111,34 +125,35 @@ ipcMain.handle("install", async (event, args) => {
     });
     resp.data.pipe(fs.createWriteStream(filePath, { flags: 'w' }));
     await fs.promises.chmod(filePath, 755);
-  } else {
-    const data = await fs.promises.readFile(libraryJSONPath, 'utf-8');
-    var appsObject = JSON.parse(data);
-    appsObject[args.projectID] = {
-      "name": args.name,
-      "version": args.version,
-      "type": "web",
-      "path": args.release.external_url,
-    };
+  }
 
-    fs.writeFile(libraryJSONPath, JSON.stringify(appsObject), 'utf-8', function(err) {
-      if (err) throw err
-      console.log('Done!');
-    });
-  } 
-  // else {
-  //   return 'Could not find project type and failed to install';
-  // };
+  const data = await fs.promises.readFile(libraryJSONPath, 'utf-8');
+  var appsObject = JSON.parse(data);
+  appsObject[args.projectID] = {
+    "name": args.name,
+    "version": args.version,
+    "type": args?.release?.type,
+    "path": filePath ? filePath : args.release.external_url,
+  };
 
-  return 'successfully installed!';
+  fs.writeFile(libraryJSONPath, JSON.stringify(appsObject), 'utf-8', function(err) {
+    if (err) throw err
+    console.log('Done!');
+  });
+
+  return 'Successfully installed!';
 });
 
 
-ipcMain.handle("launchApp", async (event, args) => {
-  console.log('args', args);
-  const binPath = `open ${path.join(os.homedir(), '.valist/apps/', args)}`;
+ipcMain.handle("launchApp", async (event, projectId:string) => {
+  console.log('appName', projectId);
 
-  exec(binPath, (err, stdout, stderr) => {
+  const configPath = path.join(os.homedir(), '.valist/apps/library.json');
+  const apps = await fs.promises.readFile(configPath);
+
+  const execPath = apps[projectId].path;
+
+  exec(execPath, (err, stdout, stderr) => {
     if (err) {
       console.error(err);
       return err;
@@ -146,7 +161,7 @@ ipcMain.handle("launchApp", async (event, args) => {
     return stdout;
   });
 
-  return binPath;
+  return execPath;
 });
 
 ipcMain.handle("uninstall", async (event, args) => {

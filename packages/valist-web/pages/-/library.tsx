@@ -1,5 +1,6 @@
 import { Layout } from "@/components/Layout";
-import { AppConfig, Library } from "@/components/Library";
+import { Library } from "@/components/Library";
+import { AppConfig } from "@/utils/electron";
 import { NextPage } from "next";
 import { useEffect, useState } from "react";
 
@@ -10,20 +11,20 @@ declare global {
 }
 
 const LibraryPage: NextPage = () => {
-  const [appNames, setAppNames] = useState<Record<string, AppConfig>>({});
+  const [apps, setApps] = useState<Record<string, AppConfig>>({});
   
   useEffect(() => {
     (async () => {
-      const appNames = await window?.valist?.getApps();
+      const apps = await window?.valist?.getApps();
       console.log('List Installed Valist Apps:');
-      console.log(appNames);
-      setAppNames(appNames);
+      console.log(apps);
+      setApps(apps);
     })();
   }, []);
   
   return (
     <Layout hideNavbar={true} padding={0}>
-      <Library apps={appNames} />
+      <Library apps={apps} />
     </Layout>
   );
 };
