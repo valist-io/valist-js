@@ -74,6 +74,7 @@ const ProjectPage: NextPage = () => {
   const showInfo = useMediaQuery('(max-width: 1400px)', false);
 
   const [balance, setBalance] = useState(0);
+  const [isElectron, setIsElectron] = useState<boolean>(false);
   const [isInstalled, setIsInstalled] = useState<boolean>(false);
 
   // update balance when address or projectId changes
@@ -85,7 +86,10 @@ const ProjectPage: NextPage = () => {
     }
   }, [address, projectId]);
 
-  // check if app is installed if project type is meta
+  // check if window.valist exists
+  useEffect(() => { if (window?.valist) setIsElectron(true); }, []);
+
+  // check if app is installed & if project type is native
   useEffect(() => {
     if (window.valist && projectMeta?.type.includes('native')) {
       window?.valist?.getApps().then((apps: any) => {
@@ -166,7 +170,7 @@ const ProjectPage: NextPage = () => {
       href: `/-/account/${accountName}/project/${projectName}/checkout`,
       variant: 'primary',
     });
-  } else if (projectMeta?.type.includes('native') && !isInstalled) {
+  } else if (projectMeta?.type.includes('native') && isElectron && !isInstalled) {
     rightActions.push({
       label: 'Install',
       icon: Icon.Download,

@@ -10,6 +10,7 @@ import { Item } from '../Item';
 import { Button, ButtonVariant } from '../Button';
 import { Fab } from '../Fab';
 import useStyles from './ItemHeader.styles';
+import { Fragment } from 'react';
 
 export interface ItemHeaderAction {
   label: string;
@@ -67,9 +68,9 @@ export function ItemHeader(props: ItemHeaderProps) {
         </Group>
         <Group>
           { rightActions.map((action, index) =>
-            <>
+            <Fragment key={index}>
               {!action.action && action.href &&  
-                <Anchor key={index} target={action.target} href={action.href}>
+                <Anchor target={action.target} href={action.href}>
                   <Button variant={action.variant}>
                     {action.label}
                   </Button>
@@ -80,27 +81,27 @@ export function ItemHeader(props: ItemHeaderProps) {
                   {action.label}
                 </Button>
               }
-            </>
+            </Fragment>
           )}
         </Group>
       </Group>
       { actions.length > 0 && 
         <Fab>
           { actions.map((action, index) =>
-          <>
-            {!action.action && action.href && 
-              <Anchor key={index} target={action.target} href={action.href}>
-                <Fab.Button label={action.label}>
+            <Fragment key={index}>
+              {!action.action && action.href && 
+                <Anchor target={action.target} href={action.href}>
+                  <Fab.Button label={action.label}>
+                    <action.icon size={32} />
+                  </Fab.Button>
+                </Anchor>
+              }
+              {action?.action && 
+                <Fab.Button label={action.label} onClick={() => action.action()}>
                   <action.icon size={32} />
                 </Fab.Button>
-              </Anchor>
-            }
-            {action?.action && 
-              <Fab.Button label={action.label} onClick={() => action.action()}>
-                <action.icon size={32} />
-              </Fab.Button>
-            }
-          </>
+              }
+            </Fragment>
           )}
         </Fab>
       }

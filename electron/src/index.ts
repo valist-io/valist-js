@@ -167,15 +167,14 @@ ipcMain.handle("launchApp", async (event, projectId:string) => {
 ipcMain.handle("uninstall", async (event, args) => {
   const valistDir = path.join(os.homedir(), '.valist', 'apps');
   const libraryJSONPath = path.join(valistDir, 'library.json');
-    const data = await fs.promises.readFile(libraryJSONPath, 'utf-8');
+  const data = await fs.promises.readFile(libraryJSONPath, 'utf-8');
 
-    var appsObject = JSON.parse(data);
-    if (appsObject[args]) delete appsObject[args];
+  var appsObject = JSON.parse(data);
+  if (appsObject[args]) delete appsObject[args];
 
-    fs.writeFile(libraryJSONPath, JSON.stringify(appsObject), 'utf-8', function(err) {
-      if (err) throw err;
-      return 'Successfully Uninstalled!';
-    });
+  fs.writeFile(libraryJSONPath, JSON.stringify(appsObject), 'utf-8', function(err) {
+    if (err) throw err;
+  });
 
-  return 'app not found/not installed!';
+  return 'Successfully Uninstalled!';
 });
