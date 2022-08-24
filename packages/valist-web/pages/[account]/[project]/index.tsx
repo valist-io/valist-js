@@ -91,7 +91,7 @@ const ProjectPage: NextPage = () => {
 
   // check if app is installed & if project type is native
   useEffect(() => {
-    if (window.valist && projectMeta?.type.includes('native')) {
+    if (window.valist && projectMeta?.type === 'native') {
       window?.valist?.getApps().then((apps: any) => {
         console.log('List Installed Valist Apps:');
         console.log(apps);
@@ -170,14 +170,14 @@ const ProjectPage: NextPage = () => {
       href: `/-/account/${accountName}/project/${projectName}/checkout`,
       variant: 'primary',
     });
-  } else if (projectMeta?.type.includes('native') && isElectron && !isInstalled) {
+  } else if (projectMeta?.type === 'native' && isElectron && !isInstalled) {
     rightActions.push({
       label: 'Install',
       icon: Icon.Download,
       action: testInstall,
       variant: 'primary',
     });
-  } else if (projectMeta?.type.includes('native') && isInstalled) {
+  } else if (projectMeta?.type === 'native' && isInstalled) {
     rightActions.push({
       label: 'Launch',
       icon: Icon.Rocket,
