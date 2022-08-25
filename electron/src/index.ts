@@ -74,11 +74,39 @@ app.on('activate', async function () {
   }
 });
 
+const valistDir = path.join(os.homedir(), '.valist', 'apps');
+const libraryFile = path.join(valistDir, 'library.json');
+
+type ProjectType = "native" | "web";
+type Library = {
+  [key: string]: {
+    name: string,
+    version: string,
+    type: ProjectType,
+    path: string,
+  },
+};
+
+async function readLibrary(): Promise<Library> {
+  try {
+    const data = await fs.promises.readFile(libraryFile, 'utf-8');
+    return JSON.parse(data);
+  } catch (e) {
+    if (e.code == "ENOENT") {
+      return {};
+    } else {
+      throw e;
+    }
+  }
+}
+
+async function writeLibrary(library: Library) {
+  await fs.promises.writeFile(libraryFile, JSON.stringify(library));
+}
+
 // Place all ipc or other electron api calls and custom functionality under this line
 ipcMain.handle("getApps", async () => {
-  const configPath = path.join(os.homedir(), '.valist/apps/library.json');
-  const data = await fs.promises.readFile(configPath);
-  return JSON.parse(Buffer.from(data).toString('ascii'));
+  return await readLibrary();
 });
 
 interface InstallArgs {
@@ -88,7 +116,7 @@ interface InstallArgs {
   type: string,
   release: {
     external_url: string,
-    type: string,
+    type: ProjectType,
     install: any,
   }
 }
@@ -98,23 +126,19 @@ ipcMain.handle("install", async (event, args: InstallArgs) => {
     return Error('invalid release url');
   }
 
-  const valistDir = path.join(os.homedir(), '.valist', 'apps');
-  const libraryJSONPath = path.join(valistDir, 'library.json');
-  let artifactName: string;
-  let filePath: string;
+  await fs.promises.mkdir(valistDir, { recursive: true });
 
+  let filePath = args.release.external_url;
   if (args?.type?.includes("native")) {
     if (!args.release.install) {
       return Error('package is not installable');
     }
 
-    artifactName = getInstallPath(args.release.install);
+    const artifactName = getInstallPath(args.release.install);
     if (!artifactName) {
       console.log(`this project supports the following: ${Object.keys(args.release.install).toString().replace('name,', '')}`);
       return Error(`unsupported platform/arch: ${process.platform}/${process.arch}`);
     }
-
-    await fs.promises.mkdir(valistDir, { recursive: true });
 
     const resp = await axios({
       method: "get",
@@ -141,19 +165,14 @@ ipcMain.handle("install", async (event, args: InstallArgs) => {
     await fs.promises.chmod(filePath, 755);
   }
 
-  const data = await fs.promises.readFile(libraryJSONPath, 'utf-8');
-  var appsObject = JSON.parse(data);
-  appsObject[args.projectID] = {
-    "name": args.name,
-    "version": args.version,
-    "type": args?.release?.type,
-    "path": filePath ? filePath : args.release.external_url,
+  const library = await readLibrary();
+  library[args.projectID] = {
+    name: args.name,
+    version: args.version,
+    type: args?.release?.type,
+    path: filePath,
   };
-
-  fs.writeFile(libraryJSONPath, JSON.stringify(appsObject), 'utf-8', function (err) {
-    if (err) throw err
-    console.log('Done!');
-  });
+  await writeLibrary(library);
 
   return 'Successfully installed!';
 });
@@ -162,10 +181,9 @@ ipcMain.handle("install", async (event, args: InstallArgs) => {
 ipcMain.handle("launchApp", async (event, projectId: string) => {
   console.log('appName', projectId);
 
-  const configPath = path.join(os.homedir(), '.valist/apps/library.json');
-  const apps = await fs.promises.readFile(configPath);
+  const library = await readLibrary();
 
-  const execPath = apps[projectId].path;
+  const execPath = library[projectId].path;
 
   exec(execPath, (err, stdout, stderr) => {
     if (err) {
