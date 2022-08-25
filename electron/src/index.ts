@@ -113,12 +113,11 @@ interface InstallArgs {
   projectID: string,
   name: string,
   version: string,
-  type: string,
+  type: ProjectType,
   release: {
     external_url: string,
-    type: ProjectType,
     install: any,
-  }
+  },
 }
 
 ipcMain.handle("install", async (event, args: InstallArgs) => {
@@ -129,7 +128,7 @@ ipcMain.handle("install", async (event, args: InstallArgs) => {
   await fs.promises.mkdir(valistDir, { recursive: true });
 
   let filePath = args.release.external_url;
-  if (args?.type?.includes("native")) {
+  if (args.type == "native") {
     if (!args.release.install) {
       return Error('package is not installable');
     }
@@ -169,7 +168,7 @@ ipcMain.handle("install", async (event, args: InstallArgs) => {
   library[args.projectID] = {
     name: args.name,
     version: args.version,
-    type: args?.release?.type,
+    type: args.type,
     path: filePath,
   };
   await writeLibrary(library);

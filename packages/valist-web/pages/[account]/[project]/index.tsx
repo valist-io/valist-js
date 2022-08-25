@@ -121,7 +121,8 @@ const ProjectPage: NextPage = () => {
         { 
           projectID, 
           name: `${accountName}/${projectName}`,
-          type: projectMeta?.type,
+          version: release.name,
+          type: projectMeta.type,
           release: release, 
         },
       );
