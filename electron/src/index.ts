@@ -12,7 +12,7 @@ import path from 'path';
 import os from 'os';
 import fs from "fs";
 import axios from 'axios';
-import { exec } from 'node:child_process';
+import { execFile } from 'node:child_process';
 import { getInstallPath } from './install/install';
 
 // Graceful handling of unhandled errors.
@@ -185,7 +185,7 @@ ipcMain.handle("launchApp", async (event, projectId: string) => {
 
   const execPath = library[projectId].path;
 
-  exec(execPath, (err, stdout, stderr) => {
+  execFile(execPath, (err, stdout, stderr) => {
     if (err) {
       console.error(err);
       return err;
