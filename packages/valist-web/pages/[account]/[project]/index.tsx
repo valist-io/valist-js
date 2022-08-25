@@ -76,6 +76,7 @@ const ProjectPage: NextPage = () => {
   const [balance, setBalance] = useState(0);
   const [isElectron, setIsElectron] = useState<boolean>(false);
   const [isInstalled, setIsInstalled] = useState<boolean>(false);
+  const [installPercent, setInstallPercent] = useState<number>(0);
 
   // update balance when address or projectId changes
   useEffect(() => {
@@ -110,7 +111,13 @@ const ProjectPage: NextPage = () => {
     const release = await valist.getReleaseMeta(releaseID);
 
     if (window?.valist) {
-      const resp = await window.valist.install(
+      // TODO not sure if should garbage collect this, but probably not an issue
+      window.valist.onInstallProgress((event: any, progress: number) => {
+        setInstallPercent(Math.floor(progress * 100));
+        if (installPercent === 100) setIsInstalled(true);
+      });
+
+      await window.valist.install(
         { 
           projectID, 
           name: `${accountName}/${projectName}`,
@@ -118,8 +125,7 @@ const ProjectPage: NextPage = () => {
           release: release, 
         },
       );
-      alert(resp);
-    };
+    }
   };
 
   const isPriced = !!data?.product?.currencies?.find(
@@ -172,7 +178,7 @@ const ProjectPage: NextPage = () => {
     });
   } else if (projectMeta?.type === 'native' && isElectron && !isInstalled) {
     rightActions.push({
-      label: 'Install',
+      label: `Install${installPercent > 0 ? ` (${installPercent})` : ""}`,
       icon: Icon.Download,
       action: testInstall,
       variant: 'primary',

@@ -83,7 +83,7 @@ ipcMain.handle("getApps", async () => {
 
 interface InstallArgs {
   projectID: string,
-  name:string,
+  name: string,
   version: string,
   type: string,
   release: {
@@ -100,30 +100,44 @@ ipcMain.handle("install", async (event, args: InstallArgs) => {
 
   const valistDir = path.join(os.homedir(), '.valist', 'apps');
   const libraryJSONPath = path.join(valistDir, 'library.json');
-  let installPath:string;
-  let filePath:string;
+  let artifactName: string;
+  let filePath: string;
 
   if (args?.type?.includes("native")) {
     if (!args.release.install) {
       return Error('package is not installable');
     }
-  
-    installPath = getInstallPath(args.release.install);
-    if (!installPath) {
+
+    artifactName = getInstallPath(args.release.install);
+    if (!artifactName) {
       console.log(`this project supports the following: ${Object.keys(args.release.install).toString().replace('name,', '')}`);
       return Error(`unsupported platform/arch: ${process.platform}/${process.arch}`);
     }
-    
+
     await fs.promises.mkdir(valistDir, { recursive: true });
-  
-    filePath = path.join(valistDir, args.release.install.name ?? args.name);
-    
+
     const resp = await axios({
       method: "get",
-      url: `${args.release.external_url}/${installPath}`,
+      url: `${args.release.external_url}/${artifactName}`,
       responseType: "stream",
     });
-    resp.data.pipe(fs.createWriteStream(filePath, { flags: 'w' }));
+    const readStream = resp.data;
+    const downloadSize = parseFloat(resp.headers["content-length"]);
+
+    filePath = path.join(valistDir, artifactName);
+
+    const writeStream = fs.createWriteStream(filePath, { flags: 'w' });
+    let downloadCurrent = 0;
+    readStream.on("data", chunk => {
+      downloadCurrent += chunk.length;
+      const progress = downloadCurrent / downloadSize;
+      event.sender.send("install-progress", progress);
+    });
+    readStream.pipe(writeStream);
+    await new Promise(resolve => {
+      readStream.on('end', resolve);
+    });
+
     await fs.promises.chmod(filePath, 755);
   }
 
@@ -136,7 +150,7 @@ ipcMain.handle("install", async (event, args: InstallArgs) => {
     "path": filePath ? filePath : args.release.external_url,
   };
 
-  fs.writeFile(libraryJSONPath, JSON.stringify(appsObject), 'utf-8', function(err) {
+  fs.writeFile(libraryJSONPath, JSON.stringify(appsObject), 'utf-8', function (err) {
     if (err) throw err
     console.log('Done!');
   });
@@ -145,7 +159,7 @@ ipcMain.handle("install", async (event, args: InstallArgs) => {
 });
 
 
-ipcMain.handle("launchApp", async (event, projectId:string) => {
+ipcMain.handle("launchApp", async (event, projectId: string) => {
   console.log('appName', projectId);
 
   const configPath = path.join(os.homedir(), '.valist/apps/library.json');
@@ -172,9 +186,7 @@ ipcMain.handle("uninstall", async (event, args) => {
   var appsObject = JSON.parse(data);
   if (appsObject[args]) delete appsObject[args];
 
-  fs.writeFile(libraryJSONPath, JSON.stringify(appsObject), 'utf-8', function(err) {
+  fs.writeFile(libraryJSONPath, JSON.stringify(appsObject), 'utf-8', function (err) {
     if (err) throw err;
   });
-
-  return 'Successfully Uninstalled!';
 });
