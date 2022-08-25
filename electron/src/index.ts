@@ -12,8 +12,8 @@ import path from 'path';
 import os from 'os';
 import fs from "fs";
 import axios from 'axios';
-import { execFile } from 'node:child_process';
-import { getInstallPath } from './install/install';
+
+import { execCommand, getInstallPath } from './install/install';
 
 // Graceful handling of unhandled errors.
 unhandled();
@@ -178,20 +178,12 @@ ipcMain.handle("install", async (event, args: InstallArgs) => {
 
 
 ipcMain.handle("launchApp", async (event, projectId: string) => {
-  console.log('appName', projectId);
-
   const library = await readLibrary();
 
   const execPath = library[projectId].path;
+  console.log("execPath", execPath);
 
-  execFile(execPath, (err, stdout, stderr) => {
-    if (err) {
-      console.error(err);
-      return err;
-    }
-    return stdout;
-  });
-
+  execCommand(execPath);
   return execPath;
 });
 

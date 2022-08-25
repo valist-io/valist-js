@@ -3,7 +3,7 @@ import { Card, Text, Image } from "@mantine/core";
 import query from '@/graphql/LibraryPage.graphql';
 import { useQuery } from '@apollo/client';
 import { Metadata } from '../Metadata';
-import { AppConfig, launchApp } from '@/utils/electron';
+import { AppConfig } from '@/utils/electron';
 import { useEffect, useState } from 'react';
 
 interface LibraryProps {
@@ -22,6 +22,11 @@ export function Library(props: LibraryProps): JSX.Element {
   });
 
   const [appNames, setAppNames] = useState<string[]>([]);
+
+  const launchApp = async (projectId: string) => {
+    console.log('clicked with projectId', projectId);
+    await window?.valist?.launchApp(projectId);
+  };
   
   const uninstallApp = async (appName: string) => {
     if (window?.valist) {
@@ -48,8 +53,8 @@ export function Library(props: LibraryProps): JSX.Element {
             {(data: any) =>
               <Card
               shadow="sm"
-              onClick={() => launchApp(props.apps[app])}
-              style={{ maxWidth: 250 }} 
+              onClick={() => launchApp(projectMetas?.projects.length !== 0 && projectMetas?.projects[index].id)}
+              style={{ maxWidth: 250 }}
               styles={() => ({
                 '&:hover': {
                   border: '1px solid #5850EC',

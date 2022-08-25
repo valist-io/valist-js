@@ -1,4 +1,7 @@
 
+import path from 'path';
+import { exec, execFile } from 'node:child_process';
+
 export declare class InstallMeta {
   /** binary name */
   name?: string;
@@ -42,13 +45,37 @@ export function getInstallPath(install: InstallMeta) {
   }
 }
 
-export function getExecCommand() {
-  switch (process.platform) {
+export function execCommand(execPath: string) {
+  let platform = process.platform;
+
+  switch (platform) {
     case 'darwin':
-      return 'open';
+      exec(`open ${execPath}`, (err, stdout, stderr) => {
+        if (err) {
+          console.error(err);
+          return err;
+        }
+        console.log("stdout", stdout);
+      });
     case 'win32':
-      return '';
+      execFile(execPath, (err, stdout, stderr) => {
+        if (err) {
+          console.error(err);
+          return err;
+        }
+        console.log("stdout", stdout);
+      });
     case 'linux':
-      return '';
+      exec(execPath, (err, stdout, stderr) => {
+        if (err) {
+          console.error(err);
+          return err;
+        }
+        console.log("stdout", stdout);
+      });
+  }
+
+  return {
+    platform,
   }
 }

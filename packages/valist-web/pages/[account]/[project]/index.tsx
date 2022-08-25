@@ -10,7 +10,6 @@ import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
 import { Activity } from '@/components/Activity';
 import query from '@/graphql/ProjectPage.graphql';
-import { launchApp } from '@/utils/electron';
 
 import {
   _404,
@@ -188,12 +187,7 @@ const ProjectPage: NextPage = () => {
     rightActions.push({
       label: 'Launch',
       icon: Icon.Rocket,
-      action: () => launchApp({
-        "projectID": projectId,
-        "version": releaseMeta?.version,
-        "type": projectMeta?.type,
-        "path": "",
-      }),
+      action: async () => await window?.valist?.launchApp(projectId),
       variant: 'primary',
     });
   } else {
