@@ -23,6 +23,10 @@ electron: web
 	npm run electron:sync
 	npm run electron:open
 
+electron-sign: web
+	npm run electron:sync
+	npm run electron:make --prefix=./electron
+
 frontend: sdk ui web
 
 dev:

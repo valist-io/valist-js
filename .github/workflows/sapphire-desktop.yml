@@ -1,0 +1,33 @@
+name: Sapphire Desktop
+on:
+  push:
+    tags:
+      - v*
+    branches:
+      - main
+  pull_request:
+jobs:
+  unit-tests:
+    name: Build Electron app
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - uses: actions/checkout@v2
+
+      - name: Build & sign
+      - run: |
+          make electron-sign
+        env:
+          CSC_LINK: ${{ secrets.APPLE_DIST_CERT }}
+          CSC_KEY_PASSWORD: ${{ secrets.APPLE_DIST_CERT_PASSWORD }}
+          APPLEID: ${{ secrets.APPLE_ID }}
+          APPLEIDPASS: ${{ secrets.APPLE_ID_PASSWORD }}
+
+      - name: Upload the Archive
+        uses: actions/upload-artifact@v3
+        with:
+          path: dist/valist-1.0.0-amd64.dmg
+          name: valist-sapphire-1.0.0.dmg
+          if-no-files-found: error
