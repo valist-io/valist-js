@@ -4,6 +4,7 @@ all: install frontend cli
 
 install:
 	npm install
+	npm install --prefix ./electron
 
 sdk:
 	npm run build --workspace @valist/sdk
