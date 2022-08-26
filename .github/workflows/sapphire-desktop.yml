@@ -14,11 +14,12 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
+      - uses: actions/checkout@v2
+      - name: Install dependencies  
         run: |
           make install
 
       - name: Build & sign
-      - uses: actions/checkout@v2
         run: |
           make electron-sign
         env:
