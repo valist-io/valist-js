@@ -14,12 +14,12 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
-      - run: |
+        run: |
           make install
 
       - name: Build & sign
       - uses: actions/checkout@v2
-      - run: |
+        run: |
           make electron-sign
         env:
           CSC_LINK: ${{ secrets.APPLE_DIST_CERT }}
