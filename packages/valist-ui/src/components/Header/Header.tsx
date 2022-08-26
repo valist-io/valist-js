@@ -28,7 +28,7 @@ export function Header(props: HeaderProps) {
 
   const onSearch = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      props.onSearch?.(event.target.value);
+      props.onSearch?.((event.target as HTMLInputElement).value);
     }
   };
 

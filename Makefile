@@ -20,11 +20,11 @@ web:
 cli:
 	npm run build --workspace @valist/cli
 
-electron: web
+electron: frontend
 	npm run electron:sync
 	npm run electron:open
 
-electron-sign: web
+electron-sign: frontend
 	npm run electron:sync
 	npm run electron:make --prefix=./electron
 
