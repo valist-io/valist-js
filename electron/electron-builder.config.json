@@ -22,6 +22,9 @@
     "icon": "assets/appIcon.ico"
   },
   "afterSign": "electron-builder-notarize",
+  "dmg": {
+    "sign": false
+  },
   "mac": {
     "icon": "assets/valist.png",
     "target": "dmg",
