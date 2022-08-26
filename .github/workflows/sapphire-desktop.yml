@@ -24,7 +24,7 @@ jobs:
           make electron-sign
         env:
           CSC_LINK: ${{ secrets.APPLE_DIST_CERT }}
-          CSC_KEY_PASSWORD: ${{ secrets.APPLE_DIST_CERT_PASSWORD }}
+          CSC_KEY_PASSWORD: ${{ secrets.APPLE_DIST_CERT_PASS }}
           APPLEID: ${{ secrets.APPLE_ID }}
           APPLEIDPASS: ${{ secrets.APPLE_ID_PASSWORD }}
 
