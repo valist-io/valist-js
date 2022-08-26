@@ -26,7 +26,7 @@ jobs:
           APPLEIDPASS: ${{ secrets.APPLE_ID_PASSWORD }}
 
       - name: Upload the Archive
-        uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v3
         with:
           path: dist/valist-1.0.0-amd64.dmg
           name: valist-sapphire-1.0.0.dmg
