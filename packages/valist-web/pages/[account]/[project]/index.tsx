@@ -37,13 +37,7 @@ import {
   Grid,
 } from '@mantine/core';
 import { checkIsElectron, getApps, install, launch } from '@/components/Electron';
-
-declare global {
-  interface Window {
-      valist: any;
-  }
 }
-
 const ProjectPage: NextPage = () => {
   const { chain } = useNetwork();
   const { address } = useAccount();
@@ -175,7 +169,7 @@ const ProjectPage: NextPage = () => {
     });
   } else if(projectMeta){
     rightActions.push({
-      label: projectMeta.type === 'native' ? 'Launch' : 'Download',
+      label: (projectMeta.type === 'native' || projectMeta.type === 'web') ? 'Launch' : 'Download',
       icon: Icon.Rocket,
       href: launchUrl || '',
       target: '_blank',
