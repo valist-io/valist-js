@@ -13,7 +13,7 @@ import os from 'os';
 import fs from "fs";
 import axios from 'axios';
 
-import { execCommand, getInstallPath } from './install/install';
+import { execCommand, getInstallPath, ProjectType, readLibrary, writeLibrary } from './library';
 
 // Graceful handling of unhandled errors.
 unhandled();
@@ -74,39 +74,12 @@ app.on('activate', async function () {
   }
 });
 
+// Place all ipc or other electron api calls and custom functionality under this line
 const valistDir = path.join(os.homedir(), '.valist', 'apps');
 const libraryFile = path.join(valistDir, 'library.json');
 
-type ProjectType = "native" | "web";
-type Library = {
-  [key: string]: {
-    name: string,
-    version: string,
-    type: ProjectType,
-    path: string,
-  },
-};
-
-async function readLibrary(): Promise<Library> {
-  try {
-    const data = await fs.promises.readFile(libraryFile, 'utf-8');
-    return JSON.parse(data);
-  } catch (e) {
-    if (e.code == "ENOENT") {
-      return {};
-    } else {
-      throw e;
-    }
-  }
-}
-
-async function writeLibrary(library: Library) {
-  await fs.promises.writeFile(libraryFile, JSON.stringify(library));
-}
-
-// Place all ipc or other electron api calls and custom functionality under this line
 ipcMain.handle("getApps", async () => {
-  return await readLibrary();
+  return await readLibrary(libraryFile);
 });
 
 interface InstallArgs {
@@ -121,6 +94,8 @@ interface InstallArgs {
 }
 
 ipcMain.handle("install", async (event, args: InstallArgs) => {
+  console.log('args', args);
+
   if (!args.release.external_url) {
     return Error('invalid release url');
   }
@@ -147,15 +122,19 @@ ipcMain.handle("install", async (event, args: InstallArgs) => {
     const readStream = resp.data;
     const downloadSize = parseFloat(resp.headers["content-length"]);
 
-    filePath = path.join(valistDir, artifactName);
+    const folderPath = path.join(valistDir, args.name);
+    filePath = path.join(folderPath, artifactName);
+    await fs.promises.mkdir(folderPath, { recursive: true });
 
     const writeStream = fs.createWriteStream(filePath, { flags: 'w' });
     let downloadCurrent = 0;
+
     readStream.on("data", chunk => {
       downloadCurrent += chunk.length;
       const progress = downloadCurrent / downloadSize;
       event.sender.send("install-progress", progress);
     });
+
     readStream.pipe(writeStream);
     await new Promise(resolve => {
       readStream.on('end', resolve);
@@ -164,38 +143,32 @@ ipcMain.handle("install", async (event, args: InstallArgs) => {
     await fs.promises.chmod(filePath, 755);
   }
 
-  const library = await readLibrary();
+  const library = await readLibrary(libraryFile);
   library[args.projectID] = {
     name: args.name,
     version: args.version,
     type: args.type,
     path: filePath,
   };
-  await writeLibrary(library);
-
+  await writeLibrary(library, libraryFile);
   return 'Successfully installed!';
 });
 
-
-ipcMain.handle("launchApp", async (event, projectId: string) => {
-  const library = await readLibrary();
-
+ipcMain.handle("launch", async (event, projectId: string) => {
+  const library = await readLibrary(libraryFile);
   const execPath = library[projectId].path;
-  console.log("execPath", execPath);
 
   execCommand(execPath);
   return execPath;
 });
 
-ipcMain.handle("uninstall", async (event, args) => {
-  const valistDir = path.join(os.homedir(), '.valist', 'apps');
-  const libraryJSONPath = path.join(valistDir, 'library.json');
-  const data = await fs.promises.readFile(libraryJSONPath, 'utf-8');
+ipcMain.handle("uninstall", async (event, projectId: string) => {
+  const library = await readLibrary(libraryFile);
 
-  var appsObject = JSON.parse(data);
-  if (appsObject[args]) delete appsObject[args];
+  if (library[projectId].type === 'native') {
+    await fs.promises.rmdir(path.dirname(library[projectId].path), { recursive: true });
+  }
 
-  fs.writeFile(libraryJSONPath, JSON.stringify(appsObject), 'utf-8', function (err) {
-    if (err) throw err;
-  });
+  delete library[projectId];
+  await writeLibrary(library, libraryFile);
 });

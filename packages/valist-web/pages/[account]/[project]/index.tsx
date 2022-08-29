@@ -36,6 +36,7 @@ import {
   Tabs,
   Grid,
 } from '@mantine/core';
+import { checkIsElectron, getApps, install, launch } from '@/components/Electron';
 
 declare global {
   interface Window {
@@ -86,13 +87,15 @@ const ProjectPage: NextPage = () => {
     }
   }, [address, projectId]);
 
-  // check if window.valist exists
-  useEffect(() => { if (window?.valist) setIsElectron(true); }, []);
+  // check if isElectron
+  useEffect(() => {
+    setIsElectron(checkIsElectron());
+  }, []);
 
   // check if app is installed & if project type is native
   useEffect(() => {
     if (window.valist && projectMeta?.type === 'native') {
-      window?.valist?.getApps().then((apps: any) => {
+      getApps().then((apps: any) => {
         console.log('List Installed Valist Apps:');
         console.log(apps);
 
@@ -103,29 +106,9 @@ const ProjectPage: NextPage = () => {
     }
   }, [projectId, projectMeta]);
 
-  const testInstall = async () => {
-    const accountID = valist.generateID(137, accountName);
-    const projectID = valist.generateID(accountID, projectName);
-    const releaseID = await valist.getLatestReleaseID(projectID);
-    const release = await valist.getReleaseMeta(releaseID);
-
-    if (window?.valist) {
-      // TODO not sure if should garbage collect this, but probably not an issue
-      window.valist.onInstallProgress((event: any, progress: number) => {
-        setInstallPercent(Math.floor(progress * 100));
-        if (installPercent === 100) setIsInstalled(true);
-      });
-
-      await window.valist.install(
-        { 
-          projectID, 
-          name: `${accountName}/${projectName}`,
-          version: release.name,
-          type: projectMeta.type,
-          release: release, 
-        },
-      );
-    }
+  const setProgress = (progress: number) => {
+    setInstallPercent(Math.floor(progress * 100));
+    if (installPercent === 100) setIsInstalled(true);
   };
 
   const isPriced = !!data?.product?.currencies?.find(
@@ -180,21 +163,21 @@ const ProjectPage: NextPage = () => {
     rightActions.push({
       label: `Install${installPercent > 0 ? ` (${installPercent})` : ""}`,
       icon: Icon.Download,
-      action: testInstall,
+      action: () => install(valist, accountName, projectName, projectMeta?.type, setProgress),
       variant: 'primary',
     });
-  } else if (projectMeta?.type === 'native' && isInstalled) {
+  } else if (projectMeta?.type === 'web' && isElectron) {
     rightActions.push({
       label: 'Launch',
       icon: Icon.Rocket,
-      action: async () => await window?.valist?.launchApp(projectId),
+      action: () => launch(data?.project, projectMeta?.type, releaseMeta?.external_url, valist),
       variant: 'primary',
     });
-  } else {
+  } else if(projectMeta){
     rightActions.push({
-      label: 'Launch',
+      label: projectMeta.type === 'native' ? 'Launch' : 'Download',
       icon: Icon.Rocket,
-      href: launchUrl ?? '',
+      href: launchUrl || '',
       target: '_blank',
       variant: 'primary',
     });

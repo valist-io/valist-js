@@ -22,6 +22,7 @@ import {
   ThemeButton,
 } from '@valist/ui';
 import { NextLink } from '@mantine/next';
+import { checkIsElectron } from '../Electron';
 
 export interface LayoutProps {
   title?: string;
@@ -40,7 +41,7 @@ export function Layout(props: LayoutProps) {
   const hideNavbar = !account || props.hideNavbar;
 
   const [isElectron, setIsElectron] = useState(false);
-  useEffect(() => {if(window?.valist) setIsElectron(true);}, []);
+  useEffect(() => setIsElectron(checkIsElectron), []);
 
   return (
     <AppShell

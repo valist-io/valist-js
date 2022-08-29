@@ -19,7 +19,7 @@ export interface ItemHeaderAction {
   target?: '_self' | '_blank' | '_parent' | '_top';
   hide?: boolean;
   variant?: ButtonVariant;
-  action?: () => void
+  action?: (value?: any) => void
 }
 
 export interface ItemHeaderProps {

@@ -1,9 +1,11 @@
 query ProjectPage($projectId: String!){
   project(id: $projectId){
     id
+    name
     metaURI
     account {
       id
+      name
       members {
         id
       }

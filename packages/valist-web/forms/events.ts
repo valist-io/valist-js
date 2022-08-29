@@ -6,7 +6,6 @@ import AccountMembers from '@/graphql/fragments/AccountMembers.graphql';
 import AccountProjects from '@/graphql/fragments/AccountProjects.graphql';
 import ProjectMembers from '@/graphql/fragments/ProjectMembers.graphql';
 import ProjectReleases from '@/graphql/fragments/ProjectReleases.graphql';
-import UserAccounts from '@/graphql/fragments/UserAccounts.graphql';
 
 const entityID = (id: BigNumber) => utils.hexZeroPad(id.toHexString(), 32);
 
@@ -41,15 +40,15 @@ function accountUpdated(event: Event, cache: ApolloCache<any>) {
 function accountMemberAdded(event: Event, cache: ApolloCache<any>) {
   const accountId = entityID(event.args?.['_accountID']);
   const userId = event.args?.['_member']?.toLowerCase();
-  
+
   const user = {
     __typename: 'User',
     id: userId,
   };
 
   // add the user to the account
-  const accountRef = cache.updateFragment({ 
-    id: `Account:${accountId}`, 
+  const accountRef = cache.updateFragment({
+    id: `Account:${accountId}`,
     fragment: AccountMembers,
   }, (data: any) => {
     const members = data?.members ?? [];
@@ -72,8 +71,8 @@ function accountMemberRemoved(event: Event, cache: ApolloCache<any>) {
   const userId = event.args?.['_member']?.toLowerCase();
 
   // remove the user from the account
-  cache.updateFragment({ 
-    id: `Account:${accountId}`, 
+  cache.updateFragment({
+    id: `Account:${accountId}`,
     fragment: AccountMembers,
   }, (data: any) => {
     const members = data?.members?.filter((other: any) => other.id !== userId);
@@ -86,7 +85,7 @@ function accountMemberRemoved(event: Event, cache: ApolloCache<any>) {
     fields: {
       accounts(existingAccounts = [], { readField }) {
         return existingAccounts.filter(
-          (ref: Reference) => accountId !== readField('id', ref)
+          (ref: Reference) => accountId !== readField('id', ref),
         );
       },
     },
@@ -104,7 +103,7 @@ function projectCreated(event: Event, cache: ApolloCache<any>) {
     name: event.args?.['_name'],
   };
 
-  cache.updateFragment({ 
+  cache.updateFragment({
     id: `Account:${accountId}`,
     fragment: AccountProjects,
   }, (data) => {
@@ -129,15 +128,15 @@ function projectUpdated(event: Event, cache: ApolloCache<any>) {
 function projectMemberAdded(event: Event, cache: ApolloCache<any>) {
   const projectId = entityID(event.args?.['_projectID']);
   const userId = event.args?.['_member']?.toLowerCase();
-  
+
   const user = {
     __typename: 'User',
     id: userId,
   };
 
   // add the user to the project
-  const projectRef = cache.updateFragment({ 
-    id: `Project:${projectId}`, 
+  const projectRef = cache.updateFragment({
+    id: `Project:${projectId}`,
     fragment: ProjectMembers,
   }, (data: any) => {
     const members = data?.members ?? [];
@@ -160,8 +159,8 @@ function projectMemberRemoved(event: Event, cache: ApolloCache<any>) {
   const userId = event.args?.['_member']?.toLowerCase();
 
   // remove the user from the project
-  cache.updateFragment({ 
-    id: `Project:${projectId}`, 
+  cache.updateFragment({
+    id: `Project:${projectId}`,
     fragment: ProjectMembers,
   }, (data: any) => {
     const members = data?.members?.filter((other: any) => other.id !== userId);
@@ -174,7 +173,7 @@ function projectMemberRemoved(event: Event, cache: ApolloCache<any>) {
     fields: {
       projects(existingProjects = [], { readField }) {
         return existingProjects.filter(
-          (ref: Reference) => projectId !== readField('id', ref)
+          (ref: Reference) => projectId !== readField('id', ref),
         );
       },
     },
@@ -192,7 +191,7 @@ function releaseCreated(event: Event, cache: ApolloCache<any>) {
     name: event.args?.['_name'],
   };
 
-  cache.updateFragment({ 
+  cache.updateFragment({
     id: `Project:${projectId}`,
     fragment: ProjectReleases,
   }, (data) => {

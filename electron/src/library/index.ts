@@ -1,6 +1,6 @@
 
-import path from 'path';
 import { exec, execFile } from 'node:child_process';
+import fs from "fs";
 
 export declare class InstallMeta {
   /** binary name */
@@ -66,7 +66,7 @@ export function execCommand(execPath: string) {
         console.log("stdout", stdout);
       });
     case 'linux':
-      exec(execPath, (err, stdout, stderr) => {
+      execFile(execPath, (err, stdout, stderr) => {
         if (err) {
           console.error(err);
           return err;
@@ -79,3 +79,31 @@ export function execCommand(execPath: string) {
     platform,
   }
 }
+
+export type ProjectType = "native" | "web";
+export type Library = {
+  [key: string]: {
+    name: string,
+    version: string,
+    type: ProjectType,
+    path: string,
+  },
+};
+
+export async function readLibrary(libraryFile: string): Promise<Library> {
+  try {
+    const data = await fs.promises.readFile(libraryFile, 'utf-8');
+    return JSON.parse(data);
+  } catch (e) {
+    if (e.code == "ENOENT") {
+      return {}; // default library
+    } else {
+      throw e;
+    }
+  }
+}
+
+export async function writeLibrary(library: Library, libraryPath) {
+  await fs.promises.writeFile(libraryPath, JSON.stringify(library));
+}
+
