@@ -1,2 +1,1 @@
-export * from './ElectronProvider';
-export * from './operations';
+export * from '../../utils/electron';
