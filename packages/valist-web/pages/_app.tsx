@@ -16,7 +16,7 @@ import { RainbowKitProvider } from '@/components/RainbowKitProvider';
 import { ValistProvider } from '@/components/ValistProvider';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
-const resolveName = (address: string) => useEnsName({ address, chainId: 1 });
+const resolveName = (address: string) => useEnsName({ address, chainId: 1 }); // eslint-disable-line react-hooks/rules-of-hooks
 
 // theme overrides
 const components = {
