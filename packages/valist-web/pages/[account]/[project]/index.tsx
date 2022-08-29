@@ -281,10 +281,10 @@ const ProjectPage: NextPage = () => {
                   <Stack spacing={24}>
                     <Title order={5}>Project Info</Title>
                     <List>
-                      <Group position="apart">
+                      {/* <Group position="apart">
                         <Text>Downloads</Text>
                         <Text>0</Text>
-                      </Group>
+                      </Group> */}
                       <Group position="apart">
                         <Text>Members</Text>
                         <MemberStack 
