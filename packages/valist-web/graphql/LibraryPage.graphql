@@ -1,5 +1,6 @@
 query LibraryPage($projects: [String]) {
   projects(where: {id_in: $projects}){
+    id
     name
   	metaURI
   }

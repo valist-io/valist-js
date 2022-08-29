@@ -36,6 +36,13 @@ import {
   Tabs,
   Grid,
 } from '@mantine/core';
+import { checkIsElectron, getApps, install, launch } from '@/components/Electron';
+
+declare global {
+  interface Window {
+      valist: any;
+  }
+}
 
 const ProjectPage: NextPage = () => {
   const { chain } = useNetwork();
@@ -67,6 +74,9 @@ const ProjectPage: NextPage = () => {
   const showInfo = useMediaQuery('(max-width: 1400px)', false);
 
   const [balance, setBalance] = useState(0);
+  const [isElectron, setIsElectron] = useState<boolean>(false);
+  const [isInstalled, setIsInstalled] = useState<boolean>(false);
+  const [installPercent, setInstallPercent] = useState<number>(0);
 
   // update balance when address or projectId changes
   useEffect(() => {
@@ -76,6 +86,30 @@ const ProjectPage: NextPage = () => {
         .then(value => setBalance(value?.toNumber() ?? 0));  
     }
   }, [address, projectId]);
+
+  // check if isElectron
+  useEffect(() => {
+    setIsElectron(checkIsElectron());
+  }, []);
+
+  // check if app is installed & if project type is native
+  useEffect(() => {
+    if (window.valist && projectMeta?.type === 'native') {
+      getApps().then((apps: any) => {
+        console.log('List Installed Valist Apps:');
+        console.log(apps);
+
+        if(projectId in apps) {
+          setIsInstalled(true);
+        }
+      });
+    }
+  }, [projectId, projectMeta]);
+
+  const setProgress = (progress: number) => {
+    setInstallPercent(Math.floor(progress * 100));
+    if (installPercent === 100) setIsInstalled(true);
+  };
 
   const isPriced = !!data?.product?.currencies?.find(
     (curr: any) => curr.price !== '0',
@@ -125,11 +159,25 @@ const ProjectPage: NextPage = () => {
       href: `/-/account/${accountName}/project/${projectName}/checkout`,
       variant: 'primary',
     });
-  } else {
+  } else if (projectMeta?.type === 'native' && isElectron && !isInstalled) {
+    rightActions.push({
+      label: `Install${installPercent > 0 ? ` (${installPercent})` : ""}`,
+      icon: Icon.Download,
+      action: () => install(valist, accountName, projectName, projectMeta?.type, setProgress),
+      variant: 'primary',
+    });
+  } else if (projectMeta?.type === 'web' && isElectron) {
     rightActions.push({
       label: 'Launch',
       icon: Icon.Rocket,
-      href: launchUrl ?? '',
+      action: () => launch(data?.project, projectMeta?.type, releaseMeta?.external_url, valist),
+      variant: 'primary',
+    });
+  } else if(projectMeta){
+    rightActions.push({
+      label: (projectMeta.type === 'native' || projectMeta.type === 'web') ? 'Launch' : 'Download',
+      icon: Icon.Rocket,
+      href: launchUrl || '',
       target: '_blank',
       variant: 'primary',
     });
@@ -139,22 +187,6 @@ const ProjectPage: NextPage = () => {
     { title: accountName, href: `/${accountName}` },
     { title: projectName, href: `/${accountName}/${projectName}` },
   ];
-
-  const testInstall = async () => {
-    const accountID = valist.generateID(137, accountName);
-    const projectID = valist.generateID(accountID, projectName);
-    const releaseID = await valist.getLatestReleaseID(projectID);
-    const release = await valist.getReleaseMeta(releaseID);
-
-    if (window?.valist) {
-      const resp = await window.valist.install(
-        { name: `${accountName}/${projectName}`, release: release, projectID },
-      );
-      if (resp?.includes('successfully installed!')) {
-        alert(resp);
-      };
-    };
-  };
 
   if (!loading && !data?.project) {
     return (
@@ -255,10 +287,10 @@ const ProjectPage: NextPage = () => {
                   <Stack spacing={24}>
                     <Title order={5}>Project Info</Title>
                     <List>
-                      <Group position="apart">
+                      {/* <Group position="apart">
                         <Text>Downloads</Text>
                         <Text>0</Text>
-                      </Group>
+                      </Group> */}
                       <Group position="apart">
                         <Text>Members</Text>
                         <MemberStack 
