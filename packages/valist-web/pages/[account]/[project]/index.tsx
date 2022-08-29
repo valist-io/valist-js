@@ -37,7 +37,13 @@ import {
   Grid,
 } from '@mantine/core';
 import { checkIsElectron, getApps, install, launch } from '@/components/Electron';
+
+declare global {
+  interface Window {
+      valist: any;
+  }
 }
+
 const ProjectPage: NextPage = () => {
   const { chain } = useNetwork();
   const { address } = useAccount();
