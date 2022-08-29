@@ -1,7 +1,7 @@
 import { AsyncInput } from '@valist/ui';
 import { ethers } from 'ethers';
 import { useState, useEffect } from 'react';
-import { useEnsAddress } from '@/utils/ens';
+import { useEnsAddress } from 'wagmi';
 
 const isENS = (address: string) => address.endsWith('.eth');
 const isAddress = (address: string) => ethers.utils.isAddress(address);
@@ -15,7 +15,11 @@ export function AddressInput(props: AddressProps) {
   const [value, setValue] = useState('');
   const [error, setError] = useState('');
 
-  const { data, isLoading } = useEnsAddress(value);
+  const { data, isLoading } = useEnsAddress({ 
+    name: value,
+    chainId: 1,
+    enabled: isENS(value),
+  });
 
   const isValidENS = !isLoading && !!data;
   const isValid = isValidENS || isAddress(value);
