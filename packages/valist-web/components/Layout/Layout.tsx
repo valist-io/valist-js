@@ -23,6 +23,7 @@ import {
 } from '@valist/ui';
 import { NextLink } from '@mantine/next';
 import { checkIsElectron } from '../Electron';
+import { ethers } from 'ethers';
 
 export interface LayoutProps {
   title?: string;
@@ -43,6 +44,17 @@ export function Layout(props: LayoutProps) {
   const [isElectron, setIsElectron] = useState(false);
   useEffect(() => setIsElectron(checkIsElectron), []);
 
+  const search = async (value: string) => {
+    const isAddress = ethers.utils.isAddress(value);
+    
+    if (isAddress) {
+      router.push(`/addr/${value}`);
+      return;
+    }
+
+    router.push(`/-/search/${value}`);
+  };
+
   return (
     <AppShell
       padding={props.padding}
@@ -52,7 +64,9 @@ export function Layout(props: LayoutProps) {
           hideNavbar={hideNavbar}
           opened={opened} 
           onClick={() => setOpened(!opened)}
-          onSearch={value => router.push(`/-/search/${value}`)}
+          onSearch={
+            value => search(value)
+          }
         >
           <ThemeButton />
           <Anchor target="_blank" href="https://docs.valist.io">Docs</Anchor>

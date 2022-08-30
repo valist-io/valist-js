@@ -1,0 +1,19 @@
+query Projects($address: String){
+    users(where: {id: $address}) {
+      id
+      accounts {
+        name
+        projects{
+          name
+        }
+      }
+      projects {
+        id
+        name
+        metaURI
+        account {
+          name
+        }
+      }
+    }
+  }
