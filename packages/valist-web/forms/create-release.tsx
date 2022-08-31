@@ -59,10 +59,14 @@ export async function createRelease(
 
     utils.showLoading('Uploading files');
     if (image) {
-      meta.image = await valist.writeFile(image);
+      meta.image = await utils.writeFile(image, valist, (progress: number) => {
+        utils.updateLoading(`Uploading ${image?.name}: ${progress}`);
+      });
     }
 
-    meta.external_url = await valist.writeFolder(files);
+    meta.external_url = await valist.writeFolder(files, false, (progress: number) => {
+      utils.updateLoading(`Uploading ${image?.name}: ${progress}`);
+    });
 
     utils.updateLoading('Creating transaction');
     const transaction = await valist.createRelease(projectId, values.releaseName, meta);

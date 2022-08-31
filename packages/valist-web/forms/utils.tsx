@@ -39,11 +39,13 @@ export const updateLoading = (message: ReactNode) => updateNotification({
 export const hideError = () => hideNotification(ERROR_ID);
 export const hideLoading = () => hideNotification(LOADING_ID);
 
-export async function writeFile(source: File, valist: Client): Promise<string> {
+export async function writeFile(source: File, valist: Client, onProgress?: (progress: number) => void): Promise<string> {
   if (typeof source === 'string') {
     return source as string;
   } else {
     const file = source as File;
-    return await valist.writeFile(file);
-  }
-}
+    return await valist.writeFile(file, false, (progress: number) => {
+      if(onProgress) onProgress(progress);
+    });
+  };
+};
