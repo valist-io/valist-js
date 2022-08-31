@@ -17,6 +17,7 @@ import { Divider } from '../Divider';
 import { Option } from './Option/Option';
 
 export interface AccountSelectProps {
+  name: string;
   value: string;
   image?: string;
   href: string;
@@ -54,15 +55,16 @@ export const AccountSelect: AccountSelectComponent = (props: AccountSelectProps)
       classNames={{ dropdown: classes.popoverBody }}
     >
       <Popover.Target>
-        <UnstyledButton style={props.style} onClick={() => setOpened(!opened)}>
+        <UnstyledButton 
+          style={props.style}
+          onClick={() => setOpened(!opened)}
+        >
           <Group spacing={10}>
             <Item 
-              name={props.value} 
-              label="change account" 
+              name={props.name} 
               image={props.image} 
             />
             <Icon.CaretDown 
-              style={{ alignSelf: 'flex-start', marginTop: 4 }} 
               size={16} 
               fill="currentColor" 
             />

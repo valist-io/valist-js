@@ -6,7 +6,6 @@ import { useApolloClient } from '@apollo/client';
 import { useListState } from '@mantine/hooks';
 import { useForm, zodResolver } from '@mantine/form';
 import { ValistContext } from '@/components/ValistProvider';
-import { AccountContext } from '@/components/AccountProvider';
 import { AddressInput } from '@/components/AddressInput';
 import { NameInput } from '@/components/NameInput';
 
@@ -43,7 +42,6 @@ export function CreateAccount(props: CreateAccountProps) {
   const { chain } = useNetwork();
 
   const valist = useContext(ValistContext);
-  const { setAccount } = useContext(AccountContext);
 
   // form values
   const [loading, setLoading] = useState(false);
@@ -89,10 +87,7 @@ export function CreateAccount(props: CreateAccountProps) {
       cache,
       chain?.id || 137,
     ).then((success) => {
-      if (success) {
-        setAccount(values.accountName);
-        props.afterCreate?.();
-      }
+      if (success) props.afterCreate?.();
     }).finally(() => {
       setLoading(false);  
     });

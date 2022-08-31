@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import { useQuery } from '@apollo/client';
@@ -8,10 +8,10 @@ import { NextLink } from '@mantine/next';
 import { useMediaQuery } from '@mantine/hooks';
 import { Layout } from '@/components/Layout';
 import { Metadata } from '@/components/Metadata';
-import { AccountContext } from '@/components/AccountProvider';
 import { Activity } from '@/components/Activity';
 import { CreateAccount } from '@/components/CreateAccount';
 import { CreateProject } from '@/components/CreateProject';
+import { ValistContext } from '@/components/ValistProvider';
 import query from '@/graphql/DashboardPage.graphql';
 
 import { 
@@ -24,6 +24,7 @@ import {
 } from '@mantine/core';
 
 import {
+  AccountSelect,
   Button,
   Card,
   CardGrid,
@@ -35,36 +36,55 @@ import {
   Welcome,
   CheckboxList,
 } from '@valist/ui';
-import { ValistContext } from '@/components/ValistProvider';
 
 const IndexPage: NextPage = () => {
   const router = useRouter();
   const valist = useContext(ValistContext);
-  const { account } = useContext(AccountContext);
+
   const { openConnectModal } = useConnectModal();
-  const { isConnected } = useAccount();
+  const { address, isConnected } = useAccount();
 
   const [onboarding, setOnboarding] = useState(false);
   const [infoOpened, setInfoOpened] = useState(false);
   const showInfo = useMediaQuery('(max-width: 1400px)', false);
 
   const { data, loading } = useQuery(query, { 
-    variables: { accountId: account?.id ?? '' },
+    variables: { address: address?.toLowerCase() ?? '' },
   });
 
-  const projects = data?.account?.projects ?? [];
-  const members = data?.account?.members ?? [];
-  const logs = data?.account?.logs ?? [];
+  // TODO
+  const accountMeta = undefined;
+  const [account, setAccount] = useState('');
+
+  const accounts = Array.from((data?.user?.projects ?? [])
+    .map(p => p.account)
+    .concat(data?.user?.accounts ?? [])
+    .reduce((s, a) => s.set(a.id, a), new Map())
+    .values());
+
+  const projects = Array.from((data?.user?.accounts ?? [])
+    .flatMap(a => a.projects)
+    .concat(data?.user?.projects ?? [])
+    .filter(p => account === '' || p.account.name === account)
+    .reduce((s, p) => s.set(p.id, p), new Map())
+    .values());
+
+  const members = Array.from(projects
+    .flatMap(p => [...p.members, ...p.account.members])
+    .reduce((s, m) => s.add(m.id), new Set())
+    .values());
+
+  const logs = []; // TODO
 
   const steps = [
     { label: 'Connect Wallet', checked: isConnected },
-    { label: 'Create Account', checked: onboarding || !!account },
+    { label: 'Create Account', checked: onboarding || accounts.length === 0 },
     { label: 'Create Project (Optional)', checked: false },
   ];
 
-  if (!loading && (!account || onboarding)) {
+  if (!loading && (accounts.length === 0 || onboarding)) {
     return (
-      <Layout>
+      <Layout hideNavbar>
         <Grid>
           <Grid.Col md={4}>
             <CheckboxList items={steps} />
@@ -89,22 +109,36 @@ const IndexPage: NextPage = () => {
 
   return (
     <Layout padding={0}>
-      { showInfo &&
-        <Group style={{ height: 66 }} position="right">
-            <InfoButton 
-              opened={infoOpened}
-              onClick={() => setInfoOpened(!infoOpened)} 
-            />
-        </Group>
-      }
+      <Group mt={40} pl={40} position="apart">
+        <AccountSelect
+          name={account || 'All Accounts'}
+          value={account}
+          image={accountMeta?.image}
+          href="/-/create/account"
+          onChange={setAccount}
+        >
+          <AccountSelect.Option value="" name="All Accounts" />
+          {accounts.map((acc, index) => 
+            <Metadata key={index} url={acc.metaURI}>
+              {(data: any) => (
+                <AccountSelect.Option value={acc.name} name={acc.name} image={data?.image} />
+              )}
+            </Metadata>,
+          )}
+        </AccountSelect>
+        { showInfo &&
+          <InfoButton 
+            opened={infoOpened}
+            onClick={() => setInfoOpened(!infoOpened)} 
+          />
+        }
+      </Group>
       <div style={{ padding: 40 }}>
-        <Group position="apart" mb="xl" style={{ marginBottom: 10 }}>
-          <Title style={{ display: "block" }}>Hello & Welcome 👋🏽</Title>
-          <NextLink href={`/-/account/${account?.name}/create/project`}>
+        {/*<Group position="apart" mb="xl" style={{ marginBottom: 10 }}>
+          <NextLink href={`/-/account/create/project`}>
             <Button>Create Project</Button>
           </NextLink>
-        </Group>
-        <Text style={{ display: "block", marginBottom: 32 }}>Explore your recently Published or Edited projects.</Text>
+        </Group>*/}
         <Grid>
           { (!showInfo || !infoOpened) &&
             <Grid.Col xl={8}>
@@ -113,12 +147,12 @@ const IndexPage: NextPage = () => {
               }
               { projects.length !== 0 && 
                 <CardGrid>
-                  {projects.map((project: any, index: number) =>
+                  { projects.map((project: any, index: number) =>
                     <Metadata key={index} url={project.metaURI}>
                       {(data: any) =>
                         <NextLink
                           style={{ textDecoration: 'none' }}
-                          href={`/${account?.name}/${project.name}`}
+                          href={`/${project.account?.name}/${project.name}`}
                         >
                           <ProjectCard
                             title={project.name} 
@@ -140,7 +174,7 @@ const IndexPage: NextPage = () => {
                 <Card>
                   <Stack spacing={24}>
                     <Title order={5}>Members</Title>
-                    <MemberStack members={members.map((member: any) => member.id)} />
+                    <MemberStack members={members} />
                   </Stack>
                 </Card>
                 <Card>

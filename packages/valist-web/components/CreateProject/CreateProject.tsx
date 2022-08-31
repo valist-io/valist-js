@@ -6,7 +6,6 @@ import { useApolloClient, useQuery } from '@apollo/client';
 import { useListState } from '@mantine/hooks';
 import { useForm, zodResolver } from '@mantine/form';
 import { ValistContext } from '@/components/ValistProvider';
-import { AccountContext } from '@/components/AccountProvider';
 import { AddressInput } from '@/components/AddressInput';
 import { NameInput } from '@/components/NameInput';
 import { defaultTags, defaultTypes } from '@/forms/common';
@@ -49,14 +48,14 @@ export function CreateProject(props: CreateProjectProps) {
   const { chain } = useNetwork();
 
   const valist = useContext(ValistContext);
-  const { account } = useContext(AccountContext);
-
-  const { data } = useQuery(query, {
-    variables: { id: account?.id ?? '' },
-  });
 
   const accountName = `${router.query.account}`;
   const accountId = valist.generateID(chain?.id || 137, accountName);
+
+  const { data } = useQuery(query, {
+    variables: { id: accountId },
+  });
+  
   const accountMembers = data?.account?.members ?? [];
 
   // form values
