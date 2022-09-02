@@ -65,7 +65,7 @@ export async function createRelease(
     }
 
     meta.external_url = await valist.writeFolder(files, false, (progress: number) => {
-      utils.updateLoading(`Uploading ${image?.name}: ${progress}`);
+      utils.updateLoading(`Uploading release archive: ${progress}`);
     });
 
     utils.updateLoading('Creating transaction');
