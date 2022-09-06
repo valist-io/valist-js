@@ -65,16 +65,10 @@ export function Layout(props: LayoutProps) {
               active={router.asPath === "/"} 
             />
             <Navbar.Link 
-              icon={Icons.FileText} 
-              text="Projects"
-              href="/-/projects"
-              active={router.asPath === '/-/projects'} 
-            />
-            <Navbar.Link 
-              icon={Icons.Users} 
-              text="Members"
-              href="/-/members"
-              active={router.asPath === '/-/members'} 
+              icon={Icons.Hourglass} 
+              text="Activity"
+              href="/-/activity"
+              active={router.asPath === '/-/activity'} 
             />
             <Navbar.Link 
               icon={Icons.Apps} 

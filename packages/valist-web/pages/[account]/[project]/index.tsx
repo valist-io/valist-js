@@ -66,17 +66,6 @@ const ProjectPage: NextPage = () => {
   const [infoOpened, setInfoOpened] = useState(false);
   const showInfo = useMediaQuery('(max-width: 1400px)', false);
 
-  const [balance, setBalance] = useState(0);
-
-  // update balance when address or projectId changes
-  useEffect(() => {
-    if (address) {
-      valist.getProductBalance(address, projectId)
-        .catch(_err => setBalance(0))
-        .then(value => setBalance(value?.toNumber() ?? 0));  
-    }
-  }, [address, projectId]);
-
   const isPriced = !!data?.product?.currencies?.find(
     (curr: any) => curr.price !== '0',
   );
@@ -118,43 +107,39 @@ const ProjectPage: NextPage = () => {
     },
   ];
 
-  if (isPriced && balance === 0) {
-    rightActions.push({
-      label: 'Purchase',
-      icon: Icon.ShoppingCart,
-      href: `/-/account/${accountName}/project/${projectName}/checkout`,
-      variant: 'primary',
-    });
-  } else {
-    rightActions.push({
-      label: 'Launch',
-      icon: Icon.Rocket,
-      href: launchUrl ?? '',
-      target: '_blank',
-      variant: 'primary',
-    });
-  }
+  const purchaseAction = {
+    label: 'Purchase',
+    icon: Icon.ShoppingCart,
+    href: `/-/account/${accountName}/project/${projectName}/checkout`,
+    variant: 'primary',
+  };
+
+  const launchAction = {
+    label: 'Launch',
+    icon: Icon.Rocket,
+    href: launchUrl ?? '',
+    target: '_blank',
+    variant: 'primary',
+  };
+
+  // launch or purchase action button
+  const [action, setAction] = useState(purchaseAction);
+
+  // update balance when address or projectId changes
+  useEffect(() => {
+    if (address) {
+      valist.getProductBalance(address, projectId).then(value => {
+        const balance = value?.toNumber() ?? 0;
+        const showPurchase = isPriced && balance === 0;
+        setAction(showPurchase ? purchaseAction : launchAction);
+      });
+    }
+  }, [address, projectId]);
 
   const breadcrumbs = [
     { title: accountName, href: `/${accountName}` },
     { title: projectName, href: `/${accountName}/${projectName}` },
   ];
-
-  const testInstall = async () => {
-    const accountID = valist.generateID(137, accountName);
-    const projectID = valist.generateID(accountID, projectName);
-    const releaseID = await valist.getLatestReleaseID(projectID);
-    const release = await valist.getReleaseMeta(releaseID);
-
-    if (window?.valist) {
-      const resp = await window.valist.install(
-        { name: `${accountName}/${projectName}`, release: release, projectID },
-      );
-      if (resp?.includes('successfully installed!')) {
-        alert(resp);
-      };
-    };
-  };
 
   if (!loading && !data?.project) {
     return (
@@ -186,7 +171,7 @@ const ProjectPage: NextPage = () => {
           label={projectMeta?.name}
           image={projectMeta?.image}
           leftActions={leftActions}
-          rightActions={rightActions}
+          rightActions={[...rightActions, action]}
         />
         <Grid>
           { (!showInfo || !infoOpened) &&
