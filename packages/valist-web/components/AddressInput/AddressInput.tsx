@@ -56,7 +56,7 @@ export function AddressInput(props: AddressProps) {
         onKeyPress={submit}
         onChange={(event) => setValue(event.currentTarget.value)}
       />
-      <Button onClick={(e: KeyboardEvent<HTMLElement>) => submit(e, true)}>
+      <Button style={{ width: 150 }} onClick={(e: KeyboardEvent<HTMLElement>) => submit(e, true)}>
         Add
       </Button>
     </>
