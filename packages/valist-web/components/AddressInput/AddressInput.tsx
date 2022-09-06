@@ -1,4 +1,4 @@
-import { AsyncInput } from '@valist/ui';
+import { AsyncInput, Button } from '@valist/ui';
 import { ethers } from 'ethers';
 import { useState, useEffect } from 'react';
 import { useEnsAddress } from 'wagmi';
@@ -34,26 +34,28 @@ export function AddressInput(props: AddressProps) {
     }
   }, [value, isLoading, isValid]);
 
-  const submit = (event: React.KeyboardEvent<HTMLElement>) => {
-    if (event.key !== 'Enter') return;
-    event.preventDefault();
-
+  const submit = () => {
     if (isLoading || !isValid) return;
     props.onSubmit(data ?? value);
     setValue('');  
   };
 
   return (
-    <AsyncInput
-      label="Add member"
-      placeholder="Address or ENS"
-      value={value} 
-      error={error}
-      disabled={props.disabled}
-      loading={isLoading}
-      valid={isValid}
-      onKeyPress={submit}
-      onChange={(event) => setValue(event.currentTarget.value)}
-    />
+    <>
+      <AsyncInput
+        label="Add member"
+        placeholder="Address or ENS"
+        value={value} 
+        error={error}
+        disabled={props.disabled}
+        loading={isLoading}
+        valid={isValid}
+        onKeyPress={submit}
+        onChange={(event) => setValue(event.currentTarget.value)}
+      />
+      <Button style={{ width: 150 }} onClick={() => submit()}>
+        Add
+      </Button>
+    </>
   );
 }
