@@ -1,10 +1,6 @@
 import { createStyles } from "@mantine/core";
 
-export interface AccountStyleParams {
-  large?: boolean;
-}
-
-export default createStyles((theme, params: AccountStyleParams, _getRef) => {
+export default createStyles((theme, _params, _getRef) => {
   return {
     name: {
       overflow: 'hidden', 

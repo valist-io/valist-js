@@ -13,12 +13,13 @@ import query from '@/graphql/ProjectPage.graphql';
 
 import {
   _404,
+  Actions,
+  Action,
   Button,
   Breadcrumbs,
   Card,
   InfoButton,
-  ItemHeader,
-  ItemHeaderAction,
+  Item,
   Gallery,
   List,
   Markdown,
@@ -78,63 +79,62 @@ const ProjectPage: NextPage = () => {
     (other: any) => other.id.toLowerCase() === address?.toLowerCase(),
   );
 
+  const [balance, setBalance] = useState(0);
+
+  // update balance when address or projectId changes
+  useEffect(() => {
+    if (address) {
+      valist.getProductBalance(address, projectId)
+        .catch(_err => setBalance(0))
+        .then(value => setBalance(value?.toNumber() ?? 0));  
+    }
+  }, [address, projectId]);
+
   const launchUrl = projectMeta?.launch_external 
     ? projectMeta?.external_url 
     : releaseMeta?.external_url;
 
-  const leftActions: ItemHeaderAction[] = [
+  const actions: ItemHeaderAction[] = [
     {
       label: 'Settings', 
       icon: Icon.Settings, 
       href: `/-/account/${accountName}/project/${projectName}/settings`, 
       hide: !(isAccountMember || isProjectMember),
+      side: 'left',
     },
     {
       label: 'Pricing', 
       icon: Icon.Tag, 
       href: `/-/account/${accountName}/project/${projectName}/pricing`, 
       hide: !(isAccountMember || isProjectMember),
+      side: 'left',
     },
-  ];
-
-  const rightActions: ItemHeaderAction[] = [
     {
       label: 'New Release',
       icon: Icon.News,
       href: `/-/account/${accountName}/project/${projectName}/create/release`,
       variant: 'subtle',
       hide: !(isAccountMember || isProjectMember),
+      side: 'right',
     },
-  ];
-
-  const purchaseAction = {
-    label: 'Purchase',
-    icon: Icon.ShoppingCart,
-    href: `/-/account/${accountName}/project/${projectName}/checkout`,
-    variant: 'primary',
-  };
-
-  const launchAction = {
-    label: 'Launch',
-    icon: Icon.Rocket,
-    href: launchUrl ?? '',
-    target: '_blank',
-    variant: 'primary',
-  };
-
-  // launch or purchase action button
-  const [action, setAction] = useState(purchaseAction);
-
-  // update balance when address or projectId changes
-  useEffect(() => {
-    if (address) {
-      valist.getProductBalance(address, projectId).then(value => {
-        const balance = value?.toNumber() ?? 0;
-        const showPurchase = isPriced && balance === 0;
-        setAction(showPurchase ? purchaseAction : launchAction);
-      });
+    {
+      label: 'Purchase',
+      icon: Icon.ShoppingCart,
+      href: `/-/account/${accountName}/project/${projectName}/checkout`,
+      variant: 'primary',
+      hide: (isPriced && balance === 0),
+      side: 'right',
+    },
+    {
+      label: 'Launch',
+      icon: Icon.Rocket,
+      href: launchUrl ?? '',
+      target: '_blank',
+      variant: 'primary',
+      hide: !(isPriced && balance === 0),
+      side: 'right',
     }
-  }, [address, projectId]);
+  ];
 
   const breadcrumbs = [
     { title: accountName, href: `/${accountName}` },
@@ -166,13 +166,15 @@ const ProjectPage: NextPage = () => {
         }
       </Group>
       <div style={{ padding: 40 }}>
-        <ItemHeader 
-          name={projectName}
-          label={projectMeta?.name}
-          image={projectMeta?.image}
-          leftActions={leftActions}
-          rightActions={[...rightActions, action]}
-        />
+        <Group spacing={24} mb="xl" noWrap>
+          <Item 
+            name={projectName}
+            label={projectMeta?.name}
+            image={projectMeta?.image}
+            large
+          />
+          <Actions actions={actions} />
+        </Group>
         <Grid>
           { (!showInfo || !infoOpened) &&
             <Grid.Col xl={8}>

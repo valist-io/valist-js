@@ -10,5 +10,12 @@ query PricingPage($projectId: String!){
       token
       price
     }
+    purchases(orderBy: blockTime, orderDirection: "desc") {
+      sender
+      recipient
+      token
+      price
+      blockTime
+    }
   }
 }

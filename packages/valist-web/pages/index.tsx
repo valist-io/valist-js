@@ -2,6 +2,7 @@ import type { NextPage } from 'next';
 import { useContext, useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import useSWRImmutable from 'swr/immutable';
+import * as Icon from 'tabler-icons-react';
 import { useRouter } from 'next/router';
 import { useQuery } from '@apollo/client';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
@@ -26,10 +27,13 @@ import {
 
 import {
   AccountSelect,
+  Actions,
+  Action,
   Button,
   Card,
   CardGrid,
   InfoButton,
+  ItemHeader,
   MemberStack,
   List,
   NoProjects,
@@ -48,6 +52,12 @@ const IndexPage: NextPage = () => {
   const [infoOpened, setInfoOpened] = useState(false);
   const showInfo = useMediaQuery('(max-width: 1400px)', false);
 
+  const [accountName, setAccountName] = useState('');
+  // reset account when address changes
+  useEffect(() => {
+    setAccountName('');
+  }, [address]);
+
   const { data, loading } = useQuery(query, { 
     variables: { address: address?.toLowerCase() ?? '' },
   });
@@ -58,7 +68,6 @@ const IndexPage: NextPage = () => {
     .reduce((s, a) => s.set(a.id, a), new Map())
     .values());
 
-  const [accountName, setAccountName] = useState('');
   const account = accounts.find(a => a.name === accountName);
   const { data: accountMeta } = useSWRImmutable(account?.metaURI);
 
@@ -80,6 +89,23 @@ const IndexPage: NextPage = () => {
     .sort((a, b) => b.blockTime.localeCompare(a.blockTime))
     .reduce((s, l) => s.set(l.id, l), new Map())
     .values());
+
+  const actions: Action[] = [
+    {
+      label: 'Settings', 
+      icon: Icon.Settings, 
+      href: `/-/account/${accountName}/settings`,
+      variant: 'subtle',
+      side: 'right',
+    },
+    {
+      label: 'New Project',
+      icon: Icon.News,
+      href: `/-/account/${accountName}/create/project`,
+      variant: 'primary',
+      side: 'right',
+    },
+  ];
 
   const steps = [
     { label: 'Connect Wallet', checked: isConnected },
@@ -137,6 +163,16 @@ const IndexPage: NextPage = () => {
         }
       </Group>
       <div style={{ padding: 40 }}>
+        { accountName !== '' &&
+          <Group spacing={24} mb="xl" noWrap>
+            <ItemHeader 
+              name={accountName}
+              label={accountMeta?.name}
+              image={accountMeta?.image}
+            />
+            <Actions actions={actions} />
+          </Group>
+        }
         <Grid>
           { (!showInfo || !infoOpened) &&
             <Grid.Col xl={8}>

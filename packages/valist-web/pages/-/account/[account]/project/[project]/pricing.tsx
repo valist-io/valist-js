@@ -2,14 +2,14 @@ import type { NextPage } from 'next';
 import React, { useState, useEffect, useContext } from 'react';
 import { useAccount, useNetwork } from 'wagmi';
 import { useRouter } from 'next/router';
+import { useMediaQuery } from '@mantine/hooks';
 import { useApolloClient, useQuery } from '@apollo/client';
-import { Breadcrumbs, Button, TokenInput } from '@valist/ui';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
 import { ProductPrice } from '@/components/ProductPrice';
 import { ProductBalance } from '@/components/ProductBalance';
 import { TokenModal } from '@/components/TokenModal';
-import { formatUnits } from '@/utils/tokens';
+import { formatUnits, getTokenSymbol, getTokenLogo } from '@/utils/tokens';
 import query from '@/graphql/PricingPage.graphql';
 
 import {
@@ -20,16 +20,30 @@ import {
 } from '@/forms/update-product';
 
 import {
+  Address,
+  Breadcrumbs,
+  Button,
+  Card,
+  EditButton,
+  InfoButton,
+  Item,
+  List,
+  Member,
+  TokenInput,
+} from '@valist/ui';
+
+import {
   Anchor,
+  Avatar,
   Group,
+  Grid,
+  NumberInput,
+  Stack,
+  SimpleGrid,
   Text,
   Title,
-  Stack,
   TextInput,
   Textarea,
-  NumberInput,
-  List,
-  Tabs,
 } from '@mantine/core';
 
 const Pricing: NextPage = () => {
@@ -40,6 +54,9 @@ const Pricing: NextPage = () => {
 
   const valist = useContext(ValistContext);
 
+  const [infoOpened, setInfoOpened] = useState(false);
+  const showInfo = useMediaQuery('(max-width: 1400px)', false);
+
   const accountName = `${router.query.account}`;
   const accountId = valist.generateID(chain?.id || 137, accountName);
 
@@ -47,6 +64,7 @@ const Pricing: NextPage = () => {
   const projectId = valist.generateID(accountId, projectName);
 
   const { data } = useQuery(query, { variables: { projectId } });
+  const purchases = data?.product?.purchases ?? [];
 
   // form values
   const [loading, setLoading] = useState(true);
@@ -72,6 +90,16 @@ const Pricing: NextPage = () => {
     const currency = getCurrency(address);
     return formatUnits(address, currency?.price ?? '0');
   };
+
+  const parseBlockTime = (time: string) => {
+    const utc = parseInt(time);
+    return new Date(utc * 1000);
+  };
+
+  const formatBlockTime = (time: string) => {
+    const date = parseBlockTime(time);
+    return date.toLocaleString();
+  }
 
   const updateLimit = () => {
     setLoading(true);
@@ -140,7 +168,7 @@ const Pricing: NextPage = () => {
 
       setLimit(_limit);
       setRoyaltyAmount(_royalty / 10000);
-      setRoyaltyRecipient(data?.product?.royaltyRecipient ?? '');
+      setRoyaltyRecipient(data?.product?.royaltyRecipient || '0x0000000000000000000000000000000000000000');
       setTokens(currencies.map((currency: any) => currency.token));
       setLoading(false);
     }
@@ -153,119 +181,127 @@ const Pricing: NextPage = () => {
   ];
 
   return (
-    <Layout>
+    <Layout padding={0}>
       <TokenModal
         values={tokens}
         onChange={setTokens}
         opened={tokenOpened} 
         onClose={() => setTokenOpened(false)} 
       />
-      <div style={{ paddingBottom: 32 }}>
+      <Group mt={40} pl={40} position="apart">
         <Breadcrumbs items={breadcrumbs} />
+        { showInfo &&
+          <InfoButton 
+            opened={infoOpened}
+            onClick={() => setInfoOpened(!infoOpened)} 
+          />
+        }
+      </Group>
+      <div style={{ padding: 40 }}>
+        <Title mb="xl">Pricing & Finance</Title>
+        <Grid>
+          { (!showInfo || !infoOpened) &&
+            <Grid.Col xl={8}>
+              <Stack spacing={24}>
+                <SimpleGrid
+                  breakpoints={[
+                    { minWidth: 'sm', cols: 1, spacing: 24 },
+                    { minWidth: 'md', cols: 2, spacing: 24 },
+                    { minWidth: 'lg', cols: 3, spacing: 24 },
+                  ]}
+                >
+                  <Card padding={16}>
+                    <Group align="flex-start" noWrap>
+                      <Avatar size={40} radius="xl" src="/images/shopping_cart.svg" />
+                      <Stack spacing={0}>
+                        <Text size="xs">Total Sales</Text>
+                        <Title order={3} mb={4}>{purchases.length}</Title>
+                        <Text size="xs">{`+0% > last month`}</Text>
+                      </Stack>
+                    </Group>
+                  </Card>
+                  { /*<Card padding={16}>
+                    <Group align="flex-start" noWrap>
+                      <Avatar size={40} radius="xl" src="/images/rocket.svg" />
+                      <Stack spacing={0}>
+                        <Text size="xs">Total Launches</Text>
+                        <Title order={3} mb={4}>0</Title>
+                        <Text size="xs">{`+0% > last month`}</Text>
+                      </Stack>
+                    </Group>
+                  </Card> */ }
+                  <Card padding={16}>
+                    <Group align="flex-start" noWrap>
+                      <Avatar size={40} radius="xl" src="/images/royalty.svg" />
+                      <Stack spacing={0}>
+                        <Text size="xs">Royalty</Text>
+                        <Title order={3} mb={4}>{royaltyAmount}%</Title>
+                        <Address size={12} address={royaltyRecipient} truncate />
+                      </Stack>
+                    </Group>
+                  </Card>
+                </SimpleGrid>
+                <Card>
+                  <Stack spacing={32}>
+                    <Title order={5}>Transaction History</Title>
+                    <List>
+                      { purchases.map((purchase: any, index: number) =>
+                        <Group key={index} position="apart" noWrap>
+                          <Member member={purchase.sender} truncate />
+                          <Text>{formatBlockTime(purchase.blockTime)}</Text>
+                          <Group>
+                            <Avatar radius="xl" size={40} src={getTokenLogo(purchase.token)} />
+                            <Text size="sm">{formatUnits(purchase.token, purchase.price)} {getTokenSymbol(purchase.token)}</Text>
+                          </Group>
+                        </Group>
+                      )}
+                    </List>
+                  </Stack>
+                </Card>
+              </Stack>
+            </Grid.Col>
+          }
+          { (!showInfo || infoOpened) &&
+            <Grid.Col xl={4}>
+              <Stack spacing={24}>
+                <Card>
+                  <Stack>
+                    <Text style={{ alignSelf: 'center' }}>
+                      Balance across all tokens
+                    </Text>
+                    <Title style={{ alignSelf: 'center' }}>
+                      $0.00
+                    </Title>
+                    <Button variant="subtle">Withdraw</Button>
+                  </Stack>
+                </Card>
+                <Card>
+                  <Group position="apart" noWrap>
+                    <Text>Prices</Text>
+                    <Button variant="text" onClick={() => setTokenOpened(true)}>
+                      Add Price
+                    </Button>
+                  </Group>
+                  <Stack>
+                    <EditButton>
+                      <Text size="sm">Max License Limit: {limit === 0 ? 'Unlimited' : limit}</Text>
+                    </EditButton>
+                    { tokens.map((address: string, index: number) =>
+                      <EditButton key={index} fill>
+                        <Item 
+                          name={getTokenSymbol(address)}
+                          label={getCurrencyBalance(address)}
+                          image={getTokenLogo(address)}
+                        />
+                      </EditButton>
+                    )}
+                  </Stack>
+                </Card>
+              </Stack>
+            </Grid.Col>
+          }
+        </Grid>
       </div>
-      <Tabs defaultValue="pricing">
-        <Tabs.List grow>
-          <Tabs.Tab value="pricing">Pricing</Tabs.Tab>
-          <Tabs.Tab value="royalty">Royalty</Tabs.Tab>
-          <Tabs.Tab value="withdraw">Withdraw</Tabs.Tab>
-        </Tabs.List>
-        <Tabs.Panel value="pricing">
-          <Stack style={{ maxWidth: 784 }}>
-            <Title mt="lg">Pricing</Title>
-            <Text color="dimmed">Monetize your game or app with Software License NFTs.</Text>
-            <Group>
-              <NumberInput
-                style={{ flex: '1 1 0px' }}
-                label="Max License Limit"
-                min={0}
-                disabled={loading}
-                hideControls
-                value={limit}
-                onChange={val => setLimit(val ?? 0)}
-              />
-              <Button 
-                style={{ height: 44, alignSelf: 'flex-end' }}
-                disabled={loading}
-                onClick={updateLimit}
-              >
-                Set Limit
-              </Button>
-            </Group>
-            { tokens.map((address: string, index: number) => 
-              <ProductPrice 
-                key={index}
-                address={address}
-                loading={loading}
-                price={getCurrencyPrice(address)}
-                onSubmit={updatePrice}
-              />,
-            )}
-            <div>
-              <Button 
-                variant="subtle" 
-                onClick={() => setTokenOpened(true)}
-              >
-                Add Currency
-              </Button>
-            </div>
-          </Stack>
-        </Tabs.Panel>
-        <Tabs.Panel value="royalty">
-          <Stack style={{ maxWidth: 784 }}>
-            <Title mt="lg">Royalty</Title>
-            <Text color="dimmed">
-              Add support for <Anchor href="https://eips.ethereum.org/EIPS/eip-2981" target="_blank">EIP-2981: NFT Royalty Standard.</Anchor>
-            </Text>
-            <NumberInput
-              label="Percent"
-              min={0}
-              max={99.99}
-              precision={2}
-              disabled={loading}
-              value={royaltyAmount}
-              onChange={val => setRoyaltyAmount(val ?? 0)}
-              hideControls
-            />
-            <TextInput
-              label="Address"
-              placeholder="Address or ENS"
-              disabled={loading}
-              value={royaltyRecipient}
-              onChange={e => setRoyaltyRecipient(e.currentTarget.value)}
-            />
-          </Stack>
-          <Group mt="lg">
-            <Button 
-              onClick={updateRoyalty} 
-              disabled={loading}
-            >
-              Save
-            </Button>
-          </Group>
-        </Tabs.Panel>
-        <Tabs.Panel value="withdraw">
-          <Stack style={{ maxWidth: 784 }}>
-            <Title mt="lg">Withdraw</Title>
-            <Text color="dimmed">Withdraw funds from product sales.</Text>
-            <TextInput
-              label="Recipient"
-              placeholder="Address or ENS"
-              disabled={loading}
-              value={withdrawRecipient}
-              onChange={e => setWithdrawRecipient(e.currentTarget.value)}
-            />
-            { tokens.map((address: string, index: number) => 
-              <ProductBalance 
-                key={index}
-                address={address}
-                balance={getCurrencyBalance(address)}
-                loading={loading}
-                onSubmit={withdrawBalance}
-              />,
-            )}
-          </Stack>
-        </Tabs.Panel>
-      </Tabs>
     </Layout>
   );
 };

@@ -25,18 +25,19 @@ import {
 
 import {
   _404,
+  Actions,
+  Action,
   Button,
   Breadcrumbs,
   Card,
   CardGrid,
   InfoButton,
+  Item,
   MemberList,
   MemberStack,
   ProjectCard,
   List,
   TabsListCard,
-  ItemHeader,
-  ItemHeaderAction,
 } from '@valist/ui';
 
 const AccountPage: NextPage = () => {
@@ -63,22 +64,21 @@ const AccountPage: NextPage = () => {
     (other: any) => other.id.toLowerCase() === address?.toLowerCase(),
   );
 
-  const leftActions: ItemHeaderAction[] = [
+  const actions: Action[] = [
     {
       label: 'Settings', 
       icon: Icon.Settings, 
       href: `/-/account/${accountName}/settings`, 
       hide: !isMember,
+      side: 'left',
     },
-  ];
-
-  const rightActions: ItemHeaderAction[] = [
     {
       label: 'New Project',
       icon: Icon.News,
       href: `/-/account/${accountName}/create/project`,
       variant: 'primary',
       hide: !isMember,
+      side: 'right',
     },
   ];
 
@@ -111,13 +111,15 @@ const AccountPage: NextPage = () => {
         }
       </Group>
       <div style={{ padding: 40 }}>
-        <ItemHeader 
-          name={accountName}
-          label={meta?.name}
-          image={meta?.image}
-          leftActions={leftActions}
-          rightActions={rightActions}
-        />
+        <Group spacing={24} mb="xl" noWrap>
+          <Item 
+            name={accountName}
+            label={meta?.name}
+            image={meta?.image}
+            large
+          />
+          <Actions actions={actions} />
+        </Group>
         <Grid>
           { (!showInfo || !infoOpened) &&
             <Grid.Col xl={8}>

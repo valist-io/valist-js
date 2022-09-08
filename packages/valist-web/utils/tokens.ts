@@ -72,6 +72,16 @@ export function findToken(address: string) {
   );
 }
 
+export function getTokenLogo(address: string) {
+  const token = findToken(address);
+  return token?.logoURI ?? '';
+}
+
+export function getTokenSymbol(address: string) {
+  const token = findToken(address);
+  return token?.symbol ?? '';
+}
+
 export function formatUnits(address: string, value: string) {
   const token = findToken(address);
   const decimals = token?.decimals ?? 18;
