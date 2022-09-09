@@ -179,7 +179,13 @@ const ProjectPage: NextPage = () => {
     rightActions.push({
       label: (projectMeta.type === 'native' || projectMeta.type === 'web') ? 'Launch' : 'Download',
       icon: Icon.Rocket,
-      action: () => setDonationOpen(true),
+      action: () => {
+        if (projectMeta?.prompt_donation) {
+          setDonationOpen(true);
+        } else {
+          window.open(releaseMeta?.external_url);
+        }
+      },
       variant: 'primary',
     });
   }
@@ -202,16 +208,15 @@ const ProjectPage: NextPage = () => {
     );
   };
 
-  console.log('data?.donation_address', data?.donation_address);
-
   return (
     <Layout padding={0}>
       <DonationModal 
         opened={donationOpen}
         projectName={`${accountName}/${projectName}`}
+        projectType={projectMeta?.type}
         releaseURL={releaseMeta?.external_url}
-        donationAddress={data?.donation_address}
-        onClose={() => setDonationOpen(false)}
+        donationAddress={projectMeta?.donation_address}
+        onClose={() => setDonationOpen(false)}       
       />
 
       <Group mt={40} pl={40} position="apart">
@@ -224,7 +229,7 @@ const ProjectPage: NextPage = () => {
         }
       </Group>
       <div style={{ padding: 40 }}>
-        <ItemHeader 
+        <ItemHeader
           name={projectName}
           label={projectMeta?.name}
           image={projectMeta?.image}
