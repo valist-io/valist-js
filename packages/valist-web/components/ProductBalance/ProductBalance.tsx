@@ -6,7 +6,7 @@ export interface ProductBalanceProps {
   address: string;
   balance: number;
   loading?: boolean;
-  onSubmit: (address: string) => void;
+  onSubmit: () => void;
 }
 
 export function ProductBalance(props: ProductBalanceProps) {
@@ -16,7 +16,7 @@ export function ProductBalance(props: ProductBalanceProps) {
 
   const submit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    props.onSubmit(props.address);
+    props.onSubmit();
   };
 
   return (

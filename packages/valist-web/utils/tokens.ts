@@ -66,6 +66,8 @@ export const tokens = [
   },
 ];
 
+export const tokenAddresses = tokens.map(token => token.address.toLowerCase());
+
 export function findToken(address: string) {
   return tokens.find((token: any) => 
     token.address.toLowerCase() === address.toLowerCase(),
@@ -92,4 +94,23 @@ export function parseUnits(address: string, value: string) {
   const token = findToken(address);
   const decimals = token?.decimals ?? 18;
   return ethers.utils.parseUnits(value, decimals);
+}
+
+const MESSARI_API_KEY = '51c85a1f-751b-41bc-9d50-5875a141071d';
+
+export async function getTokenPrice(address: string) {
+  const token = findToken(address);
+  const url = `https://data.messari.io/api/v1/assets/${token.symbol}/metrics/market-data`;
+  const headers = { 'x-messari-api-key': MESSARI_API_KEY };
+  const response = await fetch(url, { headers });
+  const { data } = await response.json();
+  return data?.market_data?.price_usd ?? 0;
+}
+
+export interface Token {
+  address: string;
+  balance: number;
+  price: number;
+  show?: boolean;
+  usd?: number;
 }
