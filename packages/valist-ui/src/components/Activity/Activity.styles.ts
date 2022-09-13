@@ -5,7 +5,7 @@ export default createStyles((theme, _params, getRef) => {
     text: {
       fontSize: 14,
       fontWeight: 400,
-      overflow: 'hidden', 
+      overflow: 'hidden',
       whiteSpace: 'nowrap',
     },
     link: {
