@@ -19,17 +19,17 @@ const LibraryPage: NextPage = () => {
     variables: { address: address?.toLowerCase() ?? '' },
   });
 
-  const _projects = Array.from((data?.purchases ?? [])
-    .map(p => p.product?.project)
-    .reduce((s, p) => s.set(p.id, p), new Map())
+  const _projects: any[] = Array.from((data?.purchases ?? [])
+    .map((p: any) => p.product?.project)
+    .reduce((s: Map<string, any>, p: any) => s.set(p.id, p), new Map<string, any>())
     .values());
 
-  const [projects, setProjects] = useState([]);
+  const [projects, setProjects] = useState<any[]>([]);
   // update balances and filter projects
   useEffect(() => {
     if (_projects.length > 0) {
-      const addresses = _projects.map(_ => address);
-      const projectIDs = _projects.map(p => p.id);
+      const addresses = _projects.map(_ => address ?? '');
+      const projectIDs = _projects.map((p: any) => p.id);
 
       valist.getProductBalanceBatch(addresses, projectIDs).then(values => {
         const balances = values.map(v => v.toNumber());
@@ -54,7 +54,7 @@ const LibraryPage: NextPage = () => {
               name={project.name}
               metaURI={project.metaURI}
               href={`/${project.account?.name}/${project.name}`}
-            />
+            />,
           )}
         </SimpleGrid>
       </div>

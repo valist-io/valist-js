@@ -7,7 +7,7 @@ export interface PriceButtonProps {
   address: string;
   price: number;
   loading?: boolean;
-  onSubmit: (address: string, price: string) => void;
+  onSubmit: (address: string, price: number) => void;
 }
 
 export function PriceButton(props: PriceButtonProps) {
@@ -17,7 +17,7 @@ export function PriceButton(props: PriceButtonProps) {
     <>
       <EditButton onClick={() => setOpened(true)} fill>
         <Item 
-          label={props.price}
+          label={`${props.price}`}
           name={getTokenSymbol(props.address)}
           image={getTokenLogo(props.address)}
         />

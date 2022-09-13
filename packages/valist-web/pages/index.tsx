@@ -63,31 +63,31 @@ const IndexPage: NextPage = () => {
   });
 
   const accounts = Array.from((data?.user?.projects ?? [])
-    .map(p => p.account)
+    .map((p: any) => p.account)
     .concat(data?.user?.accounts ?? [])
-    .reduce((s, a) => s.set(a.id, a), new Map())
+    .reduce((s: Map<string, any>, a: any) => s.set(a.id, a), new Map<string, any>())
     .values());
 
-  const account = accounts.find(a => a.name === accountName);
+  const account: any = accounts.find((a: any) => a.name === accountName);
   const { data: accountMeta } = useSWRImmutable(account?.metaURI);
 
   const projects = Array.from((data?.user?.accounts ?? [])
-    .flatMap(a => a.projects)
+    .flatMap((a: any) => a.projects)
     .concat(data?.user?.projects ?? [])
-    .filter(p => accountName === '' || p.account.name === accountName)
-    .reduce((s, p) => s.set(p.id, p), new Map())
+    .filter((p: any) => accountName === '' || p.account.name === accountName)
+    .reduce((s: Map<string, any>, p: any) => s.set(p.id, p), new Map<string, any>())
     .values());
 
   const members = Array.from(projects
-    .flatMap(p => p.members.concat(p.account.members ?? []))
-    .concat(account?.members ?? accounts.flatMap(a => a.members))
-    .reduce((s, m) => s.add(m.id), new Set())
+    .flatMap((p: any) => p.members.concat(p.account.members ?? []))
+    .concat(account?.members ?? accounts.flatMap((a: any) => a.members))
+    .reduce((s: Set<string>, m: any) => s.add(m.id), new Set<string>())
     .values());
 
-  const logs = Array.from((account?.logs ?? accounts.flatMap(a => a.logs))
-    .concat(projects.flatMap(p => p.logs))
-    .sort((a, b) => b.blockTime.localeCompare(a.blockTime))
-    .reduce((s, l) => s.set(l.id, l), new Map())
+  const logs = Array.from((account?.logs ?? accounts.flatMap((a: any) => a.logs))
+    .concat(projects.flatMap((p: any) => p.logs))
+    .sort((a: any, b: any) => b.blockTime.localeCompare(a.blockTime))
+    .reduce((s: Map<string, any>, l: any) => s.set(l.id, l), new Map<string, any>())
     .values());
 
   const actions: Action[] = [
@@ -149,7 +149,7 @@ const IndexPage: NextPage = () => {
           onChange={setAccountName}
         >
           <AccountSelect.Option value="" name="All Accounts" />
-          {accounts.map((acc, index) => 
+          {accounts.map((acc: any, index: number) => 
             <Metadata key={index} url={acc.metaURI}>
               {(data: any) => ( <AccountSelect.Option value={acc.name} name={acc.name} image={data?.image} /> )}
             </Metadata>,
@@ -187,7 +187,7 @@ const IndexPage: NextPage = () => {
                       name={project.name}
                       metaURI={project.metaURI}
                       href={`/${project.account?.name}/${project.name}`}
-                    />
+                    />,
                   )}
                 </CardGrid>
               }

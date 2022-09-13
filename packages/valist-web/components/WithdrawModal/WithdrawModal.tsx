@@ -6,8 +6,9 @@ import { Token } from '@/utils/tokens';
 
 export interface WithdrawModalProps {
   tokens: Token[];
-  balance: number;
+  balance: string;
   opened: boolean;
+  loading?: boolean;
   onClose: () => void;
   onSubmit: (token: string, address: string) => void;
 }
@@ -45,7 +46,7 @@ export function WithdrawModal(props: WithdrawModalProps) {
         <TextInput 
           label="Address"
           value={recipient} 
-          onChange={(event) => setValue(event.currentTarget.value)}
+          onChange={(event) => setRecipient(event.currentTarget.value)}
         />
         <Title order={5} mt={16}>Tokens</Title>
         { props.tokens.filter(token => token.balance !== 0).map((token: Token, index: number) => 
@@ -54,7 +55,7 @@ export function WithdrawModal(props: WithdrawModalProps) {
             address={token.address}
             balance={token.balance}
             loading={props.loading}
-            onSubmit={() => withdrawBalance(token.address, recipient)}
+            onSubmit={() => props.onSubmit(token.address, recipient)}
           />,
         )}
       </Stack>

@@ -12,7 +12,7 @@ export type AppConfig = {
   path: string;
 }
 
-export async function getApps(): AppConfig[] {
+export async function getApps(): Promise<AppConfig[]> {
   return await window.valist.getApps();  
 }
 

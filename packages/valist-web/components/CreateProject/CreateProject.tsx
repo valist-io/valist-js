@@ -96,7 +96,7 @@ export function CreateProject(props: CreateProjectProps) {
     setLoading(true);
     createProject(
       address,
-      account?.id,
+      accountId,
       image,
       mainCapsule,
       gallery,

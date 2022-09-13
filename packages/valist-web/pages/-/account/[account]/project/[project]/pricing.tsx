@@ -21,6 +21,7 @@ import {
   getTokenLogo, 
   getTokenPrice,
   tokenAddresses,
+  parseUnits,
   Token,
 } from '@/utils/tokens';
 
@@ -101,18 +102,18 @@ const Pricing: NextPage = () => {
   const week = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-  const [range, setRange] = useState(0);
+  const [range, setRange] = useState<string | null>('');
   const ranges = [
-    { label: 'All Time', value: 0 },
-    { label: 'This Month', value: month.valueOf() },
-    { label: 'This Week', value: week.valueOf() },
-    { label: 'Today', value: today.valueOf() },
+    { label: 'All Time', value: '' },
+    { label: 'This Month', value: `${month.valueOf()}` },
+    { label: 'This Week', value: `${week.valueOf()}` },
+    { label: 'Today', value: `${today.valueOf()}` },
   ];
 
-  const purchases = _purchases.filter(p => {
-    const date = parseBlockTime(p.blockTime);
-    return date.valueOf() > range;
-  });
+  const purchases = _purchases.filter((p: any) => !range || p.blockTime > range);
+    // const date = parseBlockTime(p.blockTime);
+    // return date.valueOf() > range;
+  // });
 
   // form values
   const [loading, setLoading] = useState(true);
@@ -142,17 +143,25 @@ const Pricing: NextPage = () => {
     });
   };
 
-  const updatePrice = (_token: string, _price: string) => {
+  const updatePrice = (_token: string, _price: number) => {
+    const price = parseUnits(_token, `${_price}`).toString();
     setLoading(true);
     setProductPrice(
       address,
       projectId,
       _token,
-      _price,
+      price,
       valist,
       cache,
       chain?.id || 137,
-    ).finally(() => {
+    ).then(success => {
+      if (success) {
+        const _tokens = tokens.map(token => 
+          token.address === _token ? { ...token, price: _price } : token,
+        );
+        setTokens(_tokens);
+      }
+    }).finally(() => {
       setLoading(false);
     });
   };
@@ -180,14 +189,21 @@ const Pricing: NextPage = () => {
   const withdrawBalance = (_token: string, _address: string) => {
     setLoading(true);
     withdrawProductBalance(
-      _address,
+      address,
       projectId,
       _token,
-      withdrawRecipient,
+      _address,
       valist,
       cache,
       chain?.id || 137,
-    ).finally(() => {
+    ).then(success => {
+      if (success) {
+        const _tokens = tokens.map(token => 
+          token.address === _token ? { ...token, balance: 0 } : token,
+        );
+        setTokens(_tokens);  
+      }
+    }).finally(() => {
       setLoading(false);
     });
   };
@@ -204,10 +220,10 @@ const Pricing: NextPage = () => {
       setRoyaltyRecipient(_royaltyRecipient || '0x0000000000000000000000000000000000000000');
       
       const _tokens = tokenAddresses.map(address => {
-        const currency = currencies.find(currency => address == currency.token);
+        const currency = currencies.find((currency: any) => address == currency.token);
         const balance = formatUnits(currency?.token ?? '', currency?.balance ?? '0');
         const price = formatUnits(currency?.token ?? '', currency?.price ?? '0');
-        return { address, balance, price, show: !!currency };
+        return { address, balance, price, usd: 0, show: !!currency };
       });
 
       const promises = _tokens.map(
@@ -304,7 +320,7 @@ const Pricing: NextPage = () => {
                             <Avatar radius="xl" size={40} src={getTokenLogo(purchase.token)} />
                             <Text size="sm">{formatUnits(purchase.token, purchase.price)} {getTokenSymbol(purchase.token)}</Text>
                           </Group>
-                        </Group>
+                        </Group>,
                       )}
                     </List>
                   </Stack>
@@ -349,7 +365,7 @@ const Pricing: NextPage = () => {
                         price={token.price}
                         loading={loading}
                         onSubmit={updatePrice}
-                      />
+                      />,
                     )}
                   </Stack>
                 </Card>

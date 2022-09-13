@@ -8,7 +8,7 @@ export interface RoyaltyModalProps {
   opened: boolean;
   onClose: () => void;
   loading?: boolean;
-  onSubmit: (limit: number) => void;
+  onSubmit: (amount: number, recipient: string) => void;
 }
 
 export function RoyaltyModal(props: RoyaltyModalProps) {
@@ -51,7 +51,7 @@ export function RoyaltyModal(props: RoyaltyModalProps) {
           <TextInput 
             label="Recipient Address"
             value={recipient} 
-            onChange={(event) => setValue(event.currentTarget.value)}
+            onChange={(event) => setRecipient(event.currentTarget.value)}
           />
           <Button 
             style={{ marginTop: 16, alignSelf: 'flex-start' }}

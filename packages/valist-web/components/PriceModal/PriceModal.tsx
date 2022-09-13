@@ -10,7 +10,7 @@ export interface PriceModalProps {
   loading?: boolean;
   opened: boolean;
   onClose: () => void;
-  onSubmit: (address: string, price: string) => void;
+  onSubmit: (address: string, price: number) => void;
 }
 
 export function PriceModal(props: PriceModalProps) {
@@ -27,11 +27,11 @@ export function PriceModal(props: PriceModalProps) {
   const decimals = token?.decimals ?? 18;
   const label = token?.name ?? '';
   const icon = token?.logoURI ?? '';
+  const symbol = token?.symbol ?? '';
 
   const submit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const value = ethers.utils.parseUnits(`${price}`, decimals);
-    props.onSubmit(props.address, value.toString());
+    props.onSubmit(props.address, price);
   };
 
   return (
@@ -49,9 +49,9 @@ export function PriceModal(props: PriceModalProps) {
             Set the price for your software in this token currency.
           </Text>
           <Item 
-            label={token.name}
-            name={token.symbol}
-            image={token.logoURI}
+            label={label}
+            name={symbol}
+            image={icon}
           />
           <TokenInput
             style={{ flex: '1 1 0px' }}

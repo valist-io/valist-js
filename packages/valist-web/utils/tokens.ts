@@ -99,8 +99,8 @@ export function parseUnits(address: string, value: string) {
 const MESSARI_API_KEY = '51c85a1f-751b-41bc-9d50-5875a141071d';
 
 export async function getTokenPrice(address: string) {
-  const token = findToken(address);
-  const url = `https://data.messari.io/api/v1/assets/${token.symbol}/metrics/market-data`;
+  const symbol = getTokenSymbol(address);
+  const url = `https://data.messari.io/api/v1/assets/${symbol}/metrics/market-data`;
   const headers = { 'x-messari-api-key': MESSARI_API_KEY };
   const response = await fetch(url, { headers });
   const { data } = await response.json();
@@ -111,6 +111,6 @@ export interface Token {
   address: string;
   balance: number;
   price: number;
-  show?: boolean;
-  usd?: number;
+  show: boolean;
+  usd: number;
 }

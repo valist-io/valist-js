@@ -94,7 +94,7 @@ const ProjectPage: NextPage = () => {
     ? projectMeta?.external_url 
     : releaseMeta?.external_url;
 
-  const actions: ItemHeaderAction[] = [
+  const actions: Action[] = [
     {
       label: 'Settings', 
       icon: Icon.Settings, 
@@ -133,7 +133,7 @@ const ProjectPage: NextPage = () => {
       variant: 'primary',
       hide: !(isPriced && balance === 0),
       side: 'right',
-    }
+    },
   ];
 
   const breadcrumbs = [
