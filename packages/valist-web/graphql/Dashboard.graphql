@@ -1,0 +1,25 @@
+query Dashboard($address: String!){
+  user(id: $address) {
+    id
+    accounts {
+      id
+      name
+      projects {
+        id
+        name
+        account {
+          id
+          name
+        }
+      }
+    }
+    projects {
+      id
+      name
+      account {
+        id
+        name
+      }
+    }
+  }
+}

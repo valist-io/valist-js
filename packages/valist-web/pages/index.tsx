@@ -4,7 +4,6 @@ import { useAccount } from 'wagmi';
 import useSWRImmutable from 'swr/immutable';
 import * as Icon from 'tabler-icons-react';
 import { useRouter } from 'next/router';
-import { useQuery } from '@apollo/client';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { useMediaQuery } from '@mantine/hooks';
 import { Layout } from '@/components/Layout';
@@ -14,7 +13,7 @@ import { ProjectCard } from '@/components/ProjectCard';
 import { CreateAccount } from '@/components/CreateAccount';
 import { CreateProject } from '@/components/CreateProject';
 import { ValistContext } from '@/components/ValistProvider';
-import query from '@/graphql/DashboardPage.graphql';
+import { useDashboard } from '@/utils/dashboard';
 
 import { 
   Title, 
@@ -53,42 +52,15 @@ const IndexPage: NextPage = () => {
   const showInfo = useMediaQuery('(max-width: 1400px)', false);
 
   const [accountName, setAccountName] = useState('');
+  const { accounts, projects, members, logs, loading } = useDashboard(accountName);
+  
   // reset account when address changes
   useEffect(() => {
     setAccountName('');
   }, [address]);
 
-  const { data, loading } = useQuery(query, { 
-    variables: { address: address?.toLowerCase() ?? '' },
-  });
-
-  const accounts = Array.from((data?.user?.projects ?? [])
-    .map((p: any) => p.account)
-    .concat(data?.user?.accounts ?? [])
-    .reduce((s: Map<string, any>, a: any) => s.set(a.id, a), new Map<string, any>())
-    .values());
-
   const account: any = accounts.find((a: any) => a.name === accountName);
   const { data: accountMeta } = useSWRImmutable(account?.metaURI);
-
-  const projects = Array.from((data?.user?.accounts ?? [])
-    .flatMap((a: any) => a.projects)
-    .concat(data?.user?.projects ?? [])
-    .filter((p: any) => accountName === '' || p.account.name === accountName)
-    .reduce((s: Map<string, any>, p: any) => s.set(p.id, p), new Map<string, any>())
-    .values());
-
-  const members = Array.from(projects
-    .flatMap((p: any) => p.members.concat(p.account.members ?? []))
-    .concat(account?.members ?? accounts.flatMap((a: any) => a.members))
-    .reduce((s: Set<string>, m: any) => s.add(m.id), new Set<string>())
-    .values());
-
-  const logs = Array.from((account?.logs ?? accounts.flatMap((a: any) => a.logs))
-    .concat(projects.flatMap((p: any) => p.logs))
-    .sort((a: any, b: any) => b.blockTime.localeCompare(a.blockTime))
-    .reduce((s: Map<string, any>, l: any) => s.set(l.id, l), new Map<string, any>())
-    .values());
 
   const actions: Action[] = [
     {

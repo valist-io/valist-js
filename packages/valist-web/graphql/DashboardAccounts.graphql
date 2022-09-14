@@ -1,0 +1,31 @@
+query DashboardAccounts($ids: [String!]){
+  accounts(where: { id_in: $ids }) {
+    id
+    name
+    metaURI
+    
+    members {
+      id
+    }
+
+    logs(orderBy: blockTime, orderDirection: "desc", limit: 5) {
+      id
+      type
+      sender
+      member
+      account {
+        id
+        name
+      }
+      project {
+        id
+        name
+      }
+      release {
+        id
+        name
+      }
+      blockTime
+    }
+  }
+}
