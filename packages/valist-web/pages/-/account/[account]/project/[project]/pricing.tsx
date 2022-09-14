@@ -39,7 +39,6 @@ import {
   Card,
   EditButton,
   InfoButton,
-  Item,
   List,
   Member,
   TokenInput,
@@ -111,9 +110,6 @@ const Pricing: NextPage = () => {
   ];
 
   const purchases = _purchases.filter((p: any) => !range || p.blockTime > range);
-    // const date = parseBlockTime(p.blockTime);
-    // return date.valueOf() > range;
-  // });
 
   // form values
   const [loading, setLoading] = useState(true);
