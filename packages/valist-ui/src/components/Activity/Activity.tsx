@@ -20,11 +20,11 @@ export function Activity(props: ActivityProps) {
 	return (
     <Group noWrap>
       <Identicon value={props.sender} />
-      <Stack spacing={4}>
+      <Stack style={{overflow: 'hidden'}} spacing={4}>
         <Text className={classes.text}>
-          {props.children}
+          test {props.children}
         </Text>
-        <Anchor 
+        <Anchor
           className={classes.link} 
           href={props.href} 
           target="_blank"

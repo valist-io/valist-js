@@ -30,14 +30,20 @@ export function Carousel(props: CarouselProps): JSX.Element {
         <h2 className={classes.title}>{props.title}</h2>
       </div>
       
-      <div style={{ display: 'flex', flexDirection: 'row', overflowX: 'scroll' }}>
+      <div style={{ display: 'flex', flexDirection: 'row' }}>
         <MantineCarousel
-          slideSize="20%"
-          breakpoints={[{ maxWidth: 'sm', slideSize: '100%', slideGap: 2 }]}
+          slideSize="20.333333%"
           slideGap="xl"
           align="start"
           loop
-          slidesToScroll={mobile ? 1 : 2}
+          dragFree
+          slidesToScroll={mobile ? 1 : 3}
+          breakpoints={[
+            { maxWidth: 'xl', slideSize: '20%'},
+            { maxWidth: 'lg', slideSize: '30%'},
+            { maxWidth: 'md', slideSize: '50%' },
+            { maxWidth: 'sm', slideSize: '80%' },
+          ]}
         >
           {props.items.map((item: Item, index ) => (
             <MantineCarousel.Slide key={index}>
