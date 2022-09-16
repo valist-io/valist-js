@@ -116,7 +116,7 @@ export function DonationModal(props: DonationModalProps) {
             Thankyou for your contribution! ❤️
           </Text>
           <Anchor target="_blank" style={{ fontSize: 35, textDecoration: 'underline' }} href={props?.releaseURL || ''}>
-            {props.projectType === 'web' ?  'Launch application.' : 'Download.'}
+            {props.projectType === 'web' ?  'Launch application' : 'Download'}
           </Anchor>
         </Stack>
       }
