@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import { urlSource } from 'ipfs-http-client';
 import { getFilesFromPath as getFiles } from 'files-from-path';
+import axios from 'axios';
 
 /**
  * Generate account, project, and release IDs.
@@ -9,9 +10,9 @@ import { getFilesFromPath as getFiles } from 'files-from-path';
  * @param name Name of the account, project, or rlease.
  */
 export function generateID(parentID: ethers.BigNumberish, name: string): string {
-  const nameBytes = ethers.utils.toUtf8Bytes(name);
-  const nameHash = ethers.utils.keccak256(nameBytes);
-  return ethers.utils.solidityKeccak256(["uint256", "bytes32"], [parentID, nameHash]);
+	const nameBytes = ethers.utils.toUtf8Bytes(name);
+	const nameHash = ethers.utils.keccak256(nameBytes);
+	return ethers.utils.solidityKeccak256(["uint256", "bytes32"], [parentID, nameHash]);
 }
 
 export function getAccountID(chainId: ethers.BigNumberish, account: string): string {
@@ -62,14 +63,28 @@ export const getFilesFromPath = getFiles;
  *
  * @param {Filelike} file
  */
- export const toImportCandidate = (file: File) => {
+export const toImportCandidate = (file: File) => {
 	/** @type {ReadableStream} */
 	let stream: any;
 	return {
 		path: file.name,
-		get content () {
-		stream = stream || file.stream()
-		return stream
+		get content() {
+			stream = stream || file.stream()
+			return stream
 		}
 	}
+}
+
+export async function getStats(projectPath: string) {
+	const stats = await axios.get(
+		`https://stats.valist.io/api/downloads/${projectPath}`,
+	);
+
+	return stats?.data?.downloads;
+}
+
+export async function sendStats(projectPath: string) {
+	await axios.post(
+		`https://stats.valist.io/api/download/${projectPath}`
+	);
 }

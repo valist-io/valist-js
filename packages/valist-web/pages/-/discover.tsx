@@ -1,11 +1,24 @@
 import type { NextPage } from 'next';
 import { Layout } from '@/components/Layout';
-import { HeroSection, Carousel, PublishPromo, DiscoveryFooter } from '@valist/ui';
+import { HeroSection, Carousel, PublishPromo, DiscoveryFooter, CardGrid, Button } from '@valist/ui';
 import { useMediaQuery } from '@mantine/hooks';
+import { CarouselItem } from '@valist/ui/dist/components/Carousel';
+import { useQuery } from '@apollo/client';
+import query from '@/graphql/Discover.graphql';
+import { Metadata } from '@/components/Metadata';
+import { Center, SimpleGrid } from '@mantine/core';
+import { useState } from 'react';
 
 const Discover: NextPage = () => {
+  const [latestIndex, setLatestIndex] = useState(12);
+  const { data } = useQuery(query, { 
+    variables: { order: 'desc' },
+  });
+  const projects = data?.projects ?? [];
+  
   const isMobile = useMediaQuery('(max-width: 900px)');
   const paddingY = isMobile ? '24px' : '64px';
+  
 
   const demoItem1: any[] = [
     {
@@ -112,32 +125,71 @@ const Discover: NextPage = () => {
   ];
   
 	return (
+    <div style={{ overflow: 'hidden' }}>
       <Layout hideNavbar={true} padding={0}>
-         <section>
-           <HeroSection
-            image={"/images/discovery/shattered_realms.png"} 
-            title={'Shattered Realms'} 
-            tagline={'Action, Adventure, RPG'} 
-            link={'/shatteredrealms/game'}
-         /> 
-         </section>
-         
-         <section style={{ marginTop: 56, padding: `0 ${paddingY}` }}>
-            <Carousel title={"Popular Software"} number={5} items={demoItem1} />
-         </section>
+          <section>
+            <HeroSection
+              image={"/images/discovery/shattered_realms.png"} 
+              title={'Shattered Realms'} 
+              tagline={'Action, Adventure, RPG'} 
+              link={'/shatteredrealms/game'}
+          /> 
+          </section>
+          
+          <section style={{ marginTop: 56, padding: `0 ${paddingY}` }}>
+              <Carousel title={"Popular Software"} number={5} items={demoItem1} />
+          </section>
 
-         <section style={{ marginTop: 56, padding: `0 ${paddingY}` }}>
-            <Carousel title={"New on Valist"} number={5} items={demoItem2} />
-         </section>
+          <section style={{ marginTop: 56, padding: `0 ${paddingY}` }}>
+              <Carousel title={"New and Noteworthy"} number={5} items={demoItem2} />
+          </section>
 
-         <section>
-            <PublishPromo />
-         </section>
-         
-         <section>
-            <DiscoveryFooter />
-         </section>
+          <section style={{ marginTop: 56, padding: `0 ${paddingY}` }}>
+            <h2 style={{ fontStyle: 'normal', fontWeight: 700, fontSize: isMobile ? 18 : 32 }}>Latest Apps and Games</h2>
+            {projects.length !== 0 &&
+              <>
+                <SimpleGrid
+                  breakpoints={[
+                    { minWidth: 'sm', cols: 1, spacing: 24 },
+                    { minWidth: 'md', cols: 2, spacing: 24 },
+                    { minWidth: 'lg', cols: 4, spacing: 16 },
+                  ]}
+                >
+                  {projects.slice(0, latestIndex).map((project: any, index: number) =>
+                    <Metadata key={index} url={project.metaURI}>
+                      {(data: any) =>
+                        <CarouselItem 
+                          img={data?.image || '/images/valist.png'} 
+                          name={data?.name} 
+                          description={data?.description} 
+                          link={`https://app.valist.io/${project.account.name}/${project?.name}`}
+                          type={data?.type}
+                        />
+                      }
+                    </Metadata>,
+                  )}
+                </SimpleGrid>
+                <Center>
+                  <Button
+                    style={{ margin: '30px 0 60px 0' }} 
+                    onClick={() => setLatestIndex(latestIndex + 12)}
+                  >
+                  Load More
+                </Button>
+               </Center>
+              </>
+            }
+          </section>
+
+          <section>
+              <PublishPromo />
+          </section>
+          
+          <section>
+              <DiscoveryFooter />
+          </section>
       </Layout>
+    </div>
 	);
 };
 
