@@ -67,7 +67,7 @@ export const tokens = [
 ];
 
 export function findToken(address: string) {
-  return tokens.find((token: any) => 
+  return tokens.find((token: any) =>
     token.address.toLowerCase() === address.toLowerCase(),
   );
 }

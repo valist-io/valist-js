@@ -30,6 +30,7 @@ import {
   Select,
   MultiSelect,
   Tabs,
+  Checkbox,
 } from '@mantine/core';
 
 import { 
@@ -79,6 +80,8 @@ const Project: NextPage = () => {
       type: '',
       tags: [],
       launchExternal: false,
+      donationAddress: '',
+      promptDonation: false,
     },
   });
 
@@ -91,10 +94,13 @@ const Project: NextPage = () => {
       form.setFieldValue('displayName', meta.name ?? '');
       form.setFieldValue('website', meta.external_url ?? '');
       form.setFieldValue('description', meta.description ?? '');
+      form.setFieldValue('shortDescription', meta.short_description ?? '');
       form.setFieldValue('youTubeLink', youTubeLink?.src ?? '');
       form.setFieldValue('tags', meta.tags ?? []);
       form.setFieldValue('type', meta.type ?? '');
       form.setFieldValue('launchExternal', meta.launch_external ?? false);
+      form.setFieldValue('promptDonation', meta.prompt_donation ?? false);
+      form.setFieldValue('donationAddress', meta.donation_address ?? false);
 
       setGallery(galleryLinks?.map((item: any) => item.src) ?? []);
       setMainCapsule(meta.main_capsule);
@@ -132,6 +138,7 @@ const Project: NextPage = () => {
   };
 
   const update = (values: FormValues) => {
+    console.log('update in settings', values);
     setLoading(true);
     updateProject(
       address,
@@ -166,6 +173,8 @@ const Project: NextPage = () => {
     { title: projectName, href: `/${accountName}/${projectName}` },
     { title: 'Settings', href: `/-/account/${accountName}/project/${projectName}/settings` },
   ];
+
+  console.log('form.values.donationAddress', form.values.donationAddress);
 
   return (
     <Layout>
@@ -210,6 +219,12 @@ const Project: NextPage = () => {
                 disabled={loading}
                 {...form.getInputProps('website')}
               />
+              <Checkbox
+                label="Launch from external website"
+                color="indigo"
+                size="sm"
+                {...form.getInputProps('launchExternal', { type: 'checkbox' })}
+              />
               <Select
                 label="Type"
                 data={defaultTypes}
@@ -229,11 +244,22 @@ const Project: NextPage = () => {
                 getCreateLabel={(query) => `+ Create ${query}`}
                 {...form.getInputProps('tags')}
               />
-              <Select
-                label="Launch External"
-                data={[{ label: "true", value: true }, { label: "false", value: false }]}
-                {...form.getInputProps('launchExternal')}
+
+              <Checkbox
+                label="Prompt for donation on download"
+                color="indigo"
+                size="sm"
+                {...form.getInputProps('promptDonation', { type: 'checkbox' })}
               />
+
+              {data?.prompt_donation || form.values.promptDonation &&
+                <AddressInput
+                  label="Donation Address"
+                  required
+                  value={form.values.donationAddress} 
+                  onSubmit={(address: string) => form.setFieldValue('donationAddress', address)} 
+                />
+              }
             </Stack>
             <Group mt="lg">
               <Button 

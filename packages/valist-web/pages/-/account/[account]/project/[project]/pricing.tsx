@@ -26,9 +26,7 @@ import {
   Title,
   Stack,
   TextInput,
-  Textarea,
   NumberInput,
-  List,
   Tabs,
 } from '@mantine/core';
 

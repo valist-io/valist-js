@@ -20,7 +20,6 @@ import {
   Stack,
   Grid,
   Text,
-  MediaQuery,
 } from '@mantine/core';
 
 import {
@@ -35,11 +34,9 @@ import {
   Welcome,
   CheckboxList,
 } from '@valist/ui';
-import { ValistContext } from '@/components/ValistProvider';
 
 const IndexPage: NextPage = () => {
   const router = useRouter();
-  const valist = useContext(ValistContext);
   const { account } = useContext(AccountContext);
   const { openConnectModal } = useConnectModal();
   const { isConnected } = useAccount();
@@ -123,7 +120,7 @@ const IndexPage: NextPage = () => {
                           <ProjectCard
                             title={project.name} 
                             secondary={data?.name}
-                            description={data?.description} 
+                            description={data?.short_description} 
                             image={data?.image} 
                           />
                         </NextLink>

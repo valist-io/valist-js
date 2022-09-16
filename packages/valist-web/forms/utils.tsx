@@ -18,6 +18,21 @@ export const showError = (error: any) => showNotification({
   message: error.data?.message ?? error.message,
 });
 
+export const showErrorMessage = (error: any) => {
+  let message = error.toString();
+  if (error.toString().includes('ERC20: transfer amount exceeds balance')) {
+    message = 'ERC20: transfer amount exceeds balance';
+  }
+
+  showNotification({
+    id: ERROR_ID,
+    autoClose: false,
+    color: 'red',
+    title: 'Error',
+    message: message,
+  });
+};
+
 export const showLoading = (message: ReactNode) => showNotification({
   id: LOADING_ID,
   autoClose: false,

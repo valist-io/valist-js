@@ -37,6 +37,7 @@ import {
   Grid,
 } from '@mantine/core';
 import { checkIsElectron, getApps, install, launch } from '@/components/Electron';
+import { DonationModal } from '@/components/DonationModal';
 
 declare global {
   interface Window {
@@ -73,6 +74,7 @@ const ProjectPage: NextPage = () => {
   const [infoOpened, setInfoOpened] = useState(false);
   const showInfo = useMediaQuery('(max-width: 1400px)', false);
 
+  const [donationOpen, setDonationOpen] = useState(false);
   const [balance, setBalance] = useState(0);
   const [isElectron, setIsElectron] = useState<boolean>(false);
   const [isInstalled, setIsInstalled] = useState<boolean>(false);
@@ -177,8 +179,13 @@ const ProjectPage: NextPage = () => {
     rightActions.push({
       label: (projectMeta.type === 'native' || projectMeta.type === 'web') ? 'Launch' : 'Download',
       icon: Icon.Rocket,
-      href: launchUrl || '',
-      target: '_blank',
+      action: () => {
+        if (projectMeta?.prompt_donation) {
+          setDonationOpen(true);
+        } else {
+          window.open(releaseMeta?.external_url);
+        }
+      },
       variant: 'primary',
     });
   }
@@ -203,6 +210,15 @@ const ProjectPage: NextPage = () => {
 
   return (
     <Layout padding={0}>
+      <DonationModal 
+        opened={donationOpen}
+        projectName={`${accountName}/${projectName}`}
+        projectType={projectMeta?.type}
+        releaseURL={releaseMeta?.external_url}
+        donationAddress={projectMeta?.donation_address}
+        onClose={() => setDonationOpen(false)}       
+      />
+
       <Group mt={40} pl={40} position="apart">
         <Breadcrumbs items={breadcrumbs} />
         { showInfo &&
@@ -213,7 +229,7 @@ const ProjectPage: NextPage = () => {
         }
       </Group>
       <div style={{ padding: 40 }}>
-        <ItemHeader 
+        <ItemHeader
           name={projectName}
           label={projectMeta?.name}
           image={projectMeta?.image}
@@ -302,12 +318,12 @@ const ProjectPage: NextPage = () => {
                         <Text>Version</Text>
                         <Text>{latestRelease?.name}</Text>
                       </Group>
-                      <Group position="apart">
+                      {projectMeta?.external_url && <Group position="apart">
                         <Text>Website</Text>
                         <Anchor href={projectMeta?.external_url ?? ''}>
                           {projectMeta?.external_url}
                         </Anchor>
-                      </Group>
+                      </Group>}
                     </List>
                   </Stack>
                 </Card>

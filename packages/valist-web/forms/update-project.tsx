@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { string, z } from 'zod';
 import { ApolloCache } from '@apollo/client';
 import { ProjectMeta, Client } from '@valist/sdk';
 import { handleEvent } from './events';
@@ -14,8 +14,10 @@ export interface FormValues {
   shortDescription: string;
   youTubeLink: string;
   type: string;
+  donationAddress: string;
   tags: string[];
   launchExternal: boolean;
+  promptDonation: boolean;
 }
 
 export const schema = z.object({
@@ -30,6 +32,7 @@ export const schema = z.object({
     .max(100, { message: 'Description should be shorter than 100 characters' }),
   type: z.string(),
   tags: z.string().array(),
+  promptDonation: z.boolean(),
   launchExternal: z.boolean(),
 });
 
@@ -51,14 +54,19 @@ export async function updateProject(
       throw new Error('connect your wallet to continue');
     }
 
+    console.log('hello from updateProject');
+
     const meta: ProjectMeta = {
       name: values.displayName,
+      short_description: values.shortDescription,
       description: values.description,
       external_url: values.website,
       type: values.type,
       tags: values.tags,
       gallery: [],
       launch_external: values.launchExternal,
+      donation_address: values.donationAddress,
+      prompt_donation: values.promptDonation,
     };
 
     utils.showLoading('Uploading files');
