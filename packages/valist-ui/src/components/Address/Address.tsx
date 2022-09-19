@@ -4,9 +4,19 @@ import {
   UnstyledButton,
 } from '@mantine/core';
 
-import React from 'react';
+import React, { useContext } from 'react';
 import { useClipboard } from '@mantine/hooks';
 import * as Icon from 'tabler-icons-react';
+
+export interface AddressContextType {
+  resolveName: (address: string) => { data: string | undefined | null, isLoading: boolean };
+}
+
+export const AddressContext = React.createContext<AddressContextType>({
+  resolveName: (address: string) => ({ data: undefined, isLoading: false }),
+});
+
+export const AddressProvider = AddressContext.Provider;
 
 export interface AddressProps {
   address: string;
@@ -17,6 +27,14 @@ export interface AddressProps {
 
 export function Address(props: AddressProps) {
   const clipboard = useClipboard();
+  const { resolveName } = useContext(AddressContext);
+  const { data: name } = resolveName(props.address);
+
+  const label = name
+    ? name
+    : props.truncate
+    ? `${props.address.slice(0, 6)}..${props.address.slice(-4)}`
+    : props.address;
 
   return (
     <UnstyledButton 
@@ -25,10 +43,7 @@ export function Address(props: AddressProps) {
     >
       <Group spacing={2} noWrap>
         <Text style={{ fontSize: props.size }}>
-          { props.truncate
-            ? `${props.address.slice(0, 6)}..${props.address.slice(-4)}`
-            : props.address
-          }
+          { label }
         </Text>
       </Group>
     </UnstyledButton>

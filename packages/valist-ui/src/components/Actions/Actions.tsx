@@ -9,6 +9,7 @@ import type { Icon } from 'tabler-icons-react';
 import { Button, ButtonVariant } from '../Button';
 import { Fab } from '../Fab';
 import useStyles from './Actions.styles';
+import { Fragment } from 'react';
 
 export interface Action {
   label: string;
@@ -41,11 +42,13 @@ export function Actions(props: ActionsProps) {
         <Group>
           { leftActions.map((action: Action, index: number) =>
             <Tooltip key={index} label={action.label} position="bottom">
-              <Anchor target={action.target} href={action.href}>
-                <UnstyledButton className={classes.action}>
-                  <action.icon size={28} />
-                </UnstyledButton>
-              </Anchor>
+              <div>
+                <Anchor target={action.target} href={action.href}>
+                  <UnstyledButton className={classes.action}>
+                    <action.icon size={28} />
+                  </UnstyledButton>
+                </Anchor>
+              </div>
             </Tooltip>
           )}
         </Group>
@@ -62,11 +65,13 @@ export function Actions(props: ActionsProps) {
       { actions.length > 0 && 
         <Fab>
           { actions.map((action, index) =>
-            <Anchor key={index} target={action.target} href={action.href}>
-              <Fab.Button label={action.label}>
-                <action.icon size={32} />
-              </Fab.Button>
-            </Anchor>
+            <Fragment key={index}>
+              <Anchor target={action.target} href={action.href}>
+                <Fab.Button label={action.label}>
+                  <action.icon size={32} />
+                </Fab.Button>
+              </Anchor>
+            </Fragment>
           )}
         </Fab>
       }

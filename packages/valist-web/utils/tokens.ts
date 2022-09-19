@@ -69,7 +69,7 @@ export const tokens = [
 export const tokenAddresses = tokens.map(token => token.address.toLowerCase());
 
 export function findToken(address: string) {
-  return tokens.find((token: any) => 
+  return tokens.find((token: any) =>
     token.address.toLowerCase() === address.toLowerCase(),
   );
 }

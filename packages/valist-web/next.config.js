@@ -1,10 +1,20 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  assetPrefix: process.env.IPFS_BUILD ? './' : undefined,
-  images: {
-    domains: ['gateway.valist.io', 'https://gateway.valist.io', 'localhost'],
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "s-maxage=1, stale-while-revalidate=59",
+          },
+        ],
+      },
+    ];
   },
+  assetPrefix: process.env.IPFS_BUILD ? './' : undefined,
   publicRuntimeConfig: {
     CHAIN_ID: process.env.CHAIN_ID || 1337,
     WEB3_PROVIDER: process.env.WEB3_PROVIDER || 'http://localhost:8545',

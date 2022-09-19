@@ -2,7 +2,7 @@ export { _404 } from "./components/404";
 export { AccountSelect } from './components/AccountSelect';
 export { Actions } from './components/Actions';
 export { Activity } from './components/Activity';
-export { Address } from './components/Address';
+export { Address, AddressProvider } from './components/Address';
 export { AppShell } from './components/AppShell';
 export { AsyncInput } from './components/AsyncInput';
 export { Button } from './components/Button';

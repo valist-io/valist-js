@@ -18,6 +18,21 @@ export const showError = (error: any) => showNotification({
   message: error.data?.message ?? error.message,
 });
 
+export const showErrorMessage = (error: any) => {
+  let message = error.toString();
+  if (error.toString().includes('ERC20: transfer amount exceeds balance')) {
+    message = 'ERC20: transfer amount exceeds balance';
+  }
+
+  showNotification({
+    id: ERROR_ID,
+    autoClose: false,
+    color: 'red',
+    title: 'Error',
+    message: message,
+  });
+};
+
 export const showLoading = (message: ReactNode) => showNotification({
   id: LOADING_ID,
   autoClose: false,
@@ -39,11 +54,13 @@ export const updateLoading = (message: ReactNode) => updateNotification({
 export const hideError = () => hideNotification(ERROR_ID);
 export const hideLoading = () => hideNotification(LOADING_ID);
 
-export async function writeFile(source: File, valist: Client): Promise<string> {
+export async function writeFile(source: File, valist: Client, onProgress?: (progress: number) => void): Promise<string> {
   if (typeof source === 'string') {
     return source as string;
   } else {
     const file = source as File;
-    return await valist.writeFile(file);
-  }
-}
+    return await valist.writeFile(file, false, (progress: number) => {
+      if(onProgress) onProgress(progress);
+    });
+  };
+};

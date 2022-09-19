@@ -4,7 +4,7 @@ import { ipcMain, MenuItemConstructorOptions } from 'electron';
 import { app, MenuItem } from 'electron';
 import electronIsDev from 'electron-is-dev';
 import unhandled from 'electron-unhandled';
-import { autoUpdater } from 'electron-updater';
+// import { autoUpdater } from 'electron-updater';
 
 import { ElectronCapacitorApp, setupContentSecurityPolicy, setupReloadWatcher } from './setup';
 
@@ -12,8 +12,8 @@ import path from 'path';
 import os from 'os';
 import fs from "fs";
 import axios from 'axios';
-import { exec } from 'node:child_process';
-import { getInstallPath } from './install/install';
+
+import { execCommand, getInstallPath, ProjectType, readLibrary, writeLibrary } from './library';
 
 // Graceful handling of unhandled errors.
 unhandled();
@@ -53,7 +53,7 @@ if (electronIsDev) {
   // Initialize our app, build windows, and load content.
   await myCapacitorApp.init();
   // Check for updates if we are in a packaged app.
-  autoUpdater.checkForUpdatesAndNotify();
+  // autoUpdater.checkForUpdatesAndNotify();
 })();
 
 // Handle when all of our windows are close (platforms have their own expectations).
@@ -75,92 +75,100 @@ app.on('activate', async function () {
 });
 
 // Place all ipc or other electron api calls and custom functionality under this line
+const valistDir = path.join(os.homedir(), '.valist', 'apps');
+const libraryFile = path.join(valistDir, 'library.json');
+
 ipcMain.handle("getApps", async () => {
-  const configPath = path.join(os.homedir(), '.valist/apps/library.json');
-  const data = await fs.promises.readFile(configPath);
-  return JSON.parse(Buffer.from(data).toString('ascii'));
+  return await readLibrary(libraryFile);
 });
 
-ipcMain.handle("install", async (event, args) => {
+interface InstallArgs {
+  projectID: string,
+  name: string,
+  version: string,
+  type: ProjectType,
+  release: {
+    external_url: string,
+    install: any,
+  },
+}
+
+ipcMain.handle("install", async (event, args: InstallArgs) => {
+  console.log('args', args);
+
   if (!args.release.external_url) {
     return Error('invalid release url');
   }
 
-  const valistDir = path.join(os.homedir(), '.valist', 'apps');
-  const libraryJSONPath = path.join(valistDir, 'library.json');
+  await fs.promises.mkdir(valistDir, { recursive: true });
 
-  if (args?.release?.type?.includes("executable")) {
+  let filePath = args.release.external_url;
+  if (args.type == "native") {
     if (!args.release.install) {
       return Error('package is not installable');
     }
-  
-    const installPath = getInstallPath(args.release.install);
-    if (!installPath) {
+
+    const artifactName = getInstallPath(args.release.install);
+    if (!artifactName) {
       console.log(`this project supports the following: ${Object.keys(args.release.install).toString().replace('name,', '')}`);
       return Error(`unsupported platform/arch: ${process.platform}/${process.arch}`);
     }
-  
-    await fs.promises.mkdir(valistDir, { recursive: true });
-  
-    const filePath = path.join(valistDir, args.release.install.name ?? args.name);
-  
+
     const resp = await axios({
       method: "get",
-      url: `${args.release.external_url}/${installPath}`,
+      url: `${args.release.external_url}/${artifactName}`,
       responseType: "stream",
     });
-    resp.data.pipe(fs.createWriteStream(filePath, { flags: 'w' }));
+    const readStream = resp.data;
+    const downloadSize = parseFloat(resp.headers["content-length"]);
+
+    const folderPath = path.join(valistDir, args.name);
+    filePath = path.join(folderPath, artifactName);
+    await fs.promises.mkdir(folderPath, { recursive: true });
+
+    const writeStream = fs.createWriteStream(filePath, { flags: 'w' });
+    let downloadCurrent = 0;
+
+    readStream.on("data", chunk => {
+      downloadCurrent += chunk.length;
+      const progress = downloadCurrent / downloadSize;
+      event.sender.send("install-progress", progress);
+    });
+
+    readStream.pipe(writeStream);
+    await new Promise(resolve => {
+      readStream.on('end', resolve);
+    });
+
     await fs.promises.chmod(filePath, 755);
-  } else {
-    const data = await fs.promises.readFile(libraryJSONPath, 'utf-8');
-    var appsObject = JSON.parse(data);
-    appsObject[args.projectID] = {
-      "name": args.name,
-      "version": args.version,
-      "type": "web",
-      "path": args.release.external_url,
-    };
+  }
 
-    fs.writeFile(libraryJSONPath, JSON.stringify(appsObject), 'utf-8', function(err) {
-      if (err) throw err
-      console.log('Done!');
-    });
-  } 
-  // else {
-  //   return 'Could not find project type and failed to install';
-  // };
-
-  return 'successfully installed!';
+  const library = await readLibrary(libraryFile);
+  library[args.projectID] = {
+    name: args.name,
+    version: args.version,
+    type: args.type,
+    path: filePath,
+  };
+  await writeLibrary(library, libraryFile);
+  return 'Successfully installed!';
 });
 
+ipcMain.handle("launch", async (event, projectId: string) => {
+  const library = await readLibrary(libraryFile);
+  const execPath = library[projectId].path;
 
-ipcMain.handle("launchApp", async (event, args) => {
-  console.log('args', args);
-  const binPath = `open ${path.join(os.homedir(), '.valist/apps/', args)}`;
-
-  exec(binPath, (err, stdout, stderr) => {
-    if (err) {
-      console.error(err);
-      return err;
-    }
-    return stdout;
-  });
-
-  return binPath;
+  execCommand(execPath);
+  return execPath;
 });
 
-ipcMain.handle("uninstall", async (event, args) => {
-  const valistDir = path.join(os.homedir(), '.valist', 'apps');
-  const libraryJSONPath = path.join(valistDir, 'library.json');
-    const data = await fs.promises.readFile(libraryJSONPath, 'utf-8');
+ipcMain.handle("uninstall", async (event, projectId: string) => {
+  const library = await readLibrary(libraryFile);
 
-    var appsObject = JSON.parse(data);
-    if (appsObject[args]) delete appsObject[args];
+  if (library[projectId].type === 'native') {
+    await fs.promises.rmdir(path.dirname(library[projectId].path), { recursive: true });
+  }
 
-    fs.writeFile(libraryJSONPath, JSON.stringify(appsObject), 'utf-8', function(err) {
-      if (err) throw err;
-      return 'Successfully Uninstalled!';
-    });
-
-  return 'app not found/not installed!';
+  delete library[projectId];
+  await writeLibrary(library, libraryFile);
 });

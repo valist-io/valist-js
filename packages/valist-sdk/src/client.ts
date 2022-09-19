@@ -237,7 +237,7 @@ export default class Client {
 		const { data } = await fetchGraphQL(this.subgraphUrl, {
 			query: queries.PROJECT_QUERY
 		});
-		return data.projects;	
+		return data.projects;
 	}
 
 	async listReleases(): Promise<Release> {
@@ -307,7 +307,7 @@ export default class Client {
 		return `${this.ipfsGateway}/ipfs/${cid.toString()}`;
 	}
 
-	async writeFile(file: ImportCandidate | ImportCandidateStream | FileObject, wrapWithDirectory = false): Promise<string> {
+	async writeFile(file: ImportCandidate | ImportCandidateStream | FileObject, wrapWithDirectory = false, onProgress?: (percent: number) => void): Promise<string> {
 		const { root: cid, car } = await packToBlob({
 			input: typeof window === 'undefined'
 				? toImportCandidate(file as File)
@@ -316,11 +316,17 @@ export default class Client {
 			wrapWithDirectory,
 		});
 
-		const auth = await axios.post(`https://pin-new.valist.io`);
-		const upload = await axios.put(auth.data, await car.arrayBuffer(), {
+		var config = {
 			maxBodyLength: Infinity,
 			headers: { 'x-amz-meta-import': 'car' },
-		});
+			onUploadProgress: function (progressEvent: { loaded: number; total: number; }) {
+				var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+				if (onProgress) onProgress(percentCompleted);
+			}
+		};
+
+		const auth = await axios.post(`https://pin-new.valist.io`);
+		const upload = await axios.put(auth.data, await car.arrayBuffer(), config);
 
 		if (upload.headers['x-amz-meta-cid'] !== cid.toString()) {
 			throw new Error(`Generated CID ${cid} did not match response ${upload.headers['x-amz-meta-cid']}`);
@@ -329,15 +335,15 @@ export default class Client {
 		return `${this.ipfsGateway}/ipfs/${cid.toString()}`;
 	}
 
-	async writeFolder(files: ImportCandidate | ImportCandidateStream | FileObject[], wrapWithDirectory = false): Promise<string> {
+	async writeFolder(files: ImportCandidate | ImportCandidateStream | FileObject[], wrapWithDirectory = false, onProgress?: (percent: number) => void): Promise<string> {
 
 		let toWrap = wrapWithDirectory;
 		const toPush = typeof window === 'undefined'
 			? (files as File[]).map(toImportCandidate)
-			: (files as ImportCandidate[]).map((file: any) => { 
+			: (files as ImportCandidate[]).map((file: any) => {
 				if (!file.path || file.path[0] !== '/') toWrap = true;
 				return ({ path: file.path || file.name, content: file });
-		});
+			});
 
 		const { root: cid, car } = await packToBlob({
 			input: toPush,
@@ -345,11 +351,17 @@ export default class Client {
 			wrapWithDirectory: toWrap,
 		});
 
-		const auth = await axios.post(`https://pin-new.valist.io`);
-		const upload = await axios.put(auth.data, await car.arrayBuffer(), {
+		var config = {
 			maxBodyLength: Infinity,
 			headers: { 'x-amz-meta-import': 'car' },
-		});
+			onUploadProgress: function (progressEvent: { loaded: number; total: number; }) {
+				var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+				if (onProgress) onProgress(percentCompleted);
+			}
+		};
+
+		const auth = await axios.post(`https://pin-new.valist.io`);
+		const upload = await axios.put(auth.data, await car.arrayBuffer(), config);
 
 		if (upload.headers['x-amz-meta-cid'] !== cid.toString()) {
 			throw new Error(`Generated CID ${cid} did not match response ${upload.headers['x-amz-meta-cid']}`);

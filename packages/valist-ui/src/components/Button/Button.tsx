@@ -12,7 +12,7 @@ export interface ButtonProps {
   variant: ButtonVariant;
   disabled?: boolean;
   loading?: boolean;
-  onClick?: () => void;
+  onClick?: (value: any) => void;
   leftIcon?: React.ReactNode;
   style?: React.CSSProperties;
   type?: 'submit' | 'button' | 'reset';

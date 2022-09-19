@@ -9,6 +9,7 @@ import { useMediaQuery } from '@mantine/hooks';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
 import { Activity } from '@/components/Activity';
+import { DonationModal } from '@/components/DonationModal';
 import query from '@/graphql/ProjectPage.graphql';
 
 import {
@@ -67,6 +68,18 @@ const ProjectPage: NextPage = () => {
   const [infoOpened, setInfoOpened] = useState(false);
   const showInfo = useMediaQuery('(max-width: 1400px)', false);
 
+  const [donationOpen, setDonationOpen] = useState(false);
+  const [balance, setBalance] = useState(0);
+
+  // update balance when address or projectId changes
+  useEffect(() => {
+    if (address) {
+      valist.getProductBalance(address, projectId)
+        .catch(_err => setBalance(0))
+        .then(value => setBalance(value?.toNumber() ?? 0));  
+    }
+  }, [address, projectId]);
+
   const isPriced = !!data?.product?.currencies?.find(
     (curr: any) => curr.price !== '0',
   );
@@ -78,17 +91,6 @@ const ProjectPage: NextPage = () => {
   const isProjectMember = !!projectMembers.find(
     (other: any) => other.id.toLowerCase() === address?.toLowerCase(),
   );
-
-  const [balance, setBalance] = useState(0);
-
-  // update balance when address or projectId changes
-  useEffect(() => {
-    if (address) {
-      valist.getProductBalance(address, projectId)
-        .catch(_err => setBalance(0))
-        .then(value => setBalance(value?.toNumber() ?? 0));  
-    }
-  }, [address, projectId]);
 
   const launchUrl = projectMeta?.launch_external 
     ? projectMeta?.external_url 
@@ -156,6 +158,14 @@ const ProjectPage: NextPage = () => {
 
   return (
     <Layout padding={0}>
+      <DonationModal 
+        opened={donationOpen}
+        projectName={`${accountName}/${projectName}`}
+        projectType={projectMeta?.type}
+        releaseURL={releaseMeta?.external_url}
+        donationAddress={projectMeta?.donation_address}
+        onClose={() => setDonationOpen(false)}       
+      />
       <Group mt={40} pl={40} position="apart">
         <Breadcrumbs items={breadcrumbs} />
         { showInfo &&
@@ -242,10 +252,10 @@ const ProjectPage: NextPage = () => {
                   <Stack spacing={24}>
                     <Title order={5}>Project Info</Title>
                     <List>
-                      <Group position="apart">
+                      {/* <Group position="apart">
                         <Text>Downloads</Text>
                         <Text>0</Text>
-                      </Group>
+                      </Group> */}
                       <Group position="apart">
                         <Text>Members</Text>
                         <MemberStack 
@@ -257,12 +267,12 @@ const ProjectPage: NextPage = () => {
                         <Text>Version</Text>
                         <Text>{latestRelease?.name}</Text>
                       </Group>
-                      <Group position="apart">
+                      {projectMeta?.external_url && <Group position="apart">
                         <Text>Website</Text>
                         <Anchor href={projectMeta?.external_url ?? ''}>
                           {projectMeta?.external_url}
                         </Anchor>
-                      </Group>
+                      </Group>}
                     </List>
                   </Stack>
                 </Card>

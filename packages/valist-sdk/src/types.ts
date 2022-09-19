@@ -1,13 +1,13 @@
 // Valist Types
 export class AccountMeta {
-  /** account image */
-  public image?: string;
-  /** account friendly name. */
-  public name?: string;
-  /** short description of the account. */
-  public description?: string;
-  /** link to the account website. */
-  public external_url?: string;
+	/** account image */
+	public image?: string;
+	/** account friendly name. */
+	public name?: string;
+	/** short description of the account. */
+	public description?: string;
+	/** link to the account website. */
+	public external_url?: string;
 }
 
 export class ProjectMeta {
@@ -29,6 +29,10 @@ export class ProjectMeta {
 	public tags?: string[];
 	/** videos and graphics of the project */
 	public gallery?: GalleryMeta[];
+	/** address where donations are sent*/
+	public donation_address?: string;
+	/** whether to prompt for donation */
+	public prompt_donation?: boolean;
 	/** launch project from external_url*/
 	public launch_external?: boolean;
 }

@@ -51,12 +51,14 @@ import {
   Group,
   Grid,
   Modal,
+  NumberInput,
   Select,
   Stack,
   SimpleGrid,
   Text,
   Title,
-  UnstyledButton,
+  TextInput,
+  Tabs,
 } from '@mantine/core';
 
 const Pricing: NextPage = () => {
