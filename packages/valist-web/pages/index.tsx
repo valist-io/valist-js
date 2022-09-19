@@ -16,12 +16,13 @@ import { ValistContext } from '@/components/ValistProvider';
 import { useDashboard } from '@/utils/dashboard';
 
 import { 
-  Title, 
+  Anchor,
+  Avatar,
+  Grid,
   Group,
   Stack,
-  Grid,
   Text,
-  MediaQuery,
+  Title, 
 } from '@mantine/core';
 
 import {
@@ -32,7 +33,6 @@ import {
   Card,
   CardGrid,
   InfoButton,
-  ItemHeader,
   MemberStack,
   List,
   NoProjects,
@@ -136,12 +136,28 @@ const IndexPage: NextPage = () => {
       </Group>
       <div style={{ padding: 40 }}>
         { accountName !== '' &&
-          <Group spacing={24} mb="xl" noWrap>
-            <ItemHeader 
-              name={accountName}
-              label={accountMeta?.name}
-              image={accountMeta?.image}
+          <Group spacing={24} mb="xl" align="stretch" noWrap>
+            <Avatar 
+              radius="md"
+              size={92} 
+              src={accountMeta?.image} 
             />
+            <Stack justify="space-between">
+              <Stack spacing={0}>
+                <Title order={3}>{accountName}</Title>
+                <Text color="gray.3">{accountMeta?.name}</Text>
+              </Stack>
+              <Group spacing={5}>
+                <Icon.Users size={20} color="#9B9BB1" />
+                <Text color="gray.3" mr={13}>
+                  {members.length} {members.length == 1 ? 'Member' : 'Members'}
+                </Text>
+                <Icon.World size={20} color="#9B9BB1" />
+                <Anchor color="gray.3" href={accountMeta?.external_url}>
+                  Website
+                </Anchor>
+              </Group>
+            </Stack>
             <Actions actions={actions} />
           </Group>
         }

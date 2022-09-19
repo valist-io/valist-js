@@ -3,11 +3,12 @@ query DashboardProjects($ids: [String!]){
     id
     name
     metaURI
-
     members {
       id
     }
-
+    account { 
+      name
+    }
     logs(orderBy: blockTime, orderDirection: "desc", limit: 5) {
       id
       type

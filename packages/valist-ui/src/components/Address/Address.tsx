@@ -5,7 +5,7 @@ import {
 } from '@mantine/core';
 
 import React from 'react';
-import { useClipboard, useHover } from '@mantine/hooks';
+import { useClipboard } from '@mantine/hooks';
 import * as Icon from 'tabler-icons-react';
 
 export interface AddressProps {
@@ -16,7 +16,6 @@ export interface AddressProps {
 }
 
 export function Address(props: AddressProps) {
-  const { hovered, ref } = useHover();
   const clipboard = useClipboard();
 
   return (
@@ -24,17 +23,13 @@ export function Address(props: AddressProps) {
       style={props.style} 
       onClick={() => clipboard.copy(props.address)}
     >
-      <Group spacing={2} ref={ref} noWrap>
+      <Group spacing={2} noWrap>
         <Text style={{ fontSize: props.size }}>
           { props.truncate
             ? `${props.address.slice(0, 6)}..${props.address.slice(-4)}`
             : props.address
           }
         </Text>
-        { hovered && (clipboard.copied 
-          ? <Icon.Check size={props.size} />
-          : <Icon.Copy size={props.size} />
-        )}
       </Group>
     </UnstyledButton>
   );

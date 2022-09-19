@@ -3,11 +3,9 @@ query DashboardAccounts($ids: [String!]){
     id
     name
     metaURI
-    
     members {
       id
     }
-
     logs(orderBy: blockTime, orderDirection: "desc", limit: 5) {
       id
       type

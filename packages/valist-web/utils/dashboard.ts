@@ -1,8 +1,9 @@
 import { useAccount } from 'wagmi';
 import { useQuery } from '@apollo/client';
-import query from '@/graphql/Dashboard.graphql';
 import accountsQuery from '@/graphql/DashboardAccounts.graphql';
 import projectsQuery from '@/graphql/DashboardProjects.graphql';
+import membersQuery from '@/graphql/DashboardMembers.graphql';
+import query from '@/graphql/Dashboard.graphql';
 
 // returns a set of all user account & project ids
 export function useEntityIds(accountName: string = '') {
@@ -19,12 +20,14 @@ export function useEntityIds(accountName: string = '') {
   const projectSet = new Set<string>();
 
   _accounts.forEach((a: any) => accountSet.add(a.id));
-  _accounts.filter((a: any) => !accountName ||  a.name === accountName)
+  _accounts.filter((a: any) => !accountName || a.name === accountName)
     .flatMap((a: any) => a.projects)
     .forEach((p: any) => projectSet.add(p.id));
 
-  // skip projects when filtering by account
-  if (!accountName) _projects.forEach((p: any) => projectSet.add(p.id));
+  // ignore projects when filtering by account
+  if (!accountName) {
+    _projects.forEach((p: any) => projectSet.add(p.id));
+  }
 
   const accountIds = Array.from(accountSet.values());
   const projectIds = Array.from(projectSet.values());
@@ -32,9 +35,9 @@ export function useEntityIds(accountName: string = '') {
   return { accountIds, projectIds, loading };
 }
 
-// returns all user accounts & projects
-export function useDashboard(accountName: string = '') {
-  const { accountIds, projectIds } = useEntityIds(accountName);
+// returns a set of all user accounts & projects
+export function useEntities(accountName: string = '') {
+  const { accountIds, projectIds, loading } = useEntityIds(accountName);
 
   const accountsData = useQuery(accountsQuery, {
     variables: { ids: accountIds },
@@ -46,18 +49,29 @@ export function useDashboard(accountName: string = '') {
 
   const accounts = accountsData.data?.accounts ?? [];
   const projects = projectsData.data?.projects ?? [];
-  const loading = accountsData.loading || projectsData.loading;
+  const _loading = loading || accountsData.loading || projectsData.loading;
+
+  return { accounts, projects, loading: _loading };
+}
+
+// returns formatted dashboard data
+export function useDashboard(accountName: string = '') {
+  const { accounts, projects, loading } = useEntities(accountName);
 
   const logMap = new Map<string, any>();
   const memberSet = new Set<string>();
 
-  accounts.flatMap((a: any) => a.logs)
+  accounts.filter((a: any) => !accountName || a.name === accountName)
+    .flatMap((a: any) => a.logs)
     .forEach((l: any) => logMap.set(l.id, l));
+
+  accounts.filter((a: any) => !accountName || a.name === accountName)
+    .flatMap((a: any) => a.members)
+    .forEach((m: any) => memberSet.add(m.id));
+
   projects.flatMap((p: any) => p.logs)
     .forEach((l: any) => logMap.set(l.id, l));
 
-  accounts.flatMap((a: any) => a.members)
-    .forEach((m: any) => memberSet.add(m.id));
   projects.flatMap((p: any) => p.members)
     .forEach((m: any) => memberSet.add(m.id));
 
@@ -69,4 +83,29 @@ export function useDashboard(accountName: string = '') {
   );
 
   return { accounts, projects, logs, members, loading };
+}
+
+// returns formatted members data
+export function useMembers(accountName: string = '') {
+  const { accounts, projects, loading } = useEntities(accountName);
+
+  const memberSet = new Set<string>();
+
+  accounts.filter((a: any) => !accountName || a.name === accountName)
+    .flatMap((a: any) => a.members)
+    .forEach((m: any) => memberSet.add(m.id));
+
+  projects.flatMap((p: any) => p.members)
+    .forEach((m: any) => memberSet.add(m.id));
+
+  const memberIds = Array.from(memberSet.values());
+
+  const membersData = useQuery(membersQuery, {
+    variables: { ids: memberIds }, 
+  });
+
+  const members = membersData.data?.users ?? [];
+  const _loading = loading || membersData.loading;
+
+  return { members, accounts, loading: _loading };
 }

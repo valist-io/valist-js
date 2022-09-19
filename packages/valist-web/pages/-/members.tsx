@@ -1,24 +1,31 @@
 import { NextPage } from 'next';
 import { useState } from 'react';
 import useSWRImmutable from 'swr/immutable';
-import { Group } from '@mantine/core';
+import { Group, SimpleGrid } from '@mantine/core';
 import { Layout } from '@/components/Layout';
 import { Activity } from '@/components/Activity';
 import { Metadata } from '@/components/Metadata';
-import { useDashboard } from '@/utils/dashboard';
+import { useMembers } from '@/utils/dashboard';
+
 
 import {
   AccountSelect,
-  List,
-  Card,
+  MemberCard,
 } from '@valist/ui';
 
-const ActivityPage: NextPage = () => {
+const MembersPage: NextPage = () => {
   const [accountName, setAccountName] = useState('');
-  const { accounts, logs } = useDashboard(accountName);
-  
+  const { accounts, members } = useMembers(accountName);
+
   const account: any = accounts.find((a: any) => a.name === accountName);
   const { data: accountMeta } = useSWRImmutable(account?.metaURI);
+
+  const getAccounts = (member: any) => {
+    const accountMap = new Map<string, any>();
+    member.accounts.forEach((a: any) => accountMap.set(a.id, a));
+    member.projects.forEach((p: any) => accountMap.set(p.account.id, p.account));
+    return Array.from(accountMap.values());
+  };
 
   return (
     <Layout padding={0}>
@@ -41,16 +48,25 @@ const ActivityPage: NextPage = () => {
         </AccountSelect>
       </Group>
       <div style={{ padding: 40 }}>
-        <Card>
-          <List>
-            {logs.map((log: any, index: number) => 
-              <Activity key={index} {...log} />,
-            )}
-          </List>
-        </Card>
+        <SimpleGrid 
+          breakpoints={[
+            { minWidth: 'sm', cols: 1, spacing: 24 },
+            { minWidth: 'md', cols: 2, spacing: 24 },
+            { minWidth: 'lg', cols: 3, spacing: 24 },
+            { minWidth: 'xl', cols: 4, spacing: 24 },
+          ]}
+        >
+          {members.map((member: any, index: number) => 
+            <MemberCard 
+              key={index} 
+              address={member.id} 
+              accounts={getAccounts(member)} 
+            />,
+          )}
+        </SimpleGrid>
       </div>
     </Layout>
   );
 };
 
-export default ActivityPage;
+export default MembersPage;
