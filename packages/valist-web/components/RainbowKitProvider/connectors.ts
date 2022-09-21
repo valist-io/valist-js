@@ -5,8 +5,8 @@ import { Chain } from 'wagmi';
 export const magic = ({ chains }: any): Wallet => ({
   id: 'magic',
   name: 'Email',
-  iconUrl: 'images/magic.svg',
-  iconBackground: '#ffffff',
+  iconUrl: 'images/mail.svg',
+  iconBackground: '#1E88E5',
   // @ts-ignore
   createConnector: () => {
     const connector = new MagicConnector({
