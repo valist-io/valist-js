@@ -4,7 +4,7 @@ import { Chain } from 'wagmi';
 
 export const magic = ({ chains }: any): Wallet => ({
   id: 'magic',
-  name: 'Magic',
+  name: 'Email',
   iconUrl: 'images/magic.svg',
   iconBackground: '#ffffff',
   // @ts-ignore
@@ -30,16 +30,9 @@ export const connectors = (chains: Chain[]) => connectorsForWallets([
   {
     groupName: 'Popular',
     wallets: [
+      magic({ chains }),
       wallet.rainbow({ chains }),
       wallet.metaMask({ chains }),
-      wallet.walletConnect({ chains }),
-      magic({ chains }),
-    ],
-  },
-  {
-    groupName: 'Mobile',
-    wallets: [
-      wallet.rainbow({ chains }),
       wallet.walletConnect({ chains }),
     ],
   },
