@@ -56,7 +56,9 @@ export async function createAccount(
 
     utils.showLoading('Uploading files');
     if (image) {
-      meta.image = await valist.writeFile(image);
+      meta.image = await utils.writeFile(image, valist, (progress: number) => {
+        utils.updateLoading(`Uploading ${image.name}: ${progress}`);
+      });
     }
 
     utils.updateLoading('Creating transaction');

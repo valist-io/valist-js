@@ -120,7 +120,7 @@ const IndexPage: NextPage = () => {
                           <ProjectCard
                             title={project.name} 
                             secondary={data?.name}
-                            description={data?.description} 
+                            description={data?.short_description} 
                             image={data?.image} 
                           />
                         </NextLink>

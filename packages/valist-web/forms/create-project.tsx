@@ -72,11 +72,15 @@ export async function createProject(
 
     utils.showLoading('Uploading files');
     if (image) {
-      meta.image = await utils.writeFile(image, valist);
+      meta.image = await utils.writeFile(image, valist, (progress: number) => {
+        utils.updateLoading(`Uploading ${image?.name}: ${progress}`);
+      });
     }
 
     if (mainCapsule) {
-      meta.main_capsule = await valist.writeFile(mainCapsule);
+      meta.image = await utils.writeFile(mainCapsule, valist, (progress: number) => {
+        utils.updateLoading(`Uploading ${mainCapsule?.name}: ${progress}`);
+      });
     }
 
     if (values.youTubeLink) {
@@ -85,7 +89,9 @@ export async function createProject(
     }
 
     for (const item of gallery) {
-      const src = await valist.writeFile(item as File);
+      const src = await utils.writeFile(item, valist, (progress: number) => {  
+        utils.updateLoading(`Uploading ${item.name}: ${progress}`);
+      });
       meta.gallery?.push({ name: '', type: 'image', src });
     }
 

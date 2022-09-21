@@ -15,8 +15,7 @@ export function PublishPromo(): JSX.Element {
           <div style={{ maxWidth: 480 }}>
             <Text className={classes.heading}>Publish today</Text>
             <Text className={classes.text}>
-              Have your software, weba
-              pp, or game hosted on valist to be truly decentralized!
+              Have your software, webapp, or game hosted on valist to be truly decentralized!
             </Text>
             <Link href="/create/release" passHref>
               <Button size="lg" style={{ background: btnColor }}>Publish Now</Button>
