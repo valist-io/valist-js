@@ -46,12 +46,23 @@ export function Layout(props: LayoutProps) {
 
   const search = async (value: string) => {
     const isAddress = ethers.utils.isAddress(value);
-    
+
     if (isAddress) {
       router.push(`/addr/${value}`);
       return;
     }
 
+    const isEns = value.endsWith('.eth');
+
+    if (isEns) {
+      const provider = new ethers.providers.JsonRpcProvider('https://rpc.valist.io/ens');
+      var resolvedAddress = await provider.resolveName(value);
+      if (resolvedAddress) {
+        router.push(`/addr/${resolvedAddress}`);
+        return;
+      }
+    }
+    
     router.push(`/-/search/${value}`);
   };
 
