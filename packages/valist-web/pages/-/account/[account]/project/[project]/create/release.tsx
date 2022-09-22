@@ -63,7 +63,7 @@ const CreateReleasePage: NextPage = () => {
   const [image, setImage] = useState<File>();
   const [files, setFiles] = useState<FileWithPath[]>([]);
   const [filesObject, setFilesObject] = useState<Record<string, any>>({});
-  const [platforms, setPlatforms] = useState<string[]>(["windows_arm64", "windows_amd64", "linux_arm64", "linux_amd64", "darwin_arm64", "darwin_amd64"]);
+  const [platforms, setPlatforms] = useState<string[]>(["windows_arm64", "windows_amd64", "linux_arm64", "linux_amd64", "darwin_arm64", "darwin_amd64", "android_arm64"]);
   const [activeTab, setActiveTab] = useState<string | null>();
   
   const form = useForm<FormValues>({
