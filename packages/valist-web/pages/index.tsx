@@ -153,9 +153,9 @@ const IndexPage: NextPage = () => {
                   {members.length} {members.length == 1 ? 'Member' : 'Members'}
                 </Text>
                 <Icon.World size={20} color="#9B9BB1" />
-                <Anchor color="gray.3" href={accountMeta?.external_url}>
+                {accountMeta?.external_url && <Anchor color="gray.3" target="_blank" href={accountMeta?.external_url}>
                   Website
-                </Anchor>
+                </Anchor>}
               </Group>
             </Stack>
             <Actions actions={actions} />

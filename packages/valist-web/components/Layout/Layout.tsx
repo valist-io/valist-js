@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useMediaQuery } from '@mantine/hooks';
@@ -81,12 +81,6 @@ export function Layout(props: LayoutProps) {
               text="Library"
               href={`/-/library`}
               active={router.asPath === `/-/library`} 
-            />
-            <Navbar.Link 
-              icon={Icons.Settings} 
-              text="Settings"
-              href={`/-/settings`}
-              active={router.asPath === `/-/settings`} 
             />
             {isMobile &&
               <>

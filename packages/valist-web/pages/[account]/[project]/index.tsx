@@ -178,8 +178,8 @@ const ProjectPage: NextPage = () => {
       <div style={{ padding: 40 }}>
         <Group spacing={24} mb="xl" noWrap>
           <Item 
-            name={projectName}
-            label={projectMeta?.name}
+            name={projectMeta?.name || projectName}
+            label={projectMeta?.short_description}
             image={projectMeta?.image}
             large
           />
