@@ -1,33 +1,38 @@
 import type { NextPage } from 'next';
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
+import useSWRImmutable from 'swr/immutable';
+import * as Icon from 'tabler-icons-react';
 import { useRouter } from 'next/router';
-import { useQuery } from '@apollo/client';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
-import { NextLink } from '@mantine/next';
 import { useMediaQuery } from '@mantine/hooks';
 import { Layout } from '@/components/Layout';
 import { Metadata } from '@/components/Metadata';
-import { AccountContext } from '@/components/AccountProvider';
 import { Activity } from '@/components/Activity';
+import { ProjectCard } from '@/components/ProjectCard';
 import { CreateAccount } from '@/components/CreateAccount';
 import { CreateProject } from '@/components/CreateProject';
-import query from '@/graphql/DashboardPage.graphql';
+import { ValistContext } from '@/components/ValistProvider';
+import { useDashboard } from '@/utils/dashboard';
 
 import { 
-  Title, 
+  Anchor,
+  Avatar,
+  Grid,
   Group,
   Stack,
-  Grid,
   Text,
+  Title, 
 } from '@mantine/core';
 
 import {
+  AccountSelect,
+  Actions,
+  Action,
   Button,
   Card,
   CardGrid,
   InfoButton,
-  ProjectCard,
   MemberStack,
   List,
   NoProjects,
@@ -37,31 +42,52 @@ import {
 
 const IndexPage: NextPage = () => {
   const router = useRouter();
-  const { account } = useContext(AccountContext);
+  const valist = useContext(ValistContext);
+
   const { openConnectModal } = useConnectModal();
-  const { isConnected } = useAccount();
+  const { address, isConnected } = useAccount();
 
   const [onboarding, setOnboarding] = useState(false);
   const [infoOpened, setInfoOpened] = useState(false);
   const showInfo = useMediaQuery('(max-width: 1400px)', false);
 
-  const { data, loading } = useQuery(query, { 
-    variables: { accountId: account?.id ?? '' },
-  });
+  const [accountName, setAccountName] = useState('');
+  const { accounts, projects, members, logs, loading } = useDashboard(accountName);
+  
+  // reset account when address changes
+  useEffect(() => {
+    setAccountName('');
+  }, [address]);
 
-  const projects = data?.account?.projects ?? [];
-  const members = data?.account?.members ?? [];
-  const logs = data?.account?.logs ?? [];
+  const account: any = accounts.find((a: any) => a.name === accountName);
+  const { data: accountMeta } = useSWRImmutable(account?.metaURI);
+
+  const actions: Action[] = [
+    {
+      label: 'Settings', 
+      icon: Icon.Settings, 
+      href: `/-/account/${accountName}/settings`,
+      variant: 'subtle',
+      side: 'right',
+    },
+    {
+      label: 'New Project',
+      icon: Icon.News,
+      href: `/-/account/${accountName}/create/project`,
+      variant: 'primary',
+      side: 'right',
+    },
+  ];
 
   const steps = [
     { label: 'Connect Wallet', checked: isConnected },
-    { label: 'Create Account', checked: onboarding || !!account },
+    { label: 'Create Account', checked: onboarding || accounts.length === 0 },
     { label: 'Create Project (Optional)', checked: false },
   ];
 
-  if (!loading && (!account || onboarding)) {
+  if (!loading && (accounts.length === 0 || onboarding)) {
     return (
-      <Layout>
+      <Layout hideNavbar>
         <Grid>
           <Grid.Col md={4}>
             <CheckboxList items={steps} />
@@ -86,46 +112,70 @@ const IndexPage: NextPage = () => {
 
   return (
     <Layout padding={0}>
-      { showInfo &&
-        <Group style={{ height: 66 }} position="right">
-            <InfoButton 
-              opened={infoOpened}
-              onClick={() => setInfoOpened(!infoOpened)} 
-            />
-        </Group>
-      }
+      <Group mt={40} pl={40} position="apart">
+        <AccountSelect
+          name={accountName || 'All Accounts'}
+          value={accountName}
+          image={accountMeta?.image}
+          href="/-/create/account"
+          onChange={setAccountName}
+        >
+          <AccountSelect.Option value="" name="All Accounts" />
+          {accounts.map((acc: any, index: number) => 
+            <Metadata key={index} url={acc.metaURI}>
+              {(data: any) => ( <AccountSelect.Option value={acc.name} name={acc.name} image={data?.image} /> )}
+            </Metadata>,
+          )}
+        </AccountSelect>
+        { showInfo &&
+          <InfoButton 
+            opened={infoOpened}
+            onClick={() => setInfoOpened(!infoOpened)} 
+          />
+        }
+      </Group>
       <div style={{ padding: 40 }}>
-        <Group position="apart" mb="xl" style={{ marginBottom: 10 }}>
-          <Title style={{ display: "block" }}>Hello & Welcome 👋🏽</Title>
-          <NextLink href={`/-/account/${account?.name}/create/project`}>
-            <Button>Create Project</Button>
-          </NextLink>
-        </Group>
-        <Text style={{ display: "block", marginBottom: 32 }}>Explore your recently Published or Edited projects.</Text>
+        { accountName !== '' &&
+          <Group spacing={24} mb="xl" align="stretch" noWrap>
+            <Avatar 
+              radius="md"
+              size={92} 
+              src={accountMeta?.image} 
+            />
+            <Stack justify="space-between">
+              <Stack spacing={0}>
+                <Title order={3}>{accountName}</Title>
+                <Text color="gray.3">{accountMeta?.name}</Text>
+              </Stack>
+              <Group spacing={5}>
+                <Icon.Users size={20} color="#9B9BB1" />
+                <Text color="gray.3" mr={13}>
+                  {members.length} {members.length == 1 ? 'Member' : 'Members'}
+                </Text>
+                <Icon.World size={20} color="#9B9BB1" />
+                {accountMeta?.external_url && <Anchor color="gray.3" target="_blank" href={accountMeta?.external_url}>
+                  Website
+                </Anchor>}
+              </Group>
+            </Stack>
+            <Actions actions={actions} />
+          </Group>
+        }
         <Grid>
           { (!showInfo || !infoOpened) &&
             <Grid.Col xl={8}>
               { projects.length === 0 && 
-                <NoProjects action={() => router.push(`/-/account/${account?.name}/create/project`)} />
+                <NoProjects action={() => router.push(`/-/account/${accountName}/create/project`)} />
               }
               { projects.length !== 0 && 
                 <CardGrid>
-                  {projects.map((project: any, index: number) =>
-                    <Metadata key={index} url={project.metaURI}>
-                      {(data: any) =>
-                        <NextLink
-                          style={{ textDecoration: 'none' }}
-                          href={`/${account?.name}/${project.name}`}
-                        >
-                          <ProjectCard
-                            title={project.name} 
-                            secondary={data?.name}
-                            description={data?.short_description} 
-                            image={data?.image} 
-                          />
-                        </NextLink>
-                      }
-                    </Metadata>,
+                  { projects.map((project: any, index: number) =>
+                    <ProjectCard 
+                      key={index}
+                      name={project.name}
+                      metaURI={project.metaURI}
+                      href={`/${project.account?.name}/${project.name}`}
+                    />,
                   )}
                 </CardGrid>
               }
@@ -137,7 +187,7 @@ const IndexPage: NextPage = () => {
                 <Card>
                   <Stack spacing={24}>
                     <Title order={5}>Members</Title>
-                    <MemberStack members={members.map((member: any) => member.id)} />
+                    <MemberStack members={members} />
                   </Stack>
                 </Card>
                 <Card>

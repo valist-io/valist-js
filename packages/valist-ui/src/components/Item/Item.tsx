@@ -16,7 +16,7 @@ export interface ItemProps {
 }
 
 export function Item(props: ItemProps) {
-  const { classes } = useStyles({ large: props.large });
+  const { classes } = useStyles();
   return (
     <Group>
       <Avatar 

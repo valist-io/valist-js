@@ -9,7 +9,6 @@ import { useLocalStorage } from '@mantine/hooks';
 import { NotificationsProvider } from '@mantine/notifications';
 import { ColorSchemeProvider, ColorScheme } from '@mantine/core';
 import { ThemeProvider, AddressProvider } from '@valist/ui';
-import { AccountProvider } from '@/components/AccountProvider';
 import { ApolloProvider } from '@/components/ApolloProvider';
 import { WagmiProvider, rehydrate } from '@/components/WagmiProvider';
 import { RainbowKitProvider } from '@/components/RainbowKitProvider';
@@ -46,17 +45,15 @@ function ValistApp(props: AppProps) {
         <WagmiProvider>
           <RainbowKitProvider colorScheme={colorScheme}>
             <ApolloProvider>
-              <AccountProvider>
-                <ValistProvider metaTx>
-                  <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
-                    <ThemeProvider theme={{ colorScheme, components }}>
-                      <NotificationsProvider>
-                        <Component {...pageProps} />
-                      </NotificationsProvider>
-                    </ThemeProvider>
-                  </ColorSchemeProvider>
-                </ValistProvider>
-              </AccountProvider>
+              <ValistProvider metaTx>
+                <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
+                  <ThemeProvider theme={{ colorScheme, components }}>
+                    <NotificationsProvider>
+                      <Component {...pageProps} />
+                    </NotificationsProvider>
+                  </ThemeProvider>
+                </ColorSchemeProvider>
+              </ValistProvider>
             </ApolloProvider>
           </RainbowKitProvider>
         </WagmiProvider>

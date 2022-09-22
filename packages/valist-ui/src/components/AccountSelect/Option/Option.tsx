@@ -10,6 +10,7 @@ import { AccountSelectContext } from '../AccountSelect';
 
 export interface OptionProps {
   name: string;
+  value: string;
   image?: string;
   label?: string;
 }
@@ -18,10 +19,10 @@ export function Option(props: OptionProps) {
   const { value, setValue } = useContext(AccountSelectContext);
 
   return (
-    <UnstyledButton onClick={() => setValue(props.name)}>
+    <UnstyledButton onClick={() => setValue(props.value)}>
       <Group position="apart">
         <Item {...props} />
-        {value === props.name && 
+        {value === props.value && 
           <Icon.Check color="#669F2A" /> 
         }
       </Group>

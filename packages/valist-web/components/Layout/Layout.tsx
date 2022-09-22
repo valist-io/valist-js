@@ -1,11 +1,10 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useMediaQuery } from '@mantine/hooks';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import * as Icons from 'tabler-icons-react';
-import { AccountSelect } from '@/components/AccountSelect';
-import { AccountContext } from '@/components/AccountProvider';
+import { NextLink } from '@mantine/next';
 
 import { 
   ActionIcon,
@@ -21,8 +20,6 @@ import {
   Social,
   ThemeButton,
 } from '@valist/ui';
-import { NextLink } from '@mantine/next';
-import { checkIsElectron } from '../Electron';
 import { ethers } from 'ethers';
 
 export interface LayoutProps {
@@ -36,13 +33,8 @@ export function Layout(props: LayoutProps) {
   const router = useRouter();
   const [opened, setOpened] = useState(false);
 
-  const { account } = useContext(AccountContext);
-
-  const isMobile = useMediaQuery('(max-width: 800px)', false);
-  const hideNavbar = !account || props.hideNavbar;
-
-  const [isElectron, setIsElectron] = useState(false);
-  useEffect(() => setIsElectron(checkIsElectron), []);
+  const isMobile = useMediaQuery('(max-width: 768px)', false);
+  const hideNavbar = !isMobile && props.hideNavbar;
 
   const search = async (value: string) => {
     const isAddress = ethers.utils.isAddress(value);
@@ -80,44 +72,50 @@ export function Layout(props: LayoutProps) {
           }
         >
           <ThemeButton />
+          <ActionIcon component={NextLink} href="/-/gas" variant="transparent">
+            <Icons.GasStation size={18} />
+          </ActionIcon>
           <Anchor target="_blank" href="https://docs.valist.io">Docs</Anchor>
           <Anchor href="/-/discover">Discover</Anchor>
           <ConnectButton chainStatus="icon" showBalance={false} />
-          {!isMobile && 
-            <ActionIcon component={NextLink} href="/-/gas" variant="transparent">
-              <Icons.GasStation size={18} />
-            </ActionIcon>
-          }
         </Header>
       }
       navbar={
         <Navbar opened={opened}>
-          <Navbar.Section grow>
-            <div style={{ margin: '20px 0 10px 30px' }}>
-              <AccountSelect />
-            </div>
+          <Navbar.Section mt={40} grow>
             <Navbar.Link 
-              icon={Icons.Apps} 
+              icon={Icons.Home} 
               text="Dashboard"
               href="/"
               active={router.asPath === "/"} 
             />
             <Navbar.Link 
-              icon={Icons.Settings} 
-              text="Settings"
-              href={`/-/account/${account?.name}/settings`}
-              active={router.asPath === `/-/account/${account?.name}/settings`} 
+              icon={Icons.Users} 
+              text="Members"
+              href={`/-/members`}
+              active={router.asPath === `/-/members`} 
             />
-            {isElectron && <Navbar.Link 
+            <Navbar.Link 
+              icon={Icons.Hourglass} 
+              text="Activity"
+              href="/-/activity"
+              active={router.asPath === '/-/activity'} 
+            />
+            <Navbar.Link 
               icon={Icons.Apps} 
               text="Library"
               href={`/-/library`}
               active={router.asPath === `/-/library`} 
-            />}
+            />
             {isMobile &&
               <>
                 <Navbar.Link 
-                  icon={Icons.DeviceGamepad2} 
+                  icon={Icons.Notebook} 
+                  text="Docs"
+                  href="https://docs.valist.io"
+                />
+                <Navbar.Link 
+                  icon={Icons.World} 
                   text="Discover"
                   href="/-/discover"
                   active={router.asPath === '/-/discover'} 

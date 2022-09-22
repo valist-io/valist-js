@@ -161,11 +161,6 @@ export default class Client {
 		return await getPrice(projectID);
 	}
 
-	async getProductBalance(address: string, projectID: ethers.BigNumberish): Promise<ethers.BigNumber> {
-		const balanceOf = this.license['balanceOf(address,uint256)'];
-		return await balanceOf(address, projectID);
-	}
-
 	async getProductTokenPrice(token: string, projectID: ethers.BigNumberish): Promise<ethers.BigNumber> {
 		const getPrice = this.license['getPrice(address,uint256)'];
 		return await getPrice(token, projectID);
@@ -181,6 +176,14 @@ export default class Client {
 
 	async getProductSupply(projectID: ethers.BigNumberish): Promise<ethers.BigNumber> {
 		return await this.license.getSupply(projectID);
+	}
+
+	async getProductBalance(address: string, projectID: ethers.BigNumberish): Promise<ethers.BigNumber> {
+		return await this.license.balanceOf(address, projectID);
+	}
+
+	async getProductBalanceBatch(addresses: string[], projectIDs: ethers.BigNumberish[]): Promise<ethers.BigNumber[]> {
+		return await this.license.balanceOfBatch(addresses, projectIDs);
 	}
 
 	async getAccountMembers(accountID: ethers.BigNumberish): Promise<string[]> {

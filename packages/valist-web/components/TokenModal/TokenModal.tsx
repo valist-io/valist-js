@@ -1,4 +1,4 @@
-import { tokens } from '@/utils/tokens';
+import { tokens, Token } from '@/utils/tokens';
 
 import {
   Group,
@@ -19,22 +19,22 @@ import {
 export interface TokenModalProps {
   opened: boolean;
   onClose: () => void;
-  values: string[];
-  onChange: (values: string[]) => void;
+  values: Token[];
+  onChange: (values: Token[]) => void;
 }
 
 export function TokenModal(props: TokenModalProps) {
-  const checked = (address: string) => !!props.values.find(
-    val => val.toLowerCase() === address.toLowerCase(),
-  );
+  const checked = (address: string) => {
+    const token = props.values.find(token => token.address === address.toLowerCase());
+    return token?.show;
+  };
 
-  const remove = (address: string) => props.values.filter(
-    val => val.toLowerCase() !== address.toLowerCase(),
-  );
-
-  const onChange = (checked: boolean, address: string) => checked
-    ? props.onChange([...props.values, address])
-    : props.onChange(remove(address));
+  const onChange = (checked: boolean, address: string) => {
+    const values = props.values.map(token =>   
+      token.address === address.toLowerCase() ? { ...token, show: checked } : token,
+    );
+    props.onChange(values);
+  };
 
   return (
     <Modal
@@ -54,7 +54,8 @@ export function TokenModal(props: TokenModalProps) {
                   label={token.name}
                   image={token.logoURI} 
                 />
-                <Switch 
+                <Switch
+                  color="purple.4"
                   checked={checked(token.address)}
                   onChange={(event) => onChange(event.currentTarget.checked, token.address) }
                 />
@@ -62,9 +63,9 @@ export function TokenModal(props: TokenModalProps) {
             )}
           </List>
         </ScrollArea.Autosize>
-        <div>
+        <div style={{ marginTop: 16 }}>
           <Button onClick={props.onClose}>
-            Done
+            Save Changes
           </Button>
         </div>
       </Stack>

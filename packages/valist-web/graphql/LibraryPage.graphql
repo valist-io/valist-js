@@ -1,7 +1,14 @@
-query LibraryPage($projects: [String]) {
-  projects(where: {id_in: $projects}){
-    id
-    name
-  	metaURI
+query LibraryPage($address: String!) {
+  purchases(where: {recipient: $address}) {
+    product {
+      project {
+        id
+        name
+        metaURI
+        account {
+          name
+        }
+      }
+    }  
   }
 }

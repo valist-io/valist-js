@@ -1,15 +1,12 @@
-query DashboardPage($accountId: String!){
-  account(id: $accountId){
+query DashboardAccounts($ids: [String!]){
+  accounts(where: { id_in: $ids }) {
     id
-    projects {
-      id
-      name
-      metaURI
-    }
+    name
+    metaURI
     members {
       id
     }
-    logs(orderBy: blockTime, orderDirection: "desc"){
+    logs(orderBy: blockTime, orderDirection: "desc", limit: 5) {
       id
       type
       sender
@@ -26,6 +23,7 @@ query DashboardPage($accountId: String!){
         id
         name
       }
+      blockTime
     }
   }
 }

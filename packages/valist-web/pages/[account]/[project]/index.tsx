@@ -9,16 +9,18 @@ import { useMediaQuery } from '@mantine/hooks';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
 import { Activity } from '@/components/Activity';
+import { DonationModal } from '@/components/DonationModal';
 import query from '@/graphql/ProjectPage.graphql';
 
 import {
   _404,
+  Actions,
+  Action,
   Button,
   Breadcrumbs,
   Card,
   InfoButton,
-  ItemHeader,
-  ItemHeaderAction,
+  Item,
   Gallery,
   List,
   Markdown,
@@ -36,14 +38,6 @@ import {
   Tabs,
   Grid,
 } from '@mantine/core';
-import { checkIsElectron, getApps, install, launch } from '@/components/Electron';
-import { DonationModal } from '@/components/DonationModal';
-
-declare global {
-  interface Window {
-      valist: any;
-  }
-}
 
 const ProjectPage: NextPage = () => {
   const { chain } = useNetwork();
@@ -76,9 +70,6 @@ const ProjectPage: NextPage = () => {
 
   const [donationOpen, setDonationOpen] = useState(false);
   const [balance, setBalance] = useState(0);
-  const [isElectron, setIsElectron] = useState<boolean>(false);
-  const [isInstalled, setIsInstalled] = useState<boolean>(false);
-  const [installPercent, setInstallPercent] = useState<number>(0);
 
   // update balance when address or projectId changes
   useEffect(() => {
@@ -88,30 +79,6 @@ const ProjectPage: NextPage = () => {
         .then(value => setBalance(value?.toNumber() ?? 0));  
     }
   }, [address, projectId]);
-
-  // check if isElectron
-  useEffect(() => {
-    setIsElectron(checkIsElectron());
-  }, []);
-
-  // check if app is installed & if project type is native
-  useEffect(() => {
-    if (window.valist && projectMeta?.type === 'native') {
-      getApps().then((apps: any) => {
-        console.log('List Installed Valist Apps:');
-        console.log(apps);
-
-        if(projectId in apps) {
-          setIsInstalled(true);
-        }
-      });
-    }
-  }, [projectId, projectMeta]);
-
-  const setProgress = (progress: number) => {
-    setInstallPercent(Math.floor(progress * 100));
-    if (installPercent === 100) setIsInstalled(true);
-  };
 
   const isPriced = !!data?.product?.currencies?.find(
     (curr: any) => curr.price !== '0',
@@ -129,66 +96,47 @@ const ProjectPage: NextPage = () => {
     ? projectMeta?.external_url 
     : releaseMeta?.external_url;
 
-  const leftActions: ItemHeaderAction[] = [
+  const actions: Action[] = [
     {
       label: 'Settings', 
       icon: Icon.Settings, 
       href: `/-/account/${accountName}/project/${projectName}/settings`, 
       hide: !(isAccountMember || isProjectMember),
+      side: 'left',
     },
     {
       label: 'Pricing', 
       icon: Icon.Tag, 
       href: `/-/account/${accountName}/project/${projectName}/pricing`, 
       hide: !(isAccountMember || isProjectMember),
+      side: 'left',
     },
-  ];
-
-  const rightActions: ItemHeaderAction[] = [
     {
       label: 'New Release',
       icon: Icon.News,
       href: `/-/account/${accountName}/project/${projectName}/create/release`,
       variant: 'subtle',
       hide: !(isAccountMember || isProjectMember),
+      side: 'right',
     },
-  ];
-
-  if (isPriced && balance === 0) {
-    rightActions.push({
+    {
       label: 'Purchase',
       icon: Icon.ShoppingCart,
       href: `/-/account/${accountName}/project/${projectName}/checkout`,
       variant: 'primary',
-    });
-  } else if (projectMeta?.type === 'native' && isElectron && !isInstalled) {
-    rightActions.push({
-      label: `Install${installPercent > 0 ? ` (${installPercent})` : ""}`,
-      icon: Icon.Download,
-      action: () => install(valist, accountName, projectName, projectMeta?.type, setProgress),
-      variant: 'primary',
-    });
-  } else if (projectMeta?.type === 'web' && isElectron) {
-    rightActions.push({
+      hide: (isPriced && balance === 0),
+      side: 'right',
+    },
+    {
       label: 'Launch',
       icon: Icon.Rocket,
-      action: () => launch(data?.project, projectMeta?.type, releaseMeta?.external_url, valist),
+      href: launchUrl ?? '',
+      target: '_blank',
       variant: 'primary',
-    });
-  } else if(projectMeta){
-    rightActions.push({
-      label: (projectMeta.type === 'native' || projectMeta.type === 'web') ? 'Launch' : 'Download',
-      icon: Icon.Rocket,
-      action: () => {
-        if (projectMeta?.prompt_donation) {
-          setDonationOpen(true);
-        } else {
-          window.open(releaseMeta?.external_url);
-        }
-      },
-      variant: 'primary',
-    });
-  }
+      hide: !(isPriced && balance === 0),
+      side: 'right',
+    },
+  ];
 
   const breadcrumbs = [
     { title: accountName, href: `/${accountName}` },
@@ -218,7 +166,6 @@ const ProjectPage: NextPage = () => {
         donationAddress={projectMeta?.donation_address}
         onClose={() => setDonationOpen(false)}       
       />
-
       <Group mt={40} pl={40} position="apart">
         <Breadcrumbs items={breadcrumbs} />
         { showInfo &&
@@ -229,13 +176,15 @@ const ProjectPage: NextPage = () => {
         }
       </Group>
       <div style={{ padding: 40 }}>
-        <ItemHeader
-          name={projectName}
-          label={projectMeta?.name}
-          image={projectMeta?.image}
-          leftActions={leftActions}
-          rightActions={rightActions}
-        />
+        <Group spacing={24} mb="xl" noWrap>
+          <Item 
+            name={projectMeta?.name || projectName}
+            label={projectMeta?.short_description}
+            image={projectMeta?.image}
+            large
+          />
+          <Actions actions={actions} />
+        </Group>
         <Grid>
           { (!showInfo || !infoOpened) &&
             <Grid.Col xl={8}>
