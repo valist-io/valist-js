@@ -38,6 +38,7 @@ import {
 } from '@mantine/core';
 import { checkIsElectron, getApps, install, launch } from '@/components/Electron';
 import { DonationModal } from '@/components/DonationModal';
+import { sendStats } from '@valist/sdk';
 
 declare global {
   interface Window {
@@ -179,11 +180,12 @@ const ProjectPage: NextPage = () => {
     rightActions.push({
       label: (projectMeta.type === 'native' || projectMeta.type === 'web') ? 'Launch' : 'Download',
       icon: Icon.Rocket,
-      action: () => {
+      action: async () => {
         if (projectMeta?.prompt_donation) {
           setDonationOpen(true);
         } else {
           window.open(releaseMeta?.external_url);
+          await sendStats(`${accountName}/${projectName}/${latestRelease?.name}`);
         }
       },
       variant: 'primary',
