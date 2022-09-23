@@ -210,7 +210,7 @@ const ProjectPage: NextPage = () => {
       icon: <Icon.World />,
       enabled: isWeb,
     },
-    Darwin: {
+    macOS: {
       icon: <Icon.BrandApple />,
       enabled: isDarwin,
     },
