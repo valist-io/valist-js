@@ -35,6 +35,7 @@ import {
   Stack,
   Tabs,
   Grid,
+  Tooltip,
 } from '@mantine/core';
 import { checkIsElectron, getApps, install, launch } from '@/components/Electron';
 import { DonationModal } from '@/components/DonationModal';
@@ -204,6 +205,33 @@ const ProjectPage: NextPage = () => {
   const isLinux = releaseMeta?.install?.linux_amd64 || releaseMeta?.install?.linux_arm64;
   const isUnknown = !isWeb && !isDarwin && !isAndroid && !isWindows && !isLinux;
 
+  const platforms: Record<string, {icon: JSX.Element, enabled: boolean}> = {
+    Web: {
+      icon: <Icon.World />,
+      enabled: isWeb,
+    },
+    Darwin: {
+      icon: <Icon.BrandApple />,
+      enabled: isDarwin,
+    },
+    Android: {
+      icon: <Icon.BrandAndroid />,
+      enabled: isAndroid,
+    },
+    Windows: {
+      icon: <Icon.BrandWindows />,
+      enabled: isWindows,
+    },
+    Linux: {
+      icon: <Icon.BrandUbuntu />,
+      enabled: isLinux,
+    },
+    Unknown: {
+      icon: <div>Unknown</div>,
+      enabled: isUnknown,
+    },
+  };
+
   if (!loading && !data?.project) {
     return (
       <Layout>
@@ -227,7 +255,6 @@ const ProjectPage: NextPage = () => {
         donationAddress={projectMeta?.donation_address}
         onClose={() => setDonationOpen(false)}       
       />
-
       <Group mt={40} pl={40} position="apart">
         <Breadcrumbs items={breadcrumbs} />
         { showInfo &&
@@ -329,14 +356,20 @@ const ProjectPage: NextPage = () => {
                       </Group>
                       <Group position="apart">
                         <Text>Platforms</Text>
-                        <Text>
-                          {isWeb && <Icon.World />}
-                          {isDarwin && <Icon.BrandApple />}
-                          {isAndroid && <Icon.BrandAndroid />}
-                          {isWindows && <Icon.BrandWindows />}
-                          {isLinux && <Icon.BrandUbuntu />}
-                          {isUnknown && <div>Unknown</div>}
-                        </Text>
+                        <div style={{ display: 'flex' }}>
+                          {Object.keys(platforms)?.map((platform:string) => (
+                            <>
+                              {platforms[platform].enabled &&
+                                <Tooltip label={platform}>
+                                  {/* requires wrapping div */}
+                                  <div >
+                                    {platforms[platform]?.icon}
+                                  </div>
+                                </Tooltip>
+                              }
+                            </>
+                          ))}
+                        </div>
                       </Group>
                       {projectMeta?.external_url &&
                         <Group position="apart">
