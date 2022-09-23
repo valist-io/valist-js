@@ -197,6 +197,13 @@ const ProjectPage: NextPage = () => {
     { title: projectName, href: `/${accountName}/${projectName}` },
   ];
 
+  const isWeb = projectMeta?.type === 'web';
+  const isDarwin = releaseMeta?.install?.darwin_amd64 || releaseMeta?.install?.darwin_amd64;
+  const isAndroid = releaseMeta?.install?.android_arm64;
+  const isWindows = releaseMeta?.install?.windows_amd64 || releaseMeta?.install?.windows_386;
+  const isLinux = releaseMeta?.install?.linux_amd64 || releaseMeta?.install?.linux_arm64;
+  const isUnknown = !isWeb && !isDarwin && !isAndroid && !isWindows && !isLinux;
+
   if (!loading && !data?.project) {
     return (
       <Layout>
@@ -320,12 +327,25 @@ const ProjectPage: NextPage = () => {
                         <Text>Version</Text>
                         <Text>{latestRelease?.name}</Text>
                       </Group>
-                      {projectMeta?.external_url && <Group position="apart">
-                        <Text>Website</Text>
-                        <Anchor href={projectMeta?.external_url ?? ''}>
-                          {projectMeta?.external_url}
-                        </Anchor>
-                      </Group>}
+                      <Group position="apart">
+                        <Text>Platforms</Text>
+                        <Text>
+                          {isWeb && <Icon.World />}
+                          {isDarwin && <Icon.BrandApple />}
+                          {isAndroid && <Icon.BrandAndroid />}
+                          {isWindows && <Icon.BrandWindows />}
+                          {isLinux && <Icon.BrandUbuntu />}
+                          {isUnknown && <div>Unknown</div>}
+                        </Text>
+                      </Group>
+                      {projectMeta?.external_url &&
+                        <Group position="apart">
+                          <Text>Website</Text>
+                          <Anchor href={projectMeta?.external_url ?? ''}>
+                            {projectMeta?.external_url}
+                          </Anchor>
+                        </Group>
+                      }
                     </List>
                   </Stack>
                 </Card>
