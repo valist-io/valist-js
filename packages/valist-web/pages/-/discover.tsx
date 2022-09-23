@@ -162,7 +162,7 @@ const Discover: NextPage = () => {
                           img={data?.image || '/images/valist.png'} 
                           name={data?.name} 
                           description={data?.description} 
-                          link={`https://app.valist.io/${project.account.name}/${project?.name}`}
+                          link={`/${project.account.name}/${project?.name}`}
                           type={data?.type}
                         />
                       }

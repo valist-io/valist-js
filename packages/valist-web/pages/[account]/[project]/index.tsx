@@ -35,9 +35,11 @@ import {
   Stack,
   Tabs,
   Grid,
+  Tooltip,
 } from '@mantine/core';
 import { checkIsElectron, getApps, install, launch } from '@/components/Electron';
 import { DonationModal } from '@/components/DonationModal';
+import { sendStats } from '@valist/sdk';
 
 declare global {
   interface Window {
@@ -179,11 +181,12 @@ const ProjectPage: NextPage = () => {
     rightActions.push({
       label: (projectMeta.type === 'native' || projectMeta.type === 'web') ? 'Launch' : 'Download',
       icon: Icon.Rocket,
-      action: () => {
+      action: async () => {
         if (projectMeta?.prompt_donation) {
           setDonationOpen(true);
         } else {
           window.open(releaseMeta?.external_url);
+          await sendStats(`${accountName}/${projectName}/${latestRelease?.name}`);
         }
       },
       variant: 'primary',
@@ -194,6 +197,40 @@ const ProjectPage: NextPage = () => {
     { title: accountName, href: `/${accountName}` },
     { title: projectName, href: `/${accountName}/${projectName}` },
   ];
+
+  const isWeb = projectMeta?.type === 'web';
+  const isDarwin = releaseMeta?.install?.darwin_amd64 || releaseMeta?.install?.darwin_amd64;
+  const isAndroid = releaseMeta?.install?.android_arm64;
+  const isWindows = releaseMeta?.install?.windows_amd64 || releaseMeta?.install?.windows_386;
+  const isLinux = releaseMeta?.install?.linux_amd64 || releaseMeta?.install?.linux_arm64;
+  const isUnknown = !isWeb && !isDarwin && !isAndroid && !isWindows && !isLinux;
+
+  const platforms: Record<string, {icon: JSX.Element, enabled: boolean}> = {
+    Web: {
+      icon: <Icon.World />,
+      enabled: isWeb,
+    },
+    macOS: {
+      icon: <Icon.BrandApple />,
+      enabled: isDarwin,
+    },
+    Android: {
+      icon: <Icon.BrandAndroid />,
+      enabled: isAndroid,
+    },
+    Windows: {
+      icon: <Icon.BrandWindows />,
+      enabled: isWindows,
+    },
+    Linux: {
+      icon: <Icon.BrandUbuntu />,
+      enabled: isLinux,
+    },
+    Unknown: {
+      icon: <div>Unknown</div>,
+      enabled: isUnknown,
+    },
+  };
 
   if (!loading && !data?.project) {
     return (
@@ -218,7 +255,6 @@ const ProjectPage: NextPage = () => {
         donationAddress={projectMeta?.donation_address}
         onClose={() => setDonationOpen(false)}       
       />
-
       <Group mt={40} pl={40} position="apart">
         <Breadcrumbs items={breadcrumbs} />
         { showInfo &&
@@ -318,12 +354,31 @@ const ProjectPage: NextPage = () => {
                         <Text>Version</Text>
                         <Text>{latestRelease?.name}</Text>
                       </Group>
-                      {projectMeta?.external_url && <Group position="apart">
-                        <Text>Website</Text>
-                        <Anchor href={projectMeta?.external_url ?? ''}>
-                          {projectMeta?.external_url}
-                        </Anchor>
-                      </Group>}
+                      <Group position="apart">
+                        <Text>Platforms</Text>
+                        <div style={{ display: 'flex' }}>
+                          {Object.keys(platforms)?.map((platform:string) => (
+                            <>
+                              {platforms[platform].enabled &&
+                                <Tooltip label={platform}>
+                                  {/* requires wrapping div */}
+                                  <div >
+                                    {platforms[platform]?.icon}
+                                  </div>
+                                </Tooltip>
+                              }
+                            </>
+                          ))}
+                        </div>
+                      </Group>
+                      {projectMeta?.external_url &&
+                        <Group position="apart">
+                          <Text>Website</Text>
+                          <Anchor href={projectMeta?.external_url ?? ''}>
+                            {projectMeta?.external_url}
+                          </Anchor>
+                        </Group>
+                      }
                     </List>
                   </Stack>
                 </Card>
