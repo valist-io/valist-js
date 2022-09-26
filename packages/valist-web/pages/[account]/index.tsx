@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import { useContext, useState } from 'react';
-import { useNetwork, useAccount } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import useSWRImmutable from 'swr/immutable';
 import * as Icon from 'tabler-icons-react';
@@ -11,6 +11,7 @@ import { Layout } from '@/components/Layout';
 import { Metadata } from '@/components/Metadata';
 import { ValistContext } from '@/components/ValistProvider';
 import { Activity } from '@/components/Activity';
+import { getChainId } from '@/utils/config';
 import query from '@/graphql/AccountPage.graphql';
 
 import { 
@@ -40,14 +41,14 @@ import {
 } from '@valist/ui';
 
 const AccountPage: NextPage = () => {
-  const { chain } = useNetwork();
+  const chainId = getChainId();
   const { address } = useAccount();
 
   const router = useRouter();
   const valist = useContext(ValistContext);
 
   const accountName = `${router.query.account}`;
-  const accountId = valist.generateID(chain?.id || 137, accountName);
+  const accountId = valist.generateID(chainId, accountName);
 
   const { data, loading } = useQuery(query, { variables: { accountId } });
   const { data: meta } = useSWRImmutable(data?.account?.metaURI);

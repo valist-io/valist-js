@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import React, { useState, useEffect, useContext } from 'react';
 import useSWRImmutable from 'swr/immutable';
-import { useAccount, useNetwork } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import { useApolloClient, useQuery } from '@apollo/client';
 import { useForm, zodResolver } from '@mantine/form';
@@ -9,6 +9,7 @@ import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
 import { AddressInput } from '@/components/AddressInput';
 import { defaultTags, defaultTypes } from '@/forms/common';
+import { getChainId } from '@/utils/config';
 import query from '@/graphql/UpdateProjectPage.graphql';
 
 import { 
@@ -46,12 +47,12 @@ const Project: NextPage = () => {
   const router = useRouter();
   const { cache } = useApolloClient();
   const { address } = useAccount();
-  const { chain } = useNetwork();
+  const chainId = getChainId();
 
   const valist = useContext(ValistContext);
 
   const accountName = `${router.query.account}`;
-  const accountId = valist.generateID(chain?.id || 137, accountName);
+  const accountId = valist.generateID(chainId, accountName);
 
   const projectName = `${router.query.project}`;
   const projectId = valist.generateID(accountId, projectName);
@@ -117,7 +118,7 @@ const Project: NextPage = () => {
       member,
       valist,
       cache,
-      chain?.id || 137,
+      chainId,
     ).finally(() => {
       setLoading(false);
     });
@@ -131,7 +132,7 @@ const Project: NextPage = () => {
       member,
       valist,
       cache,
-      chain?.id || 137,
+      chainId,
     ).finally(() => {
       setLoading(false);
     });
@@ -149,7 +150,7 @@ const Project: NextPage = () => {
       values,
       valist,
       cache,
-      chain?.id || 137,
+      chainId,
     ).finally(() => {
       setLoading(false);  
     });

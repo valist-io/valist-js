@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { providers } from 'ethers';
-import { useSigner, useProvider, useNetwork } from 'wagmi';
+import { useSigner, useProvider } from 'wagmi';
+import { getChainId } from '@/utils/config';
 
 import { 
   Client, 
@@ -10,9 +11,12 @@ import {
   createReadOnly, 
 } from '@valist/sdk';
 
-// default to read-only polygon mainnet
+
+const chainId = getChainId();
+
+// default to read-only
 const defaultProvider = new providers.JsonRpcProvider('https://rpc.valist.io');
-const defaultClient = createReadOnly(defaultProvider, { chainId: 137 });
+const defaultClient = createReadOnly(defaultProvider, { chainId });
 
 export const ValistContext = React.createContext<Client>(defaultClient);
 
@@ -26,19 +30,16 @@ export function ValistProvider(props: ValistProviderProps) {
   
   const provider = useProvider();
   const { data: signer } = useSigner();
-  const { chain } = useNetwork();
 
   // update the valist client when the signer or network changes
   useEffect(() => {
-    const options: Partial<Options> = { chainId: chain?.id, metaTx: props.metaTx };
-    if (!chain?.id || !contracts.chainIds.includes(chain.id)) {
-      setClient(undefined);
-    } else if (signer?.provider) {
+    const options: Partial<Options> = { chainId, metaTx: props.metaTx };
+    if (signer?.provider) {
       create(signer.provider as any, options).then(setClient);
     } else {
       setClient(createReadOnly(provider as any, options));
     }
-  }, [signer?.provider, chain?.id, provider, props.metaTx]);
+  }, [signer?.provider, provider, props.metaTx]);
 
   return (
     <ValistContext.Provider value={client ?? defaultClient}>

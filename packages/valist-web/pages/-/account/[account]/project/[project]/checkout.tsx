@@ -1,12 +1,13 @@
 import type { NextPage } from 'next';
 import { useContext, useState, useEffect } from 'react';
-import { useAccount, useNetwork } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import useSWRImmutable from 'swr/immutable';
 import { useQuery, useApolloClient } from '@apollo/client';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
 import { purchaseProduct } from '@/forms/purchase';
+import { getChainId } from '@/utils/config';
 import { tokens, findToken, formatUnits } from '@/utils/tokens';
 import query from '@/graphql/ProjectPage.graphql';
 
@@ -29,7 +30,7 @@ const Checkout: NextPage = () => {
   const router = useRouter();
   const { cache } = useApolloClient();
   const { address } = useAccount();
-  const { chain } = useNetwork();
+  const chainId = getChainId();
 
   const [loading, setLoading] = useState(false);
   const [recipient, setRecipient] = useState('');
@@ -42,7 +43,7 @@ const Checkout: NextPage = () => {
   const valist = useContext(ValistContext);
 
   const accountName = `${router.query.account}`;
-  const accountId = valist.generateID(chain?.id || 137, accountName);
+  const accountId = valist.generateID(chainId, accountName);
 
   const projectName = `${router.query.project}`;
   const projectId = valist.generateID(accountId, projectName);
