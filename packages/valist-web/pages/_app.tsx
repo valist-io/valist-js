@@ -13,6 +13,7 @@ import { ApolloProvider } from '@/components/ApolloProvider';
 import { WagmiProvider, rehydrate } from '@/components/WagmiProvider';
 import { RainbowKitProvider } from '@/components/RainbowKitProvider';
 import { ValistProvider } from '@/components/ValistProvider';
+import { SapphireProvider } from '@/components/SapphireProvider';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 const resolveName = (address: string) => useEnsName({ address, chainId: 1 }); // eslint-disable-line react-hooks/rules-of-hooks
@@ -46,13 +47,15 @@ function ValistApp(props: AppProps) {
           <RainbowKitProvider colorScheme={colorScheme}>
             <ApolloProvider>
               <ValistProvider metaTx>
-                <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
-                  <ThemeProvider theme={{ colorScheme, components }}>
-                    <NotificationsProvider>
-                      <Component {...pageProps} />
-                    </NotificationsProvider>
-                  </ThemeProvider>
-                </ColorSchemeProvider>
+                <SapphireProvider>
+                  <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
+                    <ThemeProvider theme={{ colorScheme, components }}>
+                      <NotificationsProvider>
+                        <Component {...pageProps} />
+                      </NotificationsProvider>
+                    </ThemeProvider>
+                  </ColorSchemeProvider>
+                </SapphireProvider>
               </ValistProvider>
             </ApolloProvider>
           </RainbowKitProvider>

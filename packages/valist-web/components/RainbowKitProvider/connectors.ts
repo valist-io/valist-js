@@ -30,6 +30,7 @@ export const connectors = (chains: Chain[]) => connectorsForWallets([
   {
     groupName: 'Popular',
     wallets: [
+      wallet.injected({ chains }),
       wallet.rainbow({ chains }),
       wallet.metaMask({ chains }),
       wallet.walletConnect({ chains }),

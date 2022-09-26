@@ -7,9 +7,6 @@
   "scripts": {
     "test": "npm run test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
-    "android:sync": "cap sync android",
-    "electron:sync": "cap sync electron",
-    "electron:open": "cap open electron",
     "build:sdk": "npm run build --workspace=@valist/sdk",
     "build:ui": "npm run build --workspace=@valist/ui",
     "build:web": "npm run build --workspace=@valist/web",
@@ -18,14 +15,12 @@
     "dev:sdk": "npm run dev --workspace=@valist/sdk",
     "dev:ui": "npm run dev --workspace=@valist/ui",
     "dev:web": "npm run dev --workspace=@valist/web",
-    "dev": "concurrently --kill-others npm:dev:*",
+    "dev:app": "npm run dev --workspace=@valist/app",
+    "web": "concurrently --kill-others \"npm:dev:*(!app)\"",
+    "app": "concurrently --kill-others \"npm:dev:*\"",
     "storybook": "npm run storybook --workspace=@valist/ui"
   },
   "devDependencies": {
-    "concurrently": "^7.2.2",
-    "@capacitor-community/electron": "latest",
-    "@capacitor/android": "^3.6.0",
-    "@capacitor/cli": "^3.6.0",
-    "@capacitor/core": "^3.6.0"
+    "concurrently": "^7.2.2"
   }
 }
