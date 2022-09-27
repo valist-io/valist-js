@@ -10,7 +10,6 @@ import { sendStats } from '@valist/sdk';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
 import { Activity } from '@/components/Activity';
-import { DonationModal } from '@/components/DonationModal';
 import { getChainId } from '@/utils/config';
 import { DonationModal } from '@/components/DonationModal';
 import query from '@/graphql/ProjectPage.graphql';
