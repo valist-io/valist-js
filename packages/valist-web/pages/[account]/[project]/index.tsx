@@ -1,14 +1,17 @@
 import type { NextPage } from 'next';
 import { useContext, useState, useEffect } from 'react';
-import { useAccount, useNetwork } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import useSWRImmutable from 'swr/immutable';
 import * as Icon from 'tabler-icons-react';
 import { useQuery } from '@apollo/client';
 import { useMediaQuery } from '@mantine/hooks';
+import { sendStats } from '@valist/sdk';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
 import { Activity } from '@/components/Activity';
+import { DonationModal } from '@/components/DonationModal';
+import { getChainId } from '@/utils/config';
 import { DonationModal } from '@/components/DonationModal';
 import query from '@/graphql/ProjectPage.graphql';
 
@@ -37,17 +40,20 @@ import {
   Stack,
   Tabs,
   Grid,
+  Tooltip,
 } from '@mantine/core';
 
+
+
 const ProjectPage: NextPage = () => {
-  const { chain } = useNetwork();
+  const chainId = getChainId();
   const { address } = useAccount();
 
   const router = useRouter();
   const valist = useContext(ValistContext);
 
   const accountName = `${router.query.account}`;
-  const accountId = valist.generateID(chain?.id || 137, accountName);
+  const accountId = valist.generateID(chainId, accountName);
 
   const projectName = `${router.query.project}`;
   const projectId = valist.generateID(accountId, projectName);
@@ -142,6 +148,40 @@ const ProjectPage: NextPage = () => {
     { title: accountName, href: `/${accountName}` },
     { title: projectName, href: `/${accountName}/${projectName}` },
   ];
+
+  const isWeb = projectMeta?.type === 'web';
+  const isDarwin = releaseMeta?.install?.darwin_amd64 || releaseMeta?.install?.darwin_amd64;
+  const isAndroid = releaseMeta?.install?.android_arm64;
+  const isWindows = releaseMeta?.install?.windows_amd64 || releaseMeta?.install?.windows_386;
+  const isLinux = releaseMeta?.install?.linux_amd64 || releaseMeta?.install?.linux_arm64;
+  const isUnknown = !isWeb && !isDarwin && !isAndroid && !isWindows && !isLinux;
+
+  const platforms: Record<string, {icon: JSX.Element, enabled: boolean}> = {
+    Web: {
+      icon: <Icon.World />,
+      enabled: isWeb,
+    },
+    macOS: {
+      icon: <Icon.BrandApple />,
+      enabled: isDarwin,
+    },
+    Android: {
+      icon: <Icon.BrandAndroid />,
+      enabled: isAndroid,
+    },
+    Windows: {
+      icon: <Icon.BrandWindows />,
+      enabled: isWindows,
+    },
+    Linux: {
+      icon: <Icon.BrandUbuntu />,
+      enabled: isLinux,
+    },
+    Unknown: {
+      icon: <div>Unknown</div>,
+      enabled: isUnknown,
+    },
+  };
 
   if (!loading && !data?.project) {
     return (
@@ -267,12 +307,31 @@ const ProjectPage: NextPage = () => {
                         <Text>Version</Text>
                         <Text>{latestRelease?.name}</Text>
                       </Group>
-                      {projectMeta?.external_url && <Group position="apart">
-                        <Text>Website</Text>
-                        <Anchor href={projectMeta?.external_url ?? ''}>
-                          {projectMeta?.external_url}
-                        </Anchor>
-                      </Group>}
+                      <Group position="apart">
+                        <Text>Platforms</Text>
+                        <div style={{ display: 'flex' }}>
+                          {Object.keys(platforms)?.map((platform:string) => (
+                            <>
+                              {platforms[platform].enabled &&
+                                <Tooltip label={platform}>
+                                  {/* requires wrapping div */}
+                                  <div >
+                                    {platforms[platform]?.icon}
+                                  </div>
+                                </Tooltip>
+                              }
+                            </>
+                          ))}
+                        </div>
+                      </Group>
+                      {projectMeta?.external_url &&
+                        <Group position="apart">
+                          <Text>Website</Text>
+                          <Anchor href={projectMeta?.external_url ?? ''}>
+                            {projectMeta?.external_url}
+                          </Anchor>
+                        </Group>
+                      }
                     </List>
                   </Stack>
                 </Card>

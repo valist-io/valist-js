@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNetwork } from 'wagmi';
+import { getChainId } from '@/utils/config';
 import { Anchor } from '@mantine/core';
 
 import { 
@@ -18,7 +18,7 @@ export interface ActivityProps {
 }
 
 export function Activity(props: ActivityProps) {
-  const { chain } = useNetwork();
+  const chainId = getChainId();
 
   const account = props.account?.name;
   const project = props.project?.name;
@@ -29,7 +29,7 @@ export function Activity(props: ActivityProps) {
   const projectURL = `/${account}/${project}`;
   const releaseURL = `/${account}/${project}/${release}`;
 
-  const href = getBlockExplorer(chain?.id || 137, props.id);
+  const href = getBlockExplorer(chainId, props.id);
   const children = () => {
     switch (props.type) {
       case 'AccountCreated':

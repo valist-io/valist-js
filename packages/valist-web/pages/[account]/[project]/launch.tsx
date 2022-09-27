@@ -1,12 +1,12 @@
 import type { NextPage } from 'next';
 import { useContext, useEffect } from 'react';
-import { useNetwork } from 'wagmi';
 import { useRouter } from 'next/router';
 import useSWRImmutable from 'swr/immutable';
 import { useQuery } from '@apollo/client';
 import { Breadcrumbs } from '@valist/ui';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
+import { getChainId } from '@/utils/config';
 import query from '@/graphql/ProjectPage.graphql';
 
 import {
@@ -15,13 +15,13 @@ import {
 } from '@mantine/core';
 
 const ProjectPage: NextPage = () => {
-  const { chain } = useNetwork();
+  const chainId = getChainId();
 
   const router = useRouter();
   const valist = useContext(ValistContext);
 
   const accountName = `${router.query.account}`;
-  const accountId = valist.generateID(chain?.id || 137, accountName);
+  const accountId = valist.generateID(chainId, accountName);
 
   const projectName = `${router.query.project}`;
   const projectId = valist.generateID(accountId, projectName);
