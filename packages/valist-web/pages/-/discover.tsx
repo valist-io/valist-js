@@ -22,8 +22,7 @@ const Discover: NextPage = () => {
         pairs[`${release.project.account.name}/${release.project.name}`] = true;
         return release.project;
     }
-    }
-  ).filter(Boolean).sort((a: any, b: any) => parseFloat(b.blockTime) - parseFloat(a.blockTime)) || [];
+  }).filter(Boolean).sort((a: any, b: any) => parseFloat(b.blockTime) - parseFloat(a.blockTime)) || [];
   
   const isMobile = useMediaQuery('(max-width: 900px)');
   const paddingY = isMobile ? '24px' : '64px';
