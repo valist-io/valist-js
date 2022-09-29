@@ -178,7 +178,7 @@ const ProjectPage: NextPage = () => {
       action: () => launch(data?.project, projectMeta?.type, releaseMeta?.external_url, valist),
       variant: 'primary',
     });
-  } else if(projectMeta){
+  } else if(projectMeta && (releases.length !== 0 || projectMeta?.launch_external)){
     rightActions.push({
       label: (projectMeta.type === 'native' || projectMeta.type === 'web') ? 'Launch' : 'Download',
       icon: Icon.Rocket,
