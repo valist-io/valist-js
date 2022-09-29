@@ -14,12 +14,19 @@ const Discover: NextPage = () => {
   const { data } = useQuery(query, { 
     variables: { order: 'desc' },
   });
-  const projects = data?.projects ?? [];
+
+  let pairs: Record<string, boolean> = {};
+
+  const projects = data?.releases.map((release: any) => {
+    if (!pairs[`${release.project.account.name}/${release.project.name}`]) {
+        pairs[`${release.project.account.name}/${release.project.name}`] = true;
+        return release.project;
+    }
+  }).filter(Boolean).sort((a: any, b: any) => parseFloat(b.blockTime) - parseFloat(a.blockTime)) || [];
   
   const isMobile = useMediaQuery('(max-width: 900px)');
   const paddingY = isMobile ? '24px' : '64px';
   
-
   const demoItem1: any[] = [
     {
       img: 'https://gateway.valist.io/ipfs/QmXf81mLFFa1UA8QGMTU8a7kdFeNFmKytfZtTnutv9KVJN',
