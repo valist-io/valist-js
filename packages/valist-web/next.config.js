@@ -16,14 +16,7 @@ const nextConfig = {
   },
   assetPrefix: process.env.IPFS_BUILD ? './' : undefined,
   publicRuntimeConfig: {
-    CHAIN_ID: process.env.CHAIN_ID || 1337,
-    WEB3_PROVIDER: process.env.WEB3_PROVIDER || 'http://localhost:8545',
-    IPFS_HOST: process.env.IPFS_HOST || 'http://localhost:5001',
-    IPFS_GATEWAY: process.env.IPFS_GATEWAY || 'http://localhost:8080',
-    PINATA_JWT: process.env.PINATA_JWT,
-    GRAPH_PROVIDER: process.env.GRAPH_PROVIDER || 'http://localhost:8000/subgraphs/name/valist-io/valist',
-    MAGIC_PUBKEY: 'pk_live_631BA2340BB9ACD8',
-    METATX_ENABLED: process.env.METATX_ENABLED || false,
+    CHAIN_ID: process.env.CHAIN_ID || 137,
   },
   webpack: function (config, options) {
     if (!options.isServer) {

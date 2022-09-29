@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import { useContext, useState, useEffect } from 'react';
-import { useAccount, useNetwork } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import useSWRImmutable from 'swr/immutable';
 import * as Icon from 'tabler-icons-react';
@@ -9,6 +9,7 @@ import { useMediaQuery } from '@mantine/hooks';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
 import { Activity } from '@/components/Activity';
+import { getChainId } from '@/utils/config';
 import query from '@/graphql/ProjectPage.graphql';
 
 import {
@@ -48,14 +49,14 @@ declare global {
 }
 
 const ProjectPage: NextPage = () => {
-  const { chain } = useNetwork();
+  const chainId = getChainId();
   const { address } = useAccount();
 
   const router = useRouter();
   const valist = useContext(ValistContext);
 
   const accountName = `${router.query.account}`;
-  const accountId = valist.generateID(chain?.id || 137, accountName);
+  const accountId = valist.generateID(chainId, accountName);
 
   const projectName = `${router.query.project}`;
   const projectId = valist.generateID(accountId, projectName);

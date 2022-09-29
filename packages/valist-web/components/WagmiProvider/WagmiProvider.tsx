@@ -1,6 +1,7 @@
 import React from 'react';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import { connectors } from '@/components/RainbowKitProvider/connectors';
+import { getChainId } from '@/utils/config'; 
 import { CookieStorage } from './storage';
 
 import {
@@ -27,13 +28,22 @@ const valistProvider = jsonRpcProvider({
   },
 });
 
+const getChains = () => {
+  const chainId = getChainId();
+  switch (chainId) {
+    case 137:
+      return [chain.mainnet, chain.polygon];
+    case 80001:
+      return [chain.mainnet, chain.polygonMumbai];
+    default:
+      return [];
+  }
+};
+
 export const { 
   chains: [/* omit mainnet */, ...chains], 
   provider,
-} = configureChains(
-  [chain.mainnet, chain.polygon, chain.polygonMumbai], 
-  [valistProvider],
-);
+} = configureChains(getChains(), [valistProvider]);
 
 export const wagmiClient = createClient({ 
   autoConnect: true, 

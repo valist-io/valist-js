@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import React, { useState, useContext } from 'react';
-import { useAccount, useNetwork } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import { useApolloClient, useQuery } from '@apollo/client';
 import { useListState } from '@mantine/hooks';
@@ -10,6 +10,7 @@ import { AccountContext } from '@/components/AccountProvider';
 import { AddressInput } from '@/components/AddressInput';
 import { NameInput } from '@/components/NameInput';
 import { defaultTags, defaultTypes } from '@/forms/common';
+import { getChainId } from '@/utils/config';
 import query from '@/graphql/CreateProjectPage.graphql';
 
 import { 
@@ -46,7 +47,7 @@ export function CreateProject(props: CreateProjectProps) {
   const router = useRouter();
   const { cache } = useApolloClient();
   const { address } = useAccount();
-  const { chain } = useNetwork();
+  const chainId = getChainId();
 
   const valist = useContext(ValistContext);
   const { account } = useContext(AccountContext);
@@ -56,7 +57,7 @@ export function CreateProject(props: CreateProjectProps) {
   });
 
   const accountName = `${router.query.account}`;
-  const accountId = valist.generateID(chain?.id || 137, accountName);
+  const accountId = valist.generateID(chainId, accountName);
   const accountMembers = data?.account?.members ?? [];
 
   // form values
@@ -105,7 +106,7 @@ export function CreateProject(props: CreateProjectProps) {
       values,
       valist,
       cache,
-      chain?.id || 137,
+      chainId,
     ).then(success => {
       if (success) {
         props.afterCreate?.();

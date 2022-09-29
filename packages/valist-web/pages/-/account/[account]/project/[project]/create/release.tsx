@@ -2,12 +2,13 @@ import type { NextPage } from 'next';
 import type { FileWithPath } from 'file-selector';
 import { useState, useContext } from 'react';
 import { useRouter } from 'next/router';
-import { useAccount, useNetwork } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { useForm, zodResolver } from '@mantine/form';
 import { useApolloClient, useQuery } from '@apollo/client';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
 import { NameInput } from '@/components/NameInput';
+import { getChainId } from '@/utils/config';
 import query from '@/graphql/CreateReleasePage.graphql';
 
 import {
@@ -44,10 +45,10 @@ const CreateReleasePage: NextPage = () => {
   const valist = useContext(ValistContext);
 
   const { address } = useAccount();
-  const { chain } = useNetwork();  
+  const chainId = getChainId();
 
   const accountName = `${router.query.account}`;
-  const accountId = valist.generateID(chain?.id ?? 137, accountName);
+  const accountId = valist.generateID(chainId, accountName);
 
   const projectName = `${router.query.project}`;
   const projectId = valist.generateID(accountId, projectName);
@@ -107,7 +108,7 @@ const CreateReleasePage: NextPage = () => {
       values,
       valist,
       cache,
-      chain?.id ?? 137,
+      chainId,
     ).then(success => {
       if (success) {
         router.push(`/${accountName}/${projectName}`);  

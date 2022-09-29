@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import React, { useState, useEffect, useContext } from 'react';
-import { useAccount, useNetwork } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import { useApolloClient } from '@apollo/client';
 import { useListState } from '@mantine/hooks';
@@ -9,6 +9,7 @@ import { ValistContext } from '@/components/ValistProvider';
 import { AccountContext } from '@/components/AccountProvider';
 import { AddressInput } from '@/components/AddressInput';
 import { NameInput } from '@/components/NameInput';
+import { getChainId } from '@/utils/config';
 
 import { 
   schema,
@@ -40,7 +41,7 @@ export function CreateAccount(props: CreateAccountProps) {
   const router = useRouter();
   const { cache } = useApolloClient();
   const { address } = useAccount();
-  const { chain } = useNetwork();
+  const chainId = getChainId();
 
   const valist = useContext(ValistContext);
   const { setAccount } = useContext(AccountContext);
@@ -87,7 +88,7 @@ export function CreateAccount(props: CreateAccountProps) {
       values,
       valist,
       cache,
-      chain?.id || 137,
+      chainId,
     ).then((success) => {
       if (success) {
         setAccount(values.accountName);
@@ -125,7 +126,7 @@ export function CreateAccount(props: CreateAccountProps) {
             <NameInput 
               label="Account Name (cannot be changed)"
               disabled={loading}
-              parentId={chain?.id || 137}
+              parentId={chainId}
               required
               {...form.getInputProps('accountName')}
             />
