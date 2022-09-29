@@ -186,7 +186,7 @@ const ProjectPage: NextPage = () => {
           setDonationOpen(true);
         } else {
           window.open(releaseMeta?.external_url);
-          await sendStats(`${accountName}/${projectName}/${latestRelease?.name}`);
+          await fetch(`/api/stats/${accountName}/${projectName}/${latestRelease?.name}`, { method: 'PUT' });
         }
       },
       variant: 'primary',
