@@ -359,7 +359,7 @@ const ProjectPage: NextPage = () => {
                         <Text>Platforms</Text>
                         <div style={{ display: 'flex' }}>
                           {Object.keys(platforms)?.map((platform:string) => (
-                            <>
+                            <div key={platform}>
                               {platforms[platform].enabled &&
                                 <Tooltip label={platform}>
                                   {/* requires wrapping div */}
@@ -368,7 +368,7 @@ const ProjectPage: NextPage = () => {
                                   </div>
                                 </Tooltip>
                               }
-                            </>
+                            </div>
                           ))}
                         </div>
                       </Group>
