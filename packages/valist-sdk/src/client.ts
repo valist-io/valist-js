@@ -323,7 +323,7 @@ export default class Client {
 			throw new Error(`Generated CID ${cid} did not match response ${resp} from pinning service.`);
 		}
 
-		return `${this.ipfsGateway}/ipfs/${cid}`;
+		return `${this.ipfsGateway}/ipfs/${cid.toString()}`;
 	}
 
 	generateID = generateID
