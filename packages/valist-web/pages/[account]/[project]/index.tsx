@@ -178,7 +178,7 @@ const ProjectPage: NextPage = () => {
       action: () => launch(data?.project, projectMeta?.type, releaseMeta?.external_url, valist),
       variant: 'primary',
     });
-  } else if(projectMeta){
+  } else if(projectMeta && (releases.length !== 0 || projectMeta?.launch_external)){
     rightActions.push({
       label: (projectMeta.type === 'native' || projectMeta.type === 'web') ? 'Launch' : 'Download',
       icon: Icon.Rocket,
@@ -359,7 +359,7 @@ const ProjectPage: NextPage = () => {
                         <Text>Platforms</Text>
                         <div style={{ display: 'flex' }}>
                           {Object.keys(platforms)?.map((platform:string) => (
-                            <>
+                            <div key={platform}>
                               {platforms[platform].enabled &&
                                 <Tooltip label={platform}>
                                   {/* requires wrapping div */}
@@ -368,7 +368,7 @@ const ProjectPage: NextPage = () => {
                                   </div>
                                 </Tooltip>
                               }
-                            </>
+                            </div>
                           ))}
                         </div>
                       </Group>
