@@ -4,8 +4,11 @@ import { ContractTransaction } from '@ethersproject/contracts';
 import { IPFS } from 'ipfs-core-types';
 import { IPFSHTTPClient } from 'ipfs-http-client';
 import { MemoryBlockStore } from 'ipfs-car/blockstore/memory';
-import { packToBlob } from 'ipfs-car/pack/blob'
+import { pack } from 'ipfs-car/pack';
+import { CarReader } from '@ipld/car';
 import { ImportCandidate, ImportCandidateStream } from 'ipfs-core-types/src/utils';
+
+import { Web3Storage, File, Filelike } from 'web3.storage';
 import { FileObject } from 'files-from-path';
 import { toImportCandidate } from './utils';
 
@@ -24,6 +27,7 @@ export default class Client {
 	constructor(
 		private registry: ethers.Contract,
 		private license: ethers.Contract,
+		private w3sClient: Web3Storage,
 		private ipfs: IPFS | IPFSHTTPClient,
 		private ipfsGateway: string,
 		private subgraphUrl: string
@@ -277,94 +281,49 @@ export default class Client {
 	}
 
 	async writeJSON(data: string): Promise<string> {
-		let buffer: Buffer | Blob;
+		let buffer: Blob | Buffer;
 		if (typeof window === 'undefined') {
 			buffer = Buffer.from(data);
 
 		} else {
 			buffer = new Blob([data], { type: 'application/json' });
 		}
-
-		const { root: cid, car } = await packToBlob({
-			input: buffer,
-			blockstore: new MemoryBlockStore(),
-			wrapWithDirectory: false,
-		});
-
-		const auth = await axios.post(`https://pin-new.valist.io`);
-		const upload = await axios.put(auth.data, await car.arrayBuffer(), {
-			maxBodyLength: Infinity,
-			headers: { 'x-amz-meta-import': 'car' },
-		});
-
-		if (upload.headers['x-amz-meta-cid'] !== cid.toString()) {
-			throw new Error(`Generated CID ${cid} did not match response ${upload.headers['x-amz-meta-cid']}`);
-		}
-
+		const file = new File([buffer], 'data.json');
+		const cid = await this.w3sClient.put([file], { wrapWithDirectory: false });
 		return `${this.ipfsGateway}/ipfs/${cid.toString()}`;
 	}
 
-	async writeFile(file: ImportCandidate | ImportCandidateStream | FileObject, wrapWithDirectory = false, onProgress?: (percent: number) => void): Promise<string> {
-		const { root: cid, car } = await packToBlob({
-			input: typeof window === 'undefined'
-				? toImportCandidate(file as File)
-				: [({ path: (file as any).path, content: file })] as ImportCandidate,
-			blockstore: new MemoryBlockStore(), // @TODO make this fs-based in node.js
-			wrapWithDirectory,
-		});
-
-		var config = {
-			maxBodyLength: Infinity,
-			headers: { 'x-amz-meta-import': 'car' },
-			onUploadProgress: function (progressEvent: { loaded: number; total: number; }) {
-				var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-				if (onProgress) onProgress(percentCompleted);
-			}
-		};
-
-		const auth = await axios.post(`https://pin-new.valist.io`);
-		const upload = await axios.put(auth.data, await car.arrayBuffer(), config);
-
-		if (upload.headers['x-amz-meta-cid'] !== cid.toString()) {
-			throw new Error(`Generated CID ${cid} did not match response ${upload.headers['x-amz-meta-cid']}`);
-		}
-
+	async writeFile(file: File | FileObject | Filelike, wrapWithDirectory = false, onProgress?: (percent: number) => void): Promise<string> {
+		const opts = { wrapWithDirectory };
+		const cid = await this.w3sClient.put([file as Filelike], opts);
 		return `${this.ipfsGateway}/ipfs/${cid.toString()}`;
 	}
 
-	async writeFolder(files: ImportCandidate | ImportCandidateStream | FileObject[], wrapWithDirectory = false, onProgress?: (percent: number) => void): Promise<string> {
-
+	async writeFolder(files: File[] | FileObject[] | Iterable<Filelike>, wrapWithDirectory = false, onProgress?: (percent: number) => void): Promise<string> {
 		let toWrap = wrapWithDirectory;
 		const toPush = typeof window === 'undefined'
 			? (files as File[]).map(toImportCandidate)
 			: (files as ImportCandidate[]).map((file: any) => {
 				if (!file.path || file.path[0] !== '/') toWrap = true;
 				return ({ path: file.path || file.name, content: file });
-			});
+		});
 
-		const { root: cid, car } = await packToBlob({
-			input: toPush,
+		const { root: cid, out: car } = await pack({
+			input: toPush as ImportCandidateStream,
 			blockstore: new MemoryBlockStore(), // @TODO make this fs-based in node.js
 			wrapWithDirectory: toWrap,
 		});
 
-		var config = {
-			maxBodyLength: Infinity,
-			headers: { 'x-amz-meta-import': 'car' },
-			onUploadProgress: function (progressEvent: { loaded: number; total: number; }) {
-				var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-				if (onProgress) onProgress(percentCompleted);
-			}
-		};
+		const reader = await CarReader.fromIterable(car);
 
-		const auth = await axios.post(`https://pin-new.valist.io`);
-		const upload = await axios.put(auth.data, await car.arrayBuffer(), config);
-
-		if (upload.headers['x-amz-meta-cid'] !== cid.toString()) {
-			throw new Error(`Generated CID ${cid} did not match response ${upload.headers['x-amz-meta-cid']}`);
+		const opts = { wrapWithDirectory, onStoredChunk: onProgress };
+		const resp = await this.w3sClient.putCar(reader, opts);
+		
+		if (!JSON.stringify(resp).includes(cid.toString())) {
+			throw new Error(`Generated CID ${cid} did not match response ${resp} from pinning service.`);
 		}
 
-		return `${this.ipfsGateway}/ipfs/${cid.toString()}`;
+		return `${this.ipfsGateway}/ipfs/${cid}`;
 	}
 
 	generateID = generateID
