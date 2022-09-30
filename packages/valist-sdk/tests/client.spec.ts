@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 import { create } from 'ipfs-http-client';
+import { Web3Storage } from 'web3.storage';
 import { expect } from 'chai';
 import { describe, beforeEach, it } from 'mocha';
 
@@ -31,7 +32,9 @@ describe('valist client', async function() {
 		const ipfsGateway = 'https://gateway.valist.io';
 		const subgraphAddress = 'https://api.thegraph.com/subgraphs/name/valist-io/valistmumbai';
 
-		const valist = new Client(registry, license, ipfs, ipfsGateway, subgraphAddress);
+		const w3sClient = new Web3Storage({ token: 'VALIST_PUBLIC_TOKEN', endpoint: new URL('https://pin-w3s.valist.workers.dev')});
+
+		const valist = new Client(registry, license, w3sClient, ipfs, ipfsGateway, subgraphAddress);
 
 		console.log(await valist.writeJSON(JSON.stringify({"test":"test"})));
 
