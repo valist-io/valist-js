@@ -316,7 +316,7 @@ export default class Client {
 
 		const reader = await CarReader.fromIterable(car);
 
-		const opts = { wrapWithDirectory, onStoredChunk: onProgress };
+		const opts = { onStoredChunk: onProgress };
 		const resp = await this.w3sClient.putCar(reader, opts);
 		
 		if (!JSON.stringify(resp).includes(cid.toString())) {
