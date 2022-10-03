@@ -14,10 +14,11 @@ import { Fragment } from 'react';
 export interface Action {
   label: string;
   icon: Icon;
-  href: string;
+  href?: string;
   side: 'left' | 'right';
   target?: '_self' | '_blank' | '_parent' | '_top';
   hide?: boolean;
+  action?: (value?: any) => void;
   variant?: ButtonVariant;
 }
 
@@ -43,22 +44,38 @@ export function Actions(props: ActionsProps) {
           { leftActions.map((action: Action, index: number) =>
             <Tooltip key={index} label={action.label} position="bottom">
               <div>
-                <Anchor target={action.target} href={action.href}>
-                  <UnstyledButton className={classes.action}>
+                {!action.action && action.href && 
+                  <Anchor target={action.target} href={action.href}>
+                    <UnstyledButton className={classes.action}>
+                      <action.icon size={28} />
+                    </UnstyledButton>
+                  </Anchor>
+                }
+                {action?.action && 
+                  <UnstyledButton className={classes.action} onClick={() => action.action()}>
                     <action.icon size={28} />
                   </UnstyledButton>
-                </Anchor>
+                }
               </div>
             </Tooltip>
           )}
         </Group>
         <Group>
-          { rightActions.map((action: Action, index: number) =>
-            <Anchor key={index} target={action.target} href={action.href}>
-              <Button variant={action.variant}>
-                {action.label}
-              </Button>
-            </Anchor>
+          { rightActions.map((action, index) =>
+            <Fragment key={index}>
+              {!action.action && action.href &&  
+                <Anchor target={action.target} href={action.href}>
+                  <Button variant={action.variant}>
+                    {action.label}
+                  </Button>
+                </Anchor>
+              }
+              {action?.action && 
+                <Button variant={action.variant} onClick={() => action.action()}>
+                  {action.label}
+                </Button>
+              }
+            </Fragment>
           )}
         </Group>
       </Group>
@@ -66,11 +83,18 @@ export function Actions(props: ActionsProps) {
         <Fab>
           { actions.map((action, index) =>
             <Fragment key={index}>
-              <Anchor target={action.target} href={action.href}>
-                <Fab.Button label={action.label}>
+              {!action.action && action.href && 
+                <Anchor target={action.target} href={action.href}>
+                  <Fab.Button label={action.label}>
+                    <action.icon size={32} />
+                  </Fab.Button>
+                </Anchor>
+              }
+              {action?.action && 
+                <Fab.Button label={action.label} onClick={() => action.action()}>
                   <action.icon size={32} />
                 </Fab.Button>
-              </Anchor>
+              }
             </Fragment>
           )}
         </Fab>

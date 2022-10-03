@@ -129,16 +129,31 @@ const ProjectPage: NextPage = () => {
       icon: Icon.ShoppingCart,
       href: `/-/account/${accountName}/project/${projectName}/checkout`,
       variant: 'primary',
-      hide: (isPriced && balance === 0),
+      hide: !(isPriced && balance === 0),
       side: 'right',
     },
+    // {
+    //   label: 'Launch',
+    //   icon: Icon.Rocket,
+    //   href: launchUrl ?? '',
+    //   target: '_blank',
+    //   variant: 'primary',
+    //   hide: isPriced || (isPriced && balance === 0),
+    //   side: 'right',
+    // },
     {
-      label: 'Launch',
+      label: (projectMeta?.type === 'native' || projectMeta?.type === 'web') ? 'Launch' : 'Download',
       icon: Icon.Rocket,
-      href: launchUrl ?? '',
-      target: '_blank',
+      action: async () => {
+        if (projectMeta?.prompt_donation) {
+          setDonationOpen(true);
+        } else {
+          window.open(releaseMeta?.external_url);
+          await fetch(`/api/stats/${accountName}/${projectName}/${latestRelease?.name}`, { method: 'PUT' });
+        }
+      },
+    hide: (isPriced && balance !== 0) || (projectMeta && (releases.length !== 0 || projectMeta?.launch_external)),
       variant: 'primary',
-      hide: !(isPriced && balance === 0),
       side: 'right',
     },
   ];
@@ -310,7 +325,7 @@ const ProjectPage: NextPage = () => {
                         <Text>Platforms</Text>
                         <div style={{ display: 'flex' }}>
                           {Object.keys(platforms)?.map((platform:string) => (
-                            <>
+                            <div key={platform}>
                               {platforms[platform].enabled &&
                                 <Tooltip label={platform}>
                                   {/* requires wrapping div */}
@@ -319,7 +334,7 @@ const ProjectPage: NextPage = () => {
                                   </div>
                                 </Tooltip>
                               }
-                            </>
+                            </div>
                           ))}
                         </div>
                       </Group>

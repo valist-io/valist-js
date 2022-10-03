@@ -16,7 +16,7 @@ const nextConfig = {
   },
   assetPrefix: process.env.IPFS_BUILD ? './' : undefined,
   publicRuntimeConfig: {
-    CHAIN_ID: process.env.CHAIN_ID || 80001,
+    CHAIN_ID: process.env.CHAIN_ID || 137,
   },
   webpack: function (config, options) {
     if (!options.isServer) {
