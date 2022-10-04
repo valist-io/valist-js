@@ -81,7 +81,7 @@ const IndexPage: NextPage = () => {
 
   const steps = [
     { label: 'Connect Wallet', checked: isConnected },
-    { label: 'Create Account', checked: onboarding || accounts.length === 0 },
+    { label: 'Create Account', checked: isConnected && (onboarding || accounts.length !== 0) },
     { label: 'Create Project (Optional)', checked: false },
   ];
 
