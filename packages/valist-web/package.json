@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.5.10",
+    "@capacitor/core": "latest",
     "@everipedia/wagmi-magic-connector": "^0.6.2",
     "@mantine/core": "^5.0.0",
     "@mantine/form": "^5.0.0",

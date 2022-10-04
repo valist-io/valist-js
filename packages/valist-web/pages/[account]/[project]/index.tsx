@@ -1,3 +1,4 @@
+import { Capacitor } from '@capacitor/core';
 import type { NextPage } from 'next';
 import { useContext, useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
@@ -40,7 +41,6 @@ import {
 } from '@mantine/core';
 import { checkIsElectron, getApps, install, launch } from '@/components/Electron';
 import { DonationModal } from '@/components/DonationModal';
-import { sendStats } from '@valist/sdk';
 
 declare global {
   interface Window {
@@ -70,6 +70,7 @@ const ProjectPage: NextPage = () => {
   const logs = data?.project?.logs ?? [];
   const releases = data?.project?.releases ?? [];
   const latestRelease = data?.project?.releases?.[0];
+  const isCapacitor = Capacitor.getPlatform() !== 'web';
 
   const { data: projectMeta } = useSWRImmutable(data?.project?.metaURI);
   const { data: releaseMeta } = useSWRImmutable(latestRelease?.metaURI);
@@ -157,7 +158,7 @@ const ProjectPage: NextPage = () => {
     },
   ];
 
-  if (isPriced && balance === 0) {
+  if (isPriced && balance === 0 && !isCapacitor) {
     rightActions.push({
       label: 'Purchase',
       icon: Icon.ShoppingCart,
@@ -186,7 +187,7 @@ const ProjectPage: NextPage = () => {
         if (projectMeta?.prompt_donation) {
           setDonationOpen(true);
         } else {
-          window.open(releaseMeta?.external_url);
+          window.open(releaseMeta?.external_url || projectMeta?.external_url);
           await fetch(`/api/stats/${accountName}/${projectName}/${latestRelease?.name}`, { method: 'PUT' });
         }
       },
