@@ -97,9 +97,9 @@ const ProjectPage: NextPage = () => {
     (other: any) => other.id.toLowerCase() === address?.toLowerCase(),
   );
 
-  const launchUrl = projectMeta?.launch_external 
-    ? projectMeta?.external_url 
-    : releaseMeta?.external_url;
+  // const launchUrl = projectMeta?.launch_external 
+  //   ? projectMeta?.external_url 
+  //   : releaseMeta?.external_url;
 
   const actions: Action[] = [
     {
@@ -129,18 +129,9 @@ const ProjectPage: NextPage = () => {
       icon: Icon.ShoppingCart,
       href: `/-/account/${accountName}/project/${projectName}/checkout`,
       variant: 'primary',
-      hide: !(isPriced && balance === 0),
+      hide: !isPriced || !(isPriced && balance === 0),
       side: 'right',
     },
-    // {
-    //   label: 'Launch',
-    //   icon: Icon.Rocket,
-    //   href: launchUrl ?? '',
-    //   target: '_blank',
-    //   variant: 'primary',
-    //   hide: isPriced || (isPriced && balance === 0),
-    //   side: 'right',
-    // },
     {
       label: (projectMeta?.type === 'native' || projectMeta?.type === 'web') ? 'Launch' : 'Download',
       icon: Icon.Rocket,
@@ -152,7 +143,7 @@ const ProjectPage: NextPage = () => {
           await fetch(`/api/stats/${accountName}/${projectName}/${latestRelease?.name}`, { method: 'PUT' });
         }
       },
-    hide: (isPriced && balance !== 0) || (projectMeta && (releases.length !== 0 || projectMeta?.launch_external)),
+      hide: (isPriced && balance === 0) || !(projectMeta && (releases.length !== 0 || projectMeta?.launch_external)),
       variant: 'primary',
       side: 'right',
     },
