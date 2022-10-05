@@ -4,13 +4,24 @@ query Apps($order: String) {
     name
     metaURI
     project {
-        name
-        metaURI
-        account {
-            name
-        }
-        blockTime
+      name
+      metaURI
+      account {
+          name
+      }
+      blockTime
     }
     blockTime
+  },
+  accounts(first: 1000, orderBy: blockTime, orderDirection: $order){
+    id
+    name
+    metaURI
+    projects {
+      name
+      releases {
+        id
+      }
+    }
   }
 }

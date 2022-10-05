@@ -6,7 +6,7 @@ import { CarouselItem } from '@valist/ui/dist/components/Carousel';
 import { useQuery } from '@apollo/client';
 import query from '@/graphql/Discover.graphql';
 import { Metadata } from '@/components/Metadata';
-import { Center, SimpleGrid } from '@mantine/core';
+import { Anchor, Avatar, Center, SimpleGrid, Text } from '@mantine/core';
 import { useState } from 'react';
 
 const Discover: NextPage = () => {
@@ -14,6 +14,19 @@ const Discover: NextPage = () => {
   const { data } = useQuery(query, { 
     variables: { order: 'desc' },
   });
+
+  const accounts = data?.accounts;
+
+  // let accountCounts: Record<string, number> = {};
+  // data?.accounts?.forEach((account: any) =>
+  //   account?.projects.forEach((project: any) => {
+  //     accountCounts[account?.name] = accountCounts[account?.name] + project.releases.length; 
+  //   }));
+  // let accounts = [];
+
+  console.log('accounts', accounts);
+
+  console.log('accounts', accounts);
 
   let pairs: Record<string, boolean> = {};
 
@@ -186,6 +199,22 @@ const Discover: NextPage = () => {
                </Center>
               </>
             }
+          </section>
+
+          <section style={{ marginBottom: 40, padding: `0 ${paddingY}` }}>
+            <h2 style={{ fontStyle: 'normal', fontWeight: 700, fontSize: isMobile ? 18 : 32 }}>Top Publishers</h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              {accounts?.slice(0, 10).map((account: any) => (
+                <Metadata key={account.id} url={account?.metaURI}>
+                  {(data: any) =>
+                    <Anchor href={`/${account?.name}`}>
+                      <Avatar style={{ margin: '10 auto 0 auto' }} size="xl" src={data?.image} alt={account?.name} />
+                      <Center><Text>{account?.name}</Text></Center>
+                    </Anchor>
+                  }
+                </Metadata>
+              ))}
+            </div>
           </section>
 
           <section>

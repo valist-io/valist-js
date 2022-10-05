@@ -51,19 +51,13 @@ export function Layout(props: LayoutProps) {
             <Icons.GasStation size={18} />
           </ActionIcon>
           <Anchor target="_blank" href="https://docs.valist.io">Docs</Anchor>
-          <Anchor href="/-/discover">Discover</Anchor>
+          <Anchor href="/-/dashboard">Dashboard</Anchor>
           <ConnectButton chainStatus="icon" showBalance={false} />
         </Header>
       }
       navbar={
         <Navbar opened={opened}>
           <Navbar.Section mt={40} grow>
-            <Navbar.Link 
-              icon={Icons.Home} 
-              text="Dashboard"
-              href="/"
-              active={router.asPath === "/"} 
-            />
             <Navbar.Link 
               icon={Icons.Users} 
               text="Members"
