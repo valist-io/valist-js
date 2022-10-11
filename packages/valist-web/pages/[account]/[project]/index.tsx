@@ -310,7 +310,7 @@ const ProjectPage: NextPage = () => {
                           members={members.map(member => member.id)} 
                         />
                       </Group>
-                      <Group position="apart">
+                      <Group style={{ overflow: 'hidden' }} position="apart">
                         <Text>Version</Text>
                         <Text>{latestRelease?.name}</Text>
                       </Group>

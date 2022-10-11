@@ -1,4 +1,4 @@
-query Apps($filterAddresses: [String]) {
+query Apps($order: String, $filterAddresses: [String]) {
   releases(first: 1000, orderBy: blockTime, orderDirection: $order,
     where: {
       sender_not_in: $filterAddresses
