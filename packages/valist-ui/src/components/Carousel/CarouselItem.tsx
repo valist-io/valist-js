@@ -17,7 +17,7 @@ export function CarouselItem(props: DiscoveryItemProps) {
 
   return (
     <div style={{maxWidth: 350}}>
-      <Link href={props.link} passHref>
+      <Link href={props.link}>
         <Card shadow="sm" p="lg" sx={() => ({
           '&:hover': {
             cursor: 'pointer',
