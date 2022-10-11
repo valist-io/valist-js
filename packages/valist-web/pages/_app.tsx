@@ -1,11 +1,10 @@
 import '@rainbow-me/rainbowkit/styles.css';
 import '@valist/ui/public/styles.css';
-
 import type { AppProps, AppContext } from 'next/app';
 import { SWRConfig } from 'swr';
 import { useEnsName } from 'wagmi';
 import { NextLink } from '@mantine/next';
-import { useLocalStorage } from '@mantine/hooks';
+import { useColorScheme, useLocalStorage } from '@mantine/hooks';
 import { NotificationsProvider } from '@mantine/notifications';
 import { ColorSchemeProvider, ColorScheme } from '@mantine/core';
 import { ThemeProvider, AddressProvider } from '@valist/ui';
@@ -28,10 +27,11 @@ const components = {
 
 function ValistApp(props: AppProps) {
   const { Component, pageProps } = props;
-
+  
+  const systemColorScheme = useColorScheme();
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
     key: 'mantine-color-scheme',
-    defaultValue: 'light',
+    defaultValue: systemColorScheme,
     getInitialValueInEffect: true,
   });
 

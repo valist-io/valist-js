@@ -9,6 +9,7 @@ import { NextLink } from '@mantine/next';
 import { 
   ActionIcon,
   Anchor,
+  Center,
   Group,
 } from '@mantine/core';
 
@@ -76,6 +77,13 @@ export function Layout(props: LayoutProps) {
               href={`/-/library`}
               active={router.asPath === `/-/library`} 
             />
+
+            <Navbar.Link 
+              icon={Icons.Settings} 
+              text="Dashboard"
+              href="/-/settings"
+              active={router.asPath === '/-/dashboard'} 
+            />
             {isMobile &&
               <>
                 <Navbar.Link 
@@ -95,6 +103,12 @@ export function Layout(props: LayoutProps) {
                   href="/-/gas"
                   active={router.asPath === '/-/gas'} 
                 />
+                <Navbar.Link 
+                  icon={Icons.Settings} 
+                  text="Settings"
+                  href="/-/settings"
+                  active={router.asPath === '/-/settings'} 
+                />
               </>
             }
           </Navbar.Section>
@@ -110,7 +124,9 @@ export function Layout(props: LayoutProps) {
       footer={
         <Footer>
           <Group>
-            <ConnectButton chainStatus="full" showBalance={false} />
+            <Center>
+               <ConnectButton chainStatus="full" showBalance={false} />
+            </Center>
           </Group>
         </Footer>
       }

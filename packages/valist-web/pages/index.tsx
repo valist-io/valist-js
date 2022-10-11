@@ -8,22 +8,39 @@ import query from '@/graphql/Discover.graphql';
 import { Metadata } from '@/components/Metadata';
 import { Center, SimpleGrid } from '@mantine/core';
 import { useState } from 'react';
+import { TopPublishers } from '@/components/TopPublishers';
+import { filterAddresses } from '@/utils/config';
 
 const Discover: NextPage = () => {
   const [latestIndex, setLatestIndex] = useState(12);
   const { data } = useQuery(query, { 
-    variables: { order: 'desc' },
+    variables: { filterAddresses },
   });
 
+  let publisherCounts: Record<string, {count: number, account: any}> = {};
   let pairs: Record<string, boolean> = {};
 
   const projects = data?.releases.map((release: any) => {
+    // Get Publisher Counts
+    const publisherCount = publisherCounts[release?.project?.account?.name];
+  
+    publisherCounts[release?.project?.account?.name] = {
+      account: release?.project?.account,
+      count: publisherCount ? publisherCounts[release?.project?.account?.name].count + 1 : 1,
+    };
+
+    // Create sorted project array
     if (!pairs[`${release.project.account.name}/${release.project.name}`]) {
         pairs[`${release.project.account.name}/${release.project.name}`] = true;
         return release.project;
     }
   }).filter(Boolean).sort((a: any, b: any) => parseFloat(b.blockTime) - parseFloat(a.blockTime)) || [];
   
+  const topAccounts = Object.keys(publisherCounts).map((name) => {
+    const publisher = publisherCounts[name];
+    return { ...publisher.account, count: publisher.count };
+  }).sort((a: any, b: any) => b.count - a.count);
+
   const isMobile = useMediaQuery('(max-width: 900px)');
   const paddingY = isMobile ? '24px' : '64px';
   
@@ -157,8 +174,8 @@ const Discover: NextPage = () => {
               <>
                 <SimpleGrid
                   breakpoints={[
-                    { minWidth: 'sm', cols: 1, spacing: 24 },
-                    { minWidth: 'md', cols: 2, spacing: 24 },
+                    { minWidth: 'sm', cols: 1, spacing: 0 },
+                    { minWidth: 'md', cols: 2, spacing: 0 },
                     { minWidth: 'lg', cols: 4, spacing: 16 },
                   ]}
                 >
@@ -186,6 +203,10 @@ const Discover: NextPage = () => {
                </Center>
               </>
             }
+          </section>
+
+          <section style={{ marginBottom: 80, padding: `0 ${paddingY}` }}>
+            <TopPublishers accounts={topAccounts} />
           </section>
 
           <section>
