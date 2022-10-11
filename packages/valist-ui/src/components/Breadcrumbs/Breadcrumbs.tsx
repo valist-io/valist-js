@@ -19,7 +19,7 @@ export interface BreadcrumbsProps {
 export function Breadcrumbs(props: BreadcrumbsProps) {
   return (
     <MantineBreadcrumbs separator={<Icon.ChevronRight color="#9B9BB1" />}>
-      <Anchor href="/">
+      <Anchor href="/-/dashboard">
         <Icon.Home color="#9B9BB1" style={{ height: '100%' }} />
       </Anchor>
       {props.items.map((item, index) => 

@@ -52,13 +52,48 @@ export function Layout(props: LayoutProps) {
             <Icons.GasStation size={18} />
           </ActionIcon>
           <Anchor target="_blank" href="https://docs.valist.io">Docs</Anchor>
-          <Anchor href="/-/dashboard">Dashboard</Anchor>
+          {(router.asPath === "/") && 
+            <Anchor href={'/-/dashboard'}>
+              Dashboard
+            </Anchor>
+          }
           <ConnectButton chainStatus="icon" showBalance={false} />
         </Header>
       }
       navbar={
         <Navbar opened={opened}>
           <Navbar.Section mt={40} grow>
+          <Navbar.Link 
+            icon={Icons.World} 
+            text='Discover'
+            href='/'
+          />
+          {isMobile &&
+              <>
+                <Navbar.Link 
+                  icon={Icons.Command} 
+                  text='Dashboard'
+                  href='/-/dashboard'
+                />
+                <Navbar.Link 
+                  icon={Icons.Settings} 
+                  text="Settings"
+                  href="/-/settings"
+                  active={router.asPath === '/-/settings'} 
+                />
+                <Navbar.Link 
+                  icon={Icons.GasStation} 
+                  text="Gas Tank"
+                  href="/-/gas"
+                  active={router.asPath === '/-/gas'} 
+                />
+                <Navbar.Link 
+                  icon={Icons.Notebook} 
+                  text="Docs"
+                  href="https://docs.valist.io"
+                />
+              </>
+            }
             <Navbar.Link 
               icon={Icons.Users} 
               text="Members"
@@ -77,40 +112,6 @@ export function Layout(props: LayoutProps) {
               href={`/-/library`}
               active={router.asPath === `/-/library`} 
             />
-
-            <Navbar.Link 
-              icon={Icons.Settings} 
-              text="Dashboard"
-              href="/-/settings"
-              active={router.asPath === '/-/dashboard'} 
-            />
-            {isMobile &&
-              <>
-                <Navbar.Link 
-                  icon={Icons.Notebook} 
-                  text="Docs"
-                  href="https://docs.valist.io"
-                />
-                <Navbar.Link 
-                  icon={Icons.World} 
-                  text="Discover"
-                  href="/-/discover"
-                  active={router.asPath === '/-/discover'} 
-                />
-                <Navbar.Link 
-                  icon={Icons.GasStation} 
-                  text="Gas Tank"
-                  href="/-/gas"
-                  active={router.asPath === '/-/gas'} 
-                />
-                <Navbar.Link 
-                  icon={Icons.Settings} 
-                  text="Settings"
-                  href="/-/settings"
-                  active={router.asPath === '/-/settings'} 
-                />
-              </>
-            }
           </Navbar.Section>
           <Navbar.Section px={30} py="md">
             <div style={{ display: 'flex', gap: 30 }}>
