@@ -26,8 +26,6 @@ const Discover: NextPage = () => {
 
   console.log('accounts', accounts);
 
-  console.log('accounts', accounts);
-
   let pairs: Record<string, boolean> = {};
 
   const projects = data?.releases.map((release: any) => {
@@ -199,22 +197,6 @@ const Discover: NextPage = () => {
                </Center>
               </>
             }
-          </section>
-
-          <section style={{ marginBottom: 40, padding: `0 ${paddingY}` }}>
-            <h2 style={{ fontStyle: 'normal', fontWeight: 700, fontSize: isMobile ? 18 : 32 }}>Top Publishers</h2>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              {accounts?.slice(0, 10).map((account: any) => (
-                <Metadata key={account.id} url={account?.metaURI}>
-                  {(data: any) =>
-                    <Anchor href={`/${account?.name}`}>
-                      <Avatar style={{ margin: '10 auto 0 auto' }} size="xl" src={data?.image} alt={account?.name} />
-                      <Center><Text>{account?.name}</Text></Center>
-                    </Anchor>
-                  }
-                </Metadata>
-              ))}
-            </div>
           </section>
 
           <section>

@@ -1,27 +1,20 @@
-query Apps($order: String) {
-  releases(first: 1000, orderBy: blockTime, orderDirection: $order){
-    id
-    name
-    metaURI
-    project {
+query Apps($filterAddresses: [String]) {
+  releases(first: 1000, orderBy: blockTime, orderDirection: $order,
+    where: {
+      sender_not_in: $filterAddresses
+    }) {
+      id
       name
       metaURI
-      account {
+      project {
+        name
+        metaURI
+        account {
           name
+          metaURI
+        }
+        blockTime
       }
       blockTime
-    }
-    blockTime
-  },
-  accounts(first: 1000, orderBy: blockTime, orderDirection: $order){
-    id
-    name
-    metaURI
-    projects {
-      name
-      releases {
-        id
-      }
-    }
-  }
+    },
 }
