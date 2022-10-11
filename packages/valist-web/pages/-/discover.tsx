@@ -197,7 +197,7 @@ const Discover: NextPage = () => {
       type: 'web',
     },
     {
-      img: 'https://gateway.valist.io/ipfs/QmWhnyhXb1ahhsuWBRvXdpNg51KH8f2zfkJyyhmpqBvuSa',
+      img: 'https://bafkreidf33irjtdo2nxe7ssed634cr7hbq677lieemqvejtofbkrufa4yq.ipfs.gateway.valist.io',
       name: 'Lens Note',
       description: 'LensNote enables you to create and share personal notes which can be reacted, collected, and mirrored.',
       link: '/blockchainaholic/lensnote',
