@@ -33,112 +33,252 @@ const Discover: NextPage = () => {
         pairs[`${release.project.account.name}/${release.project.name}`] = true;
         return release.project;
     }
-  }).filter(Boolean).sort((a: any, b: any) => parseFloat(b.blockTime) - parseFloat(a.blockTime)) || [];
+  }).filter(Boolean) || []; // sorted by release (last updated)
+
+  const sortedProjects = [...projects].sort((a: any, b: any) => parseFloat(b.blockTime) - parseFloat(a.blockTime));
+
+  // const latestNative = projects.filter((project: any) => project.type == 'native'); // @TODO needs to come from logs instead of releases
   
   const isMobile = useMediaQuery('(max-width: 900px)');
   const paddingY = isMobile ? '24px' : '64px';
   
-  const demoItem1: any[] = [
+  const featuredGames: any[] = [
     {
-      img: 'https://gateway.valist.io/ipfs/QmXf81mLFFa1UA8QGMTU8a7kdFeNFmKytfZtTnutv9KVJN',
-      name: 'Berty',
-      description: 'A messenger that is as easy to use as it is secure.',
-      link: '/berty/berty',
-      type: 'Application',
+      img: 'https://bafkreig2os6zpf6crsiqhwg5i3si7f2u474fnihbxoucb6ifxnmhfar6fi.ipfs.gateway.valist.io',
+      name: 'MintWorld',
+      description: "Catch, Fight, and Collect Monsters!",
+      link: '/mintworld/mintworld',
+      type: 'web',
     },
     {
-      img: 'https://gateway.valist.io/ipfs/QmYRcBZuTswhDs63wnmpy3zszD3QUmDDR97dNJtXBdWf3t',
-      name: 'Music3',
-      description: 'Store music on IPFS in single Click.',
-      link: '/0xdhruv/music3',
-      type: 'Application',
+      img: 'https://bafybeihavc5tjkdp6gt3hqmvm3kbkahnvfbxupkwbjs5jlehprsuisnm5u.ipfs.gateway.valist.io',
+      name: 'Now Kith',
+      description: "A 5-level puzzle game with 3-bonus rounds. Combine two objects together to get the desired result.",
+      link: '/devbymarc/now_kith',
+      type: 'web',
     },
     {
-      img: 'https://gateway.valist.io/ipfs/QmZxfFuW8knLCbMQMzjfM2s6piydLuD62GfXtTyenxVqBh',
-      name: 'VoxelVerse',
-      description: 'An open-world MetaVerse with a community driven game mechanic.',
-      link: '/kbryan/hackfs2022',
-      type: 'Game',
+      img: 'https://bafybeicss3okei2isjmlnpuqaupd6jzclnehdiiyqihvle34pukbpkrcbe.ipfs.gateway.valist.io',
+      name: 'ok ima fight',
+      description: "After spending the last few weeks training in your father's gym, the time has come to put your hands to the test and hit the ring for the very first time.",
+      link: '/devbymarc/ok_ima_fight',
+      type: 'web',
     },
     {
-      img: 'https://gateway.valist.io/ipfs/QmWhnyhXb1ahhsuWBRvXdpNg51KH8f2zfkJyyhmpqBvuSa',
-      name: 'Pap3rs',
-      description: 'An easy mechanism for academics or researchers to publish research to IPFS.',
-      link: '/chris13524/pap3rs',
-      type: 'Application',
-    },
-    {
-      img: "https://gateway.valist.io/ipfs/QmVoedSEuY4QJDhoHiJDFcAJ4L49UFjYmPoahsQfXYx3rp",
-      name: 'Web3games',
-      description: "A platform for developers to deploy and publish their browser based games.",
-      link: '/maadhav/web3games',
-      type: 'Application',
-    },
-    {
-      img: 'https://gateway.valist.io/ipfs/QmbzQKtt2Z4EU5TdydM1pgxBvp1C1Sw57kXo7KyeZ11A9s',
+      img: 'https://bafybeigk2o6or3sm4aybjdcvmy2tpkylkc76hppmdhalb7e4sgmubcwfqy.ipfs.gateway.valist.io/',
       name: 'Shattered Realms',
       description: "A 90's style J-RPG inspired by the standard imposed by Square-Enix.",
       link: '/shatteredrealms/game',
-      type: 'Game',
-    },
-  ];
-
-  const demoItem2: any[] = [
-    {
-      img: 'https://pbs.twimg.com/profile_images/1499209010637152259/5ZYfm1jB_400x400.png',
-      name: 'HashChat',
-      description: 'An encrypted, cross-chain messaging platform built on web3 wallets.',
-      link: '/max/hashchat',
-      type: 'Application',
+      type: 'web',
     },
     {
-      img: 'https://gateway.valist.io/ipfs/QmX9CGE2cpG61ZDTRLijZZG2kXJnXoL6aUdVqVaNPJPsVr',
-      name: 'Coinfight',
-      description: 'An RTS where you fight over crypto.',
-      link: '/coinop-logan/coinfight',
-      type: 'Game',
+      img: 'https://bafkreih5o5d5yaoxcybgofh5fmgjqvmsbey3utfd2ataw2akg7anliqz5i.ipfs.gateway.valist.io',
+      name: 'The Nicest Game Ever!',
+      description: "Simply get to the nicest number, 69 on one turn by completing the operation.",
+      link: '/devbymarc/the_nicest_game_ever',
+      type: 'web',
     },
     {
-      img: 'https://gateway.valist.io/ipfs/QmaPtGEpTsKub4ZfXiKzrF5YzqBkh9c4rVC5APr2yLSgJZ',
-      name: 'Split/3',
-      description: 'The web3 version of Splitwise',
-      link: '/chris13524/split3',
-      type: 'Application',
+      img: 'https://bafkreic7744zqwznyilyzaejn5fzgatc3xec6nv3qv3ehn3gwn6uokkxha.ipfs.gateway.valist.io/',
+      name: 'Evil School, Evil Kids',
+      description: "This is a simple racing game where you are racing in an evil school.",
+      link: '/awesomekalin55/racing-evil-school-child',
+      type: 'native',
     },
     {
-      img: 'https://gateway.valist.io/ipfs/QmaGDryDcRQqULRy8qqoiVNKLRwUGgZt8P9kYmCWSzcaqJ',
-      name: 'MetaChess',
-      description: 'Play and Earn:- Stake Crypto to play chess with friends and the winner takes all',
-      link: '/metachess/metachessgame',
-      type: 'Game',
+      img: 'https://bafkreihdll5sagpqdxoy53usolho7vlhuqed4geuz75vrid2pj2nk2btci.ipfs.gateway.valist.io/',
+      name: 'Aquatic Race',
+      description: "Are you coming here after RMESEC? Is it too hard? Well, you've come to the right place! Here you can just play and practise at your own pace!",
+      link: '/awesomekalin55/aquatic-race',
+      type: 'native',
+    },
+    {
+      img: 'https://bafybeifmvik5e3pctmpj233bbeqdmpqssyl5cxrthtpmbumw2gfbzbhelq.ipfs.gateway.valist.io',
+      name: 'VoxelVerse',
+      description: 'An open-world MetaVerse with a community driven game mechanic.',
+      link: '/kbryan/hackfs2022',
+      type: 'web',
     },
     {
       img: 'https://gateway.valist.io/ipfs/QmZfxfiHxPmJoGC8wgFbEr2mVXfrNzUnT8WYBeTiC5CEKq',
       name: 'ZenPond',
       description: 'Create a virtual pond and relax!',
       link: '/ivrl/zenpond',
-      type: 'Game',
+      type: 'native',
     },
     {
-      img: 'https://gateway.valist.io/ipfs/QmcSDde1wEpeTFX8Zh6LQ1EGdQWcnHse7voXhw5JA8MjLS',
-      name: 'Podcha',
-      description: 'Find, collect and listen to the world’s best podcasts, on chain.',
-      link: '/podcha/podcha',
-      type: 'Website',
+      img: 'https://gateway.valist.io/ipfs/QmX9CGE2cpG61ZDTRLijZZG2kXJnXoL6aUdVqVaNPJPsVr',
+      name: 'Coinfight',
+      description: 'An RTS where you fight over crypto.',
+      link: '/coinop-logan/coinfight',
+      type: 'native',
+    },
+  ];
+
+  const featuredApps: any[] = [
+    {
+      img: 'https://gateway.valist.io/ipfs/QmXf81mLFFa1UA8QGMTU8a7kdFeNFmKytfZtTnutv9KVJN',
+      name: 'Berty',
+      description: 'A messenger that is as easy to use as it is secure.',
+      link: '/berty/berty',
+      type: 'native',
     },
     {
-      img: 'https://gateway.valist.io/ipfs/QmaweTduZrSsejY2crbgBytBhDXxmzZHZ7NGPDBiqjuTEG',
-      name: 'Mentor DAO',
-      description: 'Mentors build a team with mentees to create real products earning real bounties.',
-      link: '/yaron/mentordao',
-      type: 'Application',
+      img: 'https://bafkreiapnho6rklrdgv5nihn5mwyeok2lvm4xzq2blswpr3vdy5nkzv63i.ipfs.gateway.valist.io',
+      name: 'SurfDB',
+      description: 'Decentralized database built on top of ceramic and cached using redis for fast response times.',
+      link: '/surfdb/surfdb',
+      type: 'native',
+    },
+    {
+      img: 'https://bafybeibg5wxyks4m2j3r6euzgilbfelfczyxizvqt5sv7wdf22h4okcrhq.ipfs.gateway.valist.io',
+      name: 'NFTicket',
+      description: 'This dApp allows you to get access to tickets as NFTs.',
+      link: '/abbas-khan/nfticket',
+      type: 'web',
+    },
+    {
+      img: 'https://bafkreial2z6akpzox3bbrzhf6ocguzs265ymhb37ektremkdigdexo25vu.ipfs.gateway.valist.io',
+      name: 'dDrive',
+      description: 'An alternative storage solution to Google Drive, open-source, fully decentralized, and built on IPFS.',
+      link: '/d-drive/d-drive-pwa',
+      type: 'web',
+    },
+    {
+      img: 'https://gateway.valist.io/ipfs/QmYRcBZuTswhDs63wnmpy3zszD3QUmDDR97dNJtXBdWf3t',
+      name: 'Music3',
+      description: 'Store music on IPFS in single Click.',
+      link: '/0xdhruv/music3',
+      type: 'web',
+    },
+    {
+      img: 'https://bafkreidizb6xussoa4xp2hlu63expjugdr3hisk4yr36mujkm5k3obesb4.ipfs.gateway.valist.io',
+      name: 'Clover',
+      description: 'Clover enables DAOs to store files collectively while allowing them to chat.',
+      link: '/lucid/clover',
+      type: 'web',
+    },
+    {
+      img: 'https://bafkreidbzttzxd5p3kvwrptoy2qvw4ypx54wvqwyl7ze2ga36er5mfrnt4.ipfs.gateway.valist.io',
+      name: 'Right Share',
+      description: 'Hassle-free Even though it\’s a Web3 Application, we hide everything that\’s no needed away from you for the best sharing experience. No wallet, no gas!',
+      link: '/rightsahre/rightshare',
+      type: 'native',
+    },
+    {
+      img: 'https://bafkreidsl63zufa2ixcpxiexbd7s343kmv4wdektmjeegh5n6tdnpl5ehi.ipfs.gateway.valist.io',
+      name: 'dearwebthree',
+      description: 'Decentralized database built on top of ceramic and cached using redis for fast response times.',
+      link: '/blockchainaholic/dearwebthree',
+      type: 'native',
+    },
+    {
+      img: 'https://bafybeiblhylduxfwxqn5ucmrjml4tnpg5rmphumln4jsedkakkzitxmd5a.ipfs.gateway.valist.io',
+      name: 'Pecunia',
+      description: 'Safe and Secure Cryptocurrency Estate Planning using ZK Snarks and Chainlink Keepers.',
+      link: '/pecunia/pecunia',
+      type: 'web',
+    },
+    {
+      img: 'https://gateway.valist.io/ipfs/QmWhnyhXb1ahhsuWBRvXdpNg51KH8f2zfkJyyhmpqBvuSa',
+      name: 'Pap3rs',
+      description: 'An easy mechanism for academics or researchers to publish research to IPFS.',
+      link: '/chris13524/pap3rs',
+      type: 'web',
+    },
+    {
+      img: 'https://bafybeib5okoy4gu24jym46dfwjfq6zxvtxx4m7vd3r7n2dzyavtwymp57m.ipfs.gateway.valist.io',
+      name: '0xfi',
+      description: 'A DeFi plus DeSo platform to manage and receive money in a single platform.',
+      link: '/0xdhruv/0xfi',
+      type: 'web',
+    },
+    {
+      img: 'https://bafybeib74veyjuejwcc6tt26fs4x5thhc4hwn6vpkchwxgnmiub7x7g5oa.ipfs.gateway.valist.io',
+      name: 'Sound Click',
+      description: 'SoundClick was created for you; the writer, the performer, the beat maker, the producer, the engineer, the record label, the publisher, the videographer, the artist, and the CREATOR.',
+      link: '/4metaverse-marcial-yahoo/sound-click',
+      type: 'web',
+    },
+    {
+      img: 'https://bafkreiazt2xf5nbvy7vruiz3mfnbgqgbcm6ysv2quvfirgrttpv25ahrya.ipfs.gateway.valist.io',
+      name: 'Unblock Receipts',
+      description: 'UnblockReceipts gives you a receipt for your gas fees on Ethereum that you can use in expense reports.',
+      link: '/unblockreceipts/unblockreceipts',
+      type: 'web',
+    },
+    {
+      img: 'https://bafkreidf33irjtdo2nxe7ssed634cr7hbq677lieemqvejtofbkrufa4yq.ipfs.gateway.valist.io',
+      name: 'Lens Note',
+      description: 'LensNote enables you to create and share personal notes which can be reacted, collected, and mirrored.',
+      link: '/blockchainaholic/lensnote',
+      type: 'web',
+    },
+    {
+      img: 'https://pbs.twimg.com/profile_images/1499209010637152259/5ZYfm1jB_400x400.png',
+      name: 'HashChat',
+      description: 'An encrypted, cross-chain messaging platform built on web3 wallets.',
+      link: '/max/hashchat',
+      type: 'web',
+    },
+    {
+      img: 'https://gateway.valist.io/ipfs/QmaPtGEpTsKub4ZfXiKzrF5YzqBkh9c4rVC5APr2yLSgJZ',
+      name: 'Split/3',
+      description: 'The web3 version of Splitwise',
+      link: '/chris13524/split3',
+      type: 'web',
     },
     {
       img: 'https://gateway.valist.io/ipfs/QmV9n331gHhs87pwp5XXZ48ysQM5jKzKP7ovKTZ6nRPJaL',
       name: 'NFT Safe Launch',
       description: 'Create a smart contract that locks the funds of an ERC-721 until some condition is met.',
       link: '/nftsafelaunch/nftsafelaunch',
-      type: 'Application',
+      type: 'web',
+    },
+  ];
+
+  const featuredTestnet: any[] = [
+    {
+      img: 'https://bafybeieuzkvucsguhcdw3kqd3itkf7hht57ncos4z72pqir6mnmu5hkn6y.ipfs.gateway.valist.io',
+      name: 'Hanging Tower',
+      description: 'Hanging Tower is metaverse blockchain game, where user can play solo or PvP in multiplayer with voice chat, earn free daily rewards.',
+      link: 'https://testnets.valist.io/tgs/hanging_tower',
+      type: 'web',
+    },
+    {
+      img: 'https://bafkreibgpkeq447piii33ebag3eiysd435uga4fl3vrl2oqa7knf4wxrcq.ipfs.gateway.valist.io',
+      name: 'Socio Funverse',
+      description: 'Socio Funverse.',
+      link: 'https://testnets.valist.io/coinexgame/sociofunverse',
+      type: 'web',
+    },
+    {
+      img: 'https://bafkreiel7yocfta44glepfbyhqew6mxdahcep5zgzfjqviacfpcti3vlmi.ipfs.gateway.valist.io',
+      name: 'Snake Mania',
+      description: 'Snake Mania is classic web3 game with DeFi, NFT-1155, ERC-20 token based fun and entertaining game.',
+      link: 'https://testnets.valist.io/tgs/snakemania',
+      type: 'web',
+    },
+    {
+      img: 'https://bafkreieeq2ahtjaa6kod2scor4n3ua5rghh2hlc4tprqjuzzji4cghqxqm.ipfs.gateway.valist.io',
+      name: 'Meta Maze',
+      description: 'Meta Maze Game Meta maze is metaverse game where players can create their own maze puzzle and mint as NFT 1155.',
+      link: 'https://testnets.valist.io/etho_metamaze/meta_maze',
+      type: 'web',
+    },
+    {
+      img: 'https://bafybeibhh2asafyhmb7pimg2uynftpxf2vwc4ilwv7jdhxju4yrs2hssvu.ipfs.gateway.valist.io',
+      name: 'MyMetapets',
+      description: 'Raise, breed, and sell fish in the metaverse!',
+      link: 'https://testnets.valist.io/mymetapets/mymetapets',
+      type: 'web',
+    },
+    {
+      img: 'https://bafybeibuog2xallbya3baunvqjivlzevweoxvd45tovqsbjh2d4nz54lau.ipfs.gateway.valist.io',
+      name: 'Farming RPG',
+      description: 'The game contains basic functionality of farming RPG (farming, chopping, clearing ground, harvesting, removing obstacles etc).',
+      link: 'https://testnets.valist.io/kar/farming_rpg_moralis',
+      type: 'native',
     },
   ];
   
@@ -155,16 +295,47 @@ const Discover: NextPage = () => {
           </section>
           
           <section style={{ marginTop: 56, padding: `0 ${paddingY}` }}>
-              <Carousel title={"Popular Software"} number={5} items={demoItem1} />
+              <Carousel title={"Featured Games"} number={5} items={featuredGames} />
           </section>
 
           <section style={{ marginTop: 56, padding: `0 ${paddingY}` }}>
-              <Carousel title={"New and Noteworthy"} number={5} items={demoItem2} />
+              <Carousel title={"Featured dApps"} number={5} items={featuredApps} />
           </section>
 
           <section style={{ marginTop: 56, padding: `0 ${paddingY}` }}>
-            <h2 style={{ fontStyle: 'normal', fontWeight: 700, fontSize: isMobile ? 18 : 32 }}>Latest Apps and Games</h2>
+              <Carousel title={"Featured on Testnet"} number={5} items={featuredTestnet} />
+          </section>
+
+          <section style={{ marginTop: 56, padding: `0 ${paddingY}` }}>
+            <h2 style={{ fontStyle: 'normal', fontWeight: 700, fontSize: isMobile ? 18 : 32 }}>Recently Updated</h2>
             {projects.length !== 0 &&
+                <SimpleGrid
+                  breakpoints={[
+                    { minWidth: 'sm', cols: 1, spacing: 24 },
+                    { minWidth: 'md', cols: 2, spacing: 24 },
+                    { minWidth: 'lg', cols: 4, spacing: 16 },
+                  ]}
+                >
+                  {projects.slice(0, 8).map((project: any, index: number) =>
+                    <Metadata key={index} url={project.metaURI}>
+                      {(data: any) =>
+                        <CarouselItem 
+                          img={data?.image || '/images/valist.png'} 
+                          name={data?.name} 
+                          description={data?.description} 
+                          link={`/${project.account.name}/${project?.name}`}
+                          type={data?.type}
+                        />
+                      }
+                    </Metadata>,
+                  )}
+                </SimpleGrid>
+            }
+          </section>
+
+          <section style={{ marginTop: 56, padding: `0 ${paddingY}` }}>
+            <h2 style={{ fontStyle: 'normal', fontWeight: 700, fontSize: isMobile ? 18 : 32 }}>Newest Apps and Games</h2>
+            {sortedProjects.length !== 0 &&
               <>
                 <SimpleGrid
                   breakpoints={[
@@ -173,7 +344,7 @@ const Discover: NextPage = () => {
                     { minWidth: 'lg', cols: 4, spacing: 16 },
                   ]}
                 >
-                  {projects.slice(0, latestIndex).map((project: any, index: number) =>
+                  {sortedProjects.slice(0, latestIndex).map((project: any, index: number) =>
                     <Metadata key={index} url={project.metaURI}>
                       {(data: any) =>
                         <CarouselItem 
