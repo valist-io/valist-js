@@ -11,3 +11,5 @@ site
 dist
 .env*
 .parcel-cache
+android
+ios

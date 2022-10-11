@@ -1,4 +1,5 @@
 import type { NextPage } from 'next';
+import { Capacitor } from '@capacitor/core';
 import { useContext, useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
@@ -47,6 +48,7 @@ import {
 const ProjectPage: NextPage = () => {
   const chainId = getChainId();
   const { address } = useAccount();
+  const isCap = Capacitor.getPlatform() !== 'web';
 
   const router = useRouter();
   const valist = useContext(ValistContext);
@@ -129,7 +131,7 @@ const ProjectPage: NextPage = () => {
       icon: Icon.ShoppingCart,
       href: `/-/account/${accountName}/project/${projectName}/checkout`,
       variant: 'primary',
-      hide: !isPriced || !(isPriced && balance === 0),
+      hide: !(isPriced && balance === 0 && !isCap),
       side: 'right',
     },
     {
@@ -320,7 +322,7 @@ const ProjectPage: NextPage = () => {
                               {platforms[platform].enabled &&
                                 <Tooltip label={platform}>
                                   {/* requires wrapping div */}
-                                  <div >
+                                  <div>
                                     {platforms[platform]?.icon}
                                   </div>
                                 </Tooltip>
