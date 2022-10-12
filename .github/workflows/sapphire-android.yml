@@ -1,0 +1,32 @@
+name: Deploy to Play Store
+
+on:
+  push:
+    branches:
+      - feature/android
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: "zulu"
+          java-version: "19"
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Generate Release APK
+        run: cd android && ./gradlew assembleRelease
+
+      # - name: Sign APK
+      #   uses: r0adkll/sign-android-release@v1
+      #   id: sign_app # ID used to access action output
+      #   with:
+      #     releaseDirectory: app/build/outputs/apk/release
+      #     signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+      #     alias: ${{ secrets.ALIAS }}
+      #     keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+      #     keyPassword: ${{ secrets.KEY_PASSWORD }}
