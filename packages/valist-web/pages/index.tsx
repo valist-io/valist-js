@@ -70,6 +70,10 @@ const Discover: NextPage = () => {
             <Carousel title={"Featured on Testnet"} number={5} items={featuredTestnet} />
           </section>
 
+          <section style={{ marginBottom: 80, padding: `0 ${paddingY}` }}>
+            <TopPublishers accounts={topAccounts} />
+          </section>
+
           <section style={{ marginTop: 56, padding: `0 ${paddingY}` }}>
             <h2 style={{ fontStyle: 'normal', fontWeight: 700, fontSize: isMobile ? 18 : 32 }}>Recently Updated</h2>
             {projects.length !== 0 &&
@@ -132,10 +136,6 @@ const Discover: NextPage = () => {
                </Center>
               </>
             }
-          </section>
-
-          <section style={{ marginBottom: 80, padding: `0 ${paddingY}` }}>
-            <TopPublishers accounts={topAccounts} />
           </section>
 
           <section>
