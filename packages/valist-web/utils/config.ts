@@ -32,4 +32,5 @@ export const filterAddresses = [
   "0x7972b09ee9554af5ee0b193f49de09865fa4141f",
   "0x31a7ed459fb11833a997426fd810a5502337ac75",
   "0x401a038c9f7b971d407cebeebc4d2df998c0cb1d",
+  "0xd50daa26f556538562ba308dc0ed45cface885fe",
 ];
