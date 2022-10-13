@@ -59,3 +59,25 @@ export function formatReceipt(rcpt?: TransactionReceipt) {
     status: rcpt.status,
   };
 }
+
+export function getPlatformArch() {
+  const platformArch = `${process.platform}/${process.arch}`;
+  switch (platformArch) {
+    case 'darwin/arm64':
+      return 'darwin_arm64';
+    case 'darwin/x64':
+      return 'darwin_amd64';
+    case 'win32/ia32':
+      return 'windows_386';
+    case 'win32/x64':
+      return 'windows_amd64';
+    case 'linux/ia32':
+      return 'linux_386';
+    case 'linux/x64':
+      return 'linux_amd64';
+    case 'linux/arm':
+      return 'linux_arm';
+    case 'linux/arm64':
+      return 'linux_arm64';
+  }
+}

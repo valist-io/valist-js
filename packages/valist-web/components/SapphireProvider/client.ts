@@ -1,43 +1,36 @@
 declare global {
   interface Window {
-    electron: any;
+    sapphire: any;
   }
 }
 
-export type AppConfig = {
-  projectID: string;
-  version: string;
-  type: string;
-  path: string;
-}
-
 export interface Client {
-  getApps: () => Promise<AppConfig[]>;
+  listApps: () => Promise<string[]>;
   launch: (id: string) => Promise<void>;
-  install: (config: AppConfig) => Promise<void>;
+  install: (id: string) => Promise<void>;
   uninstall: (id: string) => Promise<void>;
 }
 
 export class SapphireClient {
-  async getApps() {
-    return await window?.electron?.getApps();
+  async listApps() {
+    return await window?.sapphire?.request({ method: 'sapphire_listApps' });
   }
 
   async launch(id: string) {
-    await window?.electron?.launch(id);
+    await window?.sapphire?.request({ method: 'sapphire_launch', params: [id] });
   }
 
-  async install(config: AppConfig) {
-    await window?.electron?.install(config);
+  async install(id: string) {
+    await window?.sapphire?.request({ method: 'sapphire_install', params: [id] });
   }
 
   async uninstall(id: string) {
-    await window?.electron?.uninstall(id);
+    await window?.sapphire?.request({ method: 'sapphire_uninstall', params: [id] });
   }
 }
 
 export class DefaultClient {
-  async getApps() { 
+  async listApps() { 
     return []; 
   }
   
@@ -45,7 +38,7 @@ export class DefaultClient {
     // do nothing
   }
   
-  async install(config: AppConfig) {
+  async install(id: string) {
     // do nothing
   }
   
@@ -54,12 +47,6 @@ export class DefaultClient {
   }
 }
 
-export const setupEvents = () => {
-  window?.electron?.onInstallProgress((event: any, progress: number) => {
-    // TODO notification
-  });
-};
-
-export const isElectron = () => {
-  return typeof window.electron !== "undefined";
+export const isSapphire = () => {
+  return typeof window.sapphire !== "undefined";
 };

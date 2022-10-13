@@ -1,8 +1,15 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
+import { createReadOnly } from '@valist/sdk';
 import { ethers } from 'ethers';
 import keytar from 'keytar';
+import tar from 'tar';
+
+import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import EventEmitter from 'events';
+
+import { createController } from 'ipfsd-ctl';
 import * as utils from './utils';
 
 //////////////////////
@@ -66,6 +73,69 @@ app.on('activate', () => {
 });
 
 //////////////////
+/// IPFS Setup ///
+//////////////////
+
+const libraryDir = path.join(os.homedir(), '.valist', 'apps');
+const downloads = new Set<string>();
+
+let ipfs: any;
+
+const createIPFS = async () => {
+  ipfs = await createController({
+    ipfsHttpModule: require('ipfs-http-client'),
+    ipfsBin: require('go-ipfs').path(),
+    remote: false,
+    disposable: false,
+    test: false,
+  });
+
+  if (!ipfs.initialized) await ipfs.init();
+  if (!ipfs.started) await ipfs.start();
+};
+
+app.on('quit', () => {
+  ipfs?.stop();
+});
+
+app.whenReady().then(() => {
+  createIPFS();
+});
+
+const install = async (id: string) => {
+  if (!ipfs || !valist) {
+    throw new Error('not initialized');
+  }
+
+  const meta = await valist.getReleaseMeta(id);
+  if (!meta.external_url) {
+    throw new Error('invalid release url');
+  }
+
+  const platformArch = utils.getPlatformArch();
+  const artifactPath = meta.install?.[platformArch];
+  if (!artifactPath) {
+    throw new Error(`unsupported platform/arch: ${platformArch}`);
+  }
+
+  const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'valist-'));
+  const tempPath = path.join(downloadDir, id);
+  const tempStream = fs.createWriteStream(tempPath, { flags: 'w' });
+
+  const ipfsPath = `${meta.external_url}/${artifactPath}`;
+  for await (const chunk of ipfs.api.get(ipfsPath)) {
+    tempStream.write(chunk);
+  }
+
+  const extractDir = await fs.promises.mkdir(libraryDir, { recursive: true });
+  const extractPath = path.join(extractDir, id);
+  await tar.x({ C: extractPath, file: tempPath });
+
+  //const binPath = path.join(extractPath, artifactPath);
+  //await fs.promises.chmod(binPath, 755);
+};
+
+//////////////////
 /// Web3 Setup ///
 //////////////////
 
@@ -79,14 +149,35 @@ const signingQueue = new Array<SigningRequest>();
 
 let wallet: ethers.Wallet;
 let provider = new ethers.providers.JsonRpcProvider('https://rpc.valist.io');
+let valist = createReadOnly(provider, { chainId: 137 });
 
 let incomingId = 0;
 let outgoingId = 0;
 
-const signingRequest = (request: SigningRequest) => {
-  if (!signingWindow) createSigningWindow();
+const switchAccount = async (account: string) => {
+  const privateKey = await keytar.getPassword('VALIST', account);
+  wallet = new ethers.Wallet(privateKey);
+  walletEvents.emit('accountsChanged', [account]);
+  mainWindow?.webContents.send('accountsChanged', [account]);
+};
+
+const signTypedData = async (payload: string) => {
+  if (!wallet) throw new Error('Signing requires a wallet');
+  const { domain, types, message } = JSON.parse(payload);
+  delete types['EIP712Domain']; // required for signing
+  return await wallet._signTypedData(domain, types, message);
+};
+
+const enqueueSigningRequest = (request: SigningRequest) => {
   signingQueue.push(request);
+  if (!signingWindow) createSigningWindow();
   return incomingId++;
+};
+
+const dequeueSigningRequest = () => {
+  signingQueue.shift();
+  if (signingQueue.length === 0) signingWindow?.close();
+  return outgoingId++;
 };
 
 /////////////////////////
@@ -139,21 +230,17 @@ ipcMain.handle('eth_getTransactionCount', async (event, params) => {
 
 ipcMain.handle('eth_signTypedData_v4', async (event, params) => {
   const [address, payload] = params;
-  const { domain, types, message } = JSON.parse(payload);
-
-  const requestId = signingRequest({ 
+  const requestId = enqueueSigningRequest({ 
     type: 'eth_signTypedData_v4',
-    data: message,
+    data: payload,
   });
 
   return await new Promise((resolve, reject) => {
     walletEvents.once(`signingRejected_${requestId}`, () => { 
       reject('User rejected signing');
     });
-
-    walletEvents.once(`signingApproved_${requestId}`, () => {
-      delete types['EIP712Domain'];
-      wallet?._signTypedData(domain, types, message).then(resolve);
+    walletEvents.once(`signingApproved_${requestId}`, () => { 
+      signTypedData(payload).then(resolve);
     });
   });
 });
@@ -204,22 +291,17 @@ ipcMain.handle('wallet_switchEthereumChain', async (event, params) => {
 
 ipcMain.handle('wallet_switchAccount', async (event, params) => {
   const [account] = params;
-  const privateKey = await keytar.getPassword('VALIST', account);
-  wallet = new ethers.Wallet(privateKey);
-  walletEvents.emit('accountsChanged', params);
-  mainWindow?.webContents.send('accountsChanged', params);
+  await switchAccount(account);
 });
 
 ipcMain.handle('wallet_approveSigning', async (event, params) => {
-  signingQueue.shift();
-  walletEvents.emit(`signingApproved_${outgoingId++}`);
-  if (signingQueue.length === 0) signingWindow?.close();
+  const requestId = dequeueSigningRequest();
+  walletEvents.emit(`signingApproved_${requestId}`);
 });
 
 ipcMain.handle('wallet_rejectSigning', async (event, params) => {
-  signingQueue.shift();
-  walletEvents.emit(`signingRejected_${outgoingId++}`);
-  if (signingQueue.length === 0) signingWindow?.close();
+  const requestId = dequeueSigningRequest();
+  walletEvents.emit(`signingRejected_${requestId}`);
 });
 
 ipcMain.handle('wallet_signingRequest', async (event, params) => {
@@ -230,4 +312,33 @@ ipcMain.handle('wallet_signingRequest', async (event, params) => {
 ipcMain.handle('wallet_listAccounts', async (event, params) => {
   const credentials = await keytar.findCredentials('VALIST');
   return credentials.map(c => c.account);
+});
+
+/////////////////////////
+/// Sapphire Handlers ///
+/////////////////////////
+
+ipcMain.handle('sapphire_install', async (event, params) => {
+  const [id] = params;
+  if (downloads.has(id)) throw new Error('download in progress');
+
+  downloads.add(id);
+  install(id)
+    .then(() => mainWindow?.webContents.send('installSuccess', id))
+    .catch(err => mainWindow?.webContents.send('installFailed', err))
+    .finally(() => downloads.delete(id));
+});
+
+ipcMain.handle('sapphire_uninstall', async (event, params) => {
+  const [id] = params;
+  await fs.promises.rmdir(path.join(libraryDir, id));
+});
+
+ipcMain.handle('sapphire_launch', async (event, params) => {
+
+});
+
+ipcMain.handle('sapphire_listApps', async (event, params) => {
+  const files = await fs.promises.readdir(libraryDir, { withFileTypes: true });
+  return files.filter(f => f.isDirectory()).map(f => f.name);
 });

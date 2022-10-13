@@ -4,8 +4,7 @@ import {
   Client,
   DefaultClient,
   SapphireClient,
-  setupEvents,
-  isElectron,
+  isSapphire,
 } from './client';
 
 const defaultClient = new DefaultClient();
@@ -20,8 +19,7 @@ export function SapphireProvider(props: SapphireProviderProps) {
   const [client, setClient] = useState<Client>(defaultClient);
 
   useEffect(() => {
-    if (isElectron()) {
-      setupEvents();
+    if (isSapphire()) {
       setClient(new SapphireClient());
     }
   }, []);
