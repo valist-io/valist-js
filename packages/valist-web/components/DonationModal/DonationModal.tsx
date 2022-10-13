@@ -1,5 +1,6 @@
 import { hideLoading, showErrorMessage, showLoading, updateLoading } from '@/forms/utils';
 import { tokens } from '@/utils/tokens';
+import { getChainId } from '@/utils/config';
 import {
   Stack,
   Title,
@@ -13,7 +14,7 @@ import {
 } from '@valist/ui';
 import { ethers } from 'ethers';
 import { useState } from 'react';
-import { erc20ABI, useContract, useNetwork, usePrepareSendTransaction, useSendTransaction, useSigner } from 'wagmi';
+import { erc20ABI, useContract, usePrepareSendTransaction, useSendTransaction, useSigner } from 'wagmi';
 import { getBlockExplorer } from '../Activity';
 import { DonationInput } from '../DonationInput';
 
@@ -31,7 +32,7 @@ export function DonationModal(props: DonationModalProps) {
   const [currency, setCurrency] = useState<number>(0);
   const [hasDonated, setHasDonated] = useState<boolean>(false);
 
-  const { chain } = useNetwork();
+  const chainId = getChainId();
 
   const { data: signer } = useSigner();
   const contract = useContract({
@@ -44,7 +45,7 @@ export function DonationModal(props: DonationModalProps) {
     try{
       showLoading('Creating transaction');
       const tx = await contract.transfer(props.donationAddress, ethers.utils.parseEther(amount.toString()));
-      const message = <Anchor target="_blank"  href={getBlockExplorer(chain?.id || 137, tx.hash)}>Waiting for transaction - View transaction</Anchor>;
+      const message = <Anchor target="_blank"  href={getBlockExplorer(chainId, tx.hash)}>Waiting for transaction - View transaction</Anchor>;
       
       await tx.wait();
       updateLoading(message);
@@ -68,7 +69,7 @@ export function DonationModal(props: DonationModalProps) {
     },
     onSettled(data) {
       (async () => {
-        const message = <Anchor target="_blank"  href={getBlockExplorer(chain?.id || 137, data?.hash || '')}>Waiting for transaction - View transaction</Anchor>;
+        const message = <Anchor target="_blank"  href={getBlockExplorer(chainId, data?.hash || '')}>Waiting for transaction - View transaction</Anchor>;
         showLoading(message);
         setHasDonated(true);
 

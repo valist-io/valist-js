@@ -11,12 +11,6 @@ import {
   Button,
 } from '@valist/ui';
 
-declare global {
-  interface Window {
-    ethereum: any;
-  }
-}
-
 const SignPage: NextPage = () => {
   const [loading, setLoading] = useState(false);
   const [request, setRequest] = useState<any>();
@@ -59,6 +53,6 @@ const SignPage: NextPage = () => {
       </Group>
     </Stack>
   );
-}
+};
 
 export default SignPage;

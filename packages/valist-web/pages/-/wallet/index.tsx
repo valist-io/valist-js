@@ -8,12 +8,6 @@ import {
   Text,
 } from '@mantine/core';
 
-declare global {
-  interface Window {
-    ethereum: any;
-  }
-}
-
 const WalletPage: NextPage = () => {
   const [selected, setSelected] = useState<string>();
   const [accounts, setAccounts] = useState<string[]>([]);
@@ -22,13 +16,13 @@ const WalletPage: NextPage = () => {
     addressOrName: selected,
   });
 
-  const selectAccount = (account) => {
+  const selectAccount = (account: string) => {
     setSelected(account);
     window?.ethereum?.request({ method: 'wallet_switchAccount', params: [account] });
   };
 
   useEffect(() => {
-    window?.ethereum?.request({ method: 'eth_accounts' }).then(accts => {
+    window?.ethereum?.request({ method: 'eth_accounts' }).then((accts: string[]) => {
       if (accts.length > 0) setSelected(accts[0]);
     });
     window?.ethereum?.request({ method: 'wallet_listAccounts' }).then(setAccounts);
@@ -48,6 +42,6 @@ const WalletPage: NextPage = () => {
       }
     </Stack>
   );
-}
+};
 
 export default WalletPage;

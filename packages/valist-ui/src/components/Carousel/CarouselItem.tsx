@@ -12,10 +12,12 @@ interface DiscoveryItemProps {
 export function CarouselItem(props: DiscoveryItemProps) {
   const theme = useMantineTheme();
   const descColor = theme.colorScheme === 'dark' ? theme.colors.dark[2] : theme.colors.dark[4];
+  const badgeColor = theme.colorScheme === 'dark' ? '#54546B' : '#F8F8FD';
+  const badgeText = theme.colorScheme === 'dark' ? '#FFFFFF' : '#8B82A7';
 
   return (
     <div style={{maxWidth: 350}}>
-      <Link href={props.link} passHref>
+      <Link href={props.link}>
         <Card shadow="sm" p="lg" sx={() => ({
           '&:hover': {
             cursor: 'pointer',
@@ -28,7 +30,7 @@ export function CarouselItem(props: DiscoveryItemProps) {
               {props.description}
             </Text>
           </div>
-          <Badge style={{ marginTop: 15 }} color="gray">{props.type}</Badge>
+          <Badge style={{ marginTop: 15, backgroundColor: badgeColor, color: badgeText}} color="gray">{props.type || 'Unknown'}</Badge>
         </Card>
       </Link>
     </div>

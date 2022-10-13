@@ -1,9 +1,3 @@
-declare global {
-  interface Window {
-    sapphire: any;
-  }
-}
-
 export interface Client {
   listApps: () => Promise<string[]>;
   launch: (id: string) => Promise<void>;

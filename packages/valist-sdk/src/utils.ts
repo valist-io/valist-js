@@ -84,7 +84,7 @@ export async function getStats(projectPath: string) {
 }
 
 export async function sendStats(projectPath: string) {
-	await axios.post(
+	await axios.put(
 		`https://stats.valist.io/api/download/${projectPath}`
 	);
 }

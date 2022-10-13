@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import React, { useState, useEffect, useContext } from 'react';
-import { useAccount, useNetwork } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import * as Icon from 'tabler-icons-react';
 import { useMediaQuery } from '@mantine/hooks';
@@ -13,6 +13,7 @@ import { TokenModal } from '@/components/TokenModal';
 import { LimitModal } from '@/components/LimitModal';
 import { RoyaltyModal } from '@/components/RoyaltyModal';
 import { WithdrawModal } from '@/components/WithdrawModal';
+import { getChainId } from '@/utils/config';
 import query from '@/graphql/PricingPage.graphql';
 
 import { 
@@ -65,7 +66,7 @@ const Pricing: NextPage = () => {
   const router = useRouter();
   const { cache } = useApolloClient();
   const { address } = useAccount();
-  const { chain } = useNetwork();
+  const chainId = getChainId();
 
   const valist = useContext(ValistContext);
 
@@ -78,7 +79,7 @@ const Pricing: NextPage = () => {
   const showInfo = useMediaQuery('(max-width: 1400px)', false);
 
   const accountName = `${router.query.account}`;
-  const accountId = valist.generateID(chain?.id || 137, accountName);
+  const accountId = valist.generateID(chainId, accountName);
 
   const projectName = `${router.query.project}`;
   const projectId = valist.generateID(accountId, projectName);
@@ -133,7 +134,7 @@ const Pricing: NextPage = () => {
       _limit,
       valist,
       cache,
-      chain?.id || 137,
+      chainId,
     ).then(success => {
       if (success) setLimit(_limit);
     }).finally(() => {
@@ -151,7 +152,7 @@ const Pricing: NextPage = () => {
       price,
       valist,
       cache,
-      chain?.id || 137,
+      chainId,
     ).then(success => {
       if (success) {
         const _tokens = tokens.map(token => 
@@ -173,7 +174,7 @@ const Pricing: NextPage = () => {
       _amount * 10000,
       valist,
       cache,
-      chain?.id || 137,
+      chainId,
     ).then(success => {
       if (success) {
         setRoyaltyAmount(_amount);
@@ -193,7 +194,7 @@ const Pricing: NextPage = () => {
       _address,
       valist,
       cache,
-      chain?.id || 137,
+      chainId,
     ).then(success => {
       if (success) {
         const _tokens = tokens.map(token => 
