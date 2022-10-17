@@ -1,4 +1,4 @@
-name: Deploy to Play Store
+name: Build & Sign Sapphire Android
 
 on:
   push:
@@ -9,14 +9,28 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+          # cache: npm
+
+      - name: Build Web App Bundle
+        run: |
+          npm install
+          npm run build
+
+      - name: Sync Android Capacitor Build
+        run: npx cap sync android
+
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
           distribution: "adopt"
           java-version: "11"
-
-      - name: Checkout code
-        uses: actions/checkout@v2
 
       - name: Generate Release APK
         run: cd android && ./gradlew assembleRelease
