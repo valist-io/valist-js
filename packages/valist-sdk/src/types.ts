@@ -62,6 +62,8 @@ export class ReleaseMeta {
 export class InstallMeta {
 	/** binary name */
 	public name?: string;
+	/** web bundle */
+	public web?: string;
 	/** android/arm64 path */
 	public android_arm64?: string;
 	/** darwin/amd64 path */

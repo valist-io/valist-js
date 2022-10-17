@@ -216,6 +216,15 @@ const CreateReleasePage: NextPage = () => {
                       <Text color="dimmed">Upload your release files to the designated platform target.</Text>
                       <Text weight={900} color="dimmed">At least one platform is required.</Text>
                       <br/>
+                      <div>
+                          <Text style={{ display: 'inline-block', width: 150 }}>Web</Text>
+                          <FileButton multiple={true} setFiles={(_files: File[]) => {
+                            setFilesObject({ ...filesObject, web: _files });
+                          }} />
+                          {filesObject['web'] && filesObject['web'].length !== 0 && 
+                            <span style={{ marginLeft: 20 }}>- {filesObject['web'].name}</span>
+                          }
+                      </div>
                       {platforms.map((platform, index) => (
                         <div key={index}>
                           <Text style={{ display: 'inline-block', width: 150 }}>{platform}</Text>
