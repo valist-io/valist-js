@@ -6,7 +6,7 @@ android {
         compileSdkVersion 31
         applicationId "io.valist.app"
         minSdkVersion rootProject.ext.minSdkVersion
-        targetSdk 31
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
