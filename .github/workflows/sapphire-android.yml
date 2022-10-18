@@ -59,10 +59,13 @@ jobs:
       #     install-name: sapphire
       #     install-android-arm64: ${{steps.sign_app.outputs.signedReleaseFile}}
 
+      - name: Test Path
+        uses: echo ${{steps.sign_app.outputs.signedReleaseFile}}
+
       - name: Upload Android Release to Play Store
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{secrets.SERVICE_ACCOUNT_JSON}}
           packageName: io.valist.app
-          releaseFile: ./android/app/build/outputs/bundle/release/app-release.aab
+          releaseFile: ${{steps.sign_app.outputs.signedReleaseFile}}
           track: production
