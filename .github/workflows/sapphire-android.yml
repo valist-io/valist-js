@@ -9,19 +9,22 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v2
 
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
           node-version: "16"
-          # cache: npm
+          cache: npm
 
       - name: Build Web App Bundle
         run: |
           npm install
           npm run build
+
+      # - name: Unit Tests
+      #   run: npm run test
 
       - name: Sync Android Capacitor Build
         run: npx cap sync android
@@ -44,3 +47,22 @@ jobs:
           alias: ${{ secrets.ANDROID_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
           keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      # - name: Valist Publish
+      #   uses: valist-io/valist-github-action@v2.5.6
+      #   with:
+      #     private-key: ${{ secrets.VALIST_SIGNER }}
+      #     account: valist
+      #     project: sapphire
+      #     release: ${{ github.ref_name }}
+      #     path: ./
+      #     install-name: sapphire
+      #     install-android-arm64: ${{steps.sign_app.outputs.signedReleaseFile}}
+
+      - name: Upload Android Release to Play Store
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{secrets.SERVICE_ACCOUNT_JSON}}
+          packageName: io.valist.app
+          releaseFile: ./android/app/build/outputs/bundle/release/app-release.aab
+          track: production
