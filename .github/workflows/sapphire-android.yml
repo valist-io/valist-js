@@ -60,7 +60,7 @@ jobs:
       #     install-android-arm64: ${{steps.sign_app.outputs.signedReleaseFile}}
 
       - name: Test Path
-        uses: echo ${{steps.sign_app.outputs.signedReleaseFile}}
+        run: echo ${{steps.sign_app.outputs.signedReleaseFile}}
 
       - name: Upload Android Release to Play Store
         uses: r0adkll/upload-google-play@v1
