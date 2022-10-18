@@ -38,11 +38,17 @@ jobs:
       - name: Generate Release APK
         run: (cd android && ./gradlew assembleRelease)
 
+      - name: Test Path
+        run: ls ./android/app/build/outputs
+
+      - name: Test Path 2
+        run: ls ./android/app/build/outputs/bundle/debug
+
       - name: Sign APK
         uses: r0adkll/sign-android-release@v1
         id: sign_app
         with:
-          releaseDirectory: ./android/app/build/outputs/bundle/debug/app-debug.aab
+          releaseDirectory: ./android/app/build/outputs/bundle/debug
           signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
           alias: ${{ secrets.ANDROID_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
@@ -58,9 +64,6 @@ jobs:
       #     path: ./
       #     install-name: sapphire
       #     install-android-arm64: ${{steps.sign_app.outputs.signedReleaseFile}}
-
-      - name: Test Path
-        run: echo ${{steps.sign_app.outputs.signedReleaseFile}}
 
       - name: Upload Android Release to Play Store
         uses: r0adkll/upload-google-play@v1
