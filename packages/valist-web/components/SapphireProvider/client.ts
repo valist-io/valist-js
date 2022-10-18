@@ -1,15 +1,12 @@
 export interface Client {
-  listApps: () => Promise<string[]>;
   launch: (id: string) => Promise<void>;
   install: (id: string) => Promise<void>;
   uninstall: (id: string) => Promise<void>;
+  listInstalled: () => Promise<string[]>;
+  listDownloads: () => Promise<string[]>;
 }
 
 export class SapphireClient {
-  async listApps() {
-    return await window?.sapphire?.request({ method: 'sapphire_listApps' });
-  }
-
   async launch(id: string) {
     await window?.sapphire?.request({ method: 'sapphire_launch', params: [id] });
   }
@@ -21,13 +18,17 @@ export class SapphireClient {
   async uninstall(id: string) {
     await window?.sapphire?.request({ method: 'sapphire_uninstall', params: [id] });
   }
+
+  async listInstalled() {
+    return await window?.sapphire?.request({ method: 'sapphire_listInstalled' });
+  }
+
+  async listDownloads() {
+    return await window?.sapphire?.request({ method: 'sapphire_listDownloads' });
+  }
 }
 
 export class DefaultClient {
-  async listApps() { 
-    return []; 
-  }
-  
   async launch(id: string) {
     // do nothing
   }
@@ -39,8 +40,12 @@ export class DefaultClient {
   async uninstall(id: string) {
     // do nothing
   }
-}
 
-export const isSapphire = () => {
-  return typeof window.sapphire !== "undefined";
-};
+  async listInstalled() { 
+    return []; 
+  }
+
+  async listDownloads() {
+    return [];
+  }
+}

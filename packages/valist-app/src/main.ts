@@ -82,6 +82,9 @@ const downloads = new Set<string>();
 let ipfs: any;
 
 const createIPFS = async () => {
+  // TODO find a better spot for this
+  await fs.promises.mkdir(libraryDir, { recursive: true });
+
   ipfs = await createController({
     ipfsHttpModule: require('ipfs-http-client'),
     ipfsBin: require('go-ipfs').path(),
@@ -94,13 +97,33 @@ const createIPFS = async () => {
   if (!ipfs.started) await ipfs.start();
 };
 
-app.on('quit', () => {
-  ipfs?.stop();
+app.on('quit', async () => {
+  await ipfs?.stop();
 });
 
 app.whenReady().then(() => {
   createIPFS();
 });
+
+const launch = async (id: string) => {
+  if (!ipfs || !valist) {
+    throw new Error('not initialized');
+  }
+
+  const meta = await valist.getReleaseMeta(id);
+  if (!meta.external_url) {
+    throw new Error('invalid release url');
+  }
+
+  const platformArch = utils.getPlatformArch();
+  const artifactPath = meta.install?.[platformArch];
+  if (!artifactPath) {
+    throw new Error(`unsupported platform/arch: ${platformArch}`);
+  }
+
+  const execPath = path.join(libraryDir, id, artifactPath);
+  return utils.execCommand(execPath);
+}
 
 const install = async (id: string) => {
   if (!ipfs || !valist) {
@@ -118,21 +141,23 @@ const install = async (id: string) => {
     throw new Error(`unsupported platform/arch: ${platformArch}`);
   }
 
-  const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'valist-'));
-  const tempPath = path.join(downloadDir, id);
-  const tempStream = fs.createWriteStream(tempPath, { flags: 'w' });
+  const downloadDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'valist-'));
+  const downloadPath = path.join(downloadDir, 'download');
 
-  const ipfsPath = `${meta.external_url}/${artifactPath}`;
-  for await (const chunk of ipfs.api.get(ipfsPath)) {
-    tempStream.write(chunk);
+  const ipfsIndex = meta.external_url.indexOf('/ipfs/');
+  const ipfsPath = meta.external_url.slice(ipfsIndex);
+
+  const file = await fs.promises.open(downloadPath, 'w+');
+  for await (const chunk of ipfs.api.get(`${ipfsPath}/${artifactPath}`)) {
+    await file.write(chunk);
   }
 
-  const extractDir = await fs.promises.mkdir(libraryDir, { recursive: true });
-  const extractPath = path.join(extractDir, id);
-  await tar.x({ C: extractPath, file: tempPath });
+  const extractPath = path.join(libraryDir, id);
+  await fs.promises.mkdir(extractPath, { recursive: true });
+  await tar.x({ C: extractPath, file: downloadPath });
 
-  //const binPath = path.join(extractPath, artifactPath);
-  //await fs.promises.chmod(binPath, 755);
+  const binPath = path.join(extractPath, artifactPath);
+  await fs.promises.chmod(binPath, 755);
 };
 
 //////////////////
@@ -140,38 +165,40 @@ const install = async (id: string) => {
 //////////////////
 
 interface SigningRequest {
-  type: 'eth_signTypedData_v4';
+  type: 'eth_signTypedData_v4' | 'eth_signTransaction';
   data: any;
 }
 
 const walletEvents = new EventEmitter();
 const signingQueue = new Array<SigningRequest>();
 
+const provider = new ethers.providers.JsonRpcProvider('https://rpc.valist.io/mumbai');
+const valist = createReadOnly(provider, { chainId: 137 });
+
 let wallet: ethers.Wallet;
-let provider = new ethers.providers.JsonRpcProvider('https://rpc.valist.io');
-let valist = createReadOnly(provider, { chainId: 137 });
 
 let incomingId = 0;
 let outgoingId = 0;
 
 const switchAccount = async (account: string) => {
   const privateKey = await keytar.getPassword('VALIST', account);
-  wallet = new ethers.Wallet(privateKey);
+  wallet = new ethers.Wallet(privateKey, provider);
   walletEvents.emit('accountsChanged', [account]);
   mainWindow?.webContents.send('accountsChanged', [account]);
 };
 
-const signTypedData = async (payload: string) => {
-  if (!wallet) throw new Error('Signing requires a wallet');
-  const { domain, types, message } = JSON.parse(payload);
-  delete types['EIP712Domain']; // required for signing
-  return await wallet._signTypedData(domain, types, message);
-};
-
-const enqueueSigningRequest = (request: SigningRequest) => {
+const enqueueSigningRequest = async (request: SigningRequest) => {
   signingQueue.push(request);
   if (!signingWindow) createSigningWindow();
-  return incomingId++;
+
+  const requestId = incomingId++;
+  const rejectEvent = `signingRejected_${requestId}`;
+  const approveEvent = `signingApproved_${requestId}`;
+
+  return new Promise<void>((resolve, reject) => {
+    walletEvents.once(rejectEvent, () => reject('User rejected signing'));
+    walletEvents.once(approveEvent, () => resolve());
+  });
 };
 
 const dequeueSigningRequest = () => {
@@ -230,19 +257,22 @@ ipcMain.handle('eth_getTransactionCount', async (event, params) => {
 
 ipcMain.handle('eth_signTypedData_v4', async (event, params) => {
   const [address, payload] = params;
-  const requestId = enqueueSigningRequest({ 
-    type: 'eth_signTypedData_v4',
-    data: payload,
-  });
+  await enqueueSigningRequest({ type: 'eth_signTypedData_v4', data: payload });
 
-  return await new Promise((resolve, reject) => {
-    walletEvents.once(`signingRejected_${requestId}`, () => { 
-      reject('User rejected signing');
-    });
-    walletEvents.once(`signingApproved_${requestId}`, () => { 
-      signTypedData(payload).then(resolve);
-    });
-  });
+  const { domain, types, message } = JSON.parse(payload);
+  delete types['EIP712Domain']; // required for signing
+  return await wallet._signTypedData(domain, types, message);
+});
+
+ipcMain.handle('eth_sendTransaction', async (event, params) => {
+  const [payload] = params;
+  await enqueueSigningRequest({ type: 'eth_signTransaction', data: payload });
+
+  const tx = { ...payload, gasLimit: payload.gas };
+  delete tx.gas;
+
+  const { hash } = await wallet.sendTransaction(tx);
+  return hash;
 });
 
 ipcMain.handle('eth_gasPrice', async (event, params) => {
@@ -325,20 +355,30 @@ ipcMain.handle('sapphire_install', async (event, params) => {
   downloads.add(id);
   install(id)
     .then(() => mainWindow?.webContents.send('installSuccess', id))
-    .catch(err => mainWindow?.webContents.send('installFailed', err))
+    .catch(err => mainWindow?.webContents.send('installFailed', err.message))
     .finally(() => downloads.delete(id));
 });
 
 ipcMain.handle('sapphire_uninstall', async (event, params) => {
   const [id] = params;
-  await fs.promises.rmdir(path.join(libraryDir, id));
+  const installPath = path.join(libraryDir, id);
+  await fs.promises.rm(installPath, { recursive: true, force: true });
 });
 
 ipcMain.handle('sapphire_launch', async (event, params) => {
+  const [id] = params;
+  await launch(id);
+});
+
+ipcMain.handle('sapphire_update', async (event, params) => {
 
 });
 
-ipcMain.handle('sapphire_listApps', async (event, params) => {
+ipcMain.handle('sapphire_listInstalled', async (event, params) => {
   const files = await fs.promises.readdir(libraryDir, { withFileTypes: true });
   return files.filter(f => f.isDirectory()).map(f => f.name);
+});
+
+ipcMain.handle('sapphire_listDownloads', async (event, params) => {
+  return Array.from(downloads.values());
 });

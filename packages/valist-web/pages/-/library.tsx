@@ -1,42 +1,20 @@
 import { NextPage } from 'next';
-import { useContext, useState, useEffect } from 'react';
-import { useAccount } from 'wagmi';
-import { useQuery } from '@apollo/client';
 import { Layout } from '@/components/Layout';
-import { ProjectCard } from '@/components/ProjectCard';
-import { ValistContext } from '@/components/ValistProvider';
-import query from '@/graphql/LibraryPage.graphql';
+import { LibraryCard } from '@/components/LibraryCard';
+import { useLibrary, useInstalls } from '@/utils/library';
 
 import { 
   SimpleGrid,
 } from '@mantine/core';
 
 const LibraryPage: NextPage = () => {
-  const valist = useContext(ValistContext);
-  const { address } = useAccount();
+  const { releases } = useInstalls();
+  const { projects } = useLibrary();
 
-  const { data, loading } = useQuery(query, { 
-    variables: { address: address?.toLowerCase() ?? '' },
-  });
-
-  const _projects: any[] = Array.from((data?.purchases ?? [])
-    .map((p: any) => p.product?.project)
-    .reduce((s: Map<string, any>, p: any) => s.set(p.id, p), new Map<string, any>())
-    .values());
-
-  const [projects, setProjects] = useState<any[]>([]);
-  // update balances and filter projects
-  useEffect(() => {
-    if (_projects.length > 0) {
-      const addresses = _projects.map(_ => address ?? '');
-      const projectIDs = _projects.map((p: any) => p.id);
-
-      valist.getProductBalanceBatch(addresses, projectIDs).then(values => {
-        const balances = values.map(v => v.toNumber());
-        setProjects(_projects.filter((_, index) => balances[index] > 0));
-      });
-    }
-  }, [data, loading]);
+  const installed = (projectId: string) => {
+    const release = releases.find((r: any) => r.project.id === projectId);
+    return release?.id ?? '';
+  };
 
   return (
     <Layout padding={0}>
@@ -49,11 +27,13 @@ const LibraryPage: NextPage = () => {
           ]}
         >
           { projects.map((project: any, index: number) =>
-            <ProjectCard 
+            <LibraryCard 
               key={index}
+              id={project.id}
               name={project.name}
               metaURI={project.metaURI}
               href={`/${project.account?.name}/${project.name}`}
+              installed={installed(project.id)}
             />,
           )}
         </SimpleGrid>

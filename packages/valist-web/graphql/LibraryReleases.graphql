@@ -1,0 +1,11 @@
+query LibraryReleases($ids: [String!]) {
+  releases(where: { id_in: $ids }) {
+    id
+    name
+
+    project {
+      id
+      name
+    }
+  }
+}

@@ -126,7 +126,7 @@ const ProjectPage: NextPage = () => {
       icon: Icon.ShoppingCart,
       href: `/-/account/${accountName}/project/${projectName}/checkout`,
       variant: 'primary',
-      hide: (isPriced && balance === 0),
+      hide: !isPriced || balance !== 0,
       side: 'right',
     },
     {
@@ -135,7 +135,7 @@ const ProjectPage: NextPage = () => {
       href: launchUrl ?? '',
       target: '_blank',
       variant: 'primary',
-      hide: !(isPriced && balance === 0),
+      hide: isPriced && balance === 0,
       side: 'right',
     },
   ];

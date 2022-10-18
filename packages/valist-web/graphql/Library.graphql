@@ -1,0 +1,11 @@
+query Library($address: String!) {
+  user(id: $address) {
+    licenses (where: { balance_gt: 0 }) {
+      project {
+        id
+        name
+        metaURI
+      }
+    }
+  }
+}

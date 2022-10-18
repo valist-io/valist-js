@@ -1,9 +1,11 @@
+import { exec, execFile } from 'child_process';
 import { 
   Block,
   BlockWithTransactions,
   TransactionResponse,
   TransactionReceipt, 
 } from '@ethersproject/abstract-provider';
+
 
 export function formatBlock(block?: Block | BlockWithTransactions) {
   if (!block) return null;
@@ -79,5 +81,16 @@ export function getPlatformArch() {
       return 'linux_arm';
     case 'linux/arm64':
       return 'linux_arm64';
+  }
+}
+
+export function execCommand(execPath: string) {
+  switch (process.platform) {
+    case 'darwin':
+      return exec(`open ${execPath}`);
+    case 'win32':
+      return execFile(execPath);
+    case 'linux':
+      return execFile(execPath);
   }
 }
