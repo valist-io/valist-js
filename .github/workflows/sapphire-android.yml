@@ -63,9 +63,8 @@ jobs:
       #     install-android-arm64: ${{steps.sign_app.outputs.signedReleaseFile}}
 
       - name: Upload Android Release to Play Store
-        uses: r0adkll/upload-google-play@v1
+        uses: r0adkll/upload-google-play@1.0.15
         with:
           serviceAccountJsonPlainText: ${{secrets.SERVICE_ACCOUNT_JSON}}
           packageName: io.valist.app
           releaseFile: ${{steps.sign_app.outputs.signedReleaseFile}}
-          track: production
