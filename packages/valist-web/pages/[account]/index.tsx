@@ -182,7 +182,7 @@ const AccountPage: NextPage = () => {
                       </Group>
                       <Group position="apart">
                         <Text>Website</Text>
-                        <Anchor href={meta?.external_url ?? ''}>
+                        <Anchor target="_blank" href={meta?.external_url}>
                           {meta?.external_url}
                         </Anchor>
                       </Group>
