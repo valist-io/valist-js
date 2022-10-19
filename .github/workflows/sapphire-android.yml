@@ -41,14 +41,11 @@ jobs:
       - name: Test Path
         run: ls ./android/app/build/outputs
 
-      - name: Test Path 2
-        run: ls ./android/app/build/outputs/release
-
       - name: Sign APK
         uses: r0adkll/sign-android-release@v1
         id: sign_app
         with:
-          releaseDirectory: ./android/app/build/outputs/bundle/debug
+          releaseDirectory: ./android/app/build/outputs/bundle/release
           signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
           alias: ${{ secrets.ANDROID_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
