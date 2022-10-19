@@ -42,7 +42,7 @@ jobs:
         run: ls ./android/app/build/outputs
 
       - name: Test Path 2
-        run: ls ./android/app/build/outputs/bundle
+        run: ls ./android/app/build/outputs/release
 
       - name: Sign APK
         uses: r0adkll/sign-android-release@v1
