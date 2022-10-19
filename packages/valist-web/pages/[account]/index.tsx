@@ -180,12 +180,14 @@ const AccountPage: NextPage = () => {
                         <Text>Members</Text>
                         <MemberStack size={28} members={members.map((member: any) => member.id)} />
                       </Group>
-                      <Group position="apart">
-                        <Text>Website</Text>
-                        <Anchor target="_blank" href={meta?.external_url}>
-                          {meta?.external_url}
-                        </Anchor>
-                      </Group>
+                      {meta?.external_url &&
+                        <Group position="apart">
+                          <Text>Website</Text>
+                          <Anchor target="_blank" href={meta?.external_url}>
+                            {meta?.external_url}
+                          </Anchor>
+                        </Group>
+                      }
                     </List>
                   </Stack>
                 </Card>
