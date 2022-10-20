@@ -6,10 +6,10 @@ on:
       - feature/android
 
 jobs:
-  build:
+  build-web:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
+      - name: Check out Git repository
         uses: actions/checkout@v2
 
       - name: Setup Node
@@ -23,8 +23,34 @@ jobs:
           npm install
           npm run build
 
+      - uses: actions/upload-artifact@v2
+        with:
+          name: webui
+          path: ./packages/valist-web/out
+
       # - name: Unit Tests
       #   run: npm run test
+
+  build-android:
+    runs-on: ubuntu-latest
+    needs: build-web
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+          cache: npm
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: webui
+
+      - name: Install Capacitor Deps
+        run: |
+          npm install
 
       - name: Sync Android Capacitor Build
         run: npx cap sync android
@@ -58,13 +84,13 @@ jobs:
       #     account: valist
       #     project: sapphire
       #     release: ${{ github.ref_name }}
-      #     path: ./
+      #     path: /out
       #     install-name: sapphire
-      #     install-android-arm64: ${{steps.sign_app.outputs.signedReleaseFile}}
+      #     install-android-arm64:
 
-      - name: Upload Android Release to Play Store
-        uses: r0adkll/upload-google-play@v1.0.18
-        with:
-          serviceAccountJsonPlainText: ${{secrets.SERVICE_ACCOUNT_JSON}}
-          packageName: io.valist.app
-          releaseFile: ${{steps.sign_app.outputs.signedReleaseFile}}
+      # - name: Upload Android Release to Play Store
+      #   uses: r0adkll/upload-google-play@v1.0.18
+      #   with:
+      #     serviceAccountJsonPlainText: ${{secrets.SERVICE_ACCOUNT_JSON}}
+      #     packageName: io.valist.app
+      #     releaseFile: ${{steps.sign_app.outputs.signedReleaseFile}}
