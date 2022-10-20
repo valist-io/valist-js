@@ -68,13 +68,13 @@ export function Layout(props: LayoutProps) {
             text='Discover'
             href='/'
           />
+          <Navbar.Link 
+            icon={Icons.Command} 
+            text='Dashboard'
+            href='/-/dashboard'
+          />
           {isMobile &&
               <>
-                <Navbar.Link 
-                  icon={Icons.Command} 
-                  text='Dashboard'
-                  href='/-/dashboard'
-                />
                 <Navbar.Link 
                   icon={Icons.Settings} 
                   text="Settings"
