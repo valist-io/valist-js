@@ -375,7 +375,7 @@ const ProjectPage: NextPage = () => {
                       {projectMeta?.external_url &&
                         <Group position="apart">
                           <Text>Website</Text>
-                          <Anchor href={projectMeta?.external_url ?? ''}>
+                          <Anchor target="_blank" href={projectMeta?.external_url}>
                             {projectMeta?.external_url}
                           </Anchor>
                         </Group>
