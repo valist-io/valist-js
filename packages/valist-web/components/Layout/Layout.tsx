@@ -72,6 +72,7 @@ export function Layout(props: LayoutProps) {
             icon={Icons.Command} 
             text='Dashboard'
             href='/-/dashboard'
+            active={router.asPath === '/-/dashboard'} 
           />
           {isMobile &&
               <>
@@ -91,6 +92,7 @@ export function Layout(props: LayoutProps) {
                   icon={Icons.Notebook} 
                   text="Docs"
                   href="https://docs.valist.io"
+                  target="_blank"
                 />
               </>
             }
