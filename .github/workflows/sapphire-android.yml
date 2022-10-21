@@ -26,10 +26,10 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: webui
-          path: ./packages/valist-web/out
+          path: ./packages/valist-web/out/
 
-      # - name: Unit Tests
-      #   run: npm run test
+      - name: Unit Tests
+        run: npm run test
 
   build-android:
     runs-on: ubuntu-latest
@@ -47,13 +47,14 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: webui
+          path: ./packages/valist-web/out/
 
       - name: Install Capacitor Deps
         run: |
           npm install
 
-      - name: Sync Android Capacitor Build
-        run: npx cap sync android
+      - name: Sync Capacitor Build
+        run: npx cap sync
 
       - name: Setup Java
         uses: actions/setup-java@v3
