@@ -104,6 +104,12 @@ jobs:
           node-version: "16"
           cache: npm
 
+      - name: Download Webui
+        uses: actions/download-artifact@v2
+        with:
+          name: webui
+          path: ./packages/valist-web/out/
+
       - name: Install Electron dependencies
         run: (cd electron && npm install)
 
