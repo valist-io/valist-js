@@ -45,7 +45,7 @@ export function Layout(props: LayoutProps) {
           hideNavbar={hideNavbar}
           opened={opened} 
           onClick={() => setOpened(!opened)}
-          onSearch={value => router.push(`/-/search/${value}`)}
+          onSearch={(value: string) => router.push(`/-/search/${value}`)}
         >
           <ThemeButton />
           <ActionIcon component={NextLink} href="/-/gas" variant="transparent">
@@ -88,7 +88,7 @@ export function Layout(props: LayoutProps) {
                   href="/-/gas"
                   active={router.asPath === '/-/gas'} 
                 />
-                <Navbar.Link 
+                <Navbar.Link
                   icon={Icons.Notebook} 
                   text="Docs"
                   href="https://docs.valist.io"
