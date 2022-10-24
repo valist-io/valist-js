@@ -2,8 +2,12 @@ export interface Client {
   launch: (id: string) => Promise<void>;
   install: (id: string) => Promise<void>;
   uninstall: (id: string) => Promise<void>;
+  
   listInstalled: () => Promise<string[]>;
   listDownloads: () => Promise<string[]>;
+
+  on: (eventName: string, listener: Function) => void;
+  removeListener: (eventName: string, listener: Function) => void;
 }
 
 export class SapphireClient {
@@ -26,6 +30,14 @@ export class SapphireClient {
   async listDownloads() {
     return await window?.sapphire?.request({ method: 'sapphire_listDownloads' });
   }
+
+  on(eventName: string, listener: Function) {
+    window?.sapphire?.on(eventName, listener);
+  }
+
+  removeListener(eventName: string, listener: Function) {
+    window?.sapphire?.removeListener(eventName, listener);
+  }
 }
 
 export class DefaultClient {
@@ -47,5 +59,13 @@ export class DefaultClient {
 
   async listDownloads() {
     return [];
+  }
+
+  on(eventName: string, listener: Function) {
+    // do nothing
+  }
+
+  removeListener(eventName: string, listener: Function) {
+    // do nothing
   }
 }

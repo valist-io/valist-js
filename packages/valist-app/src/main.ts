@@ -1,5 +1,8 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
+import { startServer } from 'next/dist/server/lib/start-server';
+import { NextServer } from 'next/dist/server/next';
 import { createReadOnly } from '@valist/sdk';
+import { createController } from 'ipfsd-ctl';
 import { ethers } from 'ethers';
 import keytar from 'keytar';
 import tar from 'tar';
@@ -9,7 +12,6 @@ import os from 'os';
 import path from 'path';
 import EventEmitter from 'events';
 
-import { createController } from 'ipfsd-ctl';
 import * as utils from './utils';
 
 //////////////////////
@@ -60,7 +62,23 @@ const createSigningWindow = () => {
   signingWindow.once('closed', () => { signingWindow = undefined });
 };
 
-app.whenReady().then(() => {
+const startNextServer = async () => {
+  const app = await startServer({
+    dir: '.',
+    hostname: '0.0.0.0',
+    port: 3000,
+    conf: {
+      publicRuntimeConfig: {
+        CHAIN_ID: 137,
+      }
+    }
+  });
+
+  await app.prepare();
+};
+
+app.whenReady().then(async () => {
+  await startNextServer();
   createMainWindow();
 });
 
@@ -353,16 +371,21 @@ ipcMain.handle('sapphire_install', async (event, params) => {
   if (downloads.has(id)) throw new Error('download in progress');
 
   downloads.add(id);
+  mainWindow?.webContents.send('installStarted', id);
+
   install(id)
     .then(() => mainWindow?.webContents.send('installSuccess', id))
-    .catch(err => mainWindow?.webContents.send('installFailed', err.message))
+    .catch(err => mainWindow?.webContents.send('installFailed', id))
     .finally(() => downloads.delete(id));
 });
 
 ipcMain.handle('sapphire_uninstall', async (event, params) => {
   const [id] = params;
   const installPath = path.join(libraryDir, id);
-  await fs.promises.rm(installPath, { recursive: true, force: true });
+  
+  fs.promises.rm(installPath, { recursive: true, force: true })
+    .then(() => mainWindow?.webContents.send('uninstallSuccess', id))
+    .catch(err => mainWindow?.webContents.send('uninstallFailed', id));
 });
 
 ipcMain.handle('sapphire_launch', async (event, params) => {

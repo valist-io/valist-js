@@ -7,19 +7,51 @@ import query from '@/graphql/Library.graphql';
 
 export function useInstalls() {
   const sapphire = useContext(SapphireContext);
-  const [releaseIds, setReleaseIds] = useState<string[]>([]);
+
+  const [downloads, setDownloads] = useState<string[]>([]);
+  const [installed, setInstalled] = useState<string[]>([]);
 
   useEffect(() => {
-    sapphire.listInstalled().then(setReleaseIds);
+    sapphire.listInstalled().then(setInstalled);
+    sapphire.listDownloads().then(setDownloads);
+
+    const installStarted = (id: string) => {
+      setDownloads([...downloads, id]);
+    };
+
+    const installSuccess = (id: string) => {
+      setDownloads(downloads.filter(d => d !== id));
+      setInstalled([...installed, id]);
+    };
+
+    const installFailed = (id: string) => {
+      setDownloads(downloads.filter(d => d !== id));
+    };
+
+    const uninstallSuccess = (id: string) => {
+      setInstalled(installed.filter(i => i !== id));
+    };
+
+    sapphire.on('installStarted', installStarted);
+    sapphire.on('installSuccess', installSuccess);
+    sapphire.on('installFailed', installFailed);
+    sapphire.on('uninstallSuccess', uninstallSuccess);
+
+    return () => {
+      sapphire.removeListener('installStarted', installStarted);
+      sapphire.removeListener('installSuccess', installSuccess);
+      sapphire.removeListener('installFailed', installFailed);
+      sapphire.removeListener('uninstallSuccess', uninstallSuccess);
+    };
   }, []);
 
   const { data, loading } = useQuery(releaseQuery, {
-    variables: { ids: releaseIds },
+    variables: { ids: installed },
   });
 
   const _releases = data?.releases ?? [];
 
-  return { loading, releases: _releases };
+  return { loading, downloads, releases: _releases };
 }
 
 export function useLibrary() {

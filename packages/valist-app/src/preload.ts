@@ -6,9 +6,14 @@ type Callback = (error: null | Error, result: any) => void;
 type Listener = (...args: any[]) => void;
 
 const eventEmitter = new EventEmitter();
+eventEmitter.setMaxListeners(0);
+
 ipcRenderer.on('accountsChanged', (event, args) => eventEmitter.emit('accountsChanged', args));
+ipcRenderer.on('installStarted', (event, args) => eventEmitter.emit('installStarted', args));
 ipcRenderer.on('installSuccess', (event, args) => eventEmitter.emit('installSuccess', args));
 ipcRenderer.on('installFailed', (event, args) => eventEmitter.emit('installFailed', args));
+ipcRenderer.on('uninstallSuccess', (event, args) => eventEmitter.emit('uninstallSuccess', args));
+ipcRenderer.on('uninstallFailed', (event, args) => eventEmitter.emit('uninstallFailed', args));
 
 contextBridge.exposeInMainWorld('ethereum', {
   send: (request: Request, callback: Callback) => {

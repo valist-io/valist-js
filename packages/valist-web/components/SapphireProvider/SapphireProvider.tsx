@@ -22,10 +22,10 @@ const installSuccess = (id: string) => showNotification({
   message: id,
 });
 
-const installFailed = (err: string) => showNotification({
+const installFailed = (id: string) => showNotification({
   color: 'red',
   title: 'Install Failed',
-  message: err,
+  message: id,
 });
 
 if (typeof window !== 'undefined') {

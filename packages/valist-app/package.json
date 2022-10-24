@@ -2,10 +2,13 @@
   "name": "@valist/app",
   "version": "0.0.1",
   "description": "Valist desktop app",
-  "main": "dist/main.js",
+  "main": "lib/main.js",
   "scripts": {
+    "postinstall": "electron-builder install-app-deps",
     "build": "tsc",
-    "dev": "npm run build && electron ."
+    "dev": "npm run build && electron .",
+    "pack": "npm run build && electron-builder --dir",
+    "dist": "npm run build && electron-builder"
   },
   "keywords": [],
   "author": "Valist, Inc.",
@@ -13,16 +16,46 @@
   "devDependencies": {
     "@types/electron": "^1.6.10",
     "@types/node": "^18.11.0",
-    "electron": "^20.1.4",
+    "electron": "20.1.4",
+    "electron-builder": "^23.6.0",
+    "electron-builder-notarize": "^1.5.0",
     "typescript": "^4.8.3"
   },
   "dependencies": {
     "@valist/sdk": "*",
-    "ethers": "^5.7.1",
+    "ethers": "^5.6.9",
     "go-ipfs": "0.14.0",
     "ipfs-http-client": "56.0.2",
     "ipfsd-ctl": "10.0.6",
     "keytar": "^7.9.0",
     "tar": "^6.1.11"
+  },
+  "build": {
+    "appId": "io.valist.sapphire",
+    "productName": "sapphire",
+    "files": [
+      "assets/**/*",
+      "lib/**/*",
+      ".next/**/*"
+    ],
+    "publish": {
+      "provider": "github"
+    },
+    "nsis": {
+      "allowElevation": true,
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "assets/appIcon.ico"
+    },
+    "afterSign": "electron-builder-notarize",
+    "mac": {
+      "icon": "assets/valist.png",
+      "target": "dmg",
+      "hardenedRuntime": true,
+      "entitlements": "./node_modules/electron-builder-notarize/entitlements.mac.inherit.plist"
+    }
   }
 }
