@@ -28,8 +28,8 @@ jobs:
           name: webui
           path: ./packages/valist-web/out/
 
-      - name: Unit Tests
-        run: npm run test
+      # - name: Unit Tests
+      #   run: npm run test
 
   build-android:
     runs-on: ubuntu-latest
@@ -65,9 +65,6 @@ jobs:
 
       - name: Generate Release APK
         run: (cd android && ./gradlew bundleReleas)
-
-      - name: Test Path
-        run: ls ./android/app/build/outputs/bundle
 
       - name: Sign APK
         uses: r0adkll/sign-android-release@v1
@@ -124,7 +121,7 @@ jobs:
 
       - name: Build & sign
         run: |
-          make electron-sign
+          (cd electron && npm run electron:make)
         env:
           WIN_CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
           CSC_LINK: ${{ secrets.APPLE_DEV_ID_CERT }}
