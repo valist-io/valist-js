@@ -1,6 +1,5 @@
 {
   "appId": "io.valist.app",
-  "afterSign": "electron-builder-notarize",
   "directories": {
     "buildResources": "resources"
   },
@@ -10,9 +9,6 @@
     "capacitor.config.*",
     "app/**/*"
   ],
-  "publish": {
-    "provider": "github"
-  },
   "nsis": {
     "allowElevation": true,
     "oneClick": false,
@@ -22,13 +18,11 @@
     "target": "nsis",
     "icon": "assets/appIcon.ico"
   },
+  "afterSign": "electron-builder-notarize",
   "mac": {
     "icon": "assets/valist.png",
+    "target": "zip",
     "hardenedRuntime": true,
-    "entitlements": "./build/entitlements.mac.inherit.plist",
-    "target": [
-      "dmg",
-      "zip"
-    ]
+    "entitlements": "./node_modules/electron-builder-notarize/entitlements.mac.inherit.plist"
   }
 }
