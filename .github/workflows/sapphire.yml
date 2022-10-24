@@ -118,7 +118,9 @@ jobs:
         run: (cd electron && npm install)
 
       - name: Sync Electron Build
-        run: mv ./packages/valist-web/out/* ./electron/app
+        run: |
+          mkdir ./electron/app
+          mv ./packages/valist-web/out/* ./electron/app
 
       - name: Build & sign
         run: |
