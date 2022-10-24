@@ -121,7 +121,7 @@ jobs:
 
       - name: Build & sign
         run: |
-          (cd electron && npm run electron:make)
+          make electron-sign
         env:
           WIN_CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
           CSC_LINK: ${{ secrets.APPLE_DEV_ID_CERT }}

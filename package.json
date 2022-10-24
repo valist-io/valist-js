@@ -10,6 +10,7 @@
     "android:sync": "cap sync android",
     "electron:sync": "cap sync electron",
     "electron:open": "cap open electron",
+    "electron:make": "npm run build --prefix=./electron",
     "build:sdk": "npm run build --workspace=@valist/sdk",
     "build:ui": "npm run build --workspace=@valist/ui",
     "build:web": "npm run build --workspace=@valist/web",
