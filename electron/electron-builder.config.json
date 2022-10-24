@@ -1,6 +1,6 @@
 {
   "appId": "io.valist.app",
-  "afterSign": "./afterSignHook.js",
+  "afterSign": "electron-builder-notarize",
   "directories": {
     "buildResources": "resources"
   },
