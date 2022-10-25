@@ -31,6 +31,8 @@
     "ipfs-http-client": "^57.0.3"
   },
   "devDependencies": {
+    "dotenv": "^16.0.1",
+    "dotenv-cli": "^6.0.0",
     "electron": "^19.0.0",
     "electron-builder": "^23.6.0",
     "electron-builder-notarize": "^1.5.0",

@@ -23,6 +23,6 @@
     "icon": "assets/valist.png",
     "target": "zip",
     "hardenedRuntime": true,
-    "entitlements": "./node_modules/electron-builder-notarize/entitlements.mac.inherit.plist"
+		"entitlements": "./node_modules/electron-builder-notarize/entitlements.mac.inherit.plist"
   }
 }
