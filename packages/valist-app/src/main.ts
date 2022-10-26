@@ -1,6 +1,4 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
-import { startServer } from 'next/dist/server/lib/start-server';
-import { NextServer } from 'next/dist/server/next';
 import { createReadOnly } from '@valist/sdk';
 import { createController } from 'ipfsd-ctl';
 import { ethers } from 'ethers';
@@ -18,6 +16,18 @@ import * as utils from './utils';
 /// Electron Setup ///
 //////////////////////
 
+const baseURL = app.isPackaged 
+  ? 'https://app.valist.io'
+  : 'http://localhost:3000';
+
+const providerURL = app.isPackaged
+  ? 'https://rpc.valist.io'
+  : 'https://rpc.valist.io/mumbai';
+
+const chainId = app.isPackaged 
+  ? 137
+  : 80001;
+
 let mainWindow: BrowserWindow;
 let walletWindow: BrowserWindow;
 let signingWindow: BrowserWindow;
@@ -31,7 +41,7 @@ const createMainWindow = () => {
     },
   });
 
-  mainWindow.loadURL('http://localhost:3000');
+  mainWindow.loadURL(baseURL);
   mainWindow.once('closed', () => { mainWindow = undefined });
 };
 
@@ -43,7 +53,7 @@ const createWalletWindow = () => {
     },
   });
 
-  walletWindow.loadURL('http://localhost:3000/-/wallet');
+  walletWindow.loadURL(`${baseURL}/-/wallet`);
   walletWindow.once('closed', () => { walletWindow = undefined });
 };
 
@@ -58,27 +68,11 @@ const createSigningWindow = () => {
     },
   });
 
-  signingWindow.loadURL('http://localhost:3000/-/wallet/sign');
+  signingWindow.loadURL(`${baseURL}/-/wallet/sign`);
   signingWindow.once('closed', () => { signingWindow = undefined });
 };
 
-const startNextServer = async () => {
-  const app = await startServer({
-    dir: '.',
-    hostname: '0.0.0.0',
-    port: 3000,
-    conf: {
-      publicRuntimeConfig: {
-        CHAIN_ID: 137,
-      }
-    }
-  });
-
-  await app.prepare();
-};
-
-app.whenReady().then(async () => {
-  await startNextServer();
+app.whenReady().then(() => {
   createMainWindow();
 });
 
@@ -190,8 +184,8 @@ interface SigningRequest {
 const walletEvents = new EventEmitter();
 const signingQueue = new Array<SigningRequest>();
 
-const provider = new ethers.providers.JsonRpcProvider('https://rpc.valist.io/mumbai');
-const valist = createReadOnly(provider, { chainId: 137 });
+const provider = new ethers.providers.JsonRpcProvider(providerURL);
+const valist = createReadOnly(provider, { chainId });
 
 let wallet: ethers.Wallet;
 

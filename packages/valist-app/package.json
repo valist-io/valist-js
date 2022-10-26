@@ -1,7 +1,7 @@
 {
   "name": "@valist/app",
   "version": "0.0.1",
-  "description": "Valist desktop app",
+  "description": "Valist Sapphire",
   "main": "lib/main.js",
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
@@ -28,15 +28,15 @@
     "ipfs-http-client": "56.0.2",
     "ipfsd-ctl": "10.0.6",
     "keytar": "^7.9.0",
-    "tar": "^6.1.11"
+    "tar": "^6.1.11",
+    "web3": "^1.7.4"
   },
   "build": {
     "appId": "io.valist.sapphire",
     "productName": "sapphire",
     "files": [
       "assets/**/*",
-      "lib/**/*",
-      ".next/**/*"
+      "lib/**/*"
     ],
     "publish": {
       "provider": "github"
