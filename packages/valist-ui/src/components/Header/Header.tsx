@@ -24,11 +24,12 @@ export interface HeaderProps {
 
 export function Header(props: HeaderProps) {
   const { classes } = useStyles();
+  const [search, setSearch] = useState('');
   const [searchOpened, setSearchOpened] = useState(false);
 
   const onSearch = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      props.onSearch?.(event.target.value);
+      props.onSearch?.(search);
     }
   };
 
@@ -44,6 +45,8 @@ export function Header(props: HeaderProps) {
               <TextInput
                 placeholder="Search projects"
                 icon={<Icon.Search size={18} strokeWidth={3} />}
+                value={search}
+                onChange={e => setSearch(e.target.value)}
                 onKeyPress={onSearch}
               />
             </div>
@@ -78,6 +81,8 @@ export function Header(props: HeaderProps) {
                 <TextInput
                   placeholder="Search"
                   icon={<Icon.Search size={18} strokeWidth={3} />}
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
                   onKeyPress={onSearch}
                 />
               </Group>

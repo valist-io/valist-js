@@ -32,6 +32,9 @@ const nextConfig = {
       loader: 'graphql-tag/loader',
     });
 
+    const path = require('path');
+    config.resolve.alias['bn.js'] = path.resolve(__dirname, '..', '..', 'node_modules', 'bn.js');
+
     config.plugins.push(new options.webpack.IgnorePlugin({ resourceRegExp: /^electron$/ }));
     return config;
   },
