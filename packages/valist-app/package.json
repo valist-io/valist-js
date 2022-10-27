@@ -13,6 +13,10 @@
   "keywords": [],
   "author": "Valist, Inc.",
   "license": "MPL-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/valist-io/valist-js.git"
+  },
   "devDependencies": {
     "@types/electron": "^1.6.10",
     "@types/node": "^18.11.0",
@@ -33,7 +37,7 @@
   },
   "build": {
     "appId": "io.valist.sapphire",
-    "productName": "sapphire",
+    "productName": "Sapphire",
     "files": [
       "assets/**/*",
       "lib/**/*"
@@ -53,9 +57,9 @@
     "afterSign": "electron-builder-notarize",
     "mac": {
       "icon": "assets/valist.png",
-      "target": "dmg",
+      "target": "zip",
       "hardenedRuntime": true,
-      "entitlements": "./node_modules/electron-builder-notarize/entitlements.mac.inherit.plist"
+      "entitlements": "entitlements.mac.inherit.plist"
     }
   }
 }
