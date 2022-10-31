@@ -49,9 +49,6 @@
     "axios": "^0.26.0",
     "ethers": "^5.5.4",
     "files-from-path": "^0.2.6",
-    "ipfs-car": "^0.8.1",
-    "ipfs-core": "^0.13.0",
-    "ipfs-http-client": "^56.0.1",
-    "ipfs-utils": "9.0.2"
+    "ipfs-car": "^0.8.1"
   }
 }
