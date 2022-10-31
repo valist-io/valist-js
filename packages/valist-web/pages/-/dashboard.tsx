@@ -39,10 +39,10 @@ import {
   Welcome,
   CheckboxList,
 } from '@valist/ui';
+import { getAccounts, setAccount } from '@valist/ui/dist/components/AccountSelect';
 
 const IndexPage: NextPage = () => {
   const router = useRouter();
-  const valist = useContext(ValistContext);
 
   const { openConnectModal } = useConnectModal();
   const { address, isConnected } = useAccount();
@@ -54,9 +54,15 @@ const IndexPage: NextPage = () => {
   const [accountName, setAccountName] = useState('');
   const { accounts, projects, members, logs, loading } = useDashboard(accountName);
   
-  // reset account when address changes
+  const handleAccountChange = (name: string) => {
+    const accountByAddress = getAccounts();
+    if (address) setAccount(name, address, accountByAddress);
+    setAccountName(name);
+  };
+
   useEffect(() => {
-    setAccountName('');
+    const accountByAddress = getAccounts();
+    if (address) setAccountName(accountByAddress[address]);
   }, [address]);
 
   const account: any = accounts.find((a: any) => a.name === accountName);
@@ -118,7 +124,7 @@ const IndexPage: NextPage = () => {
           value={accountName}
           image={accountMeta?.image}
           href="/-/create/account"
-          onChange={setAccountName}
+          onChange={handleAccountChange}
         >
           <AccountSelect.Option value="" name="All Accounts" />
           {accounts.map((acc: any, index: number) => 
