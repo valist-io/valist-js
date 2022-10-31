@@ -37,7 +37,6 @@ export interface CreateAccountProps {
 }
 
 export function CreateAccount(props: CreateAccountProps) {
-  const router = useRouter();
   const { cache } = useApolloClient();
   const { address } = useAccount();
   const chainId = getChainId();
