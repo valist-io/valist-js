@@ -11,6 +11,7 @@ export { Card } from './components/Card';
 export { CardGrid } from './components/CardGrid';
 export { Carousel } from './components/Carousel';
 export { CheckboxList } from './components/CheckboxList';
+export { CopyButton } from './components/CopyButton';
 export { DiscoveryFooter } from "./components/DiscoveryFooter";
 export { Divider } from './components/Divider';
 export { EditButton } from './components/EditButton';
