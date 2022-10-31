@@ -1,15 +1,15 @@
 import type { NextPage } from 'next';
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import useSWRImmutable from 'swr/immutable';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import { useApolloClient, useQuery } from '@apollo/client';
 import { useForm, zodResolver } from '@mantine/form';
 import { Layout } from '@/components/Layout';
-import { ValistContext } from '@/components/ValistProvider';
 import { AddressInput } from '@/components/AddressInput';
 import { defaultTags, defaultTypes } from '@/forms/common';
 import { getChainId } from '@/utils/config';
+import { useValist } from '@/utils/valist';
 import query from '@/graphql/UpdateProjectPage.graphql';
 
 import { 
@@ -48,8 +48,7 @@ const Project: NextPage = () => {
   const { cache } = useApolloClient();
   const { address } = useAccount();
   const chainId = getChainId();
-
-  const valist = useContext(ValistContext);
+  const valist = useValist();
 
   const accountName = `${router.query.account}`;
   const accountId = valist.generateID(chainId, accountName);

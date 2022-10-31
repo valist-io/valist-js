@@ -1,14 +1,14 @@
 import type { NextPage } from 'next';
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import { useApolloClient } from '@apollo/client';
 import { useListState } from '@mantine/hooks';
 import { useForm, zodResolver } from '@mantine/form';
-import { ValistContext } from '@/components/ValistProvider';
 import { AddressInput } from '@/components/AddressInput';
 import { NameInput } from '@/components/NameInput';
 import { getChainId } from '@/utils/config';
+import { useValist } from '@/utils/valist';
 
 import { 
   schema,
@@ -41,8 +41,7 @@ export function CreateAccount(props: CreateAccountProps) {
   const { cache } = useApolloClient();
   const { address } = useAccount();
   const chainId = getChainId();
-
-  const valist = useContext(ValistContext);
+  const valist = useValist();
 
   // form values
   const [loading, setLoading] = useState(false);

@@ -1,10 +1,10 @@
 import { NextPage } from 'next';
-import { useContext, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { useQuery } from '@apollo/client';
 import { Layout } from '@/components/Layout';
 import { ProjectCard } from '@/components/ProjectCard';
-import { ValistContext } from '@/components/ValistProvider';
+import { useValist } from '@/utils/valist';
 import query from '@/graphql/LibraryPage.graphql';
 
 import { 
@@ -12,7 +12,7 @@ import {
 } from '@mantine/core';
 
 const LibraryPage: NextPage = () => {
-  const valist = useContext(ValistContext);
+  const valist = useValist();
   const { address } = useAccount();
 
   const { data, loading } = useQuery(query, { 

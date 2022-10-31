@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import useSWRImmutable from 'swr/immutable';
@@ -9,9 +9,9 @@ import { useMediaQuery } from '@mantine/hooks';
 import { useQuery } from '@apollo/client';
 import { Layout } from '@/components/Layout';
 import { Metadata } from '@/components/Metadata';
-import { ValistContext } from '@/components/ValistProvider';
 import { Activity } from '@/components/Activity';
 import { getChainId } from '@/utils/config';
+import { useValist } from '@/utils/valist';
 import query from '@/graphql/AccountPage.graphql';
 
 import { 
@@ -43,7 +43,7 @@ const AccountPage: NextPage = () => {
   const { address } = useAccount();
 
   const router = useRouter();
-  const valist = useContext(ValistContext);
+  const valist = useValist();
 
   const accountName = `${router.query.account}`;
   const accountId = valist.generateID(chainId, accountName);

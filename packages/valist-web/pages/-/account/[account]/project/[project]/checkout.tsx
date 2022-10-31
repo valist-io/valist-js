@@ -1,13 +1,13 @@
 import type { NextPage } from 'next';
-import { useContext, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import useSWRImmutable from 'swr/immutable';
 import { useQuery, useApolloClient } from '@apollo/client';
 import { Layout } from '@/components/Layout';
-import { ValistContext } from '@/components/ValistProvider';
 import { purchaseProduct } from '@/forms/purchase';
 import { getChainId } from '@/utils/config';
+import { useValist } from '@/utils/valist';
 import { tokens, findToken, formatUnits } from '@/utils/tokens';
 import query from '@/graphql/ProjectPage.graphql';
 
@@ -37,13 +37,12 @@ const Checkout: NextPage = () => {
   const { cache } = useApolloClient();
   const { address } = useAccount();
   const chainId = getChainId();
+  const valist = useValist();
 
   const [loading, setLoading] = useState(false);
   const [isGift, setIsGift] = useState(false);
   const [recipient, setRecipient] = useState('');
   const [payment, setPayment] = useState(0);
-
-  const valist = useContext(ValistContext);
 
   useEffect(() => {
     if (isGift) {
