@@ -38,6 +38,7 @@ import {
   Breadcrumbs,
   Button,
   Card,
+  CopyButton,
   EditButton,
   InfoButton,
   List,
@@ -60,7 +61,9 @@ import {
   Title,
   TextInput,
   Tabs,
+  useMantineTheme,
 } from '@mantine/core';
+import { BigNumber } from 'ethers';
 
 const Pricing: NextPage = () => {
   const router = useRouter();
@@ -87,6 +90,9 @@ const Pricing: NextPage = () => {
   const { data } = useQuery(query, { variables: { projectId } });
   const _purchases = data?.product?.purchases ?? [];
   const currencies = data?.product?.currencies ?? [];
+
+  const theme = useMantineTheme();
+	const borderColor = theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[4];
 
   const parseBlockTime = (time: string) => {
     const utc = parseInt(time);
@@ -345,6 +351,21 @@ const Pricing: NextPage = () => {
                       Withdraw
                     </Button>
                   </Stack>
+                </Card>
+                <Card>
+                  <TextInput
+                    id="projectID"
+                    name="projectID"
+                    label="ProjectIDd for Token Gating"
+                    rightSection={<CopyButton value={BigNumber.from(projectId).toString()} />}
+                    value={BigNumber.from(projectId).toString()}
+                    styles={{
+                      disabled: { 
+                        borderColor,
+                      },
+                    }}
+                    disabled
+                  />
                 </Card>
                 <Card>
                   <Group position="apart" noWrap>
