@@ -8,7 +8,6 @@ import { useApolloClient, useQuery } from '@apollo/client';
 import { Layout } from '@/components/Layout';
 import { ValistContext } from '@/components/ValistProvider';
 import { PriceButton } from '@/components/PriceButton';
-import { ProductBalance } from '@/components/ProductBalance';
 import { TokenModal } from '@/components/TokenModal';
 import { LimitModal } from '@/components/LimitModal';
 import { RoyaltyModal } from '@/components/RoyaltyModal';
@@ -43,7 +42,6 @@ import {
   InfoButton,
   List,
   Member,
-  TokenInput,
 } from '@valist/ui';
 
 import {
@@ -52,18 +50,16 @@ import {
   Avatar,
   Group,
   Grid,
-  Modal,
-  NumberInput,
   Select,
   Stack,
   SimpleGrid,
   Text,
   Title,
   TextInput,
-  Tabs,
   useMantineTheme,
 } from '@mantine/core';
 import { BigNumber } from 'ethers';
+import { getStats } from '@valist/sdk';
 
 const Pricing: NextPage = () => {
   const router = useRouter();
@@ -126,6 +122,7 @@ const Pricing: NextPage = () => {
   const [royaltyAmount, setRoyaltyAmount] = useState(0);
   const [royaltyRecipient, setRoyaltyRecipient] = useState('');
   const [withdrawRecipient, setWithdrawRecipient] = useState('');
+  const [launches, setLaunches] = useState<number>(0);
 
   const [tokens, setTokens] = useState<Token[]>([]);
 
@@ -241,6 +238,21 @@ const Pricing: NextPage = () => {
     }
   }, [data]);
 
+  // Pull project stats data
+  useEffect(() => {
+    try {
+      if (router?.isReady) {
+        fetch(`/api/stats/${accountName}/${projectName}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setLaunches(data);
+        });
+      }
+    } catch(err) {
+      console.error("Unable to pull stats data");
+    };
+  }, [router?.isReady]);
+
   const breadcrumbs = [
     { title: accountName, href: `/${accountName}` },
     { title: projectName, href: `/${accountName}/${projectName}` },
@@ -286,8 +298,8 @@ const Pricing: NextPage = () => {
                       <Avatar size={40} radius="xl" src="/images/rocket.svg" />
                       <Stack spacing={0}>
                         <Text size="xs">Total Launches</Text>
-                        <Title order={3} mb={4}>0</Title>
-                        <Text size="xs">0 Lifetime</Text>
+                        <Title order={3} mb={4}>{launches}</Title>
+                        <Text size="xs">{launches} Lifetime</Text>
                       </Stack>
                     </Group>
                   </Card>
@@ -354,9 +366,9 @@ const Pricing: NextPage = () => {
                 </Card>
                 <Card>
                   <TextInput
-                    id="projectID"
-                    name="projectID"
-                    label="ProjectIDd for Token Gating"
+                    id="projectId"
+                    name="projectId"
+                    label="ProjectId for Token Gating"
                     rightSection={<CopyButton value={BigNumber.from(projectId).toString()} />}
                     value={BigNumber.from(projectId).toString()}
                     styles={{

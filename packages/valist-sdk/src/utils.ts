@@ -47,12 +47,12 @@ export const toImportCandidate = (file: File) => {
 	}
 }
 
-export async function getStats(projectPath: string) {
+export async function getStats(projectPath: string): Promise<number | undefined> {
 	const stats = await axios.get(
 		`https://stats.valist.io/api/downloads/${projectPath}`,
 	);
 
-	return stats?.data?.downloads;
+	if (stats?.data?.downloads) return Number(stats?.data?.downloads);
 }
 
 export async function sendStats(projectPath: string) {

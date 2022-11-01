@@ -18,7 +18,7 @@ export function CopyButton(props: CopyButtonProps): JSX.Element {
       }}
       sx={() => ({
         '&:hover': {
-          backgroundColor: 'transparent',
+          backgroundColor: 'rgb(99 80 230)',
         },
       })}
       onClick={() => clipboard.copy(props.value)}
