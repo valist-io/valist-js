@@ -17,7 +17,7 @@ import * as utils from './utils';
 //////////////////////
 
 const baseURL = app.isPackaged 
-  ? 'https://app.valist.io'
+  ? 'https://beta.valist.io'
   : 'http://localhost:3000';
 
 const providerURL = app.isPackaged
