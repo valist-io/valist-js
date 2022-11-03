@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import { createReadOnly } from '@valist/sdk';
 import { createController } from 'ipfsd-ctl';
+import serveNextAt from 'next-electron-server';
 import { ethers } from 'ethers';
 import keytar from 'keytar';
 import tar from 'tar';
@@ -16,8 +17,10 @@ import * as utils from './utils';
 /// Electron Setup ///
 //////////////////////
 
+serveNextAt('next://app');
+
 const baseURL = app.isPackaged 
-  ? 'https://beta.valist.io'
+  ? 'next://app'
   : 'http://localhost:3000';
 
 const providerURL = app.isPackaged

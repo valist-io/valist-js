@@ -32,6 +32,7 @@
     "ipfs-http-client": "56.0.2",
     "ipfsd-ctl": "10.0.6",
     "keytar": "^7.9.0",
+    "next-electron-server": "^0.3.0",
     "tar": "^6.1.11",
     "web3": "^1.7.4"
   },
@@ -40,7 +41,8 @@
     "productName": "Sapphire",
     "files": [
       "assets/**/*",
-      "lib/**/*"
+      "lib/**/*",
+      "out/**/*"
     ],
     "publish": {
       "provider": "github"
