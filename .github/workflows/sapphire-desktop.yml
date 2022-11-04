@@ -30,20 +30,35 @@ jobs:
             ${{ runner.os }}-
       - name: Install dependencies
         run: |
+<<<<<<< HEAD
           npm install
       - name: Build & sign
         run: |
           npm run build:app
+=======
+          make install
+      - name: Build & sign
+        run: |
+          make electron-sign
+>>>>>>> beta
         env:
           CSC_LINK: ${{ secrets.APPLE_DEV_ID_CERT }}
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_DEV_ID_CERT_PASS }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+<<<<<<< HEAD
           CSC_FOR_PULL_REQUEST: true
+=======
+>>>>>>> beta
 
       - name: Upload the Archive
         uses: actions/upload-artifact@v3
         with:
+<<<<<<< HEAD
           path: ./electron/dist/Sapphire-0.0.1-mac.zip
           name: sapphire-0.0.1-amd64.zip
+=======
+          path: ./electron/dist/valist-1.0.0-mac.zip
+          name: valist-sapphire-1.0.0-amd64.zip
+>>>>>>> beta
           if-no-files-found: error

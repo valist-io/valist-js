@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useMediaQuery } from '@mantine/hooks';
@@ -9,6 +9,7 @@ import { NextLink } from '@mantine/next';
 import { 
   ActionIcon,
   Anchor,
+  Center,
   Group,
 } from '@mantine/core';
 
@@ -44,26 +45,57 @@ export function Layout(props: LayoutProps) {
           hideNavbar={hideNavbar}
           opened={opened} 
           onClick={() => setOpened(!opened)}
-          onSearch={value => router.push(`/-/search/${value}`)}
+          onSearch={(value: string) => router.push(`/-/search/${value}`)}
         >
           <ThemeButton />
           <ActionIcon component={NextLink} href="/-/gas" variant="transparent">
             <Icons.GasStation size={18} />
           </ActionIcon>
           <Anchor target="_blank" href="https://docs.valist.io">Docs</Anchor>
-          <Anchor href="/-/discover">Discover</Anchor>
+          {(router.asPath === "/") && 
+            <Anchor href={'/-/dashboard'}>
+              Dashboard
+            </Anchor>
+          }
           <ConnectButton chainStatus="icon" showBalance={false} />
         </Header>
       }
       navbar={
         <Navbar opened={opened}>
           <Navbar.Section mt={40} grow>
-            <Navbar.Link 
-              icon={Icons.Home} 
-              text="Dashboard"
-              href="/"
-              active={router.asPath === "/"} 
-            />
+          <Navbar.Link 
+            icon={Icons.World} 
+            text='Discover'
+            href='/'
+          />
+          <Navbar.Link 
+            icon={Icons.Command} 
+            text='Dashboard'
+            href='/-/dashboard'
+            active={router.asPath === '/-/dashboard'} 
+          />
+          {isMobile &&
+              <>
+                <Navbar.Link 
+                  icon={Icons.Settings} 
+                  text="Settings"
+                  href="/-/settings"
+                  active={router.asPath === '/-/settings'} 
+                />
+                <Navbar.Link 
+                  icon={Icons.GasStation} 
+                  text="Gas Tank"
+                  href="/-/gas"
+                  active={router.asPath === '/-/gas'} 
+                />
+                <Navbar.Link
+                  icon={Icons.Notebook} 
+                  text="Docs"
+                  href="https://docs.valist.io"
+                  target="_blank"
+                />
+              </>
+            }
             <Navbar.Link 
               icon={Icons.Users} 
               text="Members"
@@ -82,33 +114,6 @@ export function Layout(props: LayoutProps) {
               href={`/-/library`}
               active={router.asPath === `/-/library`} 
             />
-            <Navbar.Link 
-              icon={Icons.Settings} 
-              text="Settings"
-              href={`/-/settings`}
-              active={router.asPath === `/-/settings`} 
-            />
-            {isMobile &&
-              <>
-                <Navbar.Link 
-                  icon={Icons.Notebook} 
-                  text="Docs"
-                  href="https://docs.valist.io"
-                />
-                <Navbar.Link 
-                  icon={Icons.World} 
-                  text="Discover"
-                  href="/-/discover"
-                  active={router.asPath === '/-/discover'} 
-                />
-                <Navbar.Link 
-                  icon={Icons.GasStation} 
-                  text="Gas Tank"
-                  href="/-/gas"
-                  active={router.asPath === '/-/gas'} 
-                />
-              </>
-            }
           </Navbar.Section>
           <Navbar.Section px={30} py="md">
             <div style={{ display: 'flex', gap: 30 }}>
@@ -122,7 +127,9 @@ export function Layout(props: LayoutProps) {
       footer={
         <Footer>
           <Group>
-            <ConnectButton chainStatus="full" showBalance={false} />
+            <Center>
+               <ConnectButton chainStatus="full" showBalance={false} />
+            </Center>
           </Group>
         </Footer>
       }

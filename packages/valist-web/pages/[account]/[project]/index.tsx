@@ -1,5 +1,6 @@
 import type { NextPage } from 'next';
-import { useContext, useState, useEffect } from 'react';
+import { Capacitor } from '@capacitor/core';
+import { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import useSWRImmutable from 'swr/immutable';
@@ -7,10 +8,10 @@ import * as Icon from 'tabler-icons-react';
 import { useQuery } from '@apollo/client';
 import { useMediaQuery } from '@mantine/hooks';
 import { Layout } from '@/components/Layout';
-import { ValistContext } from '@/components/ValistProvider';
 import { Activity } from '@/components/Activity';
-import { DonationModal } from '@/components/DonationModal';
+import { useValist } from '@/utils/valist';
 import { getChainId } from '@/utils/config';
+import { DonationModal } from '@/components/DonationModal';
 import query from '@/graphql/ProjectPage.graphql';
 
 import {
@@ -44,9 +45,10 @@ import {
 const ProjectPage: NextPage = () => {
   const chainId = getChainId();
   const { address } = useAccount();
+  const isCap = Capacitor.getPlatform() !== 'web';
 
   const router = useRouter();
-  const valist = useContext(ValistContext);
+  const valist = useValist();
 
   const accountName = `${router.query.account}`;
   const accountId = valist.generateID(chainId, accountName);
@@ -94,9 +96,9 @@ const ProjectPage: NextPage = () => {
     (other: any) => other.id.toLowerCase() === address?.toLowerCase(),
   );
 
-  const launchUrl = projectMeta?.launch_external 
-    ? projectMeta?.external_url 
-    : releaseMeta?.external_url;
+  // const launchUrl = projectMeta?.launch_external 
+  //   ? projectMeta?.external_url 
+  //   : releaseMeta?.external_url;
 
   const actions: Action[] = [
     {
@@ -130,12 +132,18 @@ const ProjectPage: NextPage = () => {
       side: 'right',
     },
     {
-      label: 'Launch',
+      label: (projectMeta?.type === 'native' || projectMeta?.type === 'web') ? 'Launch' : 'Download',
       icon: Icon.Rocket,
-      href: launchUrl ?? '',
-      target: '_blank',
+      action: async () => {
+        if (projectMeta?.prompt_donation) {
+          setDonationOpen(true);
+        } else {
+          window.open(releaseMeta?.external_url);
+          await fetch(`/api/stats/${accountName}/${projectName}/${latestRelease?.name}`, { method: 'PUT' });
+        }
+      },
+      hide: (isPriced && balance === 0) || !(projectMeta && (releases.length !== 0 || projectMeta?.launch_external)),
       variant: 'primary',
-      hide: isPriced && balance === 0,
       side: 'right',
     },
   ];
@@ -196,7 +204,9 @@ const ProjectPage: NextPage = () => {
     <Layout padding={0}>
       <DonationModal 
         opened={donationOpen}
-        projectName={`${accountName}/${projectName}`}
+        accountName={accountName}
+        projectName={projectName}
+        releaseName={latestRelease?.name}
         projectType={projectMeta?.type}
         releaseURL={releaseMeta?.external_url}
         donationAddress={projectMeta?.donation_address}
@@ -214,8 +224,8 @@ const ProjectPage: NextPage = () => {
       <div style={{ padding: 40 }}>
         <Group spacing={24} mb="xl" noWrap>
           <Item 
-            name={projectName}
-            label={projectMeta?.name}
+            name={projectMeta?.name || projectName}
+            label={projectMeta?.short_description}
             image={projectMeta?.image}
             large
           />
@@ -299,7 +309,7 @@ const ProjectPage: NextPage = () => {
                           members={members.map(member => member.id)} 
                         />
                       </Group>
-                      <Group position="apart">
+                      <Group style={{ overflow: 'hidden' }} position="apart">
                         <Text>Version</Text>
                         <Text>{latestRelease?.name}</Text>
                       </Group>
@@ -311,7 +321,7 @@ const ProjectPage: NextPage = () => {
                               {platforms[platform].enabled &&
                                 <Tooltip label={platform}>
                                   {/* requires wrapping div */}
-                                  <div >
+                                  <div>
                                     {platforms[platform]?.icon}
                                   </div>
                                 </Tooltip>
@@ -323,7 +333,7 @@ const ProjectPage: NextPage = () => {
                       {projectMeta?.external_url &&
                         <Group position="apart">
                           <Text>Website</Text>
-                          <Anchor href={projectMeta?.external_url ?? ''}>
+                          <Anchor target="_blank" href={projectMeta?.external_url}>
                             {projectMeta?.external_url}
                           </Anchor>
                         </Group>

@@ -25,7 +25,7 @@ const GasTank: NextPage = () => {
   const [loading, setLoading] = useState(false);
   const [amount, setAmount] = useState(2);
 
-  const { data, error } = useContractRead({
+  const { data, isLoading, error } = useContractRead({
     addressOrName: paymasterAddress,
     contractInterface: paymasterABI,
     functionName: 'getRelayHubDeposit',
@@ -42,12 +42,12 @@ const GasTank: NextPage = () => {
       <Stack style={{ maxWidth: 784 }}>
         <Title mt="lg">Gas Tank</Title>
         <Text color="dimmed">Valist uses OpenGSN to cover your gas fees.</Text>
-        <TextInput
+        {(!data?._hex) && <TextInput
           label="Balance"
           error={error as any}
           value={ethers.utils.formatUnits(`${data || 0}`)} 
           disabled
-        />
+        />}
         <NumberInput
           label="Amount"
           precision={18}

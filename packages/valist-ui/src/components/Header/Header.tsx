@@ -28,7 +28,9 @@ export function Header(props: HeaderProps) {
   const [searchOpened, setSearchOpened] = useState(false);
 
   const onSearch = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') props.onSearch?.(search);
+    if (event.key === 'Enter') {
+      props.onSearch?.(search);
+    }
   };
 
   return (
@@ -44,7 +46,7 @@ export function Header(props: HeaderProps) {
                 placeholder="Search projects"
                 icon={<Icon.Search size={18} strokeWidth={3} />}
                 value={search}
-                onChange={event => setSearch(event.target.value)}
+                onChange={e => setSearch(e.target.value)}
                 onKeyPress={onSearch}
               />
             </div>
@@ -80,7 +82,7 @@ export function Header(props: HeaderProps) {
                   placeholder="Search"
                   icon={<Icon.Search size={18} strokeWidth={3} />}
                   value={search}
-                  onChange={event => setSearch(event.target.value)}
+                  onChange={e => setSearch(e.target.value)}
                   onKeyPress={onSearch}
                 />
               </Group>

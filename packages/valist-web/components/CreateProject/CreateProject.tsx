@@ -5,11 +5,11 @@ import { useRouter } from 'next/router';
 import { useApolloClient, useQuery } from '@apollo/client';
 import { useListState } from '@mantine/hooks';
 import { useForm, zodResolver } from '@mantine/form';
-import { ValistContext } from '@/components/ValistProvider';
 import { AddressInput } from '@/components/AddressInput';
 import { NameInput } from '@/components/NameInput';
 import { defaultTags, defaultTypes } from '@/forms/common';
 import { getChainId } from '@/utils/config';
+import { useValist } from '@/utils/valist';
 import query from '@/graphql/CreateProjectPage.graphql';
 
 import { 
@@ -47,8 +47,7 @@ export function CreateProject(props: CreateProjectProps) {
   const { cache } = useApolloClient();
   const { address } = useAccount();
   const chainId = getChainId();
-
-  const valist = useContext(ValistContext);
+  const valist = useValist();
 
   const accountName = `${router.query.account}`;
   const accountId = valist.generateID(chainId, accountName);

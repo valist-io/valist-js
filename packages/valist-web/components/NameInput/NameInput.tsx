@@ -1,6 +1,6 @@
 import { AsyncInput } from '@valist/ui';
-import { useState, useEffect, useContext } from 'react';
-import { ValistContext } from '@/components/ValistProvider';
+import { useState, useEffect } from 'react';
+import { useValist } from '@/utils/valist';
 
 export interface NameInputProps {
   parentId: string | number;
@@ -17,7 +17,7 @@ export function NameInput(props: NameInputProps) {
   const [loading, setLoading] = useState(false);
   const [exists, setExists] = useState(false);
   const [error, setError] = useState<string>();
-  const valist = useContext(ValistContext);
+  const valist = useValist();
 
   useEffect(() => {
     setLoading(false);

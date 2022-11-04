@@ -76,6 +76,8 @@ export class InstallMeta {
 	public linux_arm?: string;
 	/** linux/arm64 path */
 	public linux_arm64?: string;
+	/** web bundle */
+	public web?: string;
 	/** windows/386 path */
 	public windows_386?: string;
 	/** windows/amd64 path */

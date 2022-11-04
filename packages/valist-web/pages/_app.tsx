@@ -5,14 +5,13 @@ import type { AppProps, AppContext } from 'next/app';
 import { SWRConfig } from 'swr';
 import { useEnsName } from 'wagmi';
 import { NextLink } from '@mantine/next';
-import { useLocalStorage } from '@mantine/hooks';
+import { useColorScheme, useLocalStorage } from '@mantine/hooks';
 import { NotificationsProvider } from '@mantine/notifications';
 import { ColorSchemeProvider, ColorScheme } from '@mantine/core';
 import { ThemeProvider, AddressProvider } from '@valist/ui';
 import { ApolloProvider } from '@/components/ApolloProvider';
 import { WagmiProvider, rehydrate } from '@/components/WagmiProvider';
 import { RainbowKitProvider } from '@/components/RainbowKitProvider';
-import { ValistProvider } from '@/components/ValistProvider';
 import { SapphireProvider } from '@/components/SapphireProvider';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
@@ -29,10 +28,11 @@ const components = {
 
 function ValistApp(props: AppProps) {
   const { Component, pageProps } = props;
-
+  
+  const systemColorScheme = useColorScheme();
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
     key: 'mantine-color-scheme',
-    defaultValue: 'light',
+    defaultValue: systemColorScheme,
     getInitialValueInEffect: true,
   });
 
@@ -46,17 +46,15 @@ function ValistApp(props: AppProps) {
         <WagmiProvider>
           <RainbowKitProvider colorScheme={colorScheme}>
             <ApolloProvider>
-              <ValistProvider metaTx>
-                <SapphireProvider>
-                  <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
-                    <ThemeProvider theme={{ colorScheme, components }}>
-                      <NotificationsProvider>
-                        <Component {...pageProps} />
-                      </NotificationsProvider>
-                    </ThemeProvider>
-                  </ColorSchemeProvider>
-                </SapphireProvider>
-              </ValistProvider>
+              <SapphireProvider>
+                <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
+                  <ThemeProvider theme={{ colorScheme, components }}>
+                    <NotificationsProvider>
+                      <Component {...pageProps} />
+                    </NotificationsProvider>
+                  </ThemeProvider>
+                </ColorSchemeProvider>
+              </SapphireProvider>
             </ApolloProvider>
           </RainbowKitProvider>
         </WagmiProvider>

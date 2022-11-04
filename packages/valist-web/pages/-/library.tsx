@@ -2,6 +2,12 @@ import { NextPage } from 'next';
 import { Layout } from '@/components/Layout';
 import { LibraryCard } from '@/components/LibraryCard';
 import { useLibrary, useInstalls } from '@/utils/library';
+import { useState, useEffect } from 'react';
+import { useAccount } from 'wagmi';
+import { useQuery } from '@apollo/client';
+import { ProjectCard } from '@/components/ProjectCard';
+import { useValist } from '@/utils/valist';
+import query from '@/graphql/LibraryPage.graphql';
 
 import { 
   SimpleGrid,
@@ -10,6 +16,8 @@ import {
 const LibraryPage: NextPage = () => {
   const { releases } = useInstalls();
   const { projects } = useLibrary();
+  const valist = useValist();
+  const { address } = useAccount();
 
   const installed = (projectId: string) => {
     const release = releases.find((r: any) => r.project.id === projectId);

@@ -4,7 +4,7 @@ import { NextLink } from '@mantine/next';
 import { ProjectCard, Button } from '@valist/ui';
 import { Metadata } from '@/components/Metadata';
 import { SapphireContext } from '@/components/SapphireProvider';
-import { ValistContext } from '@/components/ValistProvider';
+import { useValist } from '@/utils/valist';
 
 export interface LibraryCardProps {
   id: string;
@@ -16,7 +16,7 @@ export interface LibraryCardProps {
 
 export function LibraryCard(props: LibraryCardProps) {
   const sapphire = useContext(SapphireContext);
-  const valist = useContext(ValistContext);
+  const valist = useValist();
 
   const [latest, setLatest] = useState('');
 

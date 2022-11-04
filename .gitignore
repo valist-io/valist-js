@@ -11,3 +11,8 @@ site
 dist
 .env*
 .parcel-cache
+<<<<<<< HEAD
+=======
+android
+ios
+>>>>>>> beta

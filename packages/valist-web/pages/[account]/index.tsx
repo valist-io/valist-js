@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import useSWRImmutable from 'swr/immutable';
@@ -9,9 +9,9 @@ import { useMediaQuery } from '@mantine/hooks';
 import { useQuery } from '@apollo/client';
 import { Layout } from '@/components/Layout';
 import { Metadata } from '@/components/Metadata';
-import { ValistContext } from '@/components/ValistProvider';
 import { Activity } from '@/components/Activity';
 import { getChainId } from '@/utils/config';
+import { useValist } from '@/utils/valist';
 import query from '@/graphql/AccountPage.graphql';
 
 import { 
@@ -20,8 +20,8 @@ import {
   Text,
   Group, 
   Stack,
-  Tabs,
   Grid,
+  Avatar,
 } from '@mantine/core';
 
 import {
@@ -33,12 +33,9 @@ import {
   Card,
   CardGrid,
   InfoButton,
-  Item,
-  MemberList,
   MemberStack,
   ProjectCard,
   List,
-  TabsListCard,
 } from '@valist/ui';
 
 const AccountPage: NextPage = () => {
@@ -46,7 +43,7 @@ const AccountPage: NextPage = () => {
   const { address } = useAccount();
 
   const router = useRouter();
-  const valist = useContext(ValistContext);
+  const valist = useValist();
 
   const accountName = `${router.query.account}`;
   const accountId = valist.generateID(chainId, accountName);
@@ -69,9 +66,9 @@ const AccountPage: NextPage = () => {
     {
       label: 'Settings', 
       icon: Icon.Settings, 
-      href: `/-/account/${accountName}/settings`, 
-      hide: !isMember,
-      side: 'left',
+      href: `/-/account/${accountName}/settings`,
+      variant: 'subtle',
+      side: 'right',
     },
     {
       label: 'New Project',
@@ -112,63 +109,54 @@ const AccountPage: NextPage = () => {
         }
       </Group>
       <div style={{ padding: 40 }}>
-        <Group spacing={24} mb="xl" noWrap>
-          <Item 
-            name={accountName}
-            label={meta?.name}
-            image={meta?.image}
-            large
+        <Group spacing={24} mb="xl" align="stretch" noWrap>
+          <Avatar 
+            radius="md"
+            size={92} 
+            src={meta?.image} 
           />
+          <Stack justify="space-between">
+            <Stack spacing={0}>
+              <Title order={3}>{accountName}</Title>
+              <Text color="gray.3">{meta?.name}</Text>
+            </Stack>
+            <Group spacing={5}>
+              <Icon.Users size={20} color="#9B9BB1" />
+              <Text color="gray.3" mr={13}>
+                {members.length} {members.length == 1 ? 'Member' : 'Members'}
+              </Text>
+              <Icon.World size={20} color="#9B9BB1" />
+              {meta?.external_url && 
+                <Anchor color="gray.3" target="_blank" href={meta?.external_url}>
+                  Website
+                </Anchor>
+              }
+            </Group>
+          </Stack>
           <Actions actions={actions} />
         </Group>
         <Grid>
           { (!showInfo || !infoOpened) &&
             <Grid.Col xl={8}>
-              <Tabs defaultValue="projects">
-                <TabsListCard>
-                  <Tabs.Tab value="projects">Projects</Tabs.Tab>
-                  <Tabs.Tab value="members">Members</Tabs.Tab>
-                  <Tabs.Tab value="activity">Activity</Tabs.Tab>
-                </TabsListCard>
-                <Tabs.Panel value="projects">
-                  <CardGrid>
-                    {projects.map((project: any, index: number) =>
-                       <Metadata key={index} url={project.metaURI}>
-                        {(data: any) => 
-                          <NextLink
-                            style={{ textDecoration: 'none' }}
-                            href={`/${accountName}/${project.name}`}
-                          >
-                            <ProjectCard
-                              title={project.name} 
-                              secondary={data?.name}
-                              description={data?.description} 
-                              image={data?.image} 
-                            />
-                          </NextLink>
-                        }
-                      </Metadata>,
-                    )}
-                  </CardGrid>
-                </Tabs.Panel>
-                <Tabs.Panel value="members">
-                  <Card>
-                    <MemberList
-                      label="Account Admin"
-                      members={members.map((member: any) => member.id)}
-                    />
-                  </Card>
-                </Tabs.Panel>
-                <Tabs.Panel value="activity">
-                  <Card>
-                    <List>
-                      {logs.map((log: any, index: number) => 
-                        <Activity key={index} {...log} />,
-                      )}
-                    </List>
-                  </Card>
-                </Tabs.Panel>
-              </Tabs>
+              <CardGrid>
+                {projects.map((project: any, index: number) =>
+                    <Metadata key={index} url={project.metaURI}>
+                    {(data: any) => 
+                      <NextLink
+                        style={{ textDecoration: 'none' }}
+                        href={`/${accountName}/${project.name}`}
+                      >
+                        <ProjectCard
+                          title={project.name} 
+                          secondary={data?.name}
+                          description={data?.short_description} 
+                          image={data?.image} 
+                        />
+                      </NextLink>
+                    }
+                  </Metadata>,
+                )}
+              </CardGrid>
             </Grid.Col>
           }
           { (!showInfo || infoOpened) &&
@@ -182,12 +170,14 @@ const AccountPage: NextPage = () => {
                         <Text>Members</Text>
                         <MemberStack size={28} members={members.map((member: any) => member.id)} />
                       </Group>
-                      <Group position="apart">
-                        <Text>Website</Text>
-                        <Anchor href={meta?.external_url ?? ''}>
-                          {meta?.external_url}
-                        </Anchor>
-                      </Group>
+                      {meta?.external_url &&
+                        <Group position="apart">
+                          <Text>Website</Text>
+                          <Anchor target="_blank" href={meta?.external_url}>
+                            {meta?.external_url}
+                          </Anchor>
+                        </Group>
+                      }
                     </List>
                   </Stack>
                 </Card>

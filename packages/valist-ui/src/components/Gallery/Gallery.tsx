@@ -60,9 +60,9 @@ export function Gallery(props: GalleryProps):JSX.Element {
         }
       </div>
       <div className={classes.items}>
-        {props?.assets?.map((asset) => (
+        {props?.assets?.map((asset, index) => (
           <img 
-            key={asset.name}
+            key={asset.name + String(index)}
             style={{ maxWidth: '100%', maxHeight: '100%' }}
             onClick={() => setCurrentAsset(asset)}
             src={getThumbSrc(asset)} 

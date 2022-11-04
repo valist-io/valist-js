@@ -1,19 +1,21 @@
 import { NextPage } from 'next';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import useSWRImmutable from 'swr/immutable';
 import { Group, SimpleGrid } from '@mantine/core';
 import { Layout } from '@/components/Layout';
-import { Activity } from '@/components/Activity';
 import { Metadata } from '@/components/Metadata';
 import { useMembers } from '@/utils/dashboard';
 
+import { getAccounts as _getAccounts, setAccount } from '@valist/ui/dist/components/AccountSelect';
 
 import {
   AccountSelect,
   MemberCard,
 } from '@valist/ui';
+import { useAccount } from 'wagmi';
 
 const MembersPage: NextPage = () => {
+  const { address } = useAccount();
   const [accountName, setAccountName] = useState('');
   const { accounts, members } = useMembers(accountName);
 
@@ -27,6 +29,17 @@ const MembersPage: NextPage = () => {
     return Array.from(accountMap.values());
   };
 
+  const handleAccountChange = (name: string) => {
+    const accountByAddress = _getAccounts();
+    if (address) setAccount(name, address, accountByAddress);
+    setAccountName(name);
+  };
+
+  useEffect(() => {
+    const accountByAddress = _getAccounts();
+    if (address) setAccountName(accountByAddress[address]);
+  }, [address]);
+
   return (
     <Layout padding={0}>
       <Group mt={40} pl={40} position="apart">
@@ -35,7 +48,7 @@ const MembersPage: NextPage = () => {
           value={accountName}
           image={accountMeta?.image}
           href="/-/create/account"
-          onChange={setAccountName}
+          onChange={handleAccountChange}
         >
           <AccountSelect.Option value="" name="All Accounts" />
           {accounts.map((acc: any, index: number) => 

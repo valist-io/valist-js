@@ -1,19 +1,18 @@
 import type { NextPage } from 'next';
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import * as Icon from 'tabler-icons-react';
 import { useMediaQuery } from '@mantine/hooks';
 import { useApolloClient, useQuery } from '@apollo/client';
 import { Layout } from '@/components/Layout';
-import { ValistContext } from '@/components/ValistProvider';
 import { PriceButton } from '@/components/PriceButton';
-import { ProductBalance } from '@/components/ProductBalance';
 import { TokenModal } from '@/components/TokenModal';
 import { LimitModal } from '@/components/LimitModal';
 import { RoyaltyModal } from '@/components/RoyaltyModal';
 import { WithdrawModal } from '@/components/WithdrawModal';
 import { getChainId } from '@/utils/config';
+import { useValist } from '@/utils/valist';
 import query from '@/graphql/PricingPage.graphql';
 
 import { 
@@ -38,11 +37,11 @@ import {
   Breadcrumbs,
   Button,
   Card,
+  CopyButton,
   EditButton,
   InfoButton,
   List,
   Member,
-  TokenInput,
 } from '@valist/ui';
 
 import {
@@ -51,24 +50,23 @@ import {
   Avatar,
   Group,
   Grid,
-  Modal,
-  NumberInput,
   Select,
   Stack,
   SimpleGrid,
   Text,
   Title,
   TextInput,
-  Tabs,
+  useMantineTheme,
 } from '@mantine/core';
+import { BigNumber } from 'ethers';
+import { getStats } from '@valist/sdk';
 
 const Pricing: NextPage = () => {
   const router = useRouter();
   const { cache } = useApolloClient();
   const { address } = useAccount();
   const chainId = getChainId();
-
-  const valist = useContext(ValistContext);
+  const valist = useValist();
 
   const [tokenOpened, setTokenOpened] = useState(false);
   const [limitOpened, setLimitOpened] = useState(false);
@@ -87,6 +85,9 @@ const Pricing: NextPage = () => {
   const { data } = useQuery(query, { variables: { projectId } });
   const _purchases = data?.product?.purchases ?? [];
   const currencies = data?.product?.currencies ?? [];
+
+  const theme = useMantineTheme();
+	const borderColor = theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[4];
 
   const parseBlockTime = (time: string) => {
     const utc = parseInt(time);
@@ -120,6 +121,7 @@ const Pricing: NextPage = () => {
   const [royaltyAmount, setRoyaltyAmount] = useState(0);
   const [royaltyRecipient, setRoyaltyRecipient] = useState('');
   const [withdrawRecipient, setWithdrawRecipient] = useState('');
+  const [launches, setLaunches] = useState<number>(0);
 
   const [tokens, setTokens] = useState<Token[]>([]);
 
@@ -235,6 +237,21 @@ const Pricing: NextPage = () => {
     }
   }, [data]);
 
+  // Pull project stats data
+  useEffect(() => {
+    try {
+      if (router?.isReady) {
+        fetch(`/api/stats/${accountName}/${projectName}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setLaunches(data);
+        });
+      }
+    } catch(err) {
+      console.error("Unable to pull stats data");
+    };
+  }, [router?.isReady]);
+
   const breadcrumbs = [
     { title: accountName, href: `/${accountName}` },
     { title: projectName, href: `/${accountName}/${projectName}` },
@@ -280,8 +297,8 @@ const Pricing: NextPage = () => {
                       <Avatar size={40} radius="xl" src="/images/rocket.svg" />
                       <Stack spacing={0}>
                         <Text size="xs">Total Launches</Text>
-                        <Title order={3} mb={4}>0</Title>
-                        <Text size="xs">0 Lifetime</Text>
+                        <Title order={3} mb={4}>{launches}</Title>
+                        <Text size="xs">{launches} Lifetime</Text>
                       </Stack>
                     </Group>
                   </Card>
@@ -345,6 +362,21 @@ const Pricing: NextPage = () => {
                       Withdraw
                     </Button>
                   </Stack>
+                </Card>
+                <Card>
+                  <TextInput
+                    id="projectId"
+                    name="projectId"
+                    label="ProjectId for Token Gating"
+                    rightSection={<CopyButton value={BigNumber.from(projectId).toString()} />}
+                    value={BigNumber.from(projectId).toString()}
+                    styles={{
+                      disabled: { 
+                        borderColor,
+                      },
+                    }}
+                    disabled
+                  />
                 </Card>
                 <Card>
                   <Group position="apart" noWrap>

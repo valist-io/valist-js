@@ -6,7 +6,7 @@ import { CarouselItem } from '@valist/ui/dist/components/Carousel';
 import { useQuery } from '@apollo/client';
 import query from '@/graphql/Discover.graphql';
 import { Metadata } from '@/components/Metadata';
-import { Center, SimpleGrid } from '@mantine/core';
+import { Anchor, Avatar, Center, SimpleGrid, Text } from '@mantine/core';
 import { useState } from 'react';
 
 const Discover: NextPage = () => {
@@ -14,6 +14,17 @@ const Discover: NextPage = () => {
   const { data } = useQuery(query, { 
     variables: { order: 'desc' },
   });
+
+  const accounts = data?.accounts;
+
+  // let accountCounts: Record<string, number> = {};
+  // data?.accounts?.forEach((account: any) =>
+  //   account?.projects.forEach((project: any) => {
+  //     accountCounts[account?.name] = accountCounts[account?.name] + project.releases.length; 
+  //   }));
+  // let accounts = [];
+
+  console.log('accounts', accounts);
 
   let pairs: Record<string, boolean> = {};
 

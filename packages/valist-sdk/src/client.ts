@@ -1,8 +1,6 @@
 import axios from 'axios';
 import { BigNumber, ethers } from 'ethers';
 import { ContractTransaction } from '@ethersproject/contracts';
-import { IPFS } from 'ipfs-core-types';
-import { IPFSHTTPClient } from 'ipfs-http-client';
 import { MemoryBlockStore } from 'ipfs-car/blockstore/memory';
 import { packToBlob } from 'ipfs-car/pack/blob'
 import { ImportCandidate, ImportCandidateStream } from 'ipfs-core-types/src/utils';
@@ -24,7 +22,6 @@ export default class Client {
 	constructor(
 		private registry: ethers.Contract,
 		private license: ethers.Contract,
-		private ipfs: IPFS | IPFSHTTPClient,
 		private ipfsGateway: string,
 		private subgraphUrl: string
 	) { }
