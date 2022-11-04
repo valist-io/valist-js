@@ -39,6 +39,7 @@ jobs:
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_DEV_ID_CERT_PASS }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+          CSC_FOR_PULL_REQUEST: true
 
       - name: Upload the Archive
         uses: actions/upload-artifact@v3
