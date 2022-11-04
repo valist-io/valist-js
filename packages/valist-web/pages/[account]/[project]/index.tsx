@@ -7,7 +7,6 @@ import useSWRImmutable from 'swr/immutable';
 import * as Icon from 'tabler-icons-react';
 import { useQuery } from '@apollo/client';
 import { useMediaQuery } from '@mantine/hooks';
-import { sendStats } from '@valist/sdk';
 import { Layout } from '@/components/Layout';
 import { Activity } from '@/components/Activity';
 import { getChainId } from '@/utils/config';
@@ -207,7 +206,9 @@ const ProjectPage: NextPage = () => {
     <Layout padding={0}>
       <DonationModal 
         opened={donationOpen}
-        projectName={`${accountName}/${projectName}`}
+        accountName={accountName}
+        projectName={projectName}
+        releaseName={latestRelease?.name}
         projectType={projectMeta?.type}
         releaseURL={releaseMeta?.external_url}
         donationAddress={projectMeta?.donation_address}
