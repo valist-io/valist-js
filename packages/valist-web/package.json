@@ -7,7 +7,8 @@
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
-    "export": "next export"
+    "export": "next export",
+    "export:electron": "next export -o ../valist-app/out"
   },
   "dependencies": {
     "@apollo/client": "^3.5.10",
