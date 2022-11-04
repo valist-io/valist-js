@@ -55,7 +55,7 @@ export async function createRelaySigner({ provider }: ethers.providers.Web3Provi
 		relayRegistrationLookupBlocks: 990,
 		pastEventsQueryMaxPageSize: 990,
     preferredRelays: [
-      'https://relay-polygon​.enzyme​.finance/gsn1'
+      'https://relay-polygon.enzyme.finance/gsn1'
     ],
     loggerConfiguration: {
       logLevel: 'error'
