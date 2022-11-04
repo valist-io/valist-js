@@ -4,18 +4,18 @@ import query from '@/graphql/LibraryPage.graphql';
 import { useLazyQuery } from '@apollo/client';
 import { Metadata } from '../Metadata';
 import { AppConfig } from '@/utils/electron';
-import { useContext, useEffect, useState } from 'react';
+import { useValist } from '@/utils/valist';
+import { useEffect, useState } from 'react';
 import { launch, uninstall } from '../Electron';
 import { Project } from '@valist/sdk/dist/graphql';
-import { ValistContext } from '../ValistProvider';
 
 interface LibraryProps {
   apps: Record<string, AppConfig>;
 }
 
 export function Library(props: LibraryProps): JSX.Element {
-  const valist = useContext(ValistContext);
   const [appNames, setAppNames] = useState<string[]>([]);
+  const valist = useValist();
 
   const [loadMetas, { data:projectMetas, loading }] = useLazyQuery<{projects: Project[]}>(query, { 
     variables: { projects: appNames },

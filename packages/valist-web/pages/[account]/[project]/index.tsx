@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import { Capacitor } from '@capacitor/core';
-import { useContext, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import useSWRImmutable from 'swr/immutable';
@@ -9,9 +9,9 @@ import { useQuery } from '@apollo/client';
 import { useMediaQuery } from '@mantine/hooks';
 import { sendStats } from '@valist/sdk';
 import { Layout } from '@/components/Layout';
-import { ValistContext } from '@/components/ValistProvider';
 import { Activity } from '@/components/Activity';
 import { getChainId } from '@/utils/config';
+import { useValist } from '@/utils/valist';
 import { DonationModal } from '@/components/DonationModal';
 import query from '@/graphql/ProjectPage.graphql';
 
@@ -51,7 +51,7 @@ const ProjectPage: NextPage = () => {
   const isCap = Capacitor.getPlatform() !== 'web';
 
   const router = useRouter();
-  const valist = useContext(ValistContext);
+  const valist = useValist();
 
   const accountName = `${router.query.account}`;
   const accountId = valist.generateID(chainId, accountName);

@@ -1,18 +1,18 @@
 import type { NextPage } from 'next';
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import * as Icon from 'tabler-icons-react';
 import { useMediaQuery } from '@mantine/hooks';
 import { useApolloClient, useQuery } from '@apollo/client';
 import { Layout } from '@/components/Layout';
-import { ValistContext } from '@/components/ValistProvider';
 import { PriceButton } from '@/components/PriceButton';
 import { TokenModal } from '@/components/TokenModal';
 import { LimitModal } from '@/components/LimitModal';
 import { RoyaltyModal } from '@/components/RoyaltyModal';
 import { WithdrawModal } from '@/components/WithdrawModal';
 import { getChainId } from '@/utils/config';
+import { useValist } from '@/utils/valist';
 import query from '@/graphql/PricingPage.graphql';
 
 import { 
@@ -66,8 +66,7 @@ const Pricing: NextPage = () => {
   const { cache } = useApolloClient();
   const { address } = useAccount();
   const chainId = getChainId();
-
-  const valist = useContext(ValistContext);
+  const valist = useValist();
 
   const [tokenOpened, setTokenOpened] = useState(false);
   const [limitOpened, setLimitOpened] = useState(false);

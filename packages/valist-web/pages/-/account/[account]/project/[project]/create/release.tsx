@@ -1,15 +1,15 @@
 import type { NextPage } from 'next';
 import type { FileWithPath } from 'file-selector';
-import { useState, useContext, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAccount } from 'wagmi';
 import { Collapse } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
 import { useApolloClient, useQuery } from '@apollo/client';
 import { Layout } from '@/components/Layout';
-import { ValistContext } from '@/components/ValistProvider';
 import { NameInput } from '@/components/NameInput';
 import { getChainId } from '@/utils/config';
+import { useValist } from '@/utils/valist';
 import query from '@/graphql/CreateReleasePage.graphql';
 
 import {
@@ -43,7 +43,7 @@ import { Metadata } from '@/components/Metadata';
 const CreateReleasePage: NextPage = () => {
   const router = useRouter();
   const { cache } = useApolloClient();
-  const valist = useContext(ValistContext);
+  const valist = useValist();
 
   const { address } = useAccount();
   const chainId = getChainId();

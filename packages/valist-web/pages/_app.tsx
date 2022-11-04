@@ -1,5 +1,6 @@
 import '@rainbow-me/rainbowkit/styles.css';
 import '@valist/ui/public/styles.css';
+
 import type { AppProps, AppContext } from 'next/app';
 import { SWRConfig } from 'swr';
 import { useEnsName } from 'wagmi';
@@ -11,7 +12,6 @@ import { ThemeProvider, AddressProvider } from '@valist/ui';
 import { ApolloProvider } from '@/components/ApolloProvider';
 import { WagmiProvider, rehydrate } from '@/components/WagmiProvider';
 import { RainbowKitProvider } from '@/components/RainbowKitProvider';
-import { ValistProvider } from '@/components/ValistProvider';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 const resolveName = (address: string) => useEnsName({ address, chainId: 1 }); // eslint-disable-line react-hooks/rules-of-hooks
@@ -45,15 +45,13 @@ function ValistApp(props: AppProps) {
         <WagmiProvider>
           <RainbowKitProvider colorScheme={colorScheme}>
             <ApolloProvider>
-              <ValistProvider metaTx>
-                <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
-                  <ThemeProvider theme={{ colorScheme, components }}>
-                    <NotificationsProvider>
-                      <Component {...pageProps} />
-                    </NotificationsProvider>
-                  </ThemeProvider>
-                </ColorSchemeProvider>
-              </ValistProvider>
+              <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
+                <ThemeProvider theme={{ colorScheme, components }}>
+                  <NotificationsProvider>
+                    <Component {...pageProps} />
+                  </NotificationsProvider>
+                </ThemeProvider>
+              </ColorSchemeProvider>
             </ApolloProvider>
           </RainbowKitProvider>
         </WagmiProvider>

@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import { useContext, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import useSWRImmutable from 'swr/immutable';
 import * as Icon from 'tabler-icons-react';
@@ -12,7 +12,7 @@ import { Activity } from '@/components/Activity';
 import { ProjectCard } from '@/components/ProjectCard';
 import { CreateAccount } from '@/components/CreateAccount';
 import { CreateProject } from '@/components/CreateProject';
-import { ValistContext } from '@/components/ValistProvider';
+import { useValist } from '@/utils/valist';
 import { useDashboard } from '@/utils/dashboard';
 
 import { 
@@ -43,6 +43,7 @@ import { getAccounts, setAccount } from '@valist/ui/dist/components/AccountSelec
 
 const IndexPage: NextPage = () => {
   const router = useRouter();
+  const valist = useValist();
 
   const { openConnectModal } = useConnectModal();
   const { address, isConnected } = useAccount();
