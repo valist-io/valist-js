@@ -33,7 +33,7 @@ import {
 } from '@valist/ui';
 
 export interface CreateAccountProps {
-  afterCreate?: () => void;
+  onboard?: boolean;
 }
 
 export function CreateAccount(props: CreateAccountProps) {
@@ -41,6 +41,7 @@ export function CreateAccount(props: CreateAccountProps) {
   const { address } = useAccount();
   const chainId = getChainId();
   const valist = useValist();
+  const router = useRouter();
 
   // form values
   const [loading, setLoading] = useState(false);
@@ -86,7 +87,7 @@ export function CreateAccount(props: CreateAccountProps) {
       cache,
       chainId,
     ).then((success) => {
-      if (success) props.afterCreate?.();
+      if (success && !props.onboard) router.push('/');
     }).finally(() => {
       setLoading(false);  
     });

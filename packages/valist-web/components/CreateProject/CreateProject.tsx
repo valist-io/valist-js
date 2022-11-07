@@ -39,7 +39,7 @@ import {
 } from '@valist/ui';
 
 export interface CreateProjectProps {
-  afterCreate?: () => void;
+  onboard?: boolean;
 }
 
 export function CreateProject(props: CreateProjectProps) {
@@ -106,10 +106,7 @@ export function CreateProject(props: CreateProjectProps) {
       cache,
       chainId,
     ).then(success => {
-      if (success) {
-        props.afterCreate?.();
-        router.push('/');
-      }
+      if (success) router.push('/');
     }).finally(() => {
       setLoading(false);  
     });

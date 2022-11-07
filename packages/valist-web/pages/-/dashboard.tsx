@@ -4,7 +4,6 @@ import { useAccount } from 'wagmi';
 import useSWRImmutable from 'swr/immutable';
 import * as Icon from 'tabler-icons-react';
 import { useRouter } from 'next/router';
-import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { useMediaQuery } from '@mantine/hooks';
 import { Layout } from '@/components/Layout';
 import { Metadata } from '@/components/Metadata';
@@ -21,6 +20,7 @@ import {
   Grid,
   Group,
   Stack,
+  Stepper,
   Text,
   Title, 
 } from '@mantine/core';
@@ -37,7 +37,6 @@ import {
   List,
   NoProjects,
   Welcome,
-  CheckboxList,
 } from '@valist/ui';
 import { getAccounts, setAccount } from '@valist/ui/dist/components/AccountSelect';
 
@@ -45,15 +44,20 @@ const IndexPage: NextPage = () => {
   const router = useRouter();
   const valist = useValist();
 
-  const { openConnectModal } = useConnectModal();
   const { address, isConnected } = useAccount();
 
-  const [onboarding, setOnboarding] = useState(false);
+  const [step, setStep] = useState(0);
+  const [onboarding, setOnboarding] = useState(true);
   const [infoOpened, setInfoOpened] = useState(false);
+
   const showInfo = useMediaQuery('(max-width: 1400px)', false);
+  const isMobile = useMediaQuery('(max-width: 992px)', false);
 
   const [accountName, setAccountName] = useState('');
   const { accounts, projects, members, logs, loading } = useDashboard(accountName);
+
+  console.log(accounts)
+  console.log(projects)
   
   const handleAccountChange = (name: string) => {
     const accountByAddress = getAccounts();
@@ -64,6 +68,7 @@ const IndexPage: NextPage = () => {
   useEffect(() => {
     const accountByAddress = getAccounts();
     if (address) setAccountName(accountByAddress[address]);
+    setOnboarding(true);
   }, [address]);
 
   const account: any = accounts.find((a: any) => a.name === accountName);
@@ -86,31 +91,43 @@ const IndexPage: NextPage = () => {
     },
   ];
 
-  const steps = [
-    { label: 'Connect Wallet', checked: isConnected },
-    { label: 'Create Account', checked: isConnected && (onboarding || accounts.length !== 0) },
-    { label: 'Create Project (Optional)', checked: false },
-  ];
+  // update stepper
+  useEffect(() => {
+    if (!isConnected) {
+      setStep(0);
+    } else if (accounts.length === 0) {
+      setStep(1);
+    } else if (projects.length === 0) {
+      setStep(2);
+    } else {
+      setStep(3);
+    }
+  }, [isConnected, accounts.length]);
 
-  if (!loading && (accounts.length === 0 || onboarding)) {
+  if (!loading && onboarding && step < 3) {
     return (
       <Layout hideNavbar>
         <Grid>
-          <Grid.Col md={4}>
-            <CheckboxList items={steps} />
+          <Grid.Col md={3} pr={40} mb={40}>
+            <Stack align={isMobile ? 'flex-start' : 'flex-end'}>
+              <Stepper active={step} orientation="vertical">
+                <Stepper.Step label="Step 1" description="Connect Wallet" />
+                <Stepper.Step label="Step 2" description="Create Account" />
+                <Stepper.Step label="Step 3" description="Create Project" />
+              </Stepper>
+              <Button
+                disabled={step === 0}
+                variant="subtle"
+                onClick={() => setOnboarding(false)}
+              >
+                Skip Onboarding
+              </Button>
+            </Stack>
           </Grid.Col>
-          <Grid.Col md={8}>
-            { !isConnected && 
-              <Welcome button={
-                <Button onClick={openConnectModal}>Connect Wallet</Button>
-              } />
-            }
-            { isConnected && !onboarding && 
-              <CreateAccount afterCreate={() => setOnboarding(true)} />
-            }
-            { isConnected && onboarding && 
-              <CreateProject afterCreate={() => setOnboarding(false)} />
-            }
+          <Grid.Col md={9}>
+            { step === 0 && <Welcome /> }
+            { step === 1 && <CreateAccount onboard={true} /> }
+            { step === 2 && <CreateProject onboard={true} /> }
           </Grid.Col>
         </Grid>
       </Layout>
