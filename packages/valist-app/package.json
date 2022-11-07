@@ -27,12 +27,12 @@
   },
   "dependencies": {
     "@valist/sdk": "*",
+    "electron-serve": "^1.1.0",
     "ethers": "^5.6.9",
     "go-ipfs": "0.14.0",
     "ipfs-http-client": "56.0.2",
     "ipfsd-ctl": "10.0.6",
     "keytar": "^7.9.0",
-    "next-electron-server": "^0.3.0",
     "tar": "^6.1.11",
     "web3": "^1.7.4"
   },

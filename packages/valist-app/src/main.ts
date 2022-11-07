@@ -1,8 +1,8 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import { createReadOnly } from '@valist/sdk';
 import { createController } from 'ipfsd-ctl';
-import serveNextAt from 'next-electron-server';
 import { ethers } from 'ethers';
+import electronServe from 'electron-serve';
 import keytar from 'keytar';
 import tar from 'tar';
 
@@ -17,7 +17,10 @@ import * as utils from './utils';
 /// Electron Setup ///
 //////////////////////
 
-serveNextAt('next://app');
+electronServe({
+  directory: path.join(__dirname, '..', 'out'),
+  scheme: 'next',
+});
 
 const baseURL = app.isPackaged 
   ? 'next://app'
