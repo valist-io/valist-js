@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useMediaQuery } from '@mantine/hooks';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import * as Icons from 'tabler-icons-react';
 import { NextLink } from '@mantine/next';
+import { WalletContext } from '@/components/WalletProvider';
 
 import { 
   ActionIcon,
@@ -32,6 +33,7 @@ export interface LayoutProps {
 export function Layout(props: LayoutProps) {
   const router = useRouter();
   const [opened, setOpened] = useState(false);
+  const { openWallet } = useContext(WalletContext);
 
   const isMobile = useMediaQuery('(max-width: 768px)', false);
   const hideNavbar = !isMobile && props.hideNavbar;
@@ -50,6 +52,9 @@ export function Layout(props: LayoutProps) {
           <ThemeButton />
           <ActionIcon component={NextLink} href="/-/gas" variant="transparent">
             <Icons.GasStation size={18} />
+          </ActionIcon>
+          <ActionIcon variant="transparent" onClick={openWallet}>
+            <Icons.Wallet size={18} />
           </ActionIcon>
           <Anchor target="_blank" href="https://docs.valist.io">Docs</Anchor>
           {(router.asPath === "/") && 

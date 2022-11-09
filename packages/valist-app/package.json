@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@valist/sdk": "*",
+    "@valist/web": "*",
     "electron-serve": "^1.1.0",
     "ethers": "^5.6.9",
     "go-ipfs": "0.14.0",
@@ -41,8 +42,7 @@
     "productName": "Sapphire",
     "files": [
       "assets/**/*",
-      "lib/**/*",
-      "out/**/*"
+      "lib/**/*"
     ],
     "publish": {
       "provider": "github"

@@ -12,7 +12,7 @@
     "build:ui": "npm run build --workspace=@valist/ui",
     "build:web": "npm run build --workspace=@valist/web",
     "build:cli": "npm run build --workspace=@valist/cli",
-    "build:app": "npm run build && npm run export:electron --workspace=@valist/web && npm run dist --workspace=@valist/app",
+    "build:app": "npm run build && npm run export --workspace=@valist/web && npm run dist --workspace=@valist/app",
     "build": "npm run build:sdk && npm run build:ui && npm run build:web",
     "dev:sdk": "npm run dev --workspace=@valist/sdk",
     "dev:ui": "npm run dev --workspace=@valist/ui",

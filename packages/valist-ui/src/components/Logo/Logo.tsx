@@ -1,8 +1,22 @@
 import { useMantineTheme } from '@mantine/core';
 
-export function Logo() {
+export interface LogoProps {
+  type: 'valist' | 'sapphire';
+}
+
+export function Logo(props: LogoProps) {
   const theme = useMantineTheme();
   const color = theme.colorScheme === 'dark' ? 'white' : '#1E1D26';
+
+  if (props.type === 'sapphire') {
+    return (
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0.922852 13.3847L4.69208 8.84619L7.30747 11.9231L6.15362 13.3847L15.0575 23.9808L12.4421 27.0577C7.45539 21.2299 5.90955 19.2125 0.922852 13.3847Z" fill="white"/>
+        <path d="M34.9995 8.84619L32.3842 11.9231L33.3842 13.2308L27.0957 20.9039L29.7111 23.9808L38.7688 13.2308L34.9995 8.84619Z" fill="white"/>
+        <path d="M27.6922 13.3846L25.0768 10.3077L27.5383 7.69231H12.3076L27.6922 26.1538L19.846 35.6923L14.4614 29.0769L16.923 26.1538L19.846 29.3846L22.7691 26.1538L6.46143 7.07692L9.07681 4H30.7691L33.2307 7.07692L27.6922 13.3846Z" fill="white"/>
+      </svg>
+    );
+  }
 
   return (
     <svg width="91" height="41" viewBox="0 0 91 41" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -25,3 +39,7 @@ export function Logo() {
     </svg>
   );
 }
+
+Logo.defaultProps = {
+  type: 'valist',
+};

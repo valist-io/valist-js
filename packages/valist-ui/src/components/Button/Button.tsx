@@ -26,10 +26,10 @@ export function Button(props: ButtonProps) {
   const loader = () => {
     if (variant === 'primary') {
       return <Loader color={theme.white} size="sm" />;
-    } else if (variant === 'secondary') {
+    } else if (variant === 'secondary' || variant === 'subtle') {
       return <Loader color={theme.colors.purple[3]} size="sm" />;
-    } else if (variant === 'subtle') {
-      return <Loader color={theme.colors.purple[3]} size="sm" />;
+    } else if (variant === 'outline') {
+      return <Loader color={theme.colors.gray[3]} size="sm" />;
     } else {
       return <React.Fragment>Loading...</React.Fragment>;
     }

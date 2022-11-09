@@ -18,12 +18,12 @@ import * as utils from './utils';
 //////////////////////
 
 electronServe({
-  directory: path.join(__dirname, '..', 'out'),
-  scheme: 'next',
+  directory: path.join(__dirname, '..', 'node_modules', '@valist', 'web', 'out'),
+  scheme: 'web',
 });
 
-const baseURL = app.isPackaged 
-  ? 'next://app'
+const webURL = app.isPackaged 
+  ? 'web://-'
   : 'http://localhost:3000';
 
 const providerURL = app.isPackaged
@@ -35,8 +35,6 @@ const chainId = app.isPackaged
   : 80001;
 
 let mainWindow: BrowserWindow;
-let walletWindow: BrowserWindow;
-let signingWindow: BrowserWindow;
 
 const createMainWindow = () => {
   mainWindow = new BrowserWindow({
@@ -47,35 +45,8 @@ const createMainWindow = () => {
     },
   });
 
-  mainWindow.loadURL(baseURL);
+  mainWindow.loadURL(webURL);
   mainWindow.once('closed', () => { mainWindow = undefined });
-};
-
-const createWalletWindow = () => {
-  walletWindow = new BrowserWindow({
-    parent: mainWindow,
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-    },
-  });
-
-  walletWindow.loadURL(`${baseURL}/-/wallet`);
-  walletWindow.once('closed', () => { walletWindow = undefined });
-};
-
-const createSigningWindow = () => {
-  if (!walletWindow) createWalletWindow();
-
-  signingWindow = new BrowserWindow({
-    parent: walletWindow,
-    modal: true,
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-    },
-  });
-
-  signingWindow.loadURL(`${baseURL}/-/wallet/sign`);
-  signingWindow.once('closed', () => { signingWindow = undefined });
 };
 
 app.whenReady().then(() => {
@@ -207,7 +178,6 @@ const switchAccount = async (account: string) => {
 
 const enqueueSigningRequest = async (request: SigningRequest) => {
   signingQueue.push(request);
-  if (!signingWindow) createSigningWindow();
 
   const requestId = incomingId++;
   const rejectEvent = `signingRejected_${requestId}`;
@@ -221,7 +191,6 @@ const enqueueSigningRequest = async (request: SigningRequest) => {
 
 const dequeueSigningRequest = () => {
   signingQueue.shift();
-  if (signingQueue.length === 0) signingWindow?.close();
   return outgoingId++;
 };
 
@@ -235,7 +204,8 @@ ipcMain.handle('eth_accounts', async (event, params) => {
 
 ipcMain.handle('eth_requestAccounts', async (event, params) => {
   if (wallet) return [wallet.address];
-  if (!walletWindow) createWalletWindow();
+
+  mainWindow?.webContents.send('openWallet', []);
 
   return await new Promise((resolve, reject) => {
     walletEvents.once('accountsChanged', resolve);

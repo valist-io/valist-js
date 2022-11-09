@@ -1,5 +1,4 @@
-import { Box, Center, Text, BackgroundImage } from "@mantine/core";
-import Link from "next/link";
+import { Anchor, Box, Center, Text, BackgroundImage } from "@mantine/core";
 import { Button } from "../Button/Button";
 import useStyles from "./HeroSection.styles";
 
@@ -25,11 +24,11 @@ export function HeroSection(props: HeroSectionProps): JSX.Element {
             <Center><Text className={classes.title}>{props.title}</Text></Center>
             <Center><Text className={classes.tagline}>{props.tagline}</Text></Center>
             <Center style={{marginTop: 40}}>
-              <Link href={props.link} passHref>
+              <Anchor href={props.link}>
                 <Button>
                   View Game
                 </Button>
-              </Link>
+              </Anchor>
             </Center>
           </div>
         </div>

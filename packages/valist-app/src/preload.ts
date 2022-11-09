@@ -14,6 +14,8 @@ ipcRenderer.on('installSuccess', (event, args) => eventEmitter.emit('installSucc
 ipcRenderer.on('installFailed', (event, args) => eventEmitter.emit('installFailed', args));
 ipcRenderer.on('uninstallSuccess', (event, args) => eventEmitter.emit('uninstallSuccess', args));
 ipcRenderer.on('uninstallFailed', (event, args) => eventEmitter.emit('uninstallFailed', args));
+ipcRenderer.on('openWallet', (event, args) => eventEmitter.emit('openWallet', args));
+ipcRenderer.on('hideWallet', (event, args) => eventEmitter.emit('hideWallet', args));
 
 contextBridge.exposeInMainWorld('ethereum', {
   send: (request: Request, callback: Callback) => {

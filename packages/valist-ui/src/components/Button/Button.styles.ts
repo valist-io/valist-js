@@ -1,6 +1,6 @@
 import { createStyles } from '@mantine/styles';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'subtle' | 'text';
+export type ButtonVariant = 'primary' | 'secondary' | 'subtle' | 'text' | 'outline';
 
 export interface ButtonStylesProps {
   variant: ButtonVariant;
@@ -54,6 +54,19 @@ export default createStyles((theme, params: ButtonStylesProps, getRef) => {
       },
       [`&:not(.${getRef('loading')}):disabled`]: {
         color: theme.colors.purple[1],
+        backgroundColor: 'transparent',
+      },
+    },
+    'outline': {
+      color: theme.colors.gray[3],
+      border: `1px solid ${theme.colors.gray[1]}`,
+      backgroundColor: 'transparent',
+      '&:hover': {
+        color: theme.colors.gray[5],
+        backgroundColor: 'transparent',
+      },
+      [`&:not(.${getRef('loading')}):disabled`]: {
+        color: theme.colors.gray[1],
         backgroundColor: 'transparent',
       },
     }

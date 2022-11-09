@@ -36,3 +36,9 @@ export const Text = Template.bind({});
 Text.args = {
   variant: 'text'
 };
+
+export const Outline = Template.bind({});
+
+Outline.args = {
+  variant: 'outline'
+};

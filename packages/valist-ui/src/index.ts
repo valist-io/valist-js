@@ -49,6 +49,7 @@ export { TabsListCard } from './components/TabsListCard';
 export { ThemeButton } from './components/ThemeButton';
 export { ThemeProvider } from './components/ThemeProvider';
 export { TokenInput } from './components/TokenInput';
+export { WalletModal } from './components/WalletModal';
 export { Welcome } from './components/Welcome';
 
 export type { Action } from './components/Actions';

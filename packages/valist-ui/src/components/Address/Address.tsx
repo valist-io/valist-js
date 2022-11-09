@@ -25,6 +25,10 @@ export interface AddressProps {
   style?: React.CSSProperties;
 }
 
+export function truncate(address: string) {
+  return `${address.slice(0, 6)}..${address.slice(-4)}`;
+}
+
 export function Address(props: AddressProps) {
   const clipboard = useClipboard();
   const { resolveName } = useContext(AddressContext);
@@ -33,7 +37,7 @@ export function Address(props: AddressProps) {
   const label = name
     ? name
     : props.truncate
-    ? `${props.address.slice(0, 6)}..${props.address.slice(-4)}`
+    ? truncate(props.address)
     : props.address;
 
   return (
