@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { ApolloCache } from '@apollo/client';
-import { ReleaseMeta, Client, InstallMeta } from '@valist/sdk';
+import { ReleaseMeta, Client, SupportedPlatform, PlatformsMeta } from '@valist/sdk';
 import { Event } from 'ethers';
 import { handleEvent } from './events';
 import * as utils from './utils';
@@ -48,11 +48,9 @@ export async function createRelease(
       throw new Error('files cannot be empty');
     }
 
-    const meta: ReleaseMeta = {
-      name: values.displayName,
-      description: values.description,
-    };
-    meta.install = new InstallMeta(),
+    const meta: ReleaseMeta = new ReleaseMeta();
+    meta.name = values.displayName;
+    meta.description = values.description;
 
     utils.showLoading('Uploading files');
     if (image) {
@@ -64,56 +62,38 @@ export async function createRelease(
     if (filesObject) {
       let { web, ..._nonWebFiles } = filesObject;
       const nonWebFiles = Object.values(_nonWebFiles).flat(1);
+      
+      meta.platforms = new PlatformsMeta();
 
-      Object.keys(_nonWebFiles).forEach(async (platform) => {
-        // @ts-ignore
-        if (filesObject[platform] && filesObject[platform].length !== 0) meta.install[platform] = filesObject[platform][0].name;
-      });
-
+      let webCID, nativeCID = '';
+      
       if (web?.length !== 0) {
-        const webCID = await valist.writeFolder(web, false, (progress: number) => {
+        webCID = await valist.writeFolder(web, false, (progress: number) => {
           utils.updateLoading(`Uploading release archive for web: ${progress}`);
         });
-        meta.install.web = webCID;
+        meta.platforms.web = {
+          external_url: webCID,
+          name: 'web',
+        };
       };
 
       if (nonWebFiles && nonWebFiles?.length !== 0) {
-        meta.external_url = await valist.writeFolder(nonWebFiles, false, (progress: number) => {
+        nativeCID = await valist.writeFolder(nonWebFiles, true, (progress: number) => {
           utils.updateLoading(`Uploading release archive for native: ${progress}`);
         });
-      };
-    };
 
-    /*
-
-    {
-      "external_url": "webCID || nativeCID",
-      "artifacts": {
-        "web": {
-          "external_url": "webCID",
-          "name": "web_bundle"
-        },
-        "linux_amd64": {
-          "external_url": "nativeCID/linux_amd64_build",
-          "name": "binaryname"
-        },
-        "linux_arm64": {
-          "external_url": "nativeCID/linux_arm64_build",
-          "name": "binaryname"
-        },
-        "windows_amd64": {
-          "external_url": "nativeCID/windows_amd64_build",
-          "name": "binaryname",
-          "dependencies": {
-            "cpp-libs@version": "microsoft_link || cid"
+        Object.keys(_nonWebFiles).forEach((platform) => {
+          if (meta.platforms && filesObject[platform] && filesObject[platform].length !== 0) {
+            meta.platforms[platform as SupportedPlatform] = {
+              external_url: `${nativeCID}/${filesObject[platform][0].name}`,
+              name: filesObject[platform][0].name,
+            };
           }
-        }
-      }
-    }
+        });
+      };
 
-
-
-    */
+      meta.external_url = webCID || nativeCID;
+    };
 
     utils.updateLoading('Creating transaction');
     const transaction = await valist.createRelease(projectId, values.releaseName, meta);

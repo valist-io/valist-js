@@ -41,8 +41,17 @@ import {
   Grid,
   Tooltip,
 } from '@mantine/core';
+import { isReleaseMetaV2, platformNames, ProjectMeta, ReleaseMeta, ReleaseMetaV1, SupportedPlatform, supportedPlatforms } from '@valist/sdk';
 
-
+const platformIcons: Record<SupportedPlatform , JSX.Element> = {
+  'web': <Icon.World />,
+  'darwin_amd64': <Icon.BrandApple />,
+  'darwin_arm64': <Icon.BrandApple />,
+  'android_arm64': <Icon.BrandAndroid />,
+  'linux_amd64': <Icon.BrandUbuntu />,
+  'linux_arm64': <Icon.BrandUbuntu />,
+  'windows_amd64': <Icon.BrandWindows />,
+};
 
 const ProjectPage: NextPage = () => {
   const chainId = getChainId();
@@ -64,12 +73,12 @@ const ProjectPage: NextPage = () => {
   const projectMembers = data?.project?.members ?? [];
   const members = [...accountMembers, ...projectMembers];
 
-  const logs = data?.project?.logs ?? [];
-  const releases = data?.project?.releases ?? [];
+  const logs = data?.project?.logs || [];
+  const releases = data?.project?.releases || [];
   const latestRelease = data?.project?.releases?.[0];
 
-  const { data: projectMeta } = useSWRImmutable(data?.project?.metaURI);
-  const { data: releaseMeta } = useSWRImmutable(latestRelease?.metaURI);
+  const { data: projectMeta } = useSWRImmutable<ProjectMeta>(data?.project?.metaURI);
+  const { data: releaseMeta } = useSWRImmutable<ReleaseMeta | ReleaseMetaV1>(latestRelease?.metaURI);
 
   const [infoOpened, setInfoOpened] = useState(false);
   const showInfo = useMediaQuery('(max-width: 1400px)', false);
@@ -97,10 +106,6 @@ const ProjectPage: NextPage = () => {
   const isProjectMember = !!projectMembers.find(
     (other: any) => other.id.toLowerCase() === address?.toLowerCase(),
   );
-
-  // const launchUrl = projectMeta?.launch_external 
-  //   ? projectMeta?.external_url 
-  //   : releaseMeta?.external_url;
 
   const actions: Action[] = [
     {
@@ -155,45 +160,57 @@ const ProjectPage: NextPage = () => {
     { title: projectName, href: `/${accountName}/${projectName}` },
   ];
 
-  const isWeb = projectMeta?.type === 'web';
-  const isDarwin = releaseMeta?.install?.darwin_amd64 || releaseMeta?.install?.darwin_amd64;
-  const isAndroid = releaseMeta?.install?.android_arm64;
-  const isWindows = releaseMeta?.install?.windows_amd64 || releaseMeta?.install?.windows_386;
-  const isLinux = releaseMeta?.install?.linux_amd64 || releaseMeta?.install?.linux_arm64;
-  const isUnknown = !isWeb && !isDarwin && !isAndroid && !isWindows && !isLinux;
+  let platforms: { icon: JSX.Element, name: string, url: string }[] = [
+    {
+      icon: <Icon.FileUnknown/>,
+      name: 'Unknown',
+      url: releaseMeta?.external_url || '',
+    },
+  ];
 
-  const platforms: Record<string, {icon: JSX.Element, enabled: boolean}> = {
-    Web: {
-      icon: <Icon.World />,
-      enabled: isWeb,
-    },
-    macOS: {
-      icon: <Icon.BrandApple />,
-      enabled: isDarwin,
-    },
-    Android: {
-      icon: <Icon.BrandAndroid />,
-      enabled: isAndroid,
-    },
-    Windows: {
-      icon: <Icon.BrandWindows />,
-      enabled: isWindows,
-    },
-    Linux: {
-      icon: <Icon.BrandUbuntu />,
-      enabled: isLinux,
-    },
-    Unknown: {
-      icon: <div>Unknown</div>,
-      enabled: isUnknown,
-    },
-  };
+  if (releaseMeta) {
+    if (isReleaseMetaV2(releaseMeta)) {
+      if (releaseMeta.platforms) { // v2 always has platform field
+        platforms = [];
+        Object.keys(releaseMeta.platforms).forEach((platform) => {
+          if (releaseMeta.platforms) {
+            platforms.push({
+              icon: platformIcons[platform as SupportedPlatform],
+              name: platformNames[platform as SupportedPlatform],
+              url: releaseMeta?.platforms[platform as SupportedPlatform]?.external_url || '',
+            });
+          }
+        });
+      }
+    } else {
+      if (releaseMeta.install) { // if native type
+        platforms = [];
+        Object.keys(releaseMeta.install).forEach((platform) => {
+          if (releaseMeta.install) {
+            platforms.push({
+              icon: platformIcons[platform as SupportedPlatform],
+              name: platformNames[platform as SupportedPlatform],
+              url: `${releaseMeta.external_url}/${releaseMeta?.install[platform as SupportedPlatform]}`,
+            });
+          }
+        });
+      } else { // if web type
+        platforms = [
+          {
+            icon: <Icon.World/>,
+            name: platformNames['web'],
+            url: releaseMeta?.external_url || '',
+          },
+        ];
+      }
+    }
+  }
 
   if (!loading && !data?.project) {
     return (
       <Layout>
         <_404 
-          message={"The project you are looking for doesn't seem to exist, no biggie, click on the button below to create it!"}
+          message={"The project you are looking for doesn't seem to exist -- no biggie, click on the button below to create it!"}
           action={
             <Button onClick={() => router.push(`/-/account/${accountName}/create/project`)}>Create project</Button>
           }
@@ -209,9 +226,9 @@ const ProjectPage: NextPage = () => {
         accountName={accountName}
         projectName={projectName}
         releaseName={latestRelease?.name}
-        projectType={projectMeta?.type}
-        releaseURL={releaseMeta?.external_url}
-        donationAddress={projectMeta?.donation_address}
+        projectType={projectMeta?.type || 'web'}
+        releaseURL={releaseMeta?.external_url || ''}
+        donationAddress={projectMeta?.donation_address || ''}
         onClose={() => setDonationOpen(false)}       
       />
       <Group mt={40} pl={40} position="apart">
@@ -318,13 +335,15 @@ const ProjectPage: NextPage = () => {
                       <Group position="apart">
                         <Text>Platforms</Text>
                         <div style={{ display: 'flex' }}>
-                          {Object.keys(platforms)?.map((platform:string) => (
-                            <div key={platform}>
-                              {platforms[platform].enabled &&
-                                <Tooltip label={platform}>
+                          {platforms.map((platform) => (
+                            <div key={platform.url}>
+                              {platform.url &&
+                                <Tooltip label={platform.name}>
                                   {/* requires wrapping div */}
                                   <div>
-                                    {platforms[platform]?.icon}
+                                    <a target="_blank" rel="noreferrer" href={platform.url} style={{ color: 'inherit', textDecoration: 'none' }}>
+                                      {platform.icon}
+                                    </a>
                                   </div>
                                 </Tooltip>
                               }

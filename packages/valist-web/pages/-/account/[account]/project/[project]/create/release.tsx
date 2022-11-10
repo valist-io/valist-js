@@ -37,7 +37,7 @@ import {
   ScrollArea,
   Tabs,
 } from '@mantine/core';
-import { ProjectMeta } from '@valist/sdk';
+import { ProjectMeta, SupportedPlatform, platformNames } from '@valist/sdk';
 import { Metadata } from '@/components/Metadata';
 
 const CreateReleasePage: NextPage = () => {
@@ -65,10 +65,9 @@ const CreateReleasePage: NextPage = () => {
   const [image, setImage] = useState<File>();
   const [files, setFiles] = useState<FileWithPath[]>([]);
   const [filesObject, setFilesObject] = useState<Record<string, File[]>>({});
-  const [platforms, setPlatforms] = useState<string[]>(["web", "windows_arm64", "windows_amd64", "linux_arm64", "linux_amd64", "darwin_arm64", "darwin_amd64", "android_arm64"]);
   const [activeTab, setActiveTab] = useState<string | null>();
   const [opened, setOpened] = useState(false);
-  
+
   const form = useForm<FormValues>({
     validate: zodResolver(schema),
     validateInputOnChange: true,
@@ -119,7 +118,7 @@ const CreateReleasePage: NextPage = () => {
 
   return (
     <Metadata url={data?.project?.metaURI}>
-      {(data: ProjectMeta) => (
+      {(projectMeta: ProjectMeta) => (
         <form onSubmit={form.onSubmit(submit)}>
           <Layout>
             <div style={{ paddingBottom: 32 }}>
@@ -183,48 +182,14 @@ const CreateReleasePage: NextPage = () => {
               <Tabs.Panel value="files">
                 <Stack style={{ maxWidth: 784 }}>
                   <Title mt="lg">Files</Title>
-                  {!['native', 'cli'].includes(data?.type as string) &&
-                  <>
-                    <Text color="dimmed">Upload your release files.</Text>
-                    <FileInput
-                      onChange={setFiles}
-                      value={files}
-                      disabled={loading}
-                    />
-                    <ScrollArea style={{ height: 300 }}>
-                      <Stack spacing={12}>
-                        {files.map((file: FileWithPath, index: number) => 
-                          <File
-                            key={index} 
-                            path={file.path ?? file.name} 
-                            size={file.size} 
-                          />,
-                        )}
-                      </Stack>
-                    </ScrollArea>
-                  </>
-                  }
-                  {['native', 'cli'].includes(data?.type as string) &&
-                    <>
                       <Text color="dimmed">Upload your release files to the designated platform target.</Text>
                       <Text weight={900} color="dimmed">At least one platform is required.</Text>
-                      <br/>
-                      {platforms.map((platform, index) => (
+                      <h3>Web</h3>
+                      {(Object.keys(platformNames) as SupportedPlatform[]).map((platform, index) => (
                         <div key={index}>
-                          <Text style={{ display: 'inline-block', width: 150 }}>{platform}</Text>
-                          {platform !== 'web' &&
-                            <>
-                              <FileButton setFiles={(_files: File[]) => {
-                                setFilesObject({ ...filesObject, [platform]: _files });
-                              }} />
-                              {filesObject[platform] && filesObject[platform].length !== 0  &&
-                                <span style={{ marginLeft: 20 }} onClick={() => setOpened((o) => !o)}>
-                                - {filesObject[platform].length} files
-                              </span>
-                              }
-                            </>
-                          }
-                          {platform === 'web' && 
+                          <Text style={{ display: 'inline-block', width: 300 }}>{platformNames[platform]}</Text>
+
+                          {platform === 'web' &&
                             <>
                               <FileButton directory={true} setFiles={(_files: File[]) => {
                                 setFilesObject({ ...filesObject, [platform]: _files });
@@ -239,21 +204,35 @@ const CreateReleasePage: NextPage = () => {
                                   <Stack spacing={12}>
                                     {filesObject?.web?.map((file: FileWithPath, index: number) => 
                                       <File
-                                        key={index} 
-                                        path={file.path ?? file.name} 
-                                        size={file.size} 
+                                        key={index}
+                                        path={file.webkitRelativePath || file.path || file.name}
+                                        size={file.size}
                                       />,
                                     )}
                                   </Stack>
                                 </ScrollArea>
                               </Collapse>
+                              <br/>
+                              <br/>
+                              <h3>Desktop / Mobile</h3>
+                            </>
+                          }
+
+                          {platform !== 'web' &&
+                            <>
+                              <FileButton setFiles={(_files: File[]) => {
+                                setFilesObject({ ...filesObject, [platform]: _files });
+                              }} />
+                              {filesObject[platform] && filesObject[platform].length !== 0  &&
+                                <span style={{ marginLeft: 20 }}>
+                                - {filesObject[platform].length} files
+                              </span>
+                              }
                             </>
                           }
                         </div>
                       ))}
                       <br />
-                   </>
-                  }
                 </Stack>
                 <Group mt="lg">
                   <Button

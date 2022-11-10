@@ -12,24 +12,21 @@ export function FileButton(props: FileButtonProps):JSX.Element {
 
   if (!props.directory) {
     return (
-      <>
-        <FButton onChange={(value) => props.setFiles([value])}>
-          {(props) => <Button {...props}>Choose File</Button>}
-        </FButton>
-      </>
+      <FButton onChange={(value) => props.setFiles([value])}>
+        {(props) => <Button {...props}>Choose File</Button>}
+      </FButton>
     );
   };
-
   if (props.directory) {
     return (
       <>
-        <input 
+        <input
           onChange={(e) => props.setFiles(Object.values(e.target.files))} 
-          className={classes.hidden} 
-          type="file" 
+          className={classes.hidden}
+          type="file"
           id="files"
           /* @ts-expect-error */
-          directory="" 
+          directory=""
           webkitdirectory=""
         />
         <label className={classes.root} htmlFor="files">Choose Folder</label>
