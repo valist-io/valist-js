@@ -26,10 +26,6 @@ const webURL = app.isPackaged
   ? 'web://-'
   : 'http://localhost:3000';
 
-const providerURL = app.isPackaged
-  ? 'https://rpc.valist.io'
-  : 'https://rpc.valist.io/mumbai';
-
 const chainId = app.isPackaged 
   ? 137
   : 80001;
@@ -47,6 +43,16 @@ const createMainWindow = () => {
 
   mainWindow.loadURL(webURL);
   mainWindow.once('closed', () => { mainWindow = undefined });
+  mainWindow.webContents.setWindowOpenHandler((details) => ({
+    action: 'allow',
+    overrideBrowserWindowOptions: {
+      width: 1280,
+      height: 800,
+      webPreferences: {
+        preload: path.join(__dirname, 'preload.js'),
+      },
+    },
+  }));
 };
 
 app.whenReady().then(() => {
@@ -153,6 +159,19 @@ const install = async (id: string) => {
 /// Web3 Setup ///
 //////////////////
 
+const createProvider = (id: number) => {
+  switch (id) {
+  case 1:
+    return new ethers.providers.JsonRpcProvider('https://rpc.valist.io/ens');
+  case 137:
+    return new ethers.providers.JsonRpcProvider('https://rpc.valist.io');
+  case 80001:
+    return new ethers.providers.JsonRpcProvider('https://rpc.valist.io/mumbai');
+  default:
+    throw new Error('invalid chain id');
+  }
+};
+
 interface SigningRequest {
   type: 'eth_signTypedData_v4' | 'eth_signTransaction';
   data: any;
@@ -161,10 +180,10 @@ interface SigningRequest {
 const walletEvents = new EventEmitter();
 const signingQueue = new Array<SigningRequest>();
 
-const provider = new ethers.providers.JsonRpcProvider(providerURL);
-const valist = createReadOnly(provider, { chainId });
-
+let provider = createProvider(chainId);
 let wallet: ethers.Wallet;
+
+const valist = createReadOnly(provider, { chainId });
 
 let incomingId = 0;
 let outgoingId = 0;
@@ -178,6 +197,7 @@ const switchAccount = async (account: string) => {
 
 const enqueueSigningRequest = async (request: SigningRequest) => {
   signingQueue.push(request);
+  mainWindow?.webContents.send('openWallet', []);
 
   const requestId = incomingId++;
   const rejectEvent = `signingRejected_${requestId}`;
@@ -204,7 +224,6 @@ ipcMain.handle('eth_accounts', async (event, params) => {
 
 ipcMain.handle('eth_requestAccounts', async (event, params) => {
   if (wallet) return [wallet.address];
-
   mainWindow?.webContents.send('openWallet', []);
 
   return await new Promise((resolve, reject) => {
@@ -244,17 +263,18 @@ ipcMain.handle('eth_getTransactionCount', async (event, params) => {
 });
 
 ipcMain.handle('eth_signTypedData_v4', async (event, params) => {
-  const [address, payload] = params;
-  await enqueueSigningRequest({ type: 'eth_signTypedData_v4', data: payload });
+  const [address, data] = params;
+  await enqueueSigningRequest({ type: 'eth_signTypedData_v4', data });
 
-  const { domain, types, message } = JSON.parse(payload);
+  const { domain, types, message } = JSON.parse(data);
   delete types['EIP712Domain']; // required for signing
   return await wallet._signTypedData(domain, types, message);
 });
 
 ipcMain.handle('eth_sendTransaction', async (event, params) => {
   const [payload] = params;
-  await enqueueSigningRequest({ type: 'eth_signTransaction', data: payload });
+  const data = JSON.stringify(payload);
+  await enqueueSigningRequest({ type: 'eth_signTransaction', data });
 
   const tx = { ...payload, gasLimit: payload.gas };
   delete tx.gas;
@@ -303,8 +323,15 @@ ipcMain.handle('eth_getTransactionByHash', async (event, params) => {
 /// Wallet Handlers ///
 ///////////////////////
 
-ipcMain.handle('wallet_switchEthereumChain', async (event, params) => {
+ipcMain.handle('wallet_addEthereumChain', async (event, params) => {
   return null;
+});
+
+ipcMain.handle('wallet_switchEthereumChain', async (event, params) => {
+  const [param] = params;
+  const chainId = ethers.BigNumber.from(param.chainId);
+  provider = createProvider(chainId.toNumber());
+  mainWindow?.webContents.send('chainChanged', chainId.toHexString());
 });
 
 ipcMain.handle('wallet_switchAccount', async (event, params) => {

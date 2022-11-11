@@ -14,6 +14,7 @@ import { Button } from '../Button';
 import { Logo } from '../Logo';
 import { truncate } from '../Address';
 import { AccountModal } from './AccountModal/AccountModal';
+import { SigningModal } from './SigningModal/SigningModal';
 import useStyles from './WalletModal.styles';
 
 export interface WalletModalProps {
@@ -21,7 +22,11 @@ export interface WalletModalProps {
   value?: string;
   onChange?: (value: string) => void;
   opened: boolean;
+  loading: boolean;
   onClose: () => void;
+  request?: any;
+  onApprove: () => void;
+  onReject: () => void;
 }
 
 export function WalletModal(props: WalletModalProps) {
@@ -43,6 +48,12 @@ export function WalletModal(props: WalletModalProps) {
         onChange={props.onChange}
         opened={opened}
         onClose={() => setOpened(false)}
+      />
+      <SigningModal
+        loading={props.loading}
+        request={props.request}
+        onApprove={props.onApprove}
+        onReject={props.onReject}
       />
       <Group className={classes.header} position="apart">
         <Group style={{ width: 72 }}>

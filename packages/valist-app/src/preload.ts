@@ -8,6 +8,7 @@ type Listener = (...args: any[]) => void;
 const eventEmitter = new EventEmitter();
 eventEmitter.setMaxListeners(0);
 
+ipcRenderer.on('chainChanged', (event, args) => eventEmitter.emit('chainChanged', args));
 ipcRenderer.on('accountsChanged', (event, args) => eventEmitter.emit('accountsChanged', args));
 ipcRenderer.on('installStarted', (event, args) => eventEmitter.emit('installStarted', args));
 ipcRenderer.on('installSuccess', (event, args) => eventEmitter.emit('installSuccess', args));

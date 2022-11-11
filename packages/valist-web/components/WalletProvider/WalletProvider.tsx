@@ -12,6 +12,9 @@ export interface WalletProviderProps {
 
 export function WalletProvider(props: WalletProviderProps) {
   const [opened, setOpened] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const [request, setRequest] = useState<any>();
   const [selected, setSelected] = useState<string>();
   const [accounts, setAccounts] = useState<string[]>([]);
 
@@ -23,6 +26,20 @@ export function WalletProvider(props: WalletProviderProps) {
     window?.sapphire?.request({ method: 'wallet_switchAccount', params: [account] });
   };
 
+  const approveSigning = () => {
+    setLoading(true);
+    window?.sapphire?.request({ method: 'wallet_approveSigning' })
+      .then(() => setRequest(undefined))
+      .finally(() => setLoading(false));
+  };
+
+  const rejectSigning = () => {
+    setLoading(true);
+    window?.sapphire?.request({ method: 'wallet_rejectSigning' })
+      .then(() => setRequest(undefined))
+      .finally(() => setLoading(false));
+  };
+
   useEffect(() => {
     window?.sapphire?.on('openWallet', openWallet);
     window?.sapphire?.on('hideWallet', hideWallet);
@@ -32,7 +49,12 @@ export function WalletProvider(props: WalletProviderProps) {
       if (accts.length > 0) setSelected(accts[0]);
     });
 
+    const signingId = setInterval(() => {
+      window?.sapphire?.request({ method: 'wallet_signingRequest' }).then(setRequest);
+    }, 1000);
+
     return () => {
+      clearInterval(signingId);
       window?.sapphire?.removeListener('openWallet', openWallet);
       window?.sapphire?.removeListener('hideWallet', hideWallet);
     };
@@ -45,7 +67,11 @@ export function WalletProvider(props: WalletProviderProps) {
         value={selected}
         onChange={selectAccount}
         opened={opened}
+        loading={loading}
         onClose={() => setOpened(false)}
+        request={request}
+        onApprove={approveSigning}
+        onReject={rejectSigning}
       />
       {props.children}
     </WalletContext.Provider>
