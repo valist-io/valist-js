@@ -46,14 +46,15 @@ export default class Publish extends Command {
     const { args, flags } = await this.parse(Publish);
 
     let config: Config;
-    // if (args.package) {
-    //   const parts = args.package.split('/');
-    //   if (parts.length !== 3) this.error('invalid package name');
-    //   config = new Config(parts[0], parts[1], parts[2], args.path);
-    // } else {
+    if (args.package) {
+      const parts = args.package.split('/');
+      if (parts.length !== 3) this.error('invalid package name');
+      config = new Config(parts[0], parts[1], parts[2]);
+      config.platforms['web'] = args.path;
+    } else {
       const data = fs.readFileSync('valist.yml', 'utf8');
       config = YAML.parse(data);
-    // }
+    }
 
     if (!config.account) this.error('invalid account name');
     if (!config.project) this.error('invalid project name');
@@ -88,7 +89,6 @@ export default class Publish extends Command {
     release.description = config.description || '';
 
     CliUx.ux.action.start('uploading files');
-    
 
     release.platforms = new PlatformsMeta();
 
@@ -97,7 +97,6 @@ export default class Publish extends Command {
     let filesObject: Record<string, FileObject[]> = {};
 
     const platforms = Object.keys(config.platforms);
-
 
     for (let i = 0; i < platforms.length; i++) {
       filesObject[platforms[i]] = await getFilesFromPath(config.platforms[platforms[i] as SupportedPlatform]);
@@ -122,11 +121,8 @@ export default class Publish extends Command {
     if (Object.keys(filesObject).length > 0) {
       
       const nonWebFiles: FileObject[] = Object.values(filesObject).flat(1);
-      console.log("NONWEB FILES", nonWebFiles)
 
       nativeCID = await valist.writeFolder(nonWebFiles, true);
-
-      CliUx.ux.log(`NATIVE CID ${nativeCID}`);
 
       Object.keys(filesObject).forEach((platform) => {
         if (release.platforms && filesObject[platform] && filesObject[platform].length !== 0) {
@@ -139,8 +135,6 @@ export default class Publish extends Command {
     }
 
     release.external_url = webCID || nativeCID;
-
-    console.log("RELEASE OBJECT", release)
 
     // upload release image
     if (config.image) {
