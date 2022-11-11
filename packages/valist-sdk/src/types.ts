@@ -1,3 +1,7 @@
+import { FileObject as FObject } from "files-from-path";
+
+export type FileObject = FObject;
+
 // Valist Types
 export class AccountMeta {
 	/** account image */
@@ -177,6 +181,7 @@ export class ReleaseMetaV1 {
 	/** installable binaries */
 	public install?: InstallMeta;
 }
+
 export class InstallMeta {
 	/** binary name */
 	public name?: string;
@@ -204,7 +209,7 @@ export class InstallMeta {
 
 export function isReleaseMetaV1(releaseMeta: ReleaseMeta | ReleaseMetaV1): releaseMeta is ReleaseMetaV1 {
 	const meta = releaseMeta as ReleaseMetaV1;
-    return meta.install !== undefined;
+    return meta.install !== undefined || (meta as ReleaseMeta)._metadata_version === 'undefined';
 }
 
 export function isReleaseMetaV2(releaseMeta: ReleaseMeta | ReleaseMetaV1): releaseMeta is ReleaseMeta {

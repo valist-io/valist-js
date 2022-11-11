@@ -1,3 +1,4 @@
+/*
 import { Command, CliUx } from '@oclif/core';
 import { create, Provider, InstallMeta } from '@valist/sdk';
 import { create as createIPFS } from 'ipfs-http-client';
@@ -111,3 +112,4 @@ export default class Install extends Command {
     this.log(`package installed to ${filePath}`);
   }
 }
+*/
