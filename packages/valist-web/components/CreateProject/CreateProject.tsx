@@ -1,5 +1,4 @@
-import type { NextPage } from 'next';
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import { useApolloClient, useQuery } from '@apollo/client';

@@ -42,6 +42,8 @@ import {
   GalleryInput,
   _404,
 } from '@valist/ui';
+import getConfig from 'next/config';
+import { DeployForm } from '@/components/DeployForm';
 
 const Project: NextPage = () => {
   const router = useRouter();
@@ -49,6 +51,8 @@ const Project: NextPage = () => {
   const { address } = useAccount();
   const chainId = getChainId();
   const valist = useValist();
+  const { publicRuntimeConfig } = getConfig();
+  const { CLIENT_ID } = publicRuntimeConfig;
 
   const accountName = `${router.query.account}`;
   const accountId = valist.generateID(chainId, accountName);
@@ -61,6 +65,8 @@ const Project: NextPage = () => {
 
   const accountMembers = data?.project?.account?.members ?? [];
   const projectMembers = data?.project?.members ?? [];
+
+  const [activeTab, setActiveTab] = useState<string | null>();
 
   // form values
   const [loading, setLoading] = useState(true);
@@ -82,6 +88,7 @@ const Project: NextPage = () => {
       launchExternal: false,
       donationAddress: '',
       promptDonation: false,
+      linkRepository: false,
     },
   });
 
@@ -155,6 +162,12 @@ const Project: NextPage = () => {
     });
   };
 
+  const breadcrumbs = [
+    { title: accountName, href: `/${accountName}` },
+    { title: projectName, href: `/${accountName}/${projectName}` },
+    { title: 'Settings', href: `/-/account/${accountName}/project/${projectName}/settings` },
+  ];
+
   if (!gqLoading && !data?.project) {
     return (
       <Layout>
@@ -168,25 +181,22 @@ const Project: NextPage = () => {
     );
   };
 
-  const breadcrumbs = [
-    { title: accountName, href: `/${accountName}` },
-    { title: projectName, href: `/${accountName}/${projectName}` },
-    { title: 'Settings', href: `/-/account/${accountName}/project/${projectName}/settings` },
-  ];
-
-  console.log('form.values.donationAddress', form.values.donationAddress);
-
   return (
     <Layout>
       <div style={{ paddingBottom: 32 }}>
         <Breadcrumbs items={breadcrumbs} />
       </div>
-      <Tabs defaultValue="basic">
+      <Tabs 
+        defaultValue="basic"
+        value={activeTab}
+        onTabChange={setActiveTab}
+      >
         <Tabs.List grow>
           <Tabs.Tab value="basic">Basic Info</Tabs.Tab>
           <Tabs.Tab value="descriptions">Descriptions</Tabs.Tab>
           <Tabs.Tab value="members">Members</Tabs.Tab>
           <Tabs.Tab value="media">Media</Tabs.Tab>
+          <Tabs.Tab value="build">Deployments</Tabs.Tab>
         </Tabs.List>
         <Tabs.Panel value="basic">
           <form onSubmit={form.onSubmit(update)}>
@@ -369,6 +379,16 @@ const Project: NextPage = () => {
               </Button>
             </Group>
           </form>
+        </Tabs.Panel>
+        <Tabs.Panel value="build">
+          <DeployForm
+            account={accountName}
+            project={projectName}
+            clientID={CLIENT_ID}
+            onConnected={() => {
+              setActiveTab('build');
+            }}
+          />
         </Tabs.Panel>
       </Tabs>
     </Layout>

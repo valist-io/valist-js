@@ -42,8 +42,6 @@ import {
   Tooltip,
 } from '@mantine/core';
 
-
-
 const ProjectPage: NextPage = () => {
   const chainId = getChainId();
   const { address } = useAccount();

@@ -1,4 +1,4 @@
-import { string, z } from 'zod';
+import { z } from 'zod';
 import { ApolloCache } from '@apollo/client';
 import { ProjectMeta, Client } from '@valist/sdk';
 import { handleEvent } from './events';
@@ -18,6 +18,7 @@ export interface FormValues {
   tags: string[];
   launchExternal: boolean;
   promptDonation: boolean;
+  linkRepository: boolean;
 }
 
 export const schema = z.object({
@@ -34,6 +35,7 @@ export const schema = z.object({
   tags: z.string().array(),
   promptDonation: z.boolean(),
   launchExternal: z.boolean(),
+  linkRepository: z.boolean(),
 });
 
 export async function updateProject(
@@ -53,8 +55,6 @@ export async function updateProject(
     if (!address) {
       throw new Error('connect your wallet to continue');
     }
-
-    console.log('hello from updateProject');
 
     const meta: ProjectMeta = {
       name: values.displayName,
