@@ -7,6 +7,7 @@ interface AddKeyProps {
   account: string;
   project: string;
   repo: string;
+  back: () => void;
 }
 
 export function AddKey(props: AddKeyProps):JSX.Element {
@@ -39,6 +40,7 @@ export function AddKey(props: AddKeyProps):JSX.Element {
         <br />
 
         <Button color="violet" onClick={(() => {})}>Add Key</Button>
+        <Button style={{ marginLeft: 20 }} color="violet" onClick={props.back}>Choose a different repo</Button>
       </div>
     </section>
   );

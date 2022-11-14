@@ -1,5 +1,5 @@
-import { Button, Select } from "@mantine/core";
-import { Octokit } from "@octokit/core";
+import { Select } from "@mantine/core";
+import { Button } from "@valist/ui";
 
 interface SelectRepo {
   repos: string[];
@@ -13,7 +13,7 @@ export function SelectRepo(props: SelectRepo):JSX.Element {
     <>
       <Select
         style={{ marginBottom: 20 }}
-        label="Select a repository" 
+        label="Search your repositories" 
         data={props.repos}
         searchable
         onChange={(value) => { 
@@ -21,8 +21,7 @@ export function SelectRepo(props: SelectRepo):JSX.Element {
         }}
         value={props.value}
       />
-      <Button 
-        color="violet" 
+      <Button
         onClick={props.onRepoSelect}>
           Continue
       </Button>

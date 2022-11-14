@@ -3,12 +3,13 @@ import { randomBytes } from "crypto";
 import { ethers } from "ethers";
 import libsodium from 'libsodium-wrappers';
 
-export type ProjectType = 'next' | 'go' | 'custom';
+export type ProjectType = 'custom' | 'next' | 'react';
 
 export const distLocation: Record<ProjectType, string> = {
-  next: 'out',
-  go: 'dist',
   custom: '',
+  // go: 'dist',
+  next: 'out',
+  react: 'build',
 };
 
 export const PR_TITLE = "Add Valist GitHub Action";
@@ -18,7 +19,33 @@ export const author = {
   email: 'hello@valist.io',
 };
 
-export const buildSteps: Record<ProjectType, string> = {
+export const buildCommands: Record<ProjectType, string> = {
+  custom: ``,
+  // go: ` GOOS=windows GOARCH=amd64 go build -o ./dist/windows-amd64 src/main.go
+  //       GOOS=linux GOARCH=amd64 go build -o ./dist/linux-amd64 src/main.go
+  //       GOOS=darwin GOARCH=amd64 go build -o ./dist/darwin-amd64 src/main.go
+  //       GOOS=darwin GOARCH=arm64 go build -o ./dist/darwin-arm64 src/main.go`,
+  next: `   npm run build && npx next export`,
+  react: '    npm run build',
+};
+
+export const installCommands: Record<ProjectType, string> = {
+  custom: ``,
+  // go: ``,
+  next: `   npm install`,
+  react: `   npm install`,
+};
+
+export const environments: Record<ProjectType, string> = {
+  custom: '',
+  // go: `
+  //     - name: Setup Go
+  //       uses: actions/setup-go@v3
+  //       with:
+  //         go-version: '^1.13.1'
+
+  //     - name: Build Go Project
+  //       run: |`,
   next: `
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -26,35 +53,77 @@ export const buildSteps: Record<ProjectType, string> = {
           node-version: '16'
 
       - name: Build and export Next.js app
-        run: |
-          npm install
-          npm run build
-          npx next export`,
-  go: `
-      - name: Setup Go
-        uses: actions/setup-go@v3
+        run: |`,
+  react: `
+      - name: Setup Node
+        uses: actions/setup-node@v3
         with:
-          go-version: '^1.13.1'
-      
-      - name: Build Go Project
-        run: |
-          GOOS=windows GOARCH=amd64 go build -o ./dist/windows-amd64 src/main.go
-          GOOS=linux GOARCH=amd64 go build -o ./dist/linux-amd64 src/main.go
-          GOOS=darwin GOARCH=amd64 go build -o ./dist/darwin-amd64 src/main.go
-          GOOS=darwin GOARCH=arm64 go build -o ./dist/darwin-arm64 src/main.go`,
-  custom: '',
+          node-version: '16'
+
+      - name: Build Create React App
+        run: |`,
 };
 
-export function getBuildStep(projectType: ProjectType): string {
-  const buildStep = buildSteps[projectType];
-  if (buildStep) return buildStep;
-  return buildSteps['custom'];
+export type BuildYaml = {
+  account: string;
+  project: string;
+  environment: string;
+  installCommand?: string;
+  buildCommand: string;
+  outputPath: string;
+}
+
+export function buildYaml({
+  account,
+  project,
+  environment,
+  installCommand,
+  buildCommand,
+  outputPath,
+}: BuildYaml) {
+  // Get path to artifacts from ProjectType
+  const privateKey = '${{ secrets.VALIST_SIGNER }}';
+  const release = '${{ env.TIMESTAMP }}';
+
+  return `name: Valist Publish
+on:
+  push:
+    branches:
+      - main
+jobs:
+  valist-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        ${environment}${installCommand ? '\n        ' + installCommand : ''}
+        ${buildCommand ? buildCommand : ''}
+
+      - name: Mark Timestamp
+        run: echo "TIMESTAMP=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
+        
+      - name: Valist Publish
+        uses: valist-io/valist-github-action@v2.3.1
+        with:
+          private-key: ${privateKey}
+          account: ${account}
+          project: ${project}
+          release: ${release}
+          path: ${outputPath}`;
 };
 
 export async function getRepoPubicKey(octokit: Octokit, owner: string, repo: string) {
   return await octokit.request('GET /repos/{owner}/{repo}/actions/secrets/public-key', {
     owner: owner,
     repo: repo,
+  });
+};
+
+export async function getRepoSecrets(octokit: Octokit, owner: string, repo: string) {
+  return await octokit.request('GET /repos/{owner}/{repo}/actions/secrets', {
+    owner,
+    repo,
+    per_page: 1000,
   });
 };
 
@@ -111,39 +180,6 @@ export async function mergePr(octokit: Octokit, owner: string, repo: string) {
     commit_title: 'Merge Valist',
     commit_message: 'Add valist workflow file',
   });
-};
-
-export function buildYaml(account: string = '', project: string = '', projectType: ProjectType) {
-  // Get path to artifacts from ProjectType
-  const path = distLocation[projectType];
-
-  const privateKey = '${{ secrets.VALIST_SIGNER }}';
-  const release = '${{ env.TIMESTAMP }}';
-  return `name: Valist Publish
-on:
-  push:
-    branches:
-      - main
-jobs:
-  valist-publish:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      ${getBuildStep(projectType)}
-
-      - name: Mark Timestamp
-        run: echo "TIMESTAMP=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
-        
-      - name: Valist Publish
-        uses: valist-io/valist-github-action@v2.3.1
-        with:
-          private-key: ${privateKey}
-          account: webgame
-          project: game
-          release: ${release}
-          path: ${path}
-`;
 };
 
 export const getCurrentCommit = async (
@@ -240,14 +276,17 @@ export async function createPullRequest(octokit: Octokit, valistConfig: string, 
   console.log('pull request', pullRequest);
 };
 
-export async function addSecret(octokit: Octokit, owner: string, repo: string) {
+export async function addValistSigner(octokit: Octokit, owner: string, repo: string) {
+  const wallet = new ethers.Wallet(randomBytes(32).toString('hex'));
+  await addSecret(octokit, owner, repo, 'VALIST_SIGNER', wallet.privateKey);
+  return wallet?.publicKey;
+}
+
+export async function addSecret(octokit: Octokit, owner: string, repo: string, secret_name: string, secret_value: string) {
   const key = await getRepoPubicKey(octokit, owner, repo);
 
-  const signer_key = randomBytes(32).toString('hex');
-  const wallet = new ethers.Wallet(signer_key);
-
   // Convert the message and key to Uint8Array's (Buffer implements that interface)
-  const messageBytes = Buffer.from(wallet.privateKey);
+  const messageBytes = Buffer.from(secret_value);
   const keyBytes = Buffer.from(key?.data?.key, 'base64');
 
   // Encrypt using LibSodium.
@@ -260,10 +299,8 @@ export async function addSecret(octokit: Octokit, owner: string, repo: string) {
   await octokit.request('PUT /repos/{owner}/{repo}/actions/secrets/{secret_name}', {
     owner: owner,
     repo: repo,
-    secret_name: 'VALIST_SIGNER',
+    secret_name: secret_name,
     encrypted_value: encrypted,
     key_id: key?.data?.key_id,
   });
-
-  return wallet?.publicKey;
 };

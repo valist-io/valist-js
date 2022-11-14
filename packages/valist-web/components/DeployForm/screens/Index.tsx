@@ -17,7 +17,7 @@ export function IndexScreen(props:IndexScreenProps):JSX.Element {
     {
         name: 'Github',
         icon: '/images/github.svg',
-        auth: `https://github.com/login/oauth/authorize?scope=repo%2Cworkflow&client_id=${props.clientID}&redirect_uri=${props.location}`,
+        auth: `https://github.com/login/oauth/authorize?scope=repo%2Cworkflow&client_id=${props.clientID}&state=${Buffer.from(props.location).toString("base64")}`,
     },
   ];
 
