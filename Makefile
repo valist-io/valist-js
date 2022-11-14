@@ -43,6 +43,6 @@ test:
 	npm run test
 
 clean:
-	git clean -dfx
+	git clean -dfx --exclude=".env"
 
 .PHONY: packages electron

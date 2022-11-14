@@ -1,6 +1,6 @@
 import { Command, CliUx } from '@oclif/core';
 import { ethers } from 'ethers';
-import { create, ReleaseMeta, Provider, getFilesFromPath } from '@valist/sdk';
+import { create, ReleaseMeta, Provider, getFilesFromPath, PlatformsMeta, FileObject, SupportedPlatform } from '@valist/sdk';
 import YAML from 'yaml';
 import * as fs from 'node:fs';
 import * as flags from '../flags';
@@ -49,7 +49,8 @@ export default class Publish extends Command {
     if (args.package) {
       const parts = args.package.split('/');
       if (parts.length !== 3) this.error('invalid package name');
-      config = new Config(parts[0], parts[1], parts[2], args.path);
+      config = new Config(parts[0], parts[1], parts[2]);
+      config.platforms['web'] = args.path;
     } else {
       const data = fs.readFileSync('valist.yml', 'utf8');
       config = YAML.parse(data);
@@ -58,7 +59,7 @@ export default class Publish extends Command {
     if (!config.account) this.error('invalid account name');
     if (!config.project) this.error('invalid project name');
     if (!config.release) this.error('invalid release name');
-    if (!config.path) this.error('invalid file path');
+    if (!config.platforms) this.error('no platforms configured');
 
     const privateKey = flags['private-key'] || await select();
     const metaTx = flags['meta-tx'];
@@ -85,20 +86,62 @@ export default class Publish extends Command {
 
     const release = new ReleaseMeta();
     release.name = config.release;
-    release.description = config.description;
-    release.install = config.install;
+    release.description = config.description || '';
 
     CliUx.ux.action.start('uploading files');
-    // upload release assets
-    const artifacts = await getFilesFromPath(config.path);
-    release.external_url = await valist.writeFolder(artifacts);
-    
+
+    release.platforms = new PlatformsMeta();
+
+    let webCID, nativeCID = '';
+
+    let filesObject: Record<string, FileObject[]> = {};
+
+    const platforms = Object.keys(config.platforms);
+
+    for (let i = 0; i < platforms.length; i++) {
+      filesObject[platforms[i]] = await getFilesFromPath(config.platforms[platforms[i] as SupportedPlatform]);
+      if (platforms[i] !== 'web') {
+        filesObject[platforms[i]][0].name = platforms[i]; // @TODO make this support more than one file
+      }
+    }
+      
+    if (filesObject['web']) {
+      const webFiles = await getFilesFromPath(config.platforms.web);
+
+      webCID = await valist.writeFolder(webFiles, false);
+
+      release.platforms.web = {
+        external_url: webCID,
+        name: 'web',
+      };
+
+      delete filesObject['web'];
+    };
+
+    if (Object.keys(filesObject).length > 0) {
+      
+      const nonWebFiles: FileObject[] = Object.values(filesObject).flat(1);
+
+      nativeCID = await valist.writeFolder(nonWebFiles, true);
+
+      Object.keys(filesObject).forEach((platform) => {
+        if (release.platforms && filesObject[platform] && filesObject[platform].length !== 0) {
+          release.platforms[platform as SupportedPlatform] = {
+            external_url: `${nativeCID}/${filesObject[platform][0].name}`,
+            name: filesObject[platform][0].name,
+          };
+        }
+      });
+    }
+
+    release.external_url = webCID || nativeCID;
+
     // upload release image
     if (config.image) {
       const imageFile = await getFilesFromPath(config.image);
       release.image = await valist.writeFile(imageFile[0]);
     }
-    
+
     // upload source snapshot
     // if (config.source) {
     //   const archiveURL = archiveSource(config.source);

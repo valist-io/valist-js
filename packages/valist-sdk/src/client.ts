@@ -338,8 +338,8 @@ export default class Client {
 		const toPush = typeof window === 'undefined'
 			? (files as File[]).map(toImportCandidate)
 			: (files as ImportCandidate[]).map((file: any) => {
-				if (!file.path || file.path[0] !== '/') toWrap = true;
-				return ({ path: file.path || file.name, content: file });
+				const path = file.webkitRelativePath || file.path || file.name;
+				return ({ path, content: file });
 			});
 
 		const { root: cid, car } = await packToBlob({

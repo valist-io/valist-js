@@ -11,7 +11,7 @@ const Project: NextPage = () => {
 
   const breadcrumbs = [
     { title: accountName, href: `/${accountName}` },
-    { title: 'Create Project', href: '/-/create/account' },
+    { title: 'Create Project', href: `/-/account/${accountName}/create/project` },
   ];
 
   return (
