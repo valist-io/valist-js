@@ -79,6 +79,7 @@ export class GalleryMeta {
 export class ReleaseMeta {
 	constructor(metadata_version = '2') {
 		this._metadata_version = metadata_version;
+		this.path = '';
 		this.name = '';
 		this.description = '';
 		this.external_url = '';
@@ -88,6 +89,8 @@ export class ReleaseMeta {
 	public _metadata_version: string;
 	/** project image */
 	public image?: string;
+	/** full account/project/release path */
+	public path: string;
 	/** full release name. */
 	public name: string;
 	/** short description of the release. */
@@ -215,4 +218,29 @@ export function isReleaseMetaV1(releaseMeta: ReleaseMeta | ReleaseMetaV1): relea
 export function isReleaseMetaV2(releaseMeta: ReleaseMeta | ReleaseMetaV1): releaseMeta is ReleaseMeta {
 	const meta = releaseMeta as ReleaseMeta;
     return meta._metadata_version === '2';
+}
+
+export class ReleaseConfig {
+	public account: string;
+	public project: string;
+	public release: string;
+	public image?: string;
+	public description?: string;
+	public source?: string;
+	public platforms: Record<SupportedPlatform, string>;
+  
+	constructor(account: string, project: string, release: string) {
+	  this.account = account;
+	  this.project = project;
+	  this.release = release;
+	  this.platforms = {
+			web: '',
+			darwin_amd64: '',
+			darwin_arm64: '',
+			windows_amd64: '',
+			linux_amd64: '',
+			linux_arm64: '',
+			android_arm64: '',
+		};
+	}
 }
