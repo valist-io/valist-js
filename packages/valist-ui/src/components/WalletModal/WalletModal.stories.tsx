@@ -21,5 +21,6 @@ Primary.args = {
   accounts: [
     '0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1',
     '0x9e56353EF511FB4B85b8afA0cC25FFC26d3EFD5c',
-  ]
+  ],
+  generate: () => 'produce alley citizen bone enact settle hedgehog common plate dwarf lady someone',
 };

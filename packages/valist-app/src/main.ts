@@ -359,6 +359,21 @@ ipcMain.handle('wallet_listAccounts', async (event, params) => {
   return credentials.map(c => c.account);
 });
 
+ipcMain.handle('wallet_createAccount', async (event, params) => {
+  const [mnemonic] = params;
+  
+  let wallet: ethers.Wallet;
+  if (mnemonic.match(/^[0-9a-f]*$/i)) {
+    wallet = new ethers.Wallet('0x' + mnemonic);
+  } else if (mnemonic.startsWith('0x')) {
+    wallet = new ethers.Wallet(mnemonic);
+  } else {
+    wallet = ethers.Wallet.fromMnemonic(mnemonic);
+  }
+
+  await keytar.setPassword('VALIST', wallet.address, wallet.privateKey);
+});
+
 /////////////////////////
 /// Sapphire Handlers ///
 /////////////////////////

@@ -13,7 +13,9 @@ import * as Icon from 'tabler-icons-react';
 import { Button } from '../Button';
 import { Logo } from '../Logo';
 import { truncate } from '../Address';
-import { AccountModal } from './AccountModal/AccountModal';
+import { CreateModal } from './CreateModal/CreateModal';
+import { ImportModal } from './ImportModal/ImportModal';
+import { SelectModal } from './SelectModal/SelectModal';
 import { SigningModal } from './SigningModal/SigningModal';
 import useStyles from './WalletModal.styles';
 
@@ -21,17 +23,22 @@ export interface WalletModalProps {
   accounts: string[];
   value?: string;
   onChange?: (value: string) => void;
+  
   opened: boolean;
   loading: boolean;
   onClose: () => void;
+
   request?: any;
   onApprove: () => void;
   onReject: () => void;
+
+  generate: () => string;
+  onCreate: (mnemonic: string) => void;
 }
 
 export function WalletModal(props: WalletModalProps) {
   const { classes } = useStyles();
-  const [opened, setOpened] = useState(false);
+  const [modal, setModal] = useState('');
 
   return (
     <Modal
@@ -43,11 +50,13 @@ export function WalletModal(props: WalletModalProps) {
       withCloseButton={false}
       classNames={{ modal: classes.modal }}
     >
-      <AccountModal
+      <SelectModal
         accounts={props.accounts}
         onChange={props.onChange}
-        opened={opened}
-        onClose={() => setOpened(false)}
+        opened={modal === 'select'}
+        onClose={() => setModal('')}
+        onCreate={() => setModal('create')}
+        onImport={() => setModal('import')}
       />
       <SigningModal
         loading={props.loading}
@@ -55,12 +64,23 @@ export function WalletModal(props: WalletModalProps) {
         onApprove={props.onApprove}
         onReject={props.onReject}
       />
+      <CreateModal
+        opened={modal === 'create'}
+        onClose={() => setModal('')}
+        generate={props.generate}
+        onCreate={props.onCreate}
+      />
+      <ImportModal
+        opened={modal === 'import'}
+        onClose={() => setModal('')}
+        onImport={props.onCreate}
+      />
       <Group className={classes.header} position="apart">
         <Group style={{ width: 72 }}>
           <Logo type="sapphire" />
         </Group>
         <UnstyledButton
-          onClick={() => setOpened(true)}
+          onClick={() => setModal('select')}
         >
           <Stack align="center" spacing={0}>
             <Group spacing={9}>
@@ -78,8 +98,11 @@ export function WalletModal(props: WalletModalProps) {
           <ActionIcon variant="transparent">
             <Icon.Clock />
           </ActionIcon>
-          <ActionIcon variant="transparent">
-            <Icon.Settings />
+          <ActionIcon
+            variant="transparent" 
+            onClick={props.onClose}
+          >
+            <Icon.X />
           </ActionIcon>
         </Group>
       </Group>

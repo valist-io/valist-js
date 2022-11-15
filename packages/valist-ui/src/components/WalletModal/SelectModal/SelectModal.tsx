@@ -7,17 +7,19 @@ import {
 
 import { Member } from '../../Member';
 import { Button } from '../../Button';
-import useStyles from './AccountModal.styles';
+import useStyles from './SelectModal.styles';
 
-export interface AccountModalProps {
+export interface SelectModalProps {
   accounts: string[];
   onChange?: (value: string) => void;
 
   opened: boolean;
   onClose: () => void;
+  onCreate: () => void;
+  onImport: () => void;
 }
 
-export function AccountModal(props: AccountModalProps) {
+export function SelectModal(props: SelectModalProps) {
   const { classes } = useStyles();
 
   const select = (acc: string) => {
@@ -48,11 +50,13 @@ export function AccountModal(props: AccountModalProps) {
       <Group grow>
         <Button
           variant="outline"
+          onClick={props.onImport}
         >
           Import Account
         </Button>
         <Button
           variant="primary"
+          onClick={props.onCreate}
         >
           Create New Account
         </Button>

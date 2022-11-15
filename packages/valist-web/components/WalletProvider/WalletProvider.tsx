@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { WalletModal } from '@valist/ui';
+import { ethers } from 'ethers';
 
 export const WalletContext = React.createContext({
   openWallet: () => {},
@@ -40,6 +41,16 @@ export function WalletProvider(props: WalletProviderProps) {
       .finally(() => setLoading(false));
   };
 
+  const generateAccount = () => {
+    const account = ethers.Wallet.createRandom();
+    return account.mnemonic.phrase;
+  };
+
+  const createAccount = async (mnemonic: string) => {
+    await window?.sapphire?.request({ method: 'wallet_createAccount', params: [mnemonic] });
+    await window?.sapphire?.request({ method: 'wallet_listAccounts' }).then(setAccounts);
+  };
+
   useEffect(() => {
     window?.sapphire?.on('openWallet', openWallet);
     window?.sapphire?.on('hideWallet', hideWallet);
@@ -72,6 +83,8 @@ export function WalletProvider(props: WalletProviderProps) {
         request={request}
         onApprove={approveSigning}
         onReject={rejectSigning}
+        generate={generateAccount}
+        onCreate={createAccount}
       />
       {props.children}
     </WalletContext.Provider>
