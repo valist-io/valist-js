@@ -14,7 +14,7 @@ $ npm install -g @valist/cli
 $ valist COMMAND
 running command...
 $ valist (--version)
-@valist/cli/2.5.6 darwin-arm64 node-v16.13.0
+@valist/cli/2.5.8 darwin-arm64 node-v16.13.0
 $ valist --help [COMMAND]
 USAGE
   $ valist COMMAND
@@ -26,7 +26,6 @@ USAGE
 * [`valist download PACKAGE [OUTPUT]`](#valist-download-package-output)
 * [`valist help [COMMAND]`](#valist-help-command)
 * [`valist import`](#valist-import)
-* [`valist install PACKAGE`](#valist-install-package)
 * [`valist keygen`](#valist-keygen)
 * [`valist publish [PACKAGE] [PATH]`](#valist-publish-package-path)
 
@@ -54,7 +53,7 @@ EXAMPLES
   $ valist download ipfs/go-ipfs/v0.12.2 ~/Downloads/
 ```
 
-_See code: [dist/commands/download.ts](https://github.com/valist-io/valist-js/blob/v2.5.6/dist/commands/download.ts)_
+_See code: [dist/commands/download.ts](https://github.com/valist-io/valist-js/blob/v2.5.8/dist/commands/download.ts)_
 
 ## `valist help [COMMAND]`
 
@@ -91,30 +90,7 @@ EXAMPLES
   $ valist import
 ```
 
-_See code: [dist/commands/import.ts](https://github.com/valist-io/valist-js/blob/v2.5.6/dist/commands/import.ts)_
-
-## `valist install PACKAGE`
-
-Install a package
-
-```
-USAGE
-  $ valist install [PACKAGE] [--network <value>]
-
-ARGUMENTS
-  PACKAGE  package name
-
-FLAGS
-  --network=<value>  [default: https://rpc.valist.io] Blockchain network
-
-DESCRIPTION
-  Install a package
-
-EXAMPLES
-  $ valist install ipfs/go-ipfs/v0.12.2
-```
-
-_See code: [dist/commands/install.ts](https://github.com/valist-io/valist-js/blob/v2.5.6/dist/commands/install.ts)_
+_See code: [dist/commands/import.ts](https://github.com/valist-io/valist-js/blob/v2.5.8/dist/commands/import.ts)_
 
 ## `valist keygen`
 
@@ -131,7 +107,7 @@ EXAMPLES
   $ valist keygen
 ```
 
-_See code: [dist/commands/keygen.ts](https://github.com/valist-io/valist-js/blob/v2.5.6/dist/commands/keygen.ts)_
+_See code: [dist/commands/keygen.ts](https://github.com/valist-io/valist-js/blob/v2.5.8/dist/commands/keygen.ts)_
 
 ## `valist publish [PACKAGE] [PATH]`
 
@@ -159,5 +135,5 @@ EXAMPLES
   $ valist publish ipfs/go-ipfs/v0.12.3 dist/
 ```
 
-_See code: [dist/commands/publish.ts](https://github.com/valist-io/valist-js/blob/v2.5.6/dist/commands/publish.ts)_
+_See code: [dist/commands/publish.ts](https://github.com/valist-io/valist-js/blob/v2.5.8/dist/commands/publish.ts)_
 <!-- commandsstop -->
