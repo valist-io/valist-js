@@ -51,7 +51,7 @@ const Discover: NextPage = () => {
       <Layout hideNavbar={true} padding={0}>
           <section>
             <HeroSection
-              image={"/images/discovery/shattered_realms.png"} 
+              image={"/images/discovery/shattered_realms.jpg"} 
               title={'Shattered Realms'} 
               tagline={'Action, Adventure, RPG'} 
               link={'/shatteredrealms/game'}

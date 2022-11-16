@@ -6,7 +6,7 @@ export function PublishPromo(): JSX.Element {
   const { classes } = useStyles();
   const theme = useMantineTheme();
   const btnColor = theme.colorScheme === 'dark' ? '#5850EC' : 'linear-gradient(90deg, #FF9A9E 0%, #FAD0C4 99%, #FAD0C4 100%), #5850EC';
-  const publishImage = `/images/discovery/publish_media_${theme.colorScheme === 'dark' ? 'dark' : 'light'}.png`;
+  const publishImage = `/images/discovery/publish_media_${theme.colorScheme === 'dark' ? 'dark' : 'light'}.jpg`;
 
   return (
     <Grid className={classes.root}>

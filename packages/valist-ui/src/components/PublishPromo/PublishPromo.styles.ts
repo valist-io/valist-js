@@ -5,7 +5,7 @@ import { useMantineTheme } from "@mantine/core";
 export default createStyles(() => {
   const isMobile = useMediaQuery('(max-width: 900px)');
   const theme = useMantineTheme();
-  const bgImg = theme.colorScheme === 'dark' ? `url('/images/discovery/publish_bg.png')` : '';
+  const bgImg = theme.colorScheme === 'dark' ? `url('/images/discovery/publish_bg.jpg')` : '';
   const bgColor = theme.colorScheme === 'dark' ? '' : '#5850EC';
   const btnColor = theme.colorScheme === 'dark' ? '#5850EC' : 'linear-gradient(90deg, #FF9A9E 0%, #FAD0C4 99%, #FAD0C4 100%), #5850EC';
   const paddingY = isMobile ? '24px' : '64px';

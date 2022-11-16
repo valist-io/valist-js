@@ -48,7 +48,6 @@ export function Carousel(props: CarouselProps): JSX.Element {
           {props.items.map((item: Item, index ) => (
             <MantineCarousel.Slide key={index}>
               <CarouselItem
-                key={index}
                 img={item.img}
                 name={item.name}
                 description={item.description}

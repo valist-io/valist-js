@@ -1,6 +1,7 @@
-import { Avatar, Center, Anchor, Text } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
-import { Metadata } from "../Metadata";
+import { Avatar, Center, Anchor, Text } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
+import { Image } from '@valist/ui';
+import { Metadata } from '@/components/Metadata';
 
 interface TopPublishersProps {
   accounts: {name: string, metaURI: string, count: number}[]
