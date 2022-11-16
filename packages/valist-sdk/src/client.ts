@@ -50,16 +50,16 @@ export default class Client {
 		const platforms = Object.keys(config.platforms);
 
 		for (let i = 0; i < platforms.length; i++) {
-			filesObject[platforms[i]] = await getFilesFromPath(config.platforms[platforms[i] as SupportedPlatform]);
-			if (platforms[i] !== 'web') {
-				filesObject[platforms[i]][0].name = require('path').join(platforms[i], filesObject[platforms[i]][0].name); // @TODO make this support more than one file
+			if (config.platforms[platforms[i] as SupportedPlatform]) {
+				filesObject[platforms[i]] = await getFilesFromPath(config.platforms[platforms[i] as SupportedPlatform]);
+				if (platforms[i] !== 'web') {
+					filesObject[platforms[i]][0].name = require('path').join(platforms[i], filesObject[platforms[i]][0].name); // @TODO make this support more than one file
+				}
 			}
 		}
-		
-		if (filesObject['web']) {
-			const webFiles = await getFilesFromPath(config.platforms.web);
 
-			webCID = await this.writeFolder(webFiles, false);
+		if (filesObject['web']) {
+			webCID = await this.writeFolder(filesObject['web'], false);
 
 			release.platforms.web = {
 				external_url: webCID,
