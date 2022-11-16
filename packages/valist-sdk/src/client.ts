@@ -41,6 +41,8 @@ export default class Client {
 		release.name = config.release;
 		release.description = config.description || '';
 
+		release.path = `${config.account}/${config.project}/${config.release}`;
+
 		release.platforms = new PlatformsMeta();
 
 		let webCID, nativeCID = '';
