@@ -4,10 +4,9 @@ import { ContractTransaction } from '@ethersproject/contracts';
 import { MemoryBlockStore } from 'ipfs-car/blockstore/memory';
 import { packToBlob } from 'ipfs-car/pack/blob'
 import { ImportCandidate, ImportCandidateStream } from 'ipfs-core-types/src/utils';
-import { FileObject } from 'files-from-path';
-import { toImportCandidate } from './utils';
+import { getFilesFromPath, toImportCandidate } from './utils';
 
-import { AccountMeta, ProjectMeta, ReleaseMeta } from './types';
+import { AccountMeta, PlatformsMeta, ProjectMeta, ReleaseMeta, SupportedPlatform, FileObject, ReleaseConfig } from './types';
 import { fetchGraphQL, Account, Project, Release } from './graphql';
 import { generateID, getAccountID, getProjectID, getReleaseID } from './utils';
 import * as queries from './graphql/queries';
@@ -34,6 +33,67 @@ export default class Client {
 	async createProject(accountID: ethers.BigNumberish, name: string, meta: ProjectMeta, members: string[]): Promise<ContractTransaction> {
 		const metaURI = await this.writeJSON(JSON.stringify(meta));
 		return await this.registry.createProject(accountID, name, metaURI, members);
+	}
+
+	async uploadRelease(config: ReleaseConfig): Promise<ReleaseMeta> {
+		const release = new ReleaseMeta();
+
+		release.name = config.release;
+		release.description = config.description || '';
+
+		release.platforms = new PlatformsMeta();
+
+		let webCID, nativeCID = '';
+
+		let filesObject: Record<string, FileObject[]> = {};
+
+		const platforms = Object.keys(config.platforms);
+
+		for (let i = 0; i < platforms.length; i++) {
+			if (config.platforms[platforms[i] as SupportedPlatform]) {
+				filesObject[platforms[i]] = await getFilesFromPath(config.platforms[platforms[i] as SupportedPlatform]);
+				if (platforms[i] !== 'web') {
+					filesObject[platforms[i]][0].name = require('path').join(platforms[i], filesObject[platforms[i]][0].name); // @TODO make this support more than one file
+				}
+			}
+		}
+
+		if (filesObject['web']) {
+			webCID = await this.writeFolder(filesObject['web'], false);
+
+			release.platforms.web = {
+				external_url: webCID,
+				name: 'web',
+			};
+
+			delete filesObject['web'];
+		};
+
+		if (Object.keys(filesObject).length > 0) {
+		
+			const nonWebFiles: FileObject[] = Object.values(filesObject).flat(1);
+
+			nativeCID = await this.writeFolder(nonWebFiles, true);
+
+			Object.keys(filesObject).forEach((platform) => {
+				if (release.platforms && filesObject[platform] && filesObject[platform].length !== 0) {
+				release.platforms[platform as SupportedPlatform] = {
+					external_url: `${nativeCID}/${filesObject[platform][0].name}`,
+					name: require('path').basename((filesObject[platform][0].name)),
+				};
+				}
+			});
+		}
+
+		release.external_url = webCID || nativeCID;
+
+		// upload release image
+		if (config.image) {
+			const imageFile = await getFilesFromPath(config.image);
+			release.image = await this.writeFile(imageFile[0]);
+		}
+
+		return release;
 	}
 
 	async createRelease(projectID: ethers.BigNumberish, name: string, meta: ReleaseMeta): Promise<ContractTransaction> {
@@ -338,8 +398,8 @@ export default class Client {
 		const toPush = typeof window === 'undefined'
 			? (files as File[]).map(toImportCandidate)
 			: (files as ImportCandidate[]).map((file: any) => {
-				if (!file.path || file.path[0] !== '/') toWrap = true;
-				return ({ path: file.path || file.name, content: file });
+				const path = file.webkitRelativePath || file.path || file.name;
+				return ({ path, content: file });
 			});
 
 		const { root: cid, car } = await packToBlob({

@@ -1,11 +1,10 @@
 import { Command, CliUx } from '@oclif/core';
 import { ethers } from 'ethers';
-import { create, ReleaseMeta, Provider, getFilesFromPath } from '@valist/sdk';
+import { create, Provider, ReleaseConfig } from '@valist/sdk';
 import YAML from 'yaml';
 import * as fs from 'node:fs';
 import * as flags from '../flags';
 import { select } from '../keys';
-import Config from '../config';
 
 const Web3HttpProvider = require('web3-providers-http'); // eslint-disable-line @typescript-eslint/no-var-requires
 
@@ -45,11 +44,12 @@ export default class Publish extends Command {
   public async run(): Promise<void> {
     const { args, flags } = await this.parse(Publish);
 
-    let config: Config;
+    let config: ReleaseConfig;
     if (args.package) {
       const parts = args.package.split('/');
       if (parts.length !== 3) this.error('invalid package name');
-      config = new Config(parts[0], parts[1], parts[2], args.path);
+      config = new ReleaseConfig(parts[0], parts[1], parts[2]);
+      config.platforms['web'] = args.path;
     } else {
       const data = fs.readFileSync('valist.yml', 'utf8');
       config = YAML.parse(data);
@@ -58,7 +58,7 @@ export default class Publish extends Command {
     if (!config.account) this.error('invalid account name');
     if (!config.project) this.error('invalid project name');
     if (!config.release) this.error('invalid release name');
-    if (!config.path) this.error('invalid file path');
+    if (!config.platforms) this.error('no platforms configured');
 
     const privateKey = flags['private-key'] || await select();
     const metaTx = flags['meta-tx'];
@@ -74,6 +74,7 @@ export default class Publish extends Command {
 
     const isAccountMember = await valist.isAccountMember(accountID, wallet.address);
     const isProjectMember = await valist.isProjectMember(projectID, wallet.address);
+
     if (!(isAccountMember || isProjectMember)) {
       this.error('user is not an account or project member');
     }
@@ -83,27 +84,8 @@ export default class Publish extends Command {
       this.error(`release ${config.release} exists`);
     }
 
-    const release = new ReleaseMeta();
-    release.name = config.release;
-    release.description = config.description;
-    release.install = config.install;
-
     CliUx.ux.action.start('uploading files');
-    // upload release assets
-    const artifacts = await getFilesFromPath(config.path);
-    release.external_url = await valist.writeFolder(artifacts);
-    
-    // upload release image
-    if (config.image) {
-      const imageFile = await getFilesFromPath(config.image);
-      release.image = await valist.writeFile(imageFile[0]);
-    }
-    
-    // upload source snapshot
-    // if (config.source) {
-    //   const archiveURL = archiveSource(config.source);
-    //   release.source = await valist.writeFile(archiveURL);
-    // }
+    const release = await valist.uploadRelease(config);
     CliUx.ux.action.stop();
 
     CliUx.ux.log(`successfully uploaded files to IPFS: ${release.external_url}`);
