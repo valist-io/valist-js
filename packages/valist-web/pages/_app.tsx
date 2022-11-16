@@ -5,6 +5,7 @@ import type { AppProps, AppContext } from 'next/app';
 import { SWRConfig } from 'swr';
 import { useEnsName } from 'wagmi';
 import { NextLink } from '@mantine/next';
+import Image from 'next/image';
 import { useColorScheme, useLocalStorage } from '@mantine/hooks';
 import { NotificationsProvider } from '@mantine/notifications';
 import { ColorSchemeProvider, ColorScheme } from '@mantine/core';
@@ -15,15 +16,6 @@ import { RainbowKitProvider } from '@/components/RainbowKitProvider';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 const resolveName = (address: string) => useEnsName({ address, chainId: 1 }); // eslint-disable-line react-hooks/rules-of-hooks
-
-// theme overrides
-const components = {
-  Anchor: {
-    defaultProps: {
-      component: NextLink,
-    },
-  },
-};
 
 function ValistApp(props: AppProps) {
   const { Component, pageProps } = props;
@@ -46,7 +38,7 @@ function ValistApp(props: AppProps) {
           <RainbowKitProvider colorScheme={colorScheme}>
             <ApolloProvider>
               <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
-                <ThemeProvider theme={{ colorScheme, components }}>
+                <ThemeProvider theme={{ colorScheme }} link={NextLink} image={Image}>
                   <NotificationsProvider>
                     <Component {...pageProps} />
                   </NotificationsProvider>

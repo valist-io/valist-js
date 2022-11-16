@@ -1,5 +1,12 @@
-import { Card, Image, Text, Badge, useMantineTheme } from '@mantine/core';
-import Link from 'next/link';
+import { 
+  Anchor,
+  Badge, 
+  Card, 
+  Text, 
+  useMantineTheme,
+} from '@mantine/core';
+
+import { Image } from '../Image';
 
 interface DiscoveryItemProps {
   img: string,
@@ -17,7 +24,7 @@ export function CarouselItem(props: DiscoveryItemProps) {
 
   return (
     <div style={{maxWidth: 350}}>
-      <Link href={props.link}>
+      <Anchor href={props.link}>
         <Card shadow="sm" p="lg" sx={() => ({
           '&:hover': {
             cursor: 'pointer',
@@ -32,7 +39,7 @@ export function CarouselItem(props: DiscoveryItemProps) {
           </div>
           <Badge style={{ marginTop: 15, backgroundColor: badgeColor, color: badgeText}} color="gray">{props.type || 'Unknown'}</Badge>
         </Card>
-      </Link>
+      </Anchor>
     </div>
   );
 }

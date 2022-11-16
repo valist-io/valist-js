@@ -25,6 +25,7 @@ export { GalleryInput } from './components/GalleryInput';
 export { Header } from './components/Header';
 export { HeroSection } from './components/HeroSection';
 export { Identicon } from './components/Identicon';
+export { Image } from './components/Image';
 export { ImageInput } from './components/ImageInput';
 export { InfoButton } from './components/InfoButton';
 export { Item } from './components/Item';

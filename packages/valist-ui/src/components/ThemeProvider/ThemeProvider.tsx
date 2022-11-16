@@ -12,6 +12,9 @@ import { components } from './components';
 export interface ThemeProviderProps {
   children?: React.ReactNode;
   theme?: MantineThemeOverride;
+
+  link?: any;
+  image?: any;
 }
 
 export const globalStyles = (theme: MantineTheme) => ({
@@ -23,14 +26,21 @@ export const globalStyles = (theme: MantineTheme) => ({
 });
 
 export function ThemeProvider(props: ThemeProviderProps) {
-  const { components: componentsProps, ...themeProps } = props.theme;
-
   const themeOverride = { 
     ...theme,
-    ...themeProps,
-    components: { 
-      ...components, 
-      ...componentsProps,
+    ...props.theme,
+    components: {
+      ...components,
+      Anchor: {
+        defaultProps: {
+          component: props.link,
+        },
+      },
+      _Image: {
+        defaultProps: {
+          component: props.image,
+        },
+      },
     },
   };
 

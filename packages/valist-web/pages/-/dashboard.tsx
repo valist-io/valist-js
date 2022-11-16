@@ -56,9 +56,6 @@ const IndexPage: NextPage = () => {
   const [accountName, setAccountName] = useState('');
   const { accounts, projects, members, logs, loading } = useDashboard(accountName);
 
-  console.log(accounts)
-  console.log(projects)
-  
   const handleAccountChange = (name: string) => {
     const accountByAddress = getAccounts();
     if (address) setAccount(name, address, accountByAddress);

@@ -18,6 +18,22 @@ const nextConfig = {
   publicRuntimeConfig: {
     CHAIN_ID: process.env.CHAIN_ID || 137,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '*.ipfs.gateway.valist.io',
+      },
+      {
+        protocol: 'https',
+        hostname: 'gateway.valist.io',
+      },
+      {
+        protocol: 'https',
+        hostname: 'pbs.twimg.com',
+      },
+    ],
+  },
   webpack: function (config, options) {
     if (!options.isServer) {
       // polyfill events on browser. since webpack5, polyfills are not automatically included
