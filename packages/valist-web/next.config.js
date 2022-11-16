@@ -1,29 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  async headers() {
-    return [
-      {
-        source: "/:path*",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "s-maxage=1, stale-while-revalidate=59",
-          },
-        ],
-      },
-    ];
-  },
   assetPrefix: process.env.IPFS_BUILD ? './' : undefined,
   publicRuntimeConfig: {
     CHAIN_ID: process.env.CHAIN_ID || 137,
   },
   images: {
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '*.ipfs.gateway.valist.io',
-      },
       {
         protocol: 'https',
         hostname: 'gateway.valist.io',
@@ -54,7 +37,6 @@ const nextConfig = {
     config.plugins.push(new options.webpack.IgnorePlugin({ resourceRegExp: /^electron$/ }));
     return config;
   },
-  // trailingSlash: true,
 };
 
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
