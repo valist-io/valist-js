@@ -7,7 +7,7 @@ import {
 import { config } from './cache';
 import { getSubgraphURI } from '@/utils/config';
 
-const client = new ApolloClient({
+export const client = new ApolloClient({
   uri: getSubgraphURI(),
   cache: new InMemoryCache(config),
 });
