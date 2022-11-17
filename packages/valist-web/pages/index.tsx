@@ -48,7 +48,8 @@ const Discover: NextPage = () => {
           objectFit="cover"
           objectPosition="center"
           alt="Shattered Realms"
-          src="/images/discovery/shattered_realms.jpg" 
+          src="/images/discovery/shattered_realms.jpg"
+          priority
         />
         <Stack align="center" justify="center" style={{ height: 500 }}>
           <Title color="white" size={96}>Shattered Realms</Title>
@@ -160,6 +161,7 @@ const Discover: NextPage = () => {
           objectPosition="center"
           alt="Shattered Realms"
           src={`/images/discovery/publish_promo_${theme.colorScheme}.jpg`}
+          priority
         />
         <Stack spacing={0} align="start" justify="center" p={64} style={{ height: '100%' }}>
           <Title color="white" size={56}>Publish Today</Title>
