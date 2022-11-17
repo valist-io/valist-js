@@ -8,14 +8,14 @@ export const featuredGames: any[] = [
     type: 'web',
   },
   {
-    image: 'https://gateway.valist.io/ipfs/bafybeihavc5tjkdp6gt3hqmvm3kbkahnvfbxupkwbjs5jlehprsuisnm5u',
+    image: 'https://gateway.valist.io/ipfs/bafybeibl6st3mfwt7cqkw2dxnymrvhiob5gimydgrckhht4xni2vkkawsu',
     name: 'Now Kith',
     description: "A 5-level puzzle game with 3-bonus rounds. Combine two objects together to get the desired result.",
     link: '/devbymarc/now_kith',
     type: 'web',
   },
   {
-    image: 'https://gateway.valist.io/ipfs/bafybeicss3okei2isjmlnpuqaupd6jzclnehdiiyqihvle34pukbpkrcbe',
+    image: 'https://gateway.valist.io/ipfs/bafybeibzvlwmsdh42r7pdfu2ijazlqdqgqpqpb5745mr3uls4vhbp6feau',
     name: 'ok ima fight',
     description: "After spending the last few weeks training in your father's gym, the time has come to put your hands to the test and hit the ring for the very first time.",
     link: '/devbymarc/ok_ima_fight',
