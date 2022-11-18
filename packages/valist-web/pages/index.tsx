@@ -183,8 +183,15 @@ export async function getStaticProps() {
   const variables = { order: 'desc', filterAddresses };
   const { data } = await client.query({ query, variables });
 
-  const recent = data?.releases?.map((release: any) => release.project) ?? [];
-  const newest = recent.slice().sort((a: any, b: any) => b.blockTime.localeCompare(a.blockTime));
+  const projectMap = new Map<string, any>();
+  const releases = data?.releases ?? [];
+
+  releases.map((r: any) => r.project)
+    .forEach((p: any) => projectMap.set(p.id, p));
+
+  const recent = Array.from(projectMap.values());
+  const newest = recent.slice()
+    .sort((a: any, b: any) => b.blockTime.localeCompare(a.blockTime));
 
   return {
     props: { recent, newest },
