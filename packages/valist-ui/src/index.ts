@@ -7,7 +7,6 @@ export { AppShell } from './components/AppShell';
 export { AsyncInput } from './components/AsyncInput';
 export { Button } from './components/Button';
 export { Breadcrumbs } from './components/Breadcrumbs';
-export { Card } from './components/Card';
 export { CardGrid } from './components/CardGrid';
 export { CheckboxList } from './components/CheckboxList';
 export { CopyButton } from './components/CopyButton';

@@ -1,6 +1,5 @@
 import React from 'react';
-import { Tabs } from '@mantine/core';
-import { Card } from '../Card';
+import { Paper, Tabs } from '@mantine/core';
 
 export interface TabsListCard {
   children?: React.ReactNode;
@@ -8,10 +7,18 @@ export interface TabsListCard {
 
 export function TabsListCard(props: TabsListCard) {
   return (
-    <Card style={{ paddingTop: 10, paddingBottom: 0, marginBottom: 16 }}>
+    <Paper style={{
+      width: '100%',
+      borderRadius: 8,
+      paddingLeft: 32,
+      paddingRight: 32,
+      paddingTop: 10,
+      paddingBottom: 0,
+      marginBottom: 16,
+    }}>
       <Tabs.List style={{ gap: 40, height: 50 }}>
         {props.children}
       </Tabs.List>
-    </Card>
+    </Paper>
   );
 }

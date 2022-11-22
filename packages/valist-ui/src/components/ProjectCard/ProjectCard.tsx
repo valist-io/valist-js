@@ -1,10 +1,11 @@
-import { 
+import {
+  Card,
   Group,
   Text,
 } from '@mantine/core';
 
 import { Item } from '../Item';
-import { Card } from '../Card';
+import { useStyles } from './ProjectCard.styles';
 
 export interface ProjectCardProps {
   image?: string;
@@ -14,10 +15,11 @@ export interface ProjectCardProps {
 }
 
 export function ProjectCard(props: ProjectCardProps): JSX.Element {
+  const { classes } = useStyles();
   return (
-    <Card style={{ height: 168 }}>
+    <Card className={classes.root}>
       <Group mb={16} noWrap>
-        <Item 
+        <Item
           name={props.title}
           label={props.secondary}
           image={props.image}
@@ -27,5 +29,5 @@ export function ProjectCard(props: ProjectCardProps): JSX.Element {
         {props.description}
       </Text>
     </Card>
-  )
+  );
 }
