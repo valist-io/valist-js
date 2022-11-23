@@ -4,14 +4,13 @@ import { useAccount } from 'wagmi';
 import useSWRImmutable from 'swr/immutable';
 import * as Icon from 'tabler-icons-react';
 import { useRouter } from 'next/router';
-import { useMediaQuery } from '@mantine/hooks';
+import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
 import { Layout } from '@/components/Layout';
 import { Metadata } from '@/components/Metadata';
 import { Activity } from '@/components/Activity';
 import { ProjectCard } from '@/components/ProjectCard';
 import { CreateAccount } from '@/components/CreateAccount';
 import { CreateProject } from '@/components/CreateProject';
-import { useValist } from '@/utils/valist';
 import { useDashboard } from '@/utils/dashboard';
 
 import { 
@@ -42,12 +41,12 @@ import { getAccounts, setAccount } from '@valist/ui/dist/components/AccountSelec
 
 const IndexPage: NextPage = () => {
   const router = useRouter();
-  const valist = useValist();
 
   const { address, isConnected } = useAccount();
 
   const [step, setStep] = useState(0);
-  const [onboarding, setOnboarding] = useState(true);
+  const [skipOnboarding, setSkipOnboarding] = useLocalStorage({ key: 'skipOnboarding', defaultValue: ({} as Record<string, boolean>) });
+  const [newAccount, setNewAccount] = useState('');
   const [infoOpened, setInfoOpened] = useState(false);
 
   const showInfo = useMediaQuery('(max-width: 1400px)', false);
@@ -62,10 +61,17 @@ const IndexPage: NextPage = () => {
     setAccountName(name);
   };
 
+  const _skipOnboarding = () => {
+    if (address) {
+      const skipByAddress = { ...skipOnboarding };
+      skipByAddress[address] = true;
+      setSkipOnboarding(skipByAddress);
+    }
+  };
+
   useEffect(() => {
     const accountByAddress = getAccounts();
     if (address) setAccountName(accountByAddress[address]);
-    setOnboarding(true);
   }, [address]);
 
   const account: any = accounts.find((a: any) => a.name === accountName);
@@ -101,7 +107,10 @@ const IndexPage: NextPage = () => {
     }
   }, [isConnected, accounts.length]);
 
-  if (!loading && onboarding && step < 3) {
+  const onboarding = (address && skipOnboarding[address] !== true) ? true : false;
+  const currentAccount = newAccount || (accounts.length > 0 ? accounts[0].name : '');
+
+  if (!loading && projects.length === 0 && onboarding && step < 3) {
     return (
       <Layout hideNavbar>
         <Grid>
@@ -112,19 +121,21 @@ const IndexPage: NextPage = () => {
                 <Stepper.Step label="Step 2" description="Create Account" />
                 <Stepper.Step label="Step 3" description="Create Project" />
               </Stepper>
-              <Button
-                disabled={step === 0}
-                variant="subtle"
-                onClick={() => setOnboarding(false)}
-              >
-                Skip Onboarding
-              </Button>
+              {accounts.length > 0 && 
+                <Button
+                  disabled={step === 0}
+                  variant="subtle"
+                  onClick={_skipOnboarding}
+                >
+                  Skip Onboarding
+                </Button>
+              }
             </Stack>
           </Grid.Col>
           <Grid.Col md={9}>
             { step === 0 && <Welcome /> }
-            { step === 1 && <CreateAccount onboard={true} /> }
-            { step === 2 && <CreateProject onboard={true} /> }
+            { step === 1 && <CreateAccount onboard={true} setAccount={setNewAccount} /> }
+            { step === 2 && <CreateProject onboard={true} account={currentAccount} /> }
           </Grid.Col>
         </Grid>
       </Layout>

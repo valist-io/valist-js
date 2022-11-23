@@ -1,5 +1,4 @@
-import type { NextPage } from 'next';
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import { useApolloClient, useQuery } from '@apollo/client';
@@ -40,6 +39,7 @@ import {
 
 export interface CreateProjectProps {
   onboard?: boolean;
+  account?: string;
 }
 
 export function CreateProject(props: CreateProjectProps) {
@@ -49,7 +49,7 @@ export function CreateProject(props: CreateProjectProps) {
   const chainId = getChainId();
   const valist = useValist();
 
-  const accountName = `${router.query.account}`;
+  const accountName = props.account || `${router.query.account}`;
   const accountId = valist.generateID(chainId, accountName);
 
   const { data } = useQuery(query, {
