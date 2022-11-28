@@ -35,17 +35,6 @@ export interface AccountSelectComponent extends React.FC<AccountSelectProps> {
   Option: typeof Option;
 }
 
-export const getAccounts = (): Record<string, string> => {
-  const accountsString = localStorage.getItem('currentAccount');
-  if (accountsString) return JSON.parse(accountsString);
-  return {};
-};
-
-export const setAccount = (name:string, address: string, accountByAddress: Record<string, string>): void =>  {
-  accountByAddress[address] = name;
-  localStorage.setItem('currentAccount', JSON.stringify(accountByAddress));
-};
-
 export const AccountSelect: AccountSelectComponent = (props: AccountSelectProps) => {
   const { classes } = useStyles();
   const [opened, setOpened] = useState(false);

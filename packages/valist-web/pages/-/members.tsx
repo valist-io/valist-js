@@ -2,11 +2,10 @@ import { NextPage } from 'next';
 import { useEffect, useState } from 'react';
 import useSWRImmutable from 'swr/immutable';
 import { Group, SimpleGrid } from '@mantine/core';
+import { useLocalStorage } from '@mantine/hooks';
 import { Layout } from '@/components/Layout';
 import { Metadata } from '@/components/Metadata';
 import { useMembers } from '@/utils/dashboard';
-
-import { getAccounts as _getAccounts, setAccount } from '@valist/ui/dist/components/AccountSelect';
 
 import {
   AccountSelect,
@@ -16,9 +15,16 @@ import { useAccount } from 'wagmi';
 
 const MembersPage: NextPage = () => {
   const { address } = useAccount();
-  const [accountName, setAccountName] = useState('');
-  const { accounts, members } = useMembers(accountName);
+  
+  const [accountNames, setAccountNames] = useLocalStorage<Record<string, string>>({
+    key: 'accountNames',
+    defaultValue: {},
+  });
 
+  const setAccountName = (name: string) => setAccountNames(current => ({ ...current, [`${address}`]: name }));
+
+  const accountName = address ? accountNames[address] : '';
+  const { accounts, members } = useMembers(accountName);
   const account: any = accounts.find((a: any) => a.name === accountName);
   const { data: accountMeta } = useSWRImmutable(account?.metaURI);
 
@@ -29,17 +35,6 @@ const MembersPage: NextPage = () => {
     return Array.from(accountMap.values());
   };
 
-  const handleAccountChange = (name: string) => {
-    const accountByAddress = _getAccounts();
-    if (address) setAccount(name, address, accountByAddress);
-    setAccountName(name);
-  };
-
-  useEffect(() => {
-    const accountByAddress = _getAccounts();
-    if (address) setAccountName(accountByAddress[address]);
-  }, [address]);
-
   return (
     <Layout padding={0}>
       <Group mt={40} pl={40} position="apart">
@@ -48,7 +43,7 @@ const MembersPage: NextPage = () => {
           value={accountName}
           image={accountMeta?.image}
           href="/-/create/account"
-          onChange={handleAccountChange}
+          onChange={setAccountName}
         >
           <AccountSelect.Option value="" name="All Accounts" />
           {accounts.map((acc: any, index: number) => 

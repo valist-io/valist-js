@@ -37,43 +37,34 @@ import {
   NoProjects,
   Welcome,
 } from '@valist/ui';
-import { getAccounts, setAccount } from '@valist/ui/dist/components/AccountSelect';
 
 const IndexPage: NextPage = () => {
   const router = useRouter();
+  const { address } = useAccount();
 
-  const { address, isConnected } = useAccount();
+  const [accountNames, setAccountNames] = useLocalStorage<Record<string, string>>({
+    key: 'accountNames',
+    defaultValue: {},
+  });
+
+  const [onboardingSkips, setOnboardingSkips] = useLocalStorage<Record<string, boolean>>({ 
+    key: 'onboardingSkips',
+    defaultValue: {}, 
+  });
+
+  const setAccountName = (name: string) => setAccountNames(current => ({ ...current, [`${address}`]: name }));
+  const skipOnboarding = () => setOnboardingSkips(current => ({ ...current, [`${address}`]: true }));
 
   const [step, setStep] = useState(0);
-  const [skipOnboarding, setSkipOnboarding] = useLocalStorage({ key: 'skipOnboarding', defaultValue: ({} as Record<string, boolean>) });
-  const [newAccount, setNewAccount] = useState('');
   const [infoOpened, setInfoOpened] = useState(false);
 
   const showInfo = useMediaQuery('(max-width: 1400px)', false);
   const isMobile = useMediaQuery('(max-width: 992px)', false);
 
-  const [accountName, setAccountName] = useState('');
+  const accountName = address ? accountNames[address] : '';
+  const onboarding = address ? onboardingSkips[address] : false;
+
   const { accounts, projects, members, logs, loading } = useDashboard(accountName);
-
-  const handleAccountChange = (name: string) => {
-    const accountByAddress = getAccounts();
-    if (address) setAccount(name, address, accountByAddress);
-    setAccountName(name);
-  };
-
-  const _skipOnboarding = () => {
-    if (address) {
-      const skipByAddress = { ...skipOnboarding };
-      skipByAddress[address] = true;
-      setSkipOnboarding(skipByAddress);
-    }
-  };
-
-  useEffect(() => {
-    const accountByAddress = getAccounts();
-    if (address) setAccountName(accountByAddress[address]);
-  }, [address]);
-
   const account: any = accounts.find((a: any) => a.name === accountName);
   const { data: accountMeta } = useSWRImmutable(account?.metaURI);
 
@@ -96,7 +87,7 @@ const IndexPage: NextPage = () => {
 
   // update stepper
   useEffect(() => {
-    if (!isConnected) {
+    if (!address) {
       setStep(0);
     } else if (accounts.length === 0) {
       setStep(1);
@@ -105,12 +96,9 @@ const IndexPage: NextPage = () => {
     } else {
       setStep(3);
     }
-  }, [isConnected, accounts.length]);
+  }, [address, accounts.length, projects.length]);
 
-  const onboarding = (address && skipOnboarding[address] !== true) ? true : false;
-  const currentAccount = newAccount || (accounts.length > 0 ? accounts[0].name : '');
-
-  if (!loading && projects.length === 0 && onboarding && step < 3) {
+  if (!loading && step < 3 && !onboarding) {
     return (
       <Layout hideNavbar>
         <Grid>
@@ -125,7 +113,7 @@ const IndexPage: NextPage = () => {
                 <Button
                   disabled={step === 0}
                   variant="subtle"
-                  onClick={_skipOnboarding}
+                  onClick={skipOnboarding}
                 >
                   Skip Onboarding
                 </Button>
@@ -134,8 +122,8 @@ const IndexPage: NextPage = () => {
           </Grid.Col>
           <Grid.Col md={9}>
             { step === 0 && <Welcome /> }
-            { step === 1 && <CreateAccount onboard={true} setAccount={setNewAccount} /> }
-            { step === 2 && <CreateProject onboard={true} account={currentAccount} /> }
+            { step === 1 && <CreateAccount onboard={true} /> }
+            { step === 2 && <CreateProject onboard={true} account={accountName} /> }
           </Grid.Col>
         </Grid>
       </Layout>
@@ -150,12 +138,14 @@ const IndexPage: NextPage = () => {
           value={accountName}
           image={accountMeta?.image}
           href="/-/create/account"
-          onChange={handleAccountChange}
+          onChange={setAccountName}
         >
           <AccountSelect.Option value="" name="All Accounts" />
           {accounts.map((acc: any, index: number) => 
             <Metadata key={index} url={acc.metaURI}>
-              {(data: any) => ( <AccountSelect.Option value={acc.name} name={acc.name} image={data?.image} /> )}
+              {(data: any) => ( 
+                <AccountSelect.Option value={acc.name} name={acc.name} image={data?.image} /> 
+              )}
             </Metadata>,
           )}
         </AccountSelect>
