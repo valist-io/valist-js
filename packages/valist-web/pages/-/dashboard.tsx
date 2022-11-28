@@ -167,7 +167,7 @@ const IndexPage: NextPage = () => {
         }
       </Group>
       <div style={{ padding: 40 }}>
-        { accountName !== '' &&
+        { accountName &&
           <Group spacing={24} mb="xl" align="stretch" noWrap>
             <Avatar 
               radius="md"
