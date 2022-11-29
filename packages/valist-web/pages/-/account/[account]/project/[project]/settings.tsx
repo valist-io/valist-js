@@ -42,8 +42,7 @@ import {
   GalleryInput,
   _404,
 } from '@valist/ui';
-import getConfig from 'next/config';
-import { DeployForm } from '@/components/DeployForm';
+import { ProjectMeta } from '@valist/sdk';
 
 const Project: NextPage = () => {
   const router = useRouter();
@@ -51,9 +50,7 @@ const Project: NextPage = () => {
   const { address } = useAccount();
   const chainId = getChainId();
   const valist = useValist();
-  const { publicRuntimeConfig } = getConfig();
-  const { CLIENT_ID } = publicRuntimeConfig;
-
+  
   const accountName = `${router.query.account}`;
   const accountId = valist.generateID(chainId, accountName);
 
@@ -61,17 +58,19 @@ const Project: NextPage = () => {
   const projectId = valist.generateID(accountId, projectName);
 
   const { data, loading:gqLoading } = useQuery(query, { variables: { projectId } });
-  const { data: meta } = useSWRImmutable(data?.project?.metaURI);
+  const { data: meta } = useSWRImmutable<ProjectMeta>(data?.project?.metaURI);
 
   const accountMembers = data?.project?.account?.members ?? [];
   const projectMembers = data?.project?.members ?? [];
 
   const [activeTab, setActiveTab] = useState<string | null>();
+  const [repo, setRepo] = useState<string>('');
+  const [isLinked, setIsLinked] = useState<boolean>(false);
 
   // form values
   const [loading, setLoading] = useState(true);
-  const [image, setImage] = useState<File>();
-  const [mainCapsule, setMainCapsule] = useState<File>();
+  const [image, setImage] = useState<File | string>('');
+  const [mainCapsule, setMainCapsule] = useState<File | string>('');
   const [gallery, setGallery] = useState<File[]>([]);
 
   const form = useForm<FormValues>({
@@ -107,11 +106,13 @@ const Project: NextPage = () => {
       form.setFieldValue('type', meta.type ?? '');
       form.setFieldValue('launchExternal', meta.launch_external ?? false);
       form.setFieldValue('promptDonation', meta.prompt_donation ?? false);
-      form.setFieldValue('donationAddress', meta.donation_address ?? false);
+      form.setFieldValue('donationAddress', meta.donation_address || '');
 
       setGallery(galleryLinks?.map((item: any) => item.src) ?? []);
-      setMainCapsule(meta.main_capsule);
-      setImage(meta.image);
+      setMainCapsule(meta.main_capsule || '');
+      setImage(meta.image || '');
+      setRepo(meta.repository || '');
+      if (meta.repository) setIsLinked(true);
       setLoading(false);
     }
   }, [meta]);
@@ -145,14 +146,14 @@ const Project: NextPage = () => {
   };
 
   const update = (values: FormValues) => {
-    console.log('update in settings', values);
     setLoading(true);
     updateProject(
       address,
       projectId,
-      image,
-      mainCapsule,
+      image as File,
+      mainCapsule as File,
       gallery,
+      repo,
       values,
       valist,
       cache,
@@ -181,12 +182,14 @@ const Project: NextPage = () => {
     );
   };
 
+  console.log('repo', repo);
+
   return (
     <Layout>
       <div style={{ paddingBottom: 32 }}>
         <Breadcrumbs items={breadcrumbs} />
       </div>
-      <Tabs 
+      <Tabs
         defaultValue="basic"
         value={activeTab}
         onTabChange={setActiveTab}
@@ -379,16 +382,6 @@ const Project: NextPage = () => {
               </Button>
             </Group>
           </form>
-        </Tabs.Panel>
-        <Tabs.Panel value="build">
-          <DeployForm
-            account={accountName}
-            project={projectName}
-            clientID={CLIENT_ID}
-            onConnected={() => {
-              setActiveTab('build');
-            }}
-          />
         </Tabs.Panel>
       </Tabs>
     </Layout>

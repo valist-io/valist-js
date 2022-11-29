@@ -11,11 +11,11 @@ interface YesNoPromptProps {
 export function YesNoPrompt(props: YesNoPromptProps): JSX.Element {
   return (
     <div>
-      <Text style={{fontSize: 25}}>{props.text}</Text>
+      <Text style={{ fontSize: 25 }}>{props.text}</Text>
       <Center>
-        <div style={{display: 'flex', padding: 20}}>
-          <button onClick={props.yes} style={{minHeight: 50, minWidth: 50, marginRight: 10,}}>{props.yesText || 'Yes'}</button>
-          <button onClick={props.no} style={{minHeight: 50, minWidth: 50}}>{props.noText || 'No'}</button>
+        <div style={{ display: 'flex', padding: 20 }}>
+          <button onClick={props.yes} style={{ minHeight: 50, minWidth: 50, marginRight: 10 }}>{props.yesText || 'Yes'}</button>
+          <button onClick={props.no} style={{ minHeight: 50, minWidth: 50 }}>{props.noText || 'No'}</button>
         </div>
       </Center>
     </div>

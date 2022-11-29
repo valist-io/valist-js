@@ -123,6 +123,13 @@ const ProjectPage: NextPage = () => {
       side: 'left',
     },
     {
+      label: 'Deployments', 
+      icon: Icon.Rocket, 
+      href: `/-/account/${accountName}/project/${projectName}/deployments`, 
+      hide: !(isAccountMember || isProjectMember),
+      side: 'left',
+    },
+    {
       label: 'New Release',
       icon: Icon.News,
       href: `/-/account/${accountName}/project/${projectName}/create/release`,

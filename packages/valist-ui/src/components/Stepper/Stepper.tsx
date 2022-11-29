@@ -1,4 +1,4 @@
-import { Stepper as _Stepper, Button, Group } from '@mantine/core';
+import { Stepper as _Stepper, Button, Group, Title, Center } from '@mantine/core';
 
 export type Step = {
   label: string;
@@ -10,30 +10,22 @@ interface StepperProps {
   active: number;
   setActive: (value: number) => void;
   steps: Step[];
+  completed: string;
 }
 
 export function Stepper(props: StepperProps): JSX.Element {
-  const totalSteps = props.steps.length;
-  const nextStep = props.active + 1;
-  const prevStep = props.active - 1;
-
-  const next = () => props.setActive(nextStep < totalSteps ? nextStep : props.active);
-  const prev = () => props.setActive(prevStep > 0 ? prevStep : props.active);
-
   return (
     <>
       <_Stepper active={props.active} onStepClick={props.setActive} breakpoint="sm">
-        {props.steps.map((step) => (
-          <_Stepper.Step label={step.label} description={step.description}>
-            {step.text}
+        {props.steps.map((step, index) => (
+          <_Stepper.Step key={step.label + index} label={step.label} description={step.description}>
+            <Center><Title my="lg" order={2}>{step.text}</Title> </Center>
           </_Stepper.Step>
         ))}
+        <_Stepper.Completed>
+          <Center><Title my="lg" order={2}>{props.completed}</Title></Center>
+        </_Stepper.Completed>
       </_Stepper>
-
-      <Group position="center" mt="xl">
-        <Button variant="default" onClick={prev}>Back</Button>
-        <Button onClick={next}>Next step</Button>
-      </Group>
     </>
   );
 }

@@ -10,21 +10,15 @@ interface SelectRepo {
 
 export function SelectRepo(props: SelectRepo):JSX.Element {
   return (
-    <>
-      <Select
-        style={{ marginBottom: 20 }}
-        label="Search your repositories" 
-        data={props.repos}
-        searchable
-        onChange={(value) => { 
-          if (value) props.onChange(value);
-        }}
-        value={props.value}
-      />
-      <Button
-        onClick={props.onRepoSelect}>
-          Continue
-      </Button>
-    </>
+    <Select
+      style={{ marginBottom: 20 }}
+      label="Search your repositories" 
+      data={props.repos}
+      searchable
+      onChange={(value) => { 
+        if (value) props.onChange(value);
+      }}
+      value={props.value}
+    />
   );
 }

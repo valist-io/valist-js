@@ -7,8 +7,11 @@ const RedirectPage: NextPage = () => {
 
   useEffect(() => {
     if (router.isReady && typeof router.query.state === 'string' && typeof router.query.code === 'string') {
-      const location = Buffer.from(router.query.state, 'base64').toString("utf8");
-      if (location) router.push(`${location}?code=${router.query.code}`);
+      const location = JSON.parse(Buffer.from(router.query.state, 'base64').toString("utf8"));
+      if (location) {
+        location.query.code = router.query.code;
+        router.push(location);
+      }
     }
   }, [router, router.isReady]);
   

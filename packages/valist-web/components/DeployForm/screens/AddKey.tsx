@@ -1,4 +1,4 @@
-import { Button, Text, TextInput, Title } from "@mantine/core";
+import { Text, TextInput, Title } from "@mantine/core";
 import { randomBytes } from "crypto";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
@@ -7,7 +7,6 @@ interface AddKeyProps {
   account: string;
   project: string;
   repo: string;
-  back: () => void;
 }
 
 export function AddKey(props: AddKeyProps):JSX.Element {
@@ -38,9 +37,6 @@ export function AddKey(props: AddKeyProps):JSX.Element {
         <Text>1. The new <b>public key address</b> will be added to the <b>{props.account}/{props.project}</b> Valist project.</Text>
         <Text>2. The new <b>private key</b> will be added to the <b>{props.repo}</b> GitHub repo as a secret named <b>VALIST_SIGNER</b>.</Text>
         <br />
-
-        <Button color="violet" onClick={(() => {})}>Add Key</Button>
-        <Button style={{ marginLeft: 20 }} color="violet" onClick={props.back}>Choose a different repo</Button>
       </div>
     </section>
   );

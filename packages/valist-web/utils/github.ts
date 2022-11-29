@@ -3,15 +3,6 @@ import { randomBytes } from "crypto";
 import { ethers } from "ethers";
 import libsodium from 'libsodium-wrappers';
 
-export type ProjectType = 'custom' | 'next' | 'react';
-
-export const distLocation: Record<ProjectType, string> = {
-  custom: '',
-  // go: 'dist',
-  next: 'out',
-  react: 'build',
-};
-
 export const PR_TITLE = "Add Valist GitHub Action";
 
 export const author = {
@@ -19,87 +10,57 @@ export const author = {
   email: 'hello@valist.io',
 };
 
-export const buildCommands: Record<ProjectType, string> = {
-  custom: ``,
-  // go: ` GOOS=windows GOARCH=amd64 go build -o ./dist/windows-amd64 src/main.go
-  //       GOOS=linux GOARCH=amd64 go build -o ./dist/linux-amd64 src/main.go
-  //       GOOS=darwin GOARCH=amd64 go build -o ./dist/darwin-amd64 src/main.go
-  //       GOOS=darwin GOARCH=arm64 go build -o ./dist/darwin-arm64 src/main.go`,
-  next: `   npm run build && npx next export`,
-  react: '    npm run build',
-};
+export type CreateFunction = (value: Record<string, string>) => string;
+export type WebEnvironment = 'node16';
+export type WebFramework = 'next' | 'react';
+export type PublishingMethod = 'valist';
 
-export const installCommands: Record<ProjectType, string> = {
-  custom: ``,
-  // go: ``,
-  next: `   npm install`,
-  react: `   npm install`,
-};
-
-export const environments: Record<ProjectType, string> = {
-  custom: '',
-  // go: `
-  //     - name: Setup Go
-  //       uses: actions/setup-go@v3
-  //       with:
-  //         go-version: '^1.13.1'
-
-  //     - name: Build Go Project
-  //       run: |`,
-  next: `
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-
-      - name: Build and export Next.js app
-        run: |`,
-  react: `
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-
-      - name: Build Create React App
-        run: |`,
-};
-
-export type BuildYaml = {
-  account: string;
-  project: string;
-  environment: string;
-  installCommand?: string;
+export type WebFrameworkDefault = {
+  installCommand: string;
   buildCommand: string;
-  outputPath: string;
+  outputFolder: string;
 }
 
-export function buildYaml({
-  account,
-  project,
-  environment,
-  installCommand,
-  buildCommand,
-  outputPath,
-}: BuildYaml) {
-  // Get path to artifacts from ProjectType
-  const privateKey = '${{ secrets.VALIST_SIGNER }}';
-  const release = '${{ env.TIMESTAMP }}';
+export const webFrameworkDefaults: Record<WebFramework, WebFrameworkDefault> = {
+  next: {
+    outputFolder: 'out',
+    buildCommand: 'npm run build && npx next export',
+    installCommand: 'npm install',
+  },
+  react: {
+    outputFolder: 'build',
+    buildCommand: 'npm run build',
+    installCommand: 'npm install',
+  },
+};
 
-  return `name: Valist Publish
-on:
-  push:
-    branches:
-      - main
-jobs:
-  valist-publish:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        ${environment}${installCommand ? '\n        ' + installCommand : ''}
-        ${buildCommand ? buildCommand : ''}
+//  create functions for webEnvironments
+export const webEnvironments: Record<WebEnvironment, CreateFunction> = {
+  node16: ({ }) => `
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16' \n`,
+};
 
-      - name: Mark Timestamp
+export const webFrameworks: Record<WebFramework, CreateFunction> = {
+  next: ({ buildCommand, installCommand }) => `
+      - name: Build and export Next.js app
+        run: |${installCommand ? '\n          ' + installCommand : ''}
+          ${buildCommand}
+\n`,
+  react: ({ buildCommand, installCommand }) => `
+      - name: Build and export Create React App
+        run: |${installCommand ? '\n          ' + installCommand : ''}
+          ${buildCommand}
+\n`,
+};
+
+export const publishingMethod: Record<PublishingMethod, CreateFunction> = {
+  valist: ({ account, project, outputPath }) => {
+    const privateKey = '${{ secrets.VALIST_SIGNER }}';
+    const release = '${{ env.TIMESTAMP }}';
+    return `      - name: Mark Timestamp
         run: echo "TIMESTAMP=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
         
       - name: Valist Publish
@@ -109,7 +70,61 @@ jobs:
           account: ${account}
           project: ${project}
           release: ${release}
-          path: ${outputPath}`;
+          path: ${outputPath}
+        `;
+  },
+};
+
+export type BuildManifest = {
+  build: Record<'web', Record<string, any>>;
+  publish: Record<PublishingMethod, Record<string, any>>;
+  integrations: Record<string, Record<string, any>>;
+}
+
+export function buildYaml(manifest: BuildManifest) {
+  let outputPath = 'out';
+  let yaml = `name: Valist Deploy
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+`;
+
+  // loop through build targets
+  for (const [key, value] of Object.entries(manifest.build)) {
+    if (value?.environment) {
+      yaml = yaml.concat(
+        // @ts-ignore Add base environment
+        webEnvironments[value.environment]({}),
+      );
+    }
+
+    if (value?.framework) {
+      yaml = yaml.concat(
+        // @ts-ignore Add build step
+        webFrameworks[value.framework]({
+          installCommand: value.installCommand,
+          buildCommand: value.buildCommand,
+        }),
+      );
+    }
+  }
+
+  // loop through publishing methods
+  for (const [key, value] of Object.entries(manifest.publish)) {
+    yaml = yaml.concat(
+      // @ts-ignore Add publishing method
+      publishingMethod[key]({ ...value, outputPath }),
+    );
+  }
+
+  return yaml;
 };
 
 export async function getRepoPubicKey(octokit: Octokit, owner: string, repo: string) {
@@ -141,15 +156,32 @@ export async function checkRepoSecret(octokit: Octokit, owner: string, repo: str
 };
 
 export async function getRepos(octokit: Octokit) {
-  return await octokit.request('GET /user/repos', { per_page: 100 });
+  return await octokit.request('GET /user/repos', { type: 'owner', per_page: 100 });
 };
 
 export async function getWorkflows(octokit: Octokit, owner: string, repo: string) {
-  return await octokit.request('GET /repos/{owner}/{repo}/actions/workflows', {
+  return await octokit.request('GET /repos/{owner}/{repo}/actions/runs', {
     owner,
     repo,
     per_page: 1000,
   });
+}
+
+export async function getJobLogs(octokit: Octokit, owner: string, repo: string, run_id: number) {
+  return await octokit.request('GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs', {
+    owner,
+    repo,
+    run_id,
+  });
+}
+
+export async function getRunLogs(octokit: Octokit, owner: string, repo: string, run_id: number) {
+  // return await octokit.request('GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/logs', {
+  //   owner,
+  //   repo,
+  //   run_id
+  //   attempt_number: 'ATTEMPT_NUMBER'
+  // })
 }
 
 function assertDefined<T>(value: T | undefined | null, msg = "value was undefined or null"): T {

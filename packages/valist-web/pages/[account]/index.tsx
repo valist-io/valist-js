@@ -88,7 +88,7 @@ const AccountPage: NextPage = () => {
     return (
       <Layout>
         <_404 
-          message={"The account you are looking for doesn't seem to exist, no biggie click on the button below to create it!."}
+          message={"The account you are looking for doesn't seem to exist, no biggie click on the button below to create it!"}
           action={
             <Button onClick={() => router.push(`/-/create/account`)}>Create account</Button>
           }
