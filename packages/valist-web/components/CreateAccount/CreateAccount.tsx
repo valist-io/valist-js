@@ -1,4 +1,3 @@
-import type { NextPage } from 'next';
 import React, { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
@@ -10,7 +9,7 @@ import { NameInput } from '@/components/NameInput';
 import { getChainId } from '@/utils/config';
 import { useValist } from '@/utils/valist';
 
-import { 
+import {
   schema,
   FormValues,
   createAccount, 
@@ -33,7 +32,8 @@ import {
 } from '@valist/ui';
 
 export interface CreateAccountProps {
-  afterCreate?: () => void;
+  onboard?: boolean;
+  setAccount?: (value: string) => void;
 }
 
 export function CreateAccount(props: CreateAccountProps) {
@@ -41,6 +41,7 @@ export function CreateAccount(props: CreateAccountProps) {
   const { address } = useAccount();
   const chainId = getChainId();
   const valist = useValist();
+  const router = useRouter();
 
   // form values
   const [loading, setLoading] = useState(false);
@@ -86,9 +87,10 @@ export function CreateAccount(props: CreateAccountProps) {
       cache,
       chainId,
     ).then((success) => {
-      if (success) props.afterCreate?.();
+      if (success && !props.onboard) router.push('/');
+      if (success && props.setAccount) props.setAccount(form.values.accountName);
     }).finally(() => {
-      setLoading(false);  
+      setLoading(false);
     });
   };
 

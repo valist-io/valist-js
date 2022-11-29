@@ -38,7 +38,8 @@ import {
 } from '@valist/ui';
 
 export interface CreateProjectProps {
-  afterCreate?: () => void;
+  onboard?: boolean;
+  account?: string;
 }
 
 export function CreateProject(props: CreateProjectProps) {
@@ -48,7 +49,7 @@ export function CreateProject(props: CreateProjectProps) {
   const chainId = getChainId();
   const valist = useValist();
 
-  const accountName = `${router.query.account}`;
+  const accountName = props.account || `${router.query.account}`;
   const accountId = valist.generateID(chainId, accountName);
 
   const { data } = useQuery(query, {
@@ -105,10 +106,7 @@ export function CreateProject(props: CreateProjectProps) {
       cache,
       chainId,
     ).then(success => {
-      if (success) {
-        props.afterCreate?.();
-        router.push('/');
-      }
+      if (success) router.push('/');
     }).finally(() => {
       setLoading(false);  
     });

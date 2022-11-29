@@ -4,15 +4,13 @@ import { useAccount } from 'wagmi';
 import useSWRImmutable from 'swr/immutable';
 import * as Icon from 'tabler-icons-react';
 import { useRouter } from 'next/router';
-import { useConnectModal } from '@rainbow-me/rainbowkit';
-import { useMediaQuery } from '@mantine/hooks';
+import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
 import { Layout } from '@/components/Layout';
 import { Metadata } from '@/components/Metadata';
 import { Activity } from '@/components/Activity';
 import { ProjectCard } from '@/components/ProjectCard';
 import { CreateAccount } from '@/components/CreateAccount';
 import { CreateProject } from '@/components/CreateProject';
-import { useValist } from '@/utils/valist';
 import { useDashboard } from '@/utils/dashboard';
 
 import {
@@ -21,6 +19,7 @@ import {
   Grid,
   Group,
   Stack,
+  Stepper,
   Text,
   Title, 
 } from '@mantine/core';
@@ -37,35 +36,35 @@ import {
   List,
   NoProjects,
   Welcome,
-  CheckboxList,
 } from '@valist/ui';
-import { getAccounts, setAccount } from '@valist/ui/dist/components/AccountSelect';
 
 const IndexPage: NextPage = () => {
   const router = useRouter();
-  const valist = useValist();
+  const { address } = useAccount();
 
-  const { openConnectModal } = useConnectModal();
-  const { address, isConnected } = useAccount();
+  const [accountNames, setAccountNames] = useLocalStorage<Record<string, string>>({
+    key: 'accountNames',
+    defaultValue: {},
+  });
 
-  const [onboarding, setOnboarding] = useState(false);
+  const [onboardingSkips, setOnboardingSkips] = useLocalStorage<Record<string, boolean>>({ 
+    key: 'onboardingSkips',
+    defaultValue: {}, 
+  });
+
+  const setAccountName = (name: string) => setAccountNames(current => ({ ...current, [`${address}`]: name }));
+  const skipOnboarding = () => setOnboardingSkips(current => ({ ...current, [`${address}`]: true }));
+
+  const [step, setStep] = useState(0);
   const [infoOpened, setInfoOpened] = useState(false);
+
   const showInfo = useMediaQuery('(max-width: 1400px)', false);
+  const isMobile = useMediaQuery('(max-width: 992px)', false);
 
-  const [accountName, setAccountName] = useState('');
+  const accountName = address ? accountNames[address] : '';
+  const onboarding = address ? onboardingSkips[address] : false;
+
   const { accounts, projects, members, logs, loading } = useDashboard(accountName);
-  
-  const handleAccountChange = (name: string) => {
-    const accountByAddress = getAccounts();
-    if (address) setAccount(name, address, accountByAddress);
-    setAccountName(name);
-  };
-
-  useEffect(() => {
-    const accountByAddress = getAccounts();
-    if (address) setAccountName(accountByAddress[address]);
-  }, [address]);
-
   const account: any = accounts.find((a: any) => a.name === accountName);
   const { data: accountMeta } = useSWRImmutable(account?.metaURI);
 
@@ -86,31 +85,45 @@ const IndexPage: NextPage = () => {
     },
   ];
 
-  const steps = [
-    { label: 'Connect Wallet', checked: isConnected },
-    { label: 'Create Account', checked: isConnected && (onboarding || accounts.length !== 0) },
-    { label: 'Create Project (Optional)', checked: false },
-  ];
+  // update stepper
+  useEffect(() => {
+    if (!address) {
+      setStep(0);
+    } else if (accounts.length === 0) {
+      setStep(1);
+    } else if (projects.length === 0) {
+      setStep(2);
+    } else {
+      setStep(3);
+    }
+  }, [address, accounts.length, projects.length]);
 
-  if (!loading && (accounts.length === 0 || onboarding)) {
+  if (!loading && step < 3 && !onboarding) {
     return (
       <Layout hideNavbar>
         <Grid>
-          <Grid.Col md={4}>
-            <CheckboxList items={steps} />
+          <Grid.Col md={3} pr={40} mb={40}>
+            <Stack align={isMobile ? 'flex-start' : 'flex-end'}>
+              <Stepper active={step} orientation="vertical">
+                <Stepper.Step label="Step 1" description="Connect Wallet" />
+                <Stepper.Step label="Step 2" description="Create Account" />
+                <Stepper.Step label="Step 3" description="Create Project" />
+              </Stepper>
+              {accounts.length > 0 && 
+                <Button
+                  disabled={step === 0}
+                  variant="subtle"
+                  onClick={skipOnboarding}
+                >
+                  Skip Onboarding
+                </Button>
+              }
+            </Stack>
           </Grid.Col>
-          <Grid.Col md={8}>
-            { !isConnected && 
-              <Welcome button={
-                <Button onClick={openConnectModal}>Connect Wallet</Button>
-              } />
-            }
-            { isConnected && !onboarding && 
-              <CreateAccount afterCreate={() => setOnboarding(true)} />
-            }
-            { isConnected && onboarding && 
-              <CreateProject afterCreate={() => setOnboarding(false)} />
-            }
+          <Grid.Col md={9}>
+            { step === 0 && <Welcome /> }
+            { step === 1 && <CreateAccount onboard={true} /> }
+            { step === 2 && <CreateProject onboard={true} account={accountName} /> }
           </Grid.Col>
         </Grid>
       </Layout>
@@ -125,12 +138,14 @@ const IndexPage: NextPage = () => {
           value={accountName}
           image={accountMeta?.image}
           href="/-/create/account"
-          onChange={handleAccountChange}
+          onChange={setAccountName}
         >
           <AccountSelect.Option value="" name="All Accounts" />
           {accounts.map((acc: any, index: number) => 
             <Metadata key={index} url={acc.metaURI}>
-              {(data: any) => ( <AccountSelect.Option value={acc.name} name={acc.name} image={data?.image} /> )}
+              {(data: any) => ( 
+                <AccountSelect.Option value={acc.name} name={acc.name} image={data?.image} /> 
+              )}
             </Metadata>,
           )}
         </AccountSelect>
@@ -142,7 +157,7 @@ const IndexPage: NextPage = () => {
         }
       </Group>
       <div style={{ padding: 40 }}>
-        { accountName !== '' &&
+        { accountName &&
           <Group spacing={24} mb="xl" align="stretch" noWrap>
             <Avatar 
               radius="md"

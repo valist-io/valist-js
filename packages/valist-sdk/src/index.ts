@@ -104,9 +104,9 @@ export async function create(provider: Provider, options: Partial<Options>): Pro
     options.chainId = network.chainId;
   }
 
-  const subgraphUrl = options.subgraphUrl || graphql.getSubgraphUrl(options.chainId);
-  const registryAddress = options.registryAddress || contracts.getRegistryAddress(options.chainId);
-  const licenseAddress = options.licenseAddress || contracts.getLicenseAddress(options.chainId);
+  const subgraphUrl = options.subgraphUrl || graphql.getSubgraphUrl(options.chainId || 137);
+  const registryAddress = options.registryAddress || contracts.getRegistryAddress(options.chainId || 137);
+  const licenseAddress = options.licenseAddress || contracts.getLicenseAddress(options.chainId || 137);
 
   let registry: ethers.Contract;
   let license: ethers.Contract;
@@ -117,7 +117,7 @@ export async function create(provider: Provider, options: Partial<Options>): Pro
 
     // if meta transactions enabled setup opengsn relay signer
     let metaSigner: ethers.providers.JsonRpcSigner;
-    if (options.metaTx && contracts.chainIds.includes(options.chainId)) {
+    if (options.metaTx && contracts.chainIds.includes(options.chainId || 137)) {
       metaSigner = await createRelaySigner(web3Provider, options);
       console.log('Meta-transactions enabled');
     } else {

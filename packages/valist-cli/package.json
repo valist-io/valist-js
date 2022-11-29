@@ -1,6 +1,6 @@
 {
   "name": "@valist/cli",
-  "version": "2.5.8",
+  "version": "2.6.0",
   "description": "Valist CLI",
   "author": "Valist, Inc.",
   "bin": {
@@ -64,7 +64,7 @@
     "lint": "eslint . --ext .ts",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "npm run lint",
-    "test": "mocha -r ts-node/register 'test/**/*.ts' --timeout 30000",
+    "test": "mocha -r ts-node/register 'test/**/*.ts' --timeout 120000",
     "version": "oclif readme && git add README.md"
   },
   "engines": {

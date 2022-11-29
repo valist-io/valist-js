@@ -1,7 +1,9 @@
 import { NextPage } from 'next';
 import { useEffect, useState } from 'react';
+import { useAccount } from 'wagmi';
 import useSWRImmutable from 'swr/immutable';
 import { Group } from '@mantine/core';
+import { useLocalStorage } from '@mantine/hooks';
 import { Layout } from '@/components/Layout';
 import { Activity } from '@/components/Activity';
 import { Metadata } from '@/components/Metadata';
@@ -12,27 +14,21 @@ import {
   List,
   Card,
 } from '@valist/ui';
-import { useAccount } from 'wagmi';
-import { getAccounts, setAccount } from '@valist/ui/dist/components/AccountSelect';
 
 const ActivityPage: NextPage = () => {
   const { address } = useAccount();
-  const [accountName, setAccountName] = useState('');
+
+  const [accountNames, setAccountNames] = useLocalStorage<Record<string, string>>({
+    key: 'accountNames',
+    defaultValue: {},
+  });
+
+  const setAccountName = (name: string) => setAccountNames(current => ({ ...current, [`${address}`]: name }));
+
+  const accountName = address ? accountNames[address] : '';
   const { accounts, logs } = useDashboard(accountName);
-  
   const account: any = accounts.find((a: any) => a.name === accountName);
   const { data: accountMeta } = useSWRImmutable(account?.metaURI);
-
-  const handleAccountChange = (name: string) => {
-    const accountByAddress = getAccounts();
-    if (address) setAccount(name, address, accountByAddress);
-    setAccountName(name);
-  };
-
-  useEffect(() => {
-    const accountByAddress = getAccounts();
-    if (address) setAccountName(accountByAddress[address]);
-  }, [address]);
 
   return (
     <Layout padding={0}>
@@ -42,17 +38,17 @@ const ActivityPage: NextPage = () => {
           value={accountName}
           image={accountMeta?.image}
           href="/-/create/account"
-          onChange={handleAccountChange}
+          onChange={setAccountName}
         >
           <AccountSelect.Option value="" name="All Accounts" />
-            {accounts.map((acc: any, index: number) => 
-              <Metadata key={index} url={acc.metaURI}>
-                {(data: any) => (
-                  <AccountSelect.Option value={acc.name} name={acc.name} image={data?.image} />
-                )}
-              </Metadata>,
-            )}
-          </AccountSelect>
+          {accounts.map((acc: any, index: number) => 
+            <Metadata key={index} url={acc.metaURI}>
+              {(data: any) => (
+                <AccountSelect.Option value={acc.name} name={acc.name} image={data?.image} />
+              )}
+            </Metadata>,
+          )}
+        </AccountSelect>
       </Group>
       <div style={{ padding: 40 }}>
         <Card>
