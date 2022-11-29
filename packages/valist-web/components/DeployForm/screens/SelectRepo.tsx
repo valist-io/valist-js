@@ -16,7 +16,7 @@ export function SelectRepo(props: SelectRepo):JSX.Element {
       data={props.repos}
       searchable
       onChange={(value) => { 
-        if (value) props.onChange(value);
+        if (value) props?.onChange(value);
       }}
       value={props.value}
     />

@@ -73,7 +73,7 @@ export function ConfigureBuilds(props: ConfigureBuildsProps):JSX.Element {
       
       <Title my="lg" order={3}>Other Build Variables</Title>
       <div style={{ marginLeft: 23 }}>
-        <VariableInput value={""} placeholder={"VARIABLE_NAME"} disabled={false} />
+        {/* <VariableInput value={""} placeholder={"VARIABLE_NAME"} disabled={false} /> */}
         {props.secrets?.map((secret) => (
           <Group key={secret} my='lg'>
             <TextInput
@@ -85,7 +85,7 @@ export function ConfigureBuilds(props: ConfigureBuildsProps):JSX.Element {
             <TextInput
               placeholder="*********"
               type='password'
-              disabled={secret === 'VALIST_SIGNER'}
+              disabled={true}
             />
           </Group>
         ))}

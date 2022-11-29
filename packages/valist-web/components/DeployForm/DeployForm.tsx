@@ -22,7 +22,7 @@ interface DeployFormProps {
   client: Octokit | null;
   account: string;
   project: string;
-  gitProviders: GitProvider;
+  gitProviders: GitProvider[];
   repoPath?: string;
   isLinked: boolean;
   onConnected?: () => void;
@@ -35,6 +35,7 @@ export type Screen = 'index' | 'loading' | 'selectRepo' | 'addKey' | 'pullReques
 
 export function DeployForm(props: DeployFormProps): JSX.Element {
   const [step, setStep] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const [logs, setLogs] = useState<string[]>([]);
   const [userRepos, setUserRepos] = useState<string[]>([]);
@@ -59,11 +60,11 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
       },
       publish: {
         valist: {
-          privateKey: 'VALIST_SIGNER',
+          privateKey: '${{ secrets.VALIST_SIGNER }}',
           account: props.account,
           project: props.project,
-          release: 'timestamp',
-          path: 'dist',
+          release: '${{ env.TIMESTAMP }}',
+          path: 'out',
         },
       },
       integrations: {},
@@ -87,12 +88,13 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
 
   const _selectRepo = async (name: string) => {
     const [_owner, _repo] = name.split('/');
-    if (props.client && owner && repo) {
-      const _isSigner = await checkRepoSecret(props.client, _owner, _repo);
-      setIsSigner(_isSigner);
-    }
-    if (props.onRepoSelect) props.onRepoSelect(repoPath);
+    if (!_owner && _repo) return;
+    setLoading(true);
     setRepoPath(name);
+
+    if (props.onRepoSelect) props.onRepoSelect(repoPath);
+    if (props.client) setIsSigner(await checkRepoSecret(props.client, _owner, _repo));
+    setLoading(false);
   };
 
   const _fetchLogs = async (job_id: number) => {
@@ -100,7 +102,6 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
     const logs = await getJobLogs(props.client, owner, repo, job_id);
 
     if (logs?.data?.jobs.length !== 0 && logs?.data?.jobs[0] && logs?.data?.jobs[0].steps) {
-      console.log('steps', logs?.data?.jobs[0].steps);
       setLogs(logs?.data?.jobs[0].steps.map((step) => {
         return step.name;
       }));
@@ -167,7 +168,6 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
       getWorkflows(props.client, owner, repo).then((data) => {
         const workflows = data?.data?.workflow_runs;
         if (workflows.length !== 0) setRepoWorkflows(workflows);
-        console.log('workflows', workflows);
       });
     };
 
@@ -181,11 +181,8 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
      _pullSecrets();
   }, [repo]);
 
-  console.log('valistConfig', valistConfig);
-
   // if framework changes update defaults
   useEffect(() => {
-    console.log('form framework', form.values.build.web.framework);
     // @ts-ignore
     const { installCommand, buildCommand, outputFolder } =  webFrameworkDefaults[form.values.build.web.framework];
     form.setFieldValue("form.values.build.Web.installCommand", installCommand || '');
@@ -194,7 +191,7 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
   }, [form.values.build.web.framework]);
 
   const renderScreen = () => {
-    if (props.client && userRepos.length === 0) return <LoadingScreen />;
+    if ((props.client && !props.isLinked && userRepos.length === 0) || (props.isLinked && repoWorkflows.length === 0)) return <LoadingScreen />;
     if (props.isLinked && repoWorkflows) {
       return (
         <Workflows
@@ -219,8 +216,9 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
               <Center><Text size="lg">You&lsquo;re ready to publish!</Text></Center>
             </>
           }
-          {!isSigner && 
-            <AddKey 
+          {loading && <LoadingScreen />}
+          {!isSigner && !loading &&
+            <AddKey
               account={props.account} 
               project={props.project} 
               repo={props.repoPath || ''}
@@ -313,27 +311,28 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
 
 export function useGithubAuth(code: string): [Octokit | null, null, boolean] {
   const router = useRouter();
-  const [session, setSession] = useSessionStorage({ key: 'github-session' });
   const [client, setClient] = useState<Octokit | null>(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
   async function getAuth() {
     try {
-      if (router.isReady  && !client) {
-        let token = session;
-        if (!session && code.length === 20) {
+      if (router.isReady && !client) {
+        let _session = JSON.parse(sessionStorage.getItem("github-session") || '');
+
+        if (!_session && code.length === 20) {
           const response = await fetch(`/api/auth/github?code=${code}`);
-          token = String(await response.json());
+          _session = String(await response.json());
+          sessionStorage.setItem("github-session", _session);
+
           router.push({
             pathname: router.pathname,
             query: Object.fromEntries(Object.entries(router.query).filter(([name, value]) => name !== "code")),
           });
         }
 
-        if (token.includes('ghu_')) {
-          setSession(token);
-          setClient(new Octokit({ auth: token }));
+        if (_session.includes('ghu_')) {
+          setClient(new Octokit({ auth: _session }));
         }
       }
     } catch (e: any) {
@@ -342,7 +341,7 @@ export function useGithubAuth(code: string): [Octokit | null, null, boolean] {
       setLoading(false);
     }
   }
-  
+
   useEffect(() => {
     getAuth();
   }, [code, router.isReady]);
