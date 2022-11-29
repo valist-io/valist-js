@@ -39,6 +39,8 @@ export class ProjectMeta {
 	public prompt_donation?: boolean;
 	/** launch project from external_url*/
 	public launch_external?: boolean;
+	/** repository used for deployments */
+	public repository?: string;
 }
 
 export class GalleryMeta {
@@ -50,31 +52,31 @@ export class GalleryMeta {
 
 /*
 	Example ReleaseMeta:
-    {
-      "external_url": "webCID || nativeCID",
-      "install": {
-        "web": {
-          "external_url": "webCID",
-          "name": "web"
-        },
-        "linux_amd64": {
-          "external_url": "nativeCID/linux_amd64_build",
-          "name": "binaryname"
-        },
-        "linux_arm64": {
-          "external_url": "nativeCID/linux_arm64_build",
-          "name": "binaryname"
-        },
-        "windows_amd64": {
-          "external_url": "nativeCID/windows_amd64_build",
-          "name": "binaryname",
-          "dependencies": {
-            "cpp-libs@version": "microsoft_link || cid"
-          }
-        }
-      }
-    }
-    */
+		{
+			"external_url": "webCID || nativeCID",
+			"install": {
+				"web": {
+					"external_url": "webCID",
+					"name": "web"
+				},
+				"linux_amd64": {
+					"external_url": "nativeCID/linux_amd64_build",
+					"name": "binaryname"
+				},
+				"linux_arm64": {
+					"external_url": "nativeCID/linux_arm64_build",
+					"name": "binaryname"
+				},
+				"windows_amd64": {
+					"external_url": "nativeCID/windows_amd64_build",
+					"name": "binaryname",
+					"dependencies": {
+						"cpp-libs@version": "microsoft_link || cid"
+					}
+				}
+			}
+		}
+		*/
 
 export class ReleaseMeta {
 	constructor(metadata_version = '2') {
@@ -108,13 +110,13 @@ export type SupportedPlatform = 'web' | 'darwin_amd64' | 'darwin_arm64' | 'linux
 export const supportedPlatforms: SupportedPlatform[] = ['web', 'darwin_amd64', 'darwin_arm64', 'linux_amd64', 'linux_arm64', 'windows_amd64', 'android_arm64'];
 
 export const platformNames: Record<SupportedPlatform, string> = {
-    "web": "Web build",
-    "windows_amd64": "Windows (amd64 / Intel)",
-    "linux_amd64": "Linux (amd64 / Intel)",
-    "linux_arm64": "Linux (arm64)",
-    "darwin_arm64": "macOS (arm64 / Apple Silicon)",
-    "darwin_amd64": "macOS (amd64 / Intel)",
-    "android_arm64": "Android (arm64)",
+	"web": "Web build",
+	"windows_amd64": "Windows (amd64 / Intel)",
+	"linux_amd64": "Linux (amd64 / Intel)",
+	"linux_arm64": "Linux (arm64)",
+	"darwin_arm64": "macOS (arm64 / Apple Silicon)",
+	"darwin_amd64": "macOS (amd64 / Intel)",
+	"android_arm64": "Android (arm64)",
 };
 
 export class PlatformsMeta {
@@ -212,12 +214,12 @@ export class InstallMeta {
 
 export function isReleaseMetaV1(releaseMeta: ReleaseMeta | ReleaseMetaV1): releaseMeta is ReleaseMetaV1 {
 	const meta = releaseMeta as ReleaseMetaV1;
-    return meta.install !== undefined || (meta as ReleaseMeta)._metadata_version === 'undefined';
+	return meta.install !== undefined || (meta as ReleaseMeta)._metadata_version === 'undefined';
 }
 
 export function isReleaseMetaV2(releaseMeta: ReleaseMeta | ReleaseMetaV1): releaseMeta is ReleaseMeta {
 	const meta = releaseMeta as ReleaseMeta;
-    return meta._metadata_version === '2';
+	return meta._metadata_version === '2';
 }
 
 export class ReleaseConfig {
@@ -228,12 +230,12 @@ export class ReleaseConfig {
 	public description?: string;
 	public source?: string;
 	public platforms: Record<SupportedPlatform, string>;
-  
+
 	constructor(account: string, project: string, release: string) {
-	  this.account = account;
-	  this.project = project;
-	  this.release = release;
-	  this.platforms = {
+		this.account = account;
+		this.project = project;
+		this.release = release;
+		this.platforms = {
 			web: '',
 			darwin_amd64: '',
 			darwin_arm64: '',

@@ -42,6 +42,7 @@ export { ProjectCard } from './components/ProjectCard';
 export { RadioCard } from './components/RadioCard';
 export { SearchOptions } from './components/SearchOptions';
 export { Social } from './components/Social';
+export { Stepper } from './components/Stepper';
 export { TabsListCard } from './components/TabsListCard';
 export { ThemeButton } from './components/ThemeButton';
 export { ThemeProvider } from './components/ThemeProvider';

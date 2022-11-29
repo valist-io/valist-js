@@ -4,6 +4,7 @@ const nextConfig = {
   assetPrefix: process.env.IPFS_BUILD ? './' : undefined,
   publicRuntimeConfig: {
     CHAIN_ID: process.env.CHAIN_ID || 137,
+    CLIENT_ID: process.env.CLIENT_ID,
   },
   images: {
     remotePatterns: [

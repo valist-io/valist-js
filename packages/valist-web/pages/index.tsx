@@ -12,8 +12,6 @@ import { client } from '@/components/ApolloProvider';
 import query from '@/graphql/Discover.graphql';
 
 import {
-  Anchor,
-  Avatar,
   Group,
   SimpleGrid,
   Stack,
