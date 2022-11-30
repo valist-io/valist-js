@@ -12,6 +12,7 @@ import { ConfigureBuilds } from "./screens/ConfigureBuilds";
 import { useForm } from "@mantine/form";
 import { ChoosePublishers } from "./screens/ChoosePublishers";
 import { AddIntegrations } from "./screens/AddIntegrations";
+import { InstallApp } from "./screens/InstallApp";
 
 export type GitProvider = {
   name: string; 
@@ -34,8 +35,10 @@ interface DeployFormProps {
 export type Screen = 'index' | 'loading' | 'selectRepo' | 'addKey' | 'pullRequest';
 
 export function DeployForm(props: DeployFormProps): JSX.Element {
+  const router = useRouter();
   const [step, setStep] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
+  const [accessDenied, setAccessDenied] = useState<boolean>(false);
 
   const [logs, setLogs] = useState<string[]>([]);
   const [userRepos, setUserRepos] = useState<string[]>([]);
@@ -86,6 +89,12 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
   const next = () => setStep(nextStep <= totalSteps ? nextStep : step);
   const prev = () => setStep(prevStep >= 0 ? prevStep : step);
 
+  const installUrl = () => {
+    const obj = { pathname: router?.pathname, query: router?.query };
+    const state = Buffer.from(JSON.stringify(obj)).toString("base64");
+    return `https://github.com/apps/valist-publish/installations/new?state=${state}`;
+  };
+
   const _selectRepo = async (name: string) => {
     const [_owner, _repo] = name.split('/');
     if (!_owner && _repo) return;
@@ -93,7 +102,11 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
     setRepoPath(name);
 
     if (props.onRepoSelect) props.onRepoSelect(repoPath);
-    if (props.client) setIsSigner(await checkRepoSecret(props.client, _owner, _repo));
+    if (props.client) {
+      const resp = await checkRepoSecret(props.client, _owner, _repo);
+      if (resp === 403) setAccessDenied(true);
+      if (resp === 200) setIsSigner(true);
+    }
     setLoading(false);
   };
 
@@ -108,14 +121,16 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
     }
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const _pullSecrets = () => {
+// eslint-disable-next-line react-hooks/exhaustive-deps
+const _pullSecrets = async () => {
     if (!props.client || !owner || !repo) return;
-    getRepoSecrets(props.client, owner, repo).then((secrets) => {
-      setRepoSecrets(secrets.data.secrets.map((secret) => {
-        return secret.name;
-      }));
-    });
+
+    const resp = await getRepoSecrets(props.client, owner, repo);
+    if (!resp) return;
+
+    setRepoSecrets(resp.data.secrets.map((secret) => {
+      return secret.name;
+    }));
   };
 
   const _addSecret = async () => {
@@ -192,6 +207,9 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
 
   const renderScreen = () => {
     if ((props.client && !props.isLinked && userRepos.length === 0) || (props.isLinked && repoWorkflows.length === 0)) return <LoadingScreen />;
+    if (accessDenied) {
+      return <InstallApp redirectUrl={installUrl()} />;
+    }
     if (props.isLinked && repoWorkflows) {
       return (
         <Workflows

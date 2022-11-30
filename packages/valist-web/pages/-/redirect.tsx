@@ -6,12 +6,10 @@ const RedirectPage: NextPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (router.isReady && typeof router.query.state === 'string' && typeof router.query.code === 'string') {
+    if (router.isReady && typeof router.query.state === 'string') {
       const location = JSON.parse(Buffer.from(router.query.state, 'base64').toString("utf8"));
-      if (location) {
-        location.query.code = router.query.code;
-        router.push(location);
-      }
+      if (typeof router.query.code === 'string') location.query.code = router.query.code;
+      if (location) router.push(location);
     }
   }, [router, router.isReady]);
   

@@ -135,11 +135,16 @@ export async function getRepoPubicKey(octokit: Octokit, owner: string, repo: str
 };
 
 export async function getRepoSecrets(octokit: Octokit, owner: string, repo: string) {
-  return await octokit.request('GET /repos/{owner}/{repo}/actions/secrets', {
-    owner,
-    repo,
-    per_page: 1000,
-  });
+  try {
+    const result = await octokit.request('GET /repos/{owner}/{repo}/actions/secrets', {
+      owner,
+      repo,
+      per_page: 1000,
+    });
+    return result;
+  } catch (err) {
+    return false;
+  }
 };
 
 export async function checkRepoSecret(octokit: Octokit, owner: string, repo: string) {
@@ -149,10 +154,11 @@ export async function checkRepoSecret(octokit: Octokit, owner: string, repo: str
       repo,
       secret_name: 'VALIST_SIGNER',
     });
+    return 200;
   } catch (err) {
-    return false;
+    if (String(err).includes('Resource not accessible by integration')) return 403;
+    if (String(err).includes('404')) return 404;
   }
-  return true;
 };
 
 export async function getRepos(octokit: Octokit) {
