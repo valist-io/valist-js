@@ -317,9 +317,9 @@ export function useGithubAuth(code: string): [Octokit | null, null, boolean] {
   async function getAuth() {
     try {
       if (router.isReady && !client) {
-        let _session = JSON.parse(sessionStorage.getItem("github-session") || '');
+        let _session  = sessionStorage.getItem("github-session") || '';
 
-        if (!_session && code.length === 20) {
+        if (!_session.includes('ghu_') && code.length === 20) {
           const response = await fetch(`/api/auth/github?code=${code}`);
           _session = String(await response.json());
           sessionStorage.setItem("github-session", _session);
@@ -335,6 +335,7 @@ export function useGithubAuth(code: string): [Octokit | null, null, boolean] {
         }
       }
     } catch (e: any) {
+      console.log(e);
       setError(e);
     } finally {
       setLoading(false);
