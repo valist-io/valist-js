@@ -1,8 +1,8 @@
 import { platforms } from "../DeployForm";
-import Image from 'next/image';
 import { Button as MantineButton, Center, Group, Select, Text, TextInput, Title } from "@mantine/core";
 import { Fragment, useState } from "react";
 import { UseFormReturnType } from "@mantine/form";
+import { LogoButton } from "../LogoButton";
 
 interface ConfigureBuildsProps {
   form: UseFormReturnType<any>;
@@ -13,21 +13,21 @@ export function ConfigureBuilds(props: ConfigureBuildsProps):JSX.Element {
   const [pending, setPending] = useState<string[]>([]);
 
   const togglePlatform = (platform: string) => pending.includes(platform) ? setPending(pending.filter((p) => p !== platform)) : setPending([...pending, platform]);
-  const activeStyle = (platform: string) => pending.includes(platform) ? 'solid 5px #820cd8' : undefined;
+  const isActive = (platform: string) => pending.includes(platform);
 
   return (
     <section>
       <Center><Text>All builds are also published to Valist</Text></Center>
       <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', margin: '0 auto' }}>
         {Object.keys(platforms).map((platform) => (
-          <button
-            key={platform}
-            style={{ width: 240, margin: 20, border: activeStyle(platform) }}
-            onClick={() => togglePlatform(platform)}
-          >
-            <span><Image style={{ display: 'block' }} height={55} width={55} alt={platform + 'Logo'} src={platforms[platform].icon} /></span>
-            <span style={{ fontSize: 25, display: 'block' }}>{platform}</span>
-          </button>
+          <LogoButton
+            key={platform} 
+            onClick={() => togglePlatform(platform)} 
+            text={platforms[platform].name} 
+            image={platforms[platform].icon} 
+            active={isActive(platform)}
+            disabled={platform !== 'web'}
+          />
         ))}
       </div>
 
@@ -49,7 +49,7 @@ export function ConfigureBuilds(props: ConfigureBuildsProps):JSX.Element {
                       data={input.data}
                       my="xl"
                       style={{ margin: 20, width: '40%' }}
-                      label={input?.label}
+                      label={input.label}
                       required={input?.required}
                       {...props.form.getInputProps(`build.${platform}.${input.name}`)}
                     />

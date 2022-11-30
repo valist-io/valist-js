@@ -8,9 +8,10 @@ import { AddKey } from "./screens/AddKey";
 import { LoadingScreen } from "./screens/Loading";
 import { SelectRepo } from "./screens/SelectRepo";
 import { Workflows } from "./screens/Workflows";
-import Image from 'next/image';
 import { ConfigureBuilds } from "./screens/ConfigureBuilds";
 import { useForm } from "@mantine/form";
+import { ChoosePublishers } from "./screens/ChoosePublishers";
+import { AddIntegrations } from "./screens/AddIntegrations";
 
 export type GitProvider = {
   name: string; 
@@ -211,7 +212,7 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
           />
           {isSigner &&
             <>
-              <Center><Text size="xl">This repository contains a valid signer key.</Text></Center>
+              <Center><Text size="xl">This repository contains a signer key.</Text></Center>
               <Center><Text size="lg">You&lsquo;re ready to publish!</Text></Center>
             </>
           }
@@ -236,33 +237,12 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
     }
     if (!props.isLinked && step === 2) {
       return (
-        <section>
-          {Object.keys(publishTypes).map((publisher) => (
-            <button
-              key={publisher}
-              style={{ width: 240, margin: 20 }}
-            >
-              <span><Image style={{ display: 'block' }} height={55} width={55} alt={publisher + 'Logo'} src={publishTypes[publisher].icon} /></span>
-              <span style={{ fontSize: 25, display: 'block' }}>{publisher}</span>
-            </button>
-          ))}
-        </section>
+        <ChoosePublishers />
       );
     }
     if (!props.isLinked && step === 3) {
       return (
-        <section>
-          <Center><Text>Add optional integrations to notify your users when you publish a new release</Text></Center>
-          {Object.keys(integrations).map((integration) => (
-            <button
-              key={integration}
-              style={{ width: 240, margin: 20 }}
-            >
-              <span><Image style={{ display: 'block' }} height={55} width={55} alt={integration + 'Logo'} src={integrations[integration].icon} /></span>
-              <span style={{ fontSize: 25, display: 'block' }}>{integration}</span>
-            </button>
-          ))}
-        </section>
+        <AddIntegrations />
       );
     }
     if (!props.isLinked && step === 4) {
@@ -324,10 +304,10 @@ export function useGithubAuth(code: string): [Octokit | null, null, boolean] {
           _session = String(await response.json());
           sessionStorage.setItem("github-session", _session);
 
-          router.push({
-            pathname: router.pathname,
-            query: Object.fromEntries(Object.entries(router.query).filter(([name, value]) => name !== "code")),
-          });
+          // router.push({
+          //   pathname: router.pathname,
+          //   query: Object.fromEntries(Object.entries(router.query).filter(([name, value]) => name !== "code")),
+          // });
         }
 
         if (_session.includes('ghu_')) {
@@ -349,10 +329,11 @@ export function useGithubAuth(code: string): [Octokit | null, null, boolean] {
   return [client, error, loading];
 };
 
-export type BuildRecords = Record<string, {icon: string, inputs: {name: string, label:string, select?: boolean, data?: string[] | {value: string, label: string}[], required: boolean}[]}>;
+export type BuildRecords = Record<string, {name: string, icon: string, inputs: {name: string, label:string, select?: boolean, data?: string[] | {value: string, label: string}[], required: boolean}[]}>;
 
 export const platforms:BuildRecords = {
-  'Web': {
+  'web': {
+    name: 'Web',
     icon: '/images/logos/globe.png',
     inputs: [
       {
@@ -391,23 +372,28 @@ export const platforms:BuildRecords = {
       },
     ],
   },
-  'Mac': {
+  'mac': {
+    name: 'Mac',
     icon: '/images/logos/mac.png',
     inputs: [],
   },
-  'Windows': {
+  'windows': {
+    name: 'Window',
     icon: '/images/logos/windows.svg',
     inputs: [],
   },
-  'Linux': {
+  'linux': {
+    name: 'Linux',
     icon: '/images/logos/linux.png',
     inputs: [],
   },
-  'Android': {
+  'android': {
+    name: 'Android',
     icon: '/images/logos/android.svg',
     inputs: [],
   },
-  'iOS': {
+  'ios': {
+    name: 'iOS',
     icon: '/images/logos/ios.png',
     inputs: [],
   },
