@@ -91,6 +91,7 @@ const Deployments: NextPage = () => {
   useEffect(() => {
     console.log('------------');
     console.log('isLinked', isLinked);
+    console.log('!isLoading', !isLoading);
     console.log('client', client);
     console.log('!code', !code);
     console.log('gitProviders', gitProviders);
