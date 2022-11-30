@@ -92,6 +92,7 @@ const Deployments: NextPage = () => {
     console.log('------------');
     console.log('isLinked', isLinked);
     console.log('!isLoading', !isLoading);
+    console.log('CLIENT_ID', CLIENT_ID);
     console.log('client', client);
     console.log('!code', !code);
     console.log('gitProviders', gitProviders);

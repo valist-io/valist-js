@@ -1,6 +1,5 @@
 import { addSecret, BuildManifest, buildYaml, checkRepoSecret, createPullRequest, getJobLogs, getRepos, getRepoSecrets, getWorkflows, webFrameworkDefaults } from "@/utils/github";
 import { Button as MantineButton, Center, Group, Stack, Text, Textarea, Title } from "@mantine/core";
-import { useSessionStorage } from "@mantine/hooks";
 import { Octokit } from "@octokit/core";
 import { Stepper } from "@valist/ui";
 import { useRouter } from "next/router";
