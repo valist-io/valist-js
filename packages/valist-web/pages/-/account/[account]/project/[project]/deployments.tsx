@@ -89,13 +89,15 @@ const Deployments: NextPage = () => {
 
   // redirect to get auth code automatically if repo is linked
   useEffect(() => {
-    // console.log('------------');
-    // console.log('location', location);
-    // console.log('isLinked', isLinked);
-    // console.log('client', client);
-    // console.log('!code', !code);
-    // console.log('------------');
-    if (!isLoading  && !client && !code && CLIENT_ID && router.isReady) {
+    console.log('------------');
+    console.log('isLinked', isLinked);
+    console.log('client', client);
+    console.log('!code', !code);
+    console.log('gitProviders', gitProviders);
+    console.log('------------');
+
+    if (!isLoading && !client && !code && CLIENT_ID && router.isReady) {
+      console.log('Starting redirect...');
       window.location.assign(mkurl(CLIENT_ID, router));
     }
   }, [client, isLinked, isLoading, router.isReady]);
