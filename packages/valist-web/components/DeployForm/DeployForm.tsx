@@ -1,4 +1,4 @@
-import { addSecret, BuildManifest, buildYaml, checkRepoSecret, createPullRequest, getJobLogs, getRepos, getRepoSecrets, getWorkflows, webFrameworkDefaults } from "@/utils/github";
+import { BuildManifest, buildYaml, checkRepoSecret, createPullRequest, getJobLogs, getRepos, getRepoSecrets, getWorkflows, webFrameworkDefaults } from "@/utils/github";
 import { Button as MantineButton, Center, Group, Stack, Text, Textarea, Title } from "@mantine/core";
 import { Octokit } from "@octokit/core";
 import { Stepper } from "@valist/ui";
@@ -32,23 +32,20 @@ interface DeployFormProps {
   onPullRequest?: () => void;
 }
 
-export type Screen = 'index' | 'loading' | 'selectRepo' | 'addKey' | 'pullRequest';
-
 export function DeployForm(props: DeployFormProps): JSX.Element {
   const router = useRouter();
   const [step, setStep] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [accessDenied, setAccessDenied] = useState<boolean>(false);
+  const [pendingBuilds, setPendingBuilds] = useState<string[]>([]);
+  const [pendingPublishers, setPendingPublishers] = useState<string[]>(['Valist Protocol']);
 
-  const [logs, setLogs] = useState<string[]>([]);
   const [userRepos, setUserRepos] = useState<string[]>([]);
   const [repoWorkflows, setRepoWorkflows] = useState<any[]>([]);
   const [repoSecrets, setRepoSecrets] = useState<string[]>([]);
   const [repoPath, setRepoPath] = useState<string>('');
   const owner = props?.repoPath?.split('/')[0];
   const repo = props?.repoPath?.split('/')[1];
-  const [newSecretName, setNewSecretName] = useState<string>('');
-  const [newSecretValue, setNewSecretValue] = useState<string>('');
 
   const form = useForm({
     initialValues: {
@@ -110,19 +107,8 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
     setLoading(false);
   };
 
-  const _fetchLogs = async (job_id: number) => {
-    if (!props.client || !owner || !repo) return;
-    const logs = await getJobLogs(props.client, owner, repo, job_id);
-
-    if (logs?.data?.jobs.length !== 0 && logs?.data?.jobs[0] && logs?.data?.jobs[0].steps) {
-      setLogs(logs?.data?.jobs[0].steps.map((step) => {
-        return step.name;
-      }));
-    }
-  };
-
-// eslint-disable-next-line react-hooks/exhaustive-deps
-const _pullSecrets = async () => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const _pullSecrets = async () => {
     if (!props.client || !owner || !repo) return;
 
     const resp = await getRepoSecrets(props.client, owner, repo);
@@ -131,16 +117,6 @@ const _pullSecrets = async () => {
     setRepoSecrets(resp.data.secrets.map((secret) => {
       return secret.name;
     }));
-  };
-
-  const _addSecret = async () => {
-    if (!props.client || !owner || !repo) return;
-    await addSecret(props.client, owner, repo, newSecretName, newSecretValue);
-    _pullSecrets();
-  };
-
-  const _addKey = () => {
-
   };
 
   const _createPr = async () => {
@@ -179,16 +155,11 @@ const _pullSecrets = async () => {
   // request user workflows if repo set
   useEffect(() => {
     if (props.client && owner && repo) {
-      console.log('workflow repo', repo);
       getWorkflows(props.client, owner, repo).then((data) => {
         const workflows = data?.data?.workflow_runs;
         if (workflows.length !== 0) setRepoWorkflows(workflows);
       });
     };
-
-    setRepoWorkflows([
-      [],
-    ]);
   }, [repo]);
 
   // request user secrets
@@ -200,9 +171,9 @@ const _pullSecrets = async () => {
   useEffect(() => {
     // @ts-ignore
     const { installCommand, buildCommand, outputFolder } =  webFrameworkDefaults[form.values.build.web.framework];
-    form.setFieldValue("form.values.build.Web.installCommand", installCommand || '');
-    form.setFieldValue("form.values.build.Web.buildCommand']", buildCommand || '');
-    form.setFieldValue("form.values.build.Web.outputFolder']", outputFolder || '');
+    form.setFieldValue("build.web.installCommand", installCommand || '');
+    form.setFieldValue("build.web.buildCommand", buildCommand || '');
+    form.setFieldValue("build.web.outputFolder", outputFolder || '');
   }, [form.values.build.web.framework]);
 
   const renderScreen = () => {
@@ -215,7 +186,6 @@ const _pullSecrets = async () => {
         <Workflows
           data={repoWorkflows} 
           logs={[]} 
-          fetchLogs={_fetchLogs} 
         />
       );
     }
@@ -249,13 +219,18 @@ const _pullSecrets = async () => {
       return (
         <ConfigureBuilds
           form={form} 
-          secrets={repoSecrets} 
+          secrets={repoSecrets}
+          pending={pendingBuilds}
+          setPending={setPendingBuilds}
         />
       );
     }
     if (!props.isLinked && step === 2) {
       return (
-        <ChoosePublishers />
+        <ChoosePublishers
+          pending={pendingPublishers}
+          setPending={setPendingPublishers} 
+        />
       );
     }
     if (!props.isLinked && step === 3) {

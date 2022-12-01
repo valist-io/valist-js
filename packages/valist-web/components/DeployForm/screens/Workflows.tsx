@@ -13,20 +13,20 @@ export type Workflow = {
 interface WorkflowsProps {
   data: Workflow[];
   logs: any[];
-  fetchLogs: (job_id: number) => Promise<void>;
+  // fetchLogs: (job_id: number) => Promise<void>;
 }
 
 export function Workflows(props: WorkflowsProps): JSX.Element {
-  const showLogs = (run_id: number) => {
-    props.fetchLogs(run_id);
-  };
+  // const showLogs = (run_id: number) => {
+  //   props.fetchLogs(run_id);
+  // };
 
   return (
     <section>
       {props?.data?.map((workflow: Workflow, index: number) => (
         <Card 
           key={index}
-          onClick={() => showLogs(workflow.id)}
+          onClick={() => {}}
           style={{ margin: '20px 0', cursor: 'pointer' }}
         >
           <div>{workflow?.display_title}</div>

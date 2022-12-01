@@ -1,19 +1,19 @@
 import { platforms } from "../DeployForm";
 import { Button as MantineButton, Center, Group, Select, Text, TextInput, Title } from "@mantine/core";
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import { UseFormReturnType } from "@mantine/form";
 import { LogoButton } from "../LogoButton";
 
 interface ConfigureBuildsProps {
   form: UseFormReturnType<any>;
+  pending: string[];
   secrets: string[];
+  setPending: (value: string[]) => void;
 }
 
 export function ConfigureBuilds(props: ConfigureBuildsProps):JSX.Element {
-  const [pending, setPending] = useState<string[]>([]);
-
-  const togglePlatform = (platform: string) => pending.includes(platform) ? setPending(pending.filter((p) => p !== platform)) : setPending([...pending, platform]);
-  const isActive = (platform: string) => pending.includes(platform);
+  const togglePlatform = (platform: string) => props.pending.includes(platform) ? props.setPending(props.pending.filter((p) => p !== platform)) : props.setPending([...props.pending, platform]);
+  const isActive = (platform: string) => props.pending.includes(platform);
 
   return (
     <section>
@@ -33,12 +33,12 @@ export function ConfigureBuilds(props: ConfigureBuildsProps):JSX.Element {
 
       <Title my="lg" order={3}>Required Platform Variables</Title>
       <div style={{ padding: '5px 0 10px 0' }}>
-        {pending?.length === 0 && 
+        {props.pending?.length === 0 && 
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 180 }}>
             <div>No platforms selected</div>
           </div>
         }
-        {pending.map((platform) => (
+        {props.pending.map((platform) => (
           <div key={platform}>
             <Title my="lg" order={4}>{platform}</Title>
             <div style={{ display: 'flex', flexWrap: 'wrap' }}>
@@ -74,7 +74,7 @@ export function ConfigureBuilds(props: ConfigureBuildsProps):JSX.Element {
       <Title my="lg" order={3}>Other Build Variables</Title>
       <div style={{ marginLeft: 23 }}>
         {/* <VariableInput value={""} placeholder={"VARIABLE_NAME"} disabled={false} /> */}
-        {props.secrets?.map((secret) => (
+        {props.secrets.length > 0 && props.secrets?.map((secret) => (
           <Group key={secret} my='lg'>
             <TextInput
               value={secret}
@@ -89,6 +89,11 @@ export function ConfigureBuilds(props: ConfigureBuildsProps):JSX.Element {
             />
           </Group>
         ))}
+        {props.secrets.length === 0 &&
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 180 }}>
+            <div>No variables build found</div>
+          </div>
+        }
       </div>
     </section>
   );
