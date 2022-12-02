@@ -73,13 +73,13 @@ export async function createProject(
     utils.showLoading('Uploading files');
     if (image) {
       meta.image = await utils.writeFile(image, valist, (progress: number) => {
-        utils.updateLoading(`Uploading ${image?.name}: ${progress}`);
+        utils.updateLoading(`Uploading ${image?.name}: ${progress}%`);
       });
     }
 
     if (mainCapsule) {
       meta.image = await utils.writeFile(mainCapsule, valist, (progress: number) => {
-        utils.updateLoading(`Uploading ${mainCapsule?.name}: ${progress}`);
+        utils.updateLoading(`Uploading ${mainCapsule?.name}: ${progress}%`);
       });
     }
 
@@ -90,7 +90,7 @@ export async function createProject(
 
     for (const item of gallery) {
       const src = await utils.writeFile(item, valist, (progress: number) => {  
-        utils.updateLoading(`Uploading ${item.name}: ${progress}`);
+        utils.updateLoading(`Uploading ${item.name}: ${progress}%`);
       });
       meta.gallery?.push({ name: '', type: 'image', src });
     }
