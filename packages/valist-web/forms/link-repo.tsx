@@ -43,6 +43,9 @@ export async function linkRepo(
     if (addReceipt) {
       await addSecret(client, owner, repo, 'VALIST_SIGNER', privateKey);
       setStatusStep(3);
+
+      await createPullRequest(client, valistConfig, owner, repo);
+      setStatusStep(4);
     
       const linkTransaction = await valist.setProjectMeta(projectId, { ...projectMeta, repository });
       const linkMessage = <Anchor target="_blank"  href={getBlockExplorer(chainId, linkTransaction.hash)}>Waiting for transaction - View transaction</Anchor>;
@@ -50,9 +53,6 @@ export async function linkRepo(
 
       const receipt = await linkTransaction.wait();
       receipt.events?.forEach(event => handleEvent(event, cache));
-      setStatusStep(4);
-
-      await createPullRequest(client, valistConfig, owner, repo);
       setStatusStep(5);
     }
   } catch (error: any) {
