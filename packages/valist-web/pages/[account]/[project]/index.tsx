@@ -329,6 +329,20 @@ const ProjectPage: NextPage = () => {
                         <Text>0</Text>
                       </Group> */}
                       <Group position="apart">
+                        <Text>Valist Link</Text>
+                        <Anchor target="_blank" href={`https://${accountName}-${projectName}.on.valist.io`}>
+                          https://{accountName}--{projectName}.on.valist.io
+                        </Anchor>
+                      </Group>
+                      {releaseMeta?.external_url &&
+                        <Group position="apart">
+                          <Text>IPFS Link</Text>
+                          <Anchor target="_blank" style={{ maxWidth: 300, overflow: 'hidden' }} href={releaseMeta?.external_url}>
+                            {releaseMeta?.external_url}
+                          </Anchor>
+                        </Group>
+                      }
+                      <Group position="apart">
                         <Text>Members</Text>
                         <MemberStack 
                           size={28} 

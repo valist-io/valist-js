@@ -88,6 +88,7 @@ const Pricing: NextPage = () => {
 
   const theme = useMantineTheme();
 	const borderColor = theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[4];
+  const textColor = theme.colorScheme === 'dark' ? '' : `${theme.colors.gray[4]} !important`;
 
   const parseBlockTime = (time: string) => {
     const utc = parseInt(time);
@@ -373,6 +374,7 @@ const Pricing: NextPage = () => {
                     styles={{
                       disabled: { 
                         borderColor,
+                        color: textColor,
                       },
                     }}
                     disabled
