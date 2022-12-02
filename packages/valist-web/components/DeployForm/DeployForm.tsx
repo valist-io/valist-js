@@ -282,7 +282,13 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
       {!props.isLinked &&
         <Group position="center" mt="xl">
           {step !== 0 && <MantineButton onClick={prev}>Back</MantineButton>}
-          {step !== 4 && <MantineButton variant="default" onClick={next}>Next step</MantineButton>}
+          {step !== 4 && 
+            <MantineButton 
+              variant="default" 
+              onClick={!(step === 1 && pendingBuilds.length === 0) ? next : () => alert('Please, select at least 1 build type.')}>
+                Next step
+            </MantineButton>
+          }
           {step === 4 && <MantineButton variant="default" onClick={_createPr}>Deploy</MantineButton>}
         </Group>
       }
