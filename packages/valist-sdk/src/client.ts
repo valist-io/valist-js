@@ -542,9 +542,13 @@ export class MetaClient extends AbstractClient {
 			throw new Error(result.error);
 		}
 
-		const getTransaction = async (hash: string) => this.biconomy?.ethersProvider?.getTransaction(hash);
+		const getTransaction = async (hash: string) => {
+			await this.biconomy?.ethersProvider?.waitForTransaction(hash);
+			return await this.biconomy?.ethersProvider?.getTransaction(hash);
+		};
+
 		return new Promise((resolve, reject) => {
-			this.biconomy.once('txMined', (data: any) => getTransaction(data.hash).then(resolve).catch(reject));
+			this.biconomy.once('txHashGenerated', (data: any) => getTransaction(data.hash).then(resolve).catch(reject));
 			this.biconomy.once('onError', (data: any) => reject(data.error));
 		});
 	}

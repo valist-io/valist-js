@@ -106,7 +106,7 @@ export function CreateProject(props: CreateProjectProps) {
       cache,
       chainId,
     ).then(success => {
-      if (success) router.push('/');
+      if (success) router.push('/-/dashboard');
     }).finally(() => {
       setLoading(false);  
     });

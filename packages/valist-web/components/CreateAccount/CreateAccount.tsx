@@ -87,7 +87,7 @@ export function CreateAccount(props: CreateAccountProps) {
       cache,
       chainId,
     ).then((success) => {
-      if (success && !props.onboard) router.push('/');
+      if (success && !props.onboard) router.push('/-/dashboard');
       if (success && props.setAccount) props.setAccount(form.values.accountName);
     }).finally(() => {
       setLoading(false);
