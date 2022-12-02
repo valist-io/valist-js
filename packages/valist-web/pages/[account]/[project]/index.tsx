@@ -330,8 +330,8 @@ const ProjectPage: NextPage = () => {
                       </Group> */}
                       <Group position="apart">
                         <Text>Valist Link</Text>
-                        <Anchor target="_blank" href={`https://${accountName}-${projectName}.on.valist.io`}>
-                          https://{accountName}--{projectName}.on.valist.io
+                        <Anchor target="_blank" href={`https://${projectName}--${accountName}-.on.valist.io`}>
+                          https://{projectName}--{accountName}.on.valist.io
                         </Anchor>
                       </Group>
                       {releaseMeta?.external_url &&
