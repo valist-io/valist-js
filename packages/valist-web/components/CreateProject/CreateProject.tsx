@@ -57,6 +57,7 @@ export function CreateProject(props: CreateProjectProps) {
   });
   
   const accountMembers = data?.account?.members ?? [];
+  console.log('account', props.account);
 
   // form values
   const [loading, setLoading] = useState(false);
