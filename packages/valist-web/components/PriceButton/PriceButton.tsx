@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { EditButton, Item } from '@valist/ui';
 import { PriceModal } from '@/components/PriceModal';
 import { getTokenSymbol, getTokenLogo } from '@/utils/tokens';
+import { Avatar, Group, Stack, Text, Title, useMantineTheme } from '@mantine/core';
 
 export interface PriceButtonProps {
   address: string;
@@ -12,15 +13,34 @@ export interface PriceButtonProps {
 
 export function PriceButton(props: PriceButtonProps) {
   const [opened, setOpened] = useState(false);
+  const theme = useMantineTheme();
+  const color = theme.colorScheme === 'dark' ? theme.colors.gray[9] : theme.colors.gray[4];
+
 
   return (
     <>
       <EditButton onClick={() => setOpened(true)} fill>
-        <Item 
-          label={`${props.price}`}
-          name={getTokenSymbol(props.address)}
-          image={getTokenLogo(props.address)}
-        />
+        <Group>
+          <Avatar 
+            radius="xl"
+            size={40} 
+            src={getTokenLogo(props.address)} 
+          />
+          <Stack spacing={0}>
+            <Title 
+              order={5}
+              style={{ color }}
+            >
+              {getTokenSymbol(props.address)}
+            </Title>
+            <Text 
+              size={'xs'}
+              style={{ color }}
+            >
+              {`${props.price}`}
+            </Text>
+          </Stack>
+        </Group>
       </EditButton>
       <PriceModal
         address={props.address}
@@ -33,4 +53,3 @@ export function PriceButton(props: PriceButtonProps) {
     </>
   );
 }
-
