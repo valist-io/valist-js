@@ -161,6 +161,7 @@ export function CreateProject(props: CreateProjectProps) {
               data={defaultTypes}
               placeholder="Select type"
               nothingFound="Nothing found"
+              required
               searchable
               creatable
               getCreateLabel={(query) => `+ Create ${query}`}
