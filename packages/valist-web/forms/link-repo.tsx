@@ -55,7 +55,6 @@ export async function linkRepo(
       await createPullRequest(client, valistConfig, owner, repo);
       setStatusStep(5);
     }
-    setShowStatus(false);
   } catch (error: any) {
     utils.showError(error);
     console.log(error);

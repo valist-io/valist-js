@@ -10,7 +10,6 @@ import { useValist } from '@/utils/valist';
 import query from '@/graphql/UpdateProjectPage.graphql';
 
 import {
-  Button,
   Breadcrumbs,
   _404,
   CheckboxList,
@@ -19,7 +18,7 @@ import getConfig from 'next/config';
 import { DeployForm, useGithubAuth } from '@/components/DeployForm';
 import { ProjectMeta } from '@valist/sdk';
 import { linkRepo } from '@/forms/link-repo';
-import { Anchor, Center, Loader, Modal, Text } from '@mantine/core';
+import { Anchor, Button, Center, Loader, Modal, Text } from '@mantine/core';
 
 function mkurl(CLIENT_ID: string, router: NextRouter) {
   const obj = { pathname: router?.pathname, query: router?.query };
@@ -184,6 +183,7 @@ const Deployments: NextPage = () => {
             <Anchor href={`https://github.com/${repoPath}`}>
               https://github.com/{repoPath}
             </Anchor>
+            <Button onClick={() => setShowStatus(false)}>Close</Button>
           </div>
         }
       </Modal>}
