@@ -74,7 +74,7 @@ export const publishingMethod: Record<PublishingMethod, CreateFunction> = {
         run: echo "TIMESTAMP=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
         
       - name: Valist Publish
-        uses: valist-io/valist-github-action@v2.3.1
+        uses: valist-io/valist-github-action@v2.5.6
         with:
           private-key: ${privateKey}
           account: ${account}

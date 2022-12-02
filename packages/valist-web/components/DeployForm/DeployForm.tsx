@@ -199,7 +199,7 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
       return (
         <Workflows
           data={repoWorkflows} 
-          logs={[]} 
+          logs={[]}
         />
       );
     }
