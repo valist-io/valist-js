@@ -244,7 +244,7 @@ const Pricing: NextPage = () => {
         fetch(`/api/stats/${accountName}/${projectName}`)
         .then((response) => response.json())
         .then((data) => {
-          setLaunches(data);
+          if (!data?.message) setLaunches(data);
         });
       }
     } catch(err) {
