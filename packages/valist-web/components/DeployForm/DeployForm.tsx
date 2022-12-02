@@ -1,4 +1,4 @@
-import { BuildManifest, buildYaml, checkRepoSecret, createPullRequest, getJobLogs, getRepos, getRepoSecrets, getWorkflows, webFrameworkDefaults } from "@/utils/github";
+import { BuildManifest, buildYaml, checkRepoSecret, getRepos, getRepoSecrets, getWorkflows, webFrameworkDefaults } from "@/utils/github";
 import { Button as MantineButton, Center, Group, Stack, Text, Textarea, Title } from "@mantine/core";
 import { Octokit } from "@octokit/core";
 import { Stepper } from "@valist/ui";
@@ -13,6 +13,8 @@ import { useForm } from "@mantine/form";
 import { ChoosePublishers } from "./screens/ChoosePublishers";
 import { AddIntegrations } from "./screens/AddIntegrations";
 import { InstallApp } from "./screens/InstallApp";
+import { randomBytes } from "crypto";
+import { ethers } from "ethers";
 
 export type GitProvider = {
   name: string; 
@@ -23,8 +25,11 @@ interface DeployFormProps {
   client: Octokit | null;
   account: string;
   project: string;
+  linkRepo: (valistConfig: string) => Promise<void>;
+  publicKey: string;
+  setPublicKey: (value: string) => void;
   gitProviders: GitProvider[];
-  repoPath?: string;
+  repoPath: string;
   isLinked: boolean;
   onConnected?: () => void;
   onRepoSelect?: (repo: string) => void;
@@ -39,11 +44,12 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
   const [accessDenied, setAccessDenied] = useState<boolean>(false);
   const [pendingBuilds, setPendingBuilds] = useState<string[]>([]);
   const [pendingPublishers, setPendingPublishers] = useState<string[]>(['Valist Protocol']);
+  const [privateKey, setPrivateKey] = useState<string>('');
 
+  const [isSigner, setIsSigner] = useState<boolean>(false);
   const [userRepos, setUserRepos] = useState<string[]>([]);
   const [repoWorkflows, setRepoWorkflows] = useState<any[]>([]);
   const [repoSecrets, setRepoSecrets] = useState<string[]>([]);
-  const [repoPath, setRepoPath] = useState<string>('');
   const owner = props?.repoPath?.split('/')[0];
   const repo = props?.repoPath?.split('/')[1];
 
@@ -70,9 +76,7 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
       integrations: {},
     },
   });
-
   const [valistConfig, setValistConfig] = useState<string>(buildYaml(form.values as BuildManifest));
-  const [isSigner, setIsSigner] = useState<boolean>(false);
 
   const steps = [
     { label: "Step 1", description: "Connect your repo", text: "Step 1: Connect your repository!" },
@@ -92,17 +96,24 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
     return `https://github.com/apps/valist-publish/installations/new?state=${state}`;
   };
 
+  const _createKeyPair = async () => {
+    const signer_key = randomBytes(32).toString('hex');
+    const wallet = new ethers.Wallet(signer_key);
+    props.setPublicKey(wallet?.address);
+    setPrivateKey(wallet?.privateKey);
+  };
+
   const _selectRepo = async (name: string) => {
     const [_owner, _repo] = name.split('/');
     if (!_owner && _repo) return;
     setLoading(true);
-    setRepoPath(name);
 
-    if (props.onRepoSelect) props.onRepoSelect(repoPath);
+    if (props.onRepoSelect) props.onRepoSelect(name);
     if (props.client) {
       const resp = await checkRepoSecret(props.client, _owner, _repo);
       if (resp === 403) setAccessDenied(true);
       if (resp === 200) setIsSigner(true);
+      if (resp === 404) setIsSigner(false);
     }
     setLoading(false);
   };
@@ -121,8 +132,7 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
 
   const _createPr = async () => {
     if (!props.client || !owner || !repo) return;
-    await createPullRequest(props.client, valistConfig, owner, repo);
-    props.onPullRequest ? props.onPullRequest() : null;
+    await props.linkRepo(valistConfig);
   };
 
   // update valist config
@@ -176,6 +186,10 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
     form.setFieldValue("build.web.outputFolder", outputFolder || '');
   }, [form.values.build.web.framework]);
 
+  useEffect(() => {
+    _createKeyPair();
+  }, []);
+
   const renderScreen = () => {
     if ((props.client && !props.isLinked && userRepos.length === 0) || (props.isLinked && repoWorkflows.length === 0)) return <LoadingScreen />;
     if (accessDenied) {
@@ -193,24 +207,19 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
       return (
         <section>
           <SelectRepo
-            value={repoPath}
+            value={props.repoPath}
             repos={userRepos}
             onChange={_selectRepo} 
             onRepoSelect={async () => {}}
           />
+          <AddKey
+            account={props.account} 
+            project={props.project} 
+            repo={props.repoPath}
+            publicKey={props.publicKey}
+          />
           {isSigner &&
-            <>
-              <Center><Text size="xl">This repository contains a signer key.</Text></Center>
-              <Center><Text size="lg">You&lsquo;re ready to publish!</Text></Center>
-            </>
-          }
-          {loading && <LoadingScreen />}
-          {!isSigner && !loading &&
-            <AddKey
-              account={props.account} 
-              project={props.project} 
-              repo={props.repoPath || ''}
-            />
+            <Text style={{ color: 'red' }}>Warning this will replace any existing VALIST_SIGNER on this GitHub repo!</Text>
           }
         </section>
       );
@@ -342,8 +351,9 @@ export const platforms:BuildRecords = {
         name: 'framework',
         label: 'Framework',
         data: [
-          { value: 'react', label: 'Create React App' }, 
           { value: 'next', label: 'NextJS' },
+          { value: 'react', label: 'Create React App' }, 
+          { value: 'other', label: 'Other' },
         ],
         select: true,
         required: true, 

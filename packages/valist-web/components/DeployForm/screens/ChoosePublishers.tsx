@@ -6,7 +6,10 @@ interface ChoosePublishersProps {
 }
 
 export function ChoosePublishers(props: ChoosePublishersProps):JSX.Element {
-  const togglePublisher = (publisher: string) => props.pending.includes(publisher) ? props.setPending(props.pending.filter((p) => p !== publisher)) : props.setPending([...props.pending, publisher]);
+  const togglePublisher = (publisher: string) => {
+    if (publisher === 'Valist Protocol') return;
+    props.pending.includes(publisher) ? props.setPending(props.pending.filter((p) => p !== publisher)) : props.setPending([...props.pending, publisher]);
+  };
   const isActive = (publisher: string) => props.pending.includes(publisher);
 
   return (

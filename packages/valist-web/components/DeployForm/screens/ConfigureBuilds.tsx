@@ -91,7 +91,7 @@ export function ConfigureBuilds(props: ConfigureBuildsProps):JSX.Element {
         ))}
         {props.secrets.length === 0 &&
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 180 }}>
-            <div>No variables build found</div>
+            <div>No build variables found</div>
           </div>
         }
       </div>

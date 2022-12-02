@@ -182,8 +182,6 @@ const Project: NextPage = () => {
     );
   };
 
-  console.log('repo', repo);
-
   return (
     <Layout>
       <div style={{ paddingBottom: 32 }}>
@@ -199,7 +197,6 @@ const Project: NextPage = () => {
           <Tabs.Tab value="descriptions">Descriptions</Tabs.Tab>
           <Tabs.Tab value="members">Members</Tabs.Tab>
           <Tabs.Tab value="media">Media</Tabs.Tab>
-          <Tabs.Tab value="build">Deployments</Tabs.Tab>
         </Tabs.List>
         <Tabs.Panel value="basic">
           <form onSubmit={form.onSubmit(update)}>

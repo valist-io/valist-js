@@ -12,7 +12,7 @@ export const author = {
 
 export type CreateFunction = (value: Record<string, string>) => string;
 export type WebEnvironment = 'node16';
-export type WebFramework = 'next' | 'react';
+export type WebFramework = 'next' | 'react' | 'other';
 export type PublishingMethod = 'valist';
 
 export type WebFrameworkDefault = {
@@ -32,9 +32,14 @@ export const webFrameworkDefaults: Record<WebFramework, WebFrameworkDefault> = {
     buildCommand: 'npm run build',
     installCommand: 'npm install',
   },
+  other: {
+    outputFolder: 'dist',
+    buildCommand: 'npm run build',
+    installCommand: 'npm install',
+  },
 };
 
-//  create functions for webEnvironments
+// create functions for webEnvironments
 export const webEnvironments: Record<WebEnvironment, CreateFunction> = {
   node16: ({ }) => `
       - name: Setup Node
@@ -51,6 +56,11 @@ export const webFrameworks: Record<WebFramework, CreateFunction> = {
 \n`,
   react: ({ buildCommand, installCommand }) => `
       - name: Build and export Create React App
+        run: |${installCommand ? '\n          ' + installCommand : ''}
+          ${buildCommand}
+\n`,
+  other: ({ buildCommand, installCommand }) => `
+      - name: Build and export Javascript App
         run: |${installCommand ? '\n          ' + installCommand : ''}
           ${buildCommand}
 \n`,
@@ -154,11 +164,11 @@ export async function checkRepoSecret(octokit: Octokit, owner: string, repo: str
       repo,
       secret_name: 'VALIST_SIGNER',
     });
-    return 200;
   } catch (err) {
     if (String(err).includes('Resource not accessible by integration')) return 403;
-    if (String(err).includes('404')) return 404;
+    return 404;
   }
+  return 200;
 };
 
 export async function getRepos(octokit: Octokit) {

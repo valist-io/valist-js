@@ -1,25 +1,13 @@
 import { Text, TextInput, Title } from "@mantine/core";
-import { randomBytes } from "crypto";
-import { ethers } from "ethers";
-import { useEffect, useState } from "react";
 
 interface AddKeyProps {
   account: string;
   project: string;
   repo: string;
+  publicKey: string;
 }
 
 export function AddKey(props: AddKeyProps):JSX.Element {
-  const [publicKey, setPublicKey] = useState<string>('');
-
-  const createKeyPair = async () => {
-    const signer_key = randomBytes(32).toString('hex');
-    const wallet = new ethers.Wallet(signer_key);
-    setPublicKey(wallet?.address);
-  };
-
-  useEffect(() => {createKeyPair();}, []);
-
   return (
     <section>
       <Text style={{ marginBottom: 10 }}>GitHub needs a developer keypair with access to your Valist Project to continue.</Text>
@@ -30,7 +18,7 @@ export function AddKey(props: AddKeyProps):JSX.Element {
       <div>
         <TextInput
           disabled
-          value={publicKey} 
+          value={props.publicKey} 
         />
 
         <br />

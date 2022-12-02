@@ -13,11 +13,13 @@ import {
   Button,
   Breadcrumbs,
   _404,
+  CheckboxList,
 } from '@valist/ui';
 import getConfig from 'next/config';
 import { DeployForm, useGithubAuth } from '@/components/DeployForm';
 import { ProjectMeta } from '@valist/sdk';
 import { linkRepo } from '@/forms/link-repo';
+import { Center, Loader, Modal, Text } from '@mantine/core';
 
 function mkurl(CLIENT_ID: string, router: NextRouter) {
   const obj = { pathname: router?.pathname, query: router?.query };
@@ -45,10 +47,14 @@ const Deployments: NextPage = () => {
   const { data: meta } = useSWRImmutable<ProjectMeta>(data?.project?.metaURI);
 
   const [loading, setLoading] = useState(true);
-
+  const [privateKey, setPrivateKey] = useState<string>('');
+  const [publicKey, setPublicKey] = useState<string>('');
   const [isLinked, setIsLinked] = useState<boolean>(false);
   const [client, error, isLoading] = useGithubAuth(code);
-  const [repo, setRepo] = useState<string>('');
+  const [repoPath, setRepoPath] = useState<string>('');
+
+  const [showStatus, setShowStatus] = useState<boolean>(false);
+  const [statusStep, setStatusStep] = useState<number>(1);
 
   const gitProviders = [
     {
@@ -58,31 +64,44 @@ const Deployments: NextPage = () => {
     },
   ];
 
-  const _linkRepo = () => {
-    if (!meta) return;
+  const _linkRepo = async (valistConfig: string) => {
+    if (!meta || !client) return;
     setLoading(true);
-    linkRepo(address,
+    await linkRepo(
+      address,
       projectId,
       meta,
-      repo,
+      repoPath,
+      publicKey,
+      privateKey,
+      valistConfig,
       valist,
+      client,
       cache,
       chainId,
-      ).finally(() => {
-        setLoading(false);  
-      });
+      setShowStatus,
+      setStatusStep,
+    );
+    setLoading(false);  
   };
-
+  
   const breadcrumbs = [
     { title: accountName, href: `/${accountName}` },
     { title: projectName, href: `/${accountName}/${projectName}` },
     { title: 'Deployments', href: `/-/account/${accountName}/project/${projectName}/deployments` },
   ];
 
+  const statusList = [
+    { label:  `Add Signer Key ${publicKey}`, checked: statusStep >= 2 },
+    { label:  `Adding Private Key to GitHub`, checked: statusStep >= 3 },
+    { label:  `Creating Pull Request`, checked: statusStep >= 4 },
+    { label:  `Link Repo in Project Meta`, checked: statusStep >= 5 },
+  ];
+
   // wait for metadata to load
   useEffect(() => {
     if (meta && meta.repository) {
-      setRepo(meta.repository);
+      setRepoPath(meta.repository);
       setIsLinked(true);
     }
   }, [meta]);
@@ -131,16 +150,30 @@ const Deployments: NextPage = () => {
           account={accountName}
           project={projectName}
           isLinked={isLinked}
-          repoPath={repo}
           gitProviders={gitProviders}
-          onRepoSelect={((repo) => {
-            setRepo(repo);
-          })}
-          onPullRequest={() => {
-            _linkRepo();
-          }}          
+          repoPath={repoPath}
+          linkRepo={_linkRepo}
+          publicKey={publicKey}
+          setPublicKey={setPublicKey}
+          onRepoSelect={((repo: string) => {
+            setRepoPath(repo);
+          })}   
         />
       }
+      {showStatus && <Modal 
+        centered 
+        opened={showStatus} 
+        onClose={() => setShowStatus(false)}
+        withCloseButton={false}
+        closeOnEscape={false}
+        closeOnClickOutside={false}
+      >
+        <Center><Text mx='lg'>Connecting Repository</Text></Center>
+        <Center><Loader my='lg' color="violet" variant="dots" /></Center>
+        <CheckboxList 
+          items={statusList} 
+        />
+      </Modal>}
     </Layout>
   );
 };
