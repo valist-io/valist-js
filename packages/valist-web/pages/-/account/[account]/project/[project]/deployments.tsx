@@ -19,7 +19,7 @@ import getConfig from 'next/config';
 import { DeployForm, useGithubAuth } from '@/components/DeployForm';
 import { ProjectMeta } from '@valist/sdk';
 import { linkRepo } from '@/forms/link-repo';
-import { Center, Loader, Modal, Text } from '@mantine/core';
+import { Anchor, Center, Loader, Modal, Text } from '@mantine/core';
 
 function mkurl(CLIENT_ID: string, router: NextRouter) {
   const obj = { pathname: router?.pathname, query: router?.query };
@@ -169,11 +169,23 @@ const Deployments: NextPage = () => {
         closeOnEscape={false}
         closeOnClickOutside={false}
       >
-        <Center><Text mx='lg'>Connecting Repository</Text></Center>
-        <Center><Loader my='lg' color="violet" variant="dots" /></Center>
-        <CheckboxList 
-          items={statusList} 
-        />
+        {statusStep < 5 &&
+          <>
+            <Center><Text mx='lg'>Connecting Repository</Text></Center>
+            <Center><Loader my='lg' color="violet" variant="dots" /></Center>
+            <CheckboxList 
+              items={statusList} 
+            />
+          </>
+        }
+        {statusStep === 5 &&
+          <div>
+            Successfully created pull request for 
+            <Anchor href={`https://github.com/${repoPath}`}>
+              https://github.com/{repoPath}
+            </Anchor>
+          </div>
+        }
       </Modal>}
     </Layout>
   );
