@@ -23,6 +23,8 @@ const nextConfig = {
       // polyfill events on browser. since webpack5, polyfills are not automatically included
       config.resolve.fallback.events = require.resolve('events/');
       config.resolve.fallback.fs = false;
+      config.resolve.fallback.net = false;
+      config.resolve.fallback.tls = false;
     }
 
     // add graphql file loader

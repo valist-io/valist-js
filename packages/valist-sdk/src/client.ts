@@ -4,104 +4,43 @@ import { ContractTransaction } from '@ethersproject/contracts';
 import { MemoryBlockStore } from 'ipfs-car/blockstore/memory';
 import { packToBlob } from 'ipfs-car/pack/blob'
 import { ImportCandidate, ImportCandidateStream } from 'ipfs-core-types/src/utils';
-import { getFilesFromPath, toImportCandidate } from './utils';
+import { Biconomy } from '@biconomy/mexa';
 
+import { getFilesFromPath, toImportCandidate } from './utils';
 import { AccountMeta, PlatformsMeta, ProjectMeta, ReleaseMeta, SupportedPlatform, FileObject, ReleaseConfig } from './types';
 import { fetchGraphQL, Account, Project, Release } from './graphql';
 import { generateID, getAccountID, getProjectID, getReleaseID } from './utils';
 import * as queries from './graphql/queries';
-
 
 // minimal ABI for interacting with erc20 tokens
 const erc20ABI = [
 	'function approve(address spender, uint256 amount) returns (bool)'
 ];
 
-export default class Client {
+export abstract class AbstractClient {
 	constructor(
-		private registry: ethers.Contract,
-		private license: ethers.Contract,
-		private ipfsGateway: string,
-		private subgraphUrl: string
+		protected registry: ethers.Contract,
+		protected license: ethers.Contract,
+		protected ipfsGateway: string,
+		protected subgraphUrl: string
 	) { }
 
-	async createAccount(name: string, meta: AccountMeta, members: string[]): Promise<ContractTransaction> {
-		const metaURI = await this.writeJSON(JSON.stringify(meta));
-		return await this.registry.createAccount(name, metaURI, members);
-	}
+	abstract createAccount(name: string, meta: AccountMeta, members: string[]): Promise<ContractTransaction>;
+	abstract createProject(accountID: ethers.BigNumberish, name: string, meta: ProjectMeta, members: string[]): Promise<ContractTransaction>;
+	abstract createRelease(projectID: ethers.BigNumberish, name: string, meta: ReleaseMeta): Promise<ContractTransaction>;
+	abstract setAccountMeta(accountID: ethers.BigNumberish, meta: AccountMeta): Promise<ContractTransaction>;
+	abstract setProjectMeta(projectID: ethers.BigNumberish, meta: ProjectMeta): Promise<ContractTransaction>;
+	abstract addAccountMember(accountID: ethers.BigNumberish, address: string): Promise<ContractTransaction>;
+	abstract removeAccountMember(accountID: ethers.BigNumberish, address: string): Promise<ContractTransaction>;
+	abstract addProjectMember(projectID: ethers.BigNumberish, address: string): Promise<ContractTransaction>;
+	abstract removeProjectMember(projectID: ethers.BigNumberish, address: string): Promise<ContractTransaction>;
+	abstract approveRelease(releaseID: ethers.BigNumberish): Promise<ContractTransaction>;
+	abstract revokeRelease(releaseID: ethers.BigNumberish): Promise<ContractTransaction>;
 
-	async createProject(accountID: ethers.BigNumberish, name: string, meta: ProjectMeta, members: string[]): Promise<ContractTransaction> {
-		const metaURI = await this.writeJSON(JSON.stringify(meta));
-		return await this.registry.createProject(accountID, name, metaURI, members);
-	}
-
-	async uploadRelease(config: ReleaseConfig): Promise<ReleaseMeta> {
-		const release = new ReleaseMeta();
-
-		release.name = config.release;
-		release.description = config.description || '';
-
-		release.path = `${config.account}/${config.project}/${config.release}`;
-
-		release.platforms = new PlatformsMeta();
-
-		let webCID, nativeCID = '';
-
-		let filesObject: Record<string, FileObject[]> = {};
-
-		const platforms = Object.keys(config.platforms);
-
-		for (let i = 0; i < platforms.length; i++) {
-			if (config.platforms[platforms[i] as SupportedPlatform]) {
-				filesObject[platforms[i]] = await getFilesFromPath(config.platforms[platforms[i] as SupportedPlatform]);
-				if (platforms[i] !== 'web') {
-					filesObject[platforms[i]][0].name = require('path').join(platforms[i], filesObject[platforms[i]][0].name); // @TODO make this support more than one file
-				}
-			}
-		}
-
-		if (filesObject['web']) {
-			webCID = await this.writeFolder(filesObject['web'], false);
-
-			release.platforms.web = {
-				external_url: webCID,
-				name: 'web',
-			};
-
-			delete filesObject['web'];
-		};
-
-		if (Object.keys(filesObject).length > 0) {
-		
-			const nonWebFiles: FileObject[] = Object.values(filesObject).flat(1);
-
-			nativeCID = await this.writeFolder(nonWebFiles, true);
-
-			Object.keys(filesObject).forEach((platform) => {
-				if (release.platforms && filesObject[platform] && filesObject[platform].length !== 0) {
-				release.platforms[platform as SupportedPlatform] = {
-					external_url: `${nativeCID}/${filesObject[platform][0].name}`,
-					name: require('path').basename((filesObject[platform][0].name)),
-				};
-				}
-			});
-		}
-
-		release.external_url = webCID || nativeCID;
-
-		// upload release image
-		if (config.image) {
-			const imageFile = await getFilesFromPath(config.image);
-			release.image = await this.writeFile(imageFile[0]);
-		}
-
-		return release;
-	}
-
-	async createRelease(projectID: ethers.BigNumberish, name: string, meta: ReleaseMeta): Promise<ContractTransaction> {
-		const metaURI = await this.writeJSON(JSON.stringify(meta));
-		return await this.registry.createRelease(projectID, name, metaURI);
-	}
+	generateID = generateID;
+	getAccountID = getAccountID;
+	getProjectID = getProjectID;
+	getReleaseID = getReleaseID;
 
 	async accountExists(accountID: ethers.BigNumberish): Promise<boolean> {
 		const metaURI = await this.registry.metaByID(accountID);
@@ -134,40 +73,6 @@ export default class Client {
 		const metaURI = await this.registry.metaByID(releaseID);
 		const { data } = await axios.get(metaURI);
 		return data;
-	}
-
-	async setAccountMeta(accountID: ethers.BigNumberish, meta: AccountMeta): Promise<ContractTransaction> {
-		const metaURI = await this.writeJSON(JSON.stringify(meta));
-		return await this.registry.setAccountMetaURI(accountID, metaURI);
-	}
-
-	async setProjectMeta(projectID: ethers.BigNumberish, meta: ProjectMeta): Promise<ContractTransaction> {
-		const metaURI = await this.writeJSON(JSON.stringify(meta));
-		return await this.registry.setProjectMetaURI(projectID, metaURI);
-	}
-
-	async addAccountMember(accountID: ethers.BigNumberish, address: string): Promise<ContractTransaction> {
-		return await this.registry.addAccountMember(accountID, address);
-	}
-
-	async removeAccountMember(accountID: ethers.BigNumberish, address: string): Promise<ContractTransaction> {
-		return await this.registry.removeAccountMember(accountID, address);
-	}
-
-	async addProjectMember(projectID: ethers.BigNumberish, address: string): Promise<ContractTransaction> {
-		return await this.registry.addProjectMember(projectID, address);
-	}
-
-	async removeProjectMember(projectID: ethers.BigNumberish, address: string): Promise<ContractTransaction> {
-		return await this.registry.removeProjectMember(projectID, address);
-	}
-
-	async approveRelease(releaseID: ethers.BigNumberish): Promise<ContractTransaction> {
-		return await this.registry.approveRelease(releaseID);
-	}
-
-	async revokeRelease(releaseID: ethers.BigNumberish): Promise<ContractTransaction> {
-		return await this.registry.approveRelease(releaseID);
 	}
 
 	async setProductLimit(projectID: ethers.BigNumberish, limit: ethers.BigNumberish): Promise<ContractTransaction> {
@@ -338,6 +243,69 @@ export default class Client {
 		return data.user ? data.user.projects : [];
 	}
 
+	async uploadRelease(config: ReleaseConfig): Promise<ReleaseMeta> {
+		const release = new ReleaseMeta();
+
+		release.name = config.release;
+		release.description = config.description || '';
+
+		release.path = `${config.account}/${config.project}/${config.release}`;
+
+		release.platforms = new PlatformsMeta();
+
+		let webCID, nativeCID = '';
+
+		let filesObject: Record<string, FileObject[]> = {};
+
+		const platforms = Object.keys(config.platforms);
+
+		for (let i = 0; i < platforms.length; i++) {
+			if (config.platforms[platforms[i] as SupportedPlatform]) {
+				filesObject[platforms[i]] = await getFilesFromPath(config.platforms[platforms[i] as SupportedPlatform]);
+				if (platforms[i] !== 'web') {
+					filesObject[platforms[i]][0].name = require('path').join(platforms[i], filesObject[platforms[i]][0].name); // @TODO make this support more than one file
+				}
+			}
+		}
+
+		if (filesObject['web']) {
+			webCID = await this.writeFolder(filesObject['web'], false);
+
+			release.platforms.web = {
+				external_url: webCID,
+				name: 'web',
+			};
+
+			delete filesObject['web'];
+		};
+
+		if (Object.keys(filesObject).length > 0) {
+		
+			const nonWebFiles: FileObject[] = Object.values(filesObject).flat(1);
+
+			nativeCID = await this.writeFolder(nonWebFiles, true);
+
+			Object.keys(filesObject).forEach((platform) => {
+				if (release.platforms && filesObject[platform] && filesObject[platform].length !== 0) {
+				release.platforms[platform as SupportedPlatform] = {
+					external_url: `${nativeCID}/${filesObject[platform][0].name}`,
+					name: require('path').basename((filesObject[platform][0].name)),
+				};
+				}
+			});
+		}
+
+		release.external_url = webCID || nativeCID;
+
+		// upload release image
+		if (config.image) {
+			const imageFile = await getFilesFromPath(config.image);
+			release.image = await this.writeFile(imageFile[0]);
+		}
+
+		return release;
+	}
+
 	async writeJSON(data: string): Promise<string> {
 		let buffer: Buffer | Blob;
 		if (typeof window === 'undefined') {
@@ -428,12 +396,156 @@ export default class Client {
 
 		return `${this.ipfsGateway}/ipfs/${cid.toString()}`;
 	}
+}
 
-	generateID = generateID
+export class Client extends AbstractClient {
+	constructor(
+		registry: ethers.Contract,
+		license: ethers.Contract,
+		ipfsGateway: string,
+		subgraphUrl: string
+	) { 
+		super(registry, license, ipfsGateway, subgraphUrl);
+	}
 
-	getAccountID = getAccountID;
+	async createAccount(name: string, meta: AccountMeta, members: string[]): Promise<ContractTransaction> {
+		const metaURI = await this.writeJSON(JSON.stringify(meta));
+		return await this.registry.createAccount(name, metaURI, members);
+	}
 
-	getProjectID = getProjectID;
+	async createProject(accountID: ethers.BigNumberish, name: string, meta: ProjectMeta, members: string[]): Promise<ContractTransaction> {
+		const metaURI = await this.writeJSON(JSON.stringify(meta));
+		return await this.registry.createProject(accountID, name, metaURI, members);
+	}
 
-	getReleaseID = getReleaseID;
+	async createRelease(projectID: ethers.BigNumberish, name: string, meta: ReleaseMeta): Promise<ContractTransaction> {
+		const metaURI = await this.writeJSON(JSON.stringify(meta));
+		return await this.registry.createRelease(projectID, name, metaURI);
+	}
+
+	async setAccountMeta(accountID: ethers.BigNumberish, meta: AccountMeta): Promise<ContractTransaction> {
+		const metaURI = await this.writeJSON(JSON.stringify(meta));
+		return await this.registry.setAccountMetaURI(accountID, metaURI);
+	}
+
+	async setProjectMeta(projectID: ethers.BigNumberish, meta: ProjectMeta): Promise<ContractTransaction> {
+		const metaURI = await this.writeJSON(JSON.stringify(meta));
+		return await this.registry.setProjectMetaURI(projectID, metaURI);
+	}
+
+	async addAccountMember(accountID: ethers.BigNumberish, address: string): Promise<ContractTransaction> {
+		return await this.registry.addAccountMember(accountID, address);
+	}
+
+	async removeAccountMember(accountID: ethers.BigNumberish, address: string): Promise<ContractTransaction> {
+		return await this.registry.removeAccountMember(accountID, address);
+	}
+
+	async addProjectMember(projectID: ethers.BigNumberish, address: string): Promise<ContractTransaction> {
+		return await this.registry.addProjectMember(projectID, address);
+	}
+
+	async removeProjectMember(projectID: ethers.BigNumberish, address: string): Promise<ContractTransaction> {
+		return await this.registry.removeProjectMember(projectID, address);
+	}
+
+	async approveRelease(releaseID: ethers.BigNumberish): Promise<ContractTransaction> {
+		return await this.registry.approveRelease(releaseID);
+	}
+
+	async revokeRelease(releaseID: ethers.BigNumberish): Promise<ContractTransaction> {
+		return await this.registry.approveRelease(releaseID);
+	}
+}
+
+export class MetaClient extends AbstractClient {
+	private biconomy: Biconomy;
+
+	constructor(
+		registry: ethers.Contract,
+		license: ethers.Contract,
+		ipfsGateway: string,
+		subgraphUrl: string,
+		biconomy: Biconomy,
+	) { 
+		super(registry, license, ipfsGateway, subgraphUrl);
+		this.biconomy = biconomy;
+	}
+
+	async createAccount(name: string, meta: AccountMeta, members: string[]): Promise<ContractTransaction> {
+		const metaURI = await this.writeJSON(JSON.stringify(meta));
+		const { to, data } = await this.registry.populateTransaction.createAccount(name, metaURI, members);
+		return await this.sendMetaTransaction(to, data);
+	}
+
+	async createProject(accountID: ethers.BigNumberish, name: string, meta: ProjectMeta, members: string[]): Promise<ContractTransaction> {
+		const metaURI = await this.writeJSON(JSON.stringify(meta));
+		const { to, data } = await this.registry.populateTransaction.createProject(accountID, name, metaURI, members);
+		return await this.sendMetaTransaction(to, data);
+	}
+
+	async createRelease(projectID: ethers.BigNumberish, name: string, meta: ReleaseMeta): Promise<ContractTransaction> {
+		const metaURI = await this.writeJSON(JSON.stringify(meta));
+		const { to, data } = await this.registry.populateTransaction.createRelease(projectID, name, metaURI);
+		return await this.sendMetaTransaction(to, data);
+	}
+
+	async setAccountMeta(accountID: ethers.BigNumberish, meta: AccountMeta): Promise<ContractTransaction> {
+		const metaURI = await this.writeJSON(JSON.stringify(meta));
+		const { to, data } = await this.registry.populateTransaction.setAccountMetaURI(accountID, metaURI);
+		return await this.sendMetaTransaction(to, data);
+	}
+
+	async setProjectMeta(projectID: ethers.BigNumberish, meta: ProjectMeta): Promise<ContractTransaction> {
+		const metaURI = await this.writeJSON(JSON.stringify(meta));
+		const { to, data } = await this.registry.populateTransaction.setProjectMetaURI(projectID, metaURI);
+		return await this.sendMetaTransaction(to, data);
+	}
+
+	async addAccountMember(accountID: ethers.BigNumberish, address: string): Promise<ContractTransaction> {
+		const { to, data } = await this.registry.populateTransaction.addAccountMember(accountID, address);
+		return await this.sendMetaTransaction(to, data);
+	}
+
+	async removeAccountMember(accountID: ethers.BigNumberish, address: string): Promise<ContractTransaction> {
+		const { to, data } = await this.registry.populateTransaction.removeAccountMember(accountID, address);
+		return await this.sendMetaTransaction(to, data);
+	}
+
+	async addProjectMember(projectID: ethers.BigNumberish, address: string): Promise<ContractTransaction> {
+		const { to, data } = await this.registry.populateTransaction.addProjectMember(projectID, address);
+		return await this.sendMetaTransaction(to, data);
+	}
+
+	async removeProjectMember(projectID: ethers.BigNumberish, address: string): Promise<ContractTransaction> {
+		const { to, data } = await this.registry.populateTransaction.removeProjectMember(projectID, address);
+		return await this.sendMetaTransaction(to, data);
+	}
+
+	async approveRelease(releaseID: ethers.BigNumberish): Promise<ContractTransaction> {
+		const { to, data } = await this.registry.populateTransaction.approveRelease(releaseID);
+		return await this.sendMetaTransaction(to, data);
+	}
+
+	async revokeRelease(releaseID: ethers.BigNumberish): Promise<ContractTransaction> {
+		const { to, data } = await this.registry.populateTransaction.approveRelease(releaseID);
+		return await this.sendMetaTransaction(to, data);
+	}
+
+	private async sendMetaTransaction(to: string | undefined, data: string | undefined): Promise<ContractTransaction> {
+		const from = await this.biconomy.signer?.getAddress();
+		const signatureType = this.biconomy.eip712Sign;
+		const params = [{ to, data, from, signatureType }];
+
+		const result = await this.biconomy?.provider?.request?.({ method: 'eth_sendTransaction', params });
+		if (result.error) {
+			throw new Error(result.error);
+		}
+
+		const getTransaction = async (hash: string) => this.biconomy?.ethersProvider?.getTransaction(hash);
+		return new Promise((resolve, reject) => {
+			this.biconomy.once('txMined', (data: any) => getTransaction(data.hash).then(resolve).catch(reject));
+			this.biconomy.once('onError', (data: any) => reject(data.error));
+		});
+	}
 }
