@@ -123,7 +123,7 @@ const IndexPage: NextPage = () => {
           <Grid.Col md={9}>
             { step === 0 && <Welcome /> }
             { step === 1 && <CreateAccount onboard={true} /> }
-            { step === 2 && <CreateProject onboard={true} account={accountName} /> }
+            { step === 2 && accounts.length !== 0 && <CreateProject onboard={true} account={accounts[0]} /> }
           </Grid.Col>
         </Grid>
       </Layout>
