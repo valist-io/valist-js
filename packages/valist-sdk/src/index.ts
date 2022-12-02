@@ -67,8 +67,9 @@ export async function create(provider: Provider, options: Partial<Options>): Pro
     options.ipfsGateway = 'https://gateway.valist.io';
   }
 
-  const registry = new ethers.Contract(options.registryAddress, contracts.registryABI, provider);
-  const license = new ethers.Contract(options.licenseAddress, contracts.licenseABI, provider);
+  const signerOrProvider = provider.getSigner();
+  const registry = new ethers.Contract(options.registryAddress, contracts.registryABI, signerOrProvider);
+  const license = new ethers.Contract(options.licenseAddress, contracts.licenseABI, signerOrProvider);
 
   if (options.metaTx && contracts.chainIds.includes(options.chainId)) {
     const biconomy = await createBiconomy(provider, options);
