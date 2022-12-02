@@ -27,6 +27,7 @@ interface DeployFormProps {
   project: string;
   linkRepo: (valistConfig: string) => Promise<void>;
   publicKey: string;
+  setPrivateKey: (value: string) => void;
   setPublicKey: (value: string) => void;
   gitProviders: GitProvider[];
   repoPath: string;
@@ -44,7 +45,6 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
   const [accessDenied, setAccessDenied] = useState<boolean>(false);
   const [pendingBuilds, setPendingBuilds] = useState<string[]>([]);
   const [pendingPublishers, setPendingPublishers] = useState<string[]>(['Valist Protocol']);
-  const [privateKey, setPrivateKey] = useState<string>('');
 
   const [isSigner, setIsSigner] = useState<boolean>(false);
   const [userRepos, setUserRepos] = useState<string[]>([]);
@@ -100,7 +100,7 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
     const signer_key = randomBytes(32).toString('hex');
     const wallet = new ethers.Wallet(signer_key);
     props.setPublicKey(wallet?.address);
-    setPrivateKey(wallet?.privateKey);
+    props.setPrivateKey(wallet?.privateKey);
   };
 
   const _selectRepo = async (name: string) => {

@@ -154,6 +154,7 @@ const Deployments: NextPage = () => {
           repoPath={repoPath}
           linkRepo={_linkRepo}
           publicKey={publicKey}
+          setPrivateKey={setPrivateKey}
           setPublicKey={setPublicKey}
           onRepoSelect={((repo: string) => {
             setRepoPath(repo);
