@@ -37,7 +37,7 @@ import {
   Breadcrumbs,
   Button,
   Card,
-  CopyButton,
+  CopyInput,
   EditButton,
   InfoButton,
   List,
@@ -46,7 +46,6 @@ import {
 
 import {
   ActionIcon,
-  Anchor,
   Avatar,
   Group,
   Grid,
@@ -55,11 +54,8 @@ import {
   SimpleGrid,
   Text,
   Title,
-  TextInput,
-  useMantineTheme,
 } from '@mantine/core';
 import { BigNumber } from 'ethers';
-import { getStats } from '@valist/sdk';
 
 const Pricing: NextPage = () => {
   const router = useRouter();
@@ -85,10 +81,6 @@ const Pricing: NextPage = () => {
   const { data } = useQuery(query, { variables: { projectId } });
   const _purchases = data?.product?.purchases ?? [];
   const currencies = data?.product?.currencies ?? [];
-
-  const theme = useMantineTheme();
-	const borderColor = theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[4];
-  const textColor = theme.colorScheme === 'dark' ? '' : `${theme.colors.gray[4]} !important`;
 
   const parseBlockTime = (time: string) => {
     const utc = parseInt(time);
@@ -365,19 +357,9 @@ const Pricing: NextPage = () => {
                   </Stack>
                 </Card>
                 <Card>
-                  <TextInput
-                    id="projectId"
-                    name="projectId"
-                    label="ProjectId for Token Gating"
-                    rightSection={<CopyButton value={BigNumber.from(projectId).toString()} />}
+                  <CopyInput
+                    label={"ProjectId for Token Gating"}
                     value={BigNumber.from(projectId).toString()}
-                    styles={{
-                      disabled: { 
-                        borderColor,
-                        color: textColor,
-                      },
-                    }}
-                    disabled
                   />
                 </Card>
                 <Card>
