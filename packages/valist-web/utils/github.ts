@@ -92,7 +92,7 @@ export type BuildManifest = {
 }
 
 export function buildYaml(manifest: BuildManifest, branchName: string) {
-  let outputPath = 'out';
+  let outputPath = manifest.build.web.outputFolder;
   let yaml = `name: Valist Deploy
 on:
   push:
