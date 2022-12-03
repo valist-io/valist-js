@@ -1,7 +1,7 @@
 import { BuildManifest, buildYaml, checkRepoSecret, getRepos, getRepoSecrets, getWorkflows, webFrameworkDefaults } from "@/utils/github";
 import { Button as MantineButton, Center, Group, Stack, Text, Textarea, Title } from "@mantine/core";
 import { Octokit } from "@octokit/core";
-import { Stepper } from "@valist/ui";
+import { Button, Stepper } from "@valist/ui";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { AddKey } from "./screens/AddKey";
@@ -26,6 +26,7 @@ interface DeployFormProps {
   account: string;
   project: string;
   linkRepo: (valistConfig: string) => Promise<void>;
+  unlinkRepo: () => Promise<void>;
   publicKey: string;
   setPrivateKey: (value: string) => void;
   setPublicKey: (value: string) => void;
@@ -208,10 +209,13 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
     }
     if (props.isLinked && repoWorkflows) {
       return (
-        <Workflows
-          data={repoWorkflows} 
-          logs={[]}
-        />
+        <>
+          <Workflows
+            data={repoWorkflows} 
+            logs={[]}
+          />
+          <Button onClick={props.unlinkRepo}>Unlink Repo</Button>
+        </>
       );
     }
     if (!props.isLinked && userRepos.length !== 0 && step === 0) {

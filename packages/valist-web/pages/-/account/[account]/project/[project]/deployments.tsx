@@ -19,6 +19,7 @@ import { DeployForm, useGithubAuth } from '@/components/DeployForm';
 import { ProjectMeta } from '@valist/sdk';
 import { linkRepo } from '@/forms/link-repo';
 import { Anchor, Button, Center, Loader, Modal, Text } from '@mantine/core';
+import { unlinkRepo } from '@/forms/unlink-repo';
 
 function mkurl(CLIENT_ID: string, router: NextRouter) {
   const obj = { pathname: router?.pathname, query: router?.query };
@@ -82,7 +83,15 @@ const Deployments: NextPage = () => {
       setShowStatus,
       setStatusStep,
     );
-    setLoading(false);  
+    setLoading(false);
+    router.push(`/-/account/${accountName}/project/${projectName}`);  
+  };
+
+  const _unlinkRepo = async () => {
+    if (!meta || !client) return;
+    setLoading(true);
+    await unlinkRepo(address, projectId, meta, valist, cache, chainId);
+    setLoading(false); 
   };
 
   const breadcrumbs = [
@@ -163,6 +172,7 @@ const Deployments: NextPage = () => {
           gitProviders={gitProviders}
           repoPath={repoPath}
           linkRepo={_linkRepo}
+          unlinkRepo={_unlinkRepo}
           publicKey={publicKey}
           setPrivateKey={setPrivateKey}
           setPublicKey={setPublicKey}
