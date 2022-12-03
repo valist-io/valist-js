@@ -108,6 +108,9 @@ const Deployments: NextPage = () => {
 
   // redirect to get auth code automatically if repo is linked
   useEffect(() => {
+    const expiryTime = Number(sessionStorage.getItem('github-session-expiry'));
+    const currentTime = new Date().getTime();
+    
     console.log('------------');
     console.log('isLinked', isLinked);
     console.log('!isLoading', !isLoading);
@@ -115,9 +118,16 @@ const Deployments: NextPage = () => {
     console.log('client', client);
     console.log('!code', !code);
     console.log('gitProviders', gitProviders);
+    console.log('tokenExpiry', expiryTime);
+    console.log('currentTime', currentTime);
     console.log('------------');
 
-    if (!isLoading && (!client || renewToken) && !code && CLIENT_ID && router.isReady) {
+    const isExpired = expiryTime < currentTime;
+    if (isExpired) sessionStorage.clear();
+
+    const expiredState = !isLoading && CLIENT_ID && router.isReady && isExpired && !code;
+
+    if (!isLoading && !client && !code && CLIENT_ID && router.isReady || expiredState) {
       console.log('Starting redirect...');
       window.location.assign(mkurl(CLIENT_ID, router));
     }

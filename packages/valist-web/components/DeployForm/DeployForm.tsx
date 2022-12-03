@@ -314,6 +314,8 @@ export function useGithubAuth(code: string): [Octokit | null, null, boolean] {
   const [loading, setLoading] = useState(true);
 
   async function getAuth() {
+    let expiryTime = new Date(new Date().setHours(new Date().getHours() + 3)).getTime();
+
     try {
       if (router.isReady && !client) {
         let _session  = sessionStorage.getItem("github-session") || '';
@@ -322,11 +324,12 @@ export function useGithubAuth(code: string): [Octokit | null, null, boolean] {
           const response = await fetch(`/api/auth/github?code=${code}`);
           _session = String(await response.json());
           sessionStorage.setItem("github-session", _session);
+          sessionStorage.setItem("github-session-expiry", String(expiryTime));
 
-          // router.push({
-          //   pathname: router.pathname,
-          //   query: Object.fromEntries(Object.entries(router.query).filter(([name, value]) => name !== "code")),
-          // });
+          router.push({
+            pathname: router.pathname,
+            query: Object.fromEntries(Object.entries(router.query).filter(([name, value]) => name !== "code")),
+          });
         }
 
         if (_session.includes('ghu_')) {
