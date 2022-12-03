@@ -187,7 +187,7 @@ const IndexPage: NextPage = () => {
           { (!showInfo || !infoOpened) &&
             <Grid.Col xl={8}>
               { projects.length === 0 && 
-                <NoProjects action={() => router.push(`/-/account/${accounts[0]}/create/project`)} />
+                <NoProjects action={() => router.push(`/-/account/${accounts[0].name}/create/project`)} />
               }
               { projects.length !== 0 && 
                 <CardGrid>
