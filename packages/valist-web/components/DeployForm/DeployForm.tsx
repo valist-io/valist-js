@@ -209,7 +209,7 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
     if (accessDenied) {
       return <InstallApp redirectUrl={installUrl()} />;
     }
-    if (props.isLinked) {
+    if (props.isLinked && repoWorkflows) {
       return (
         <>
           <Workflows
