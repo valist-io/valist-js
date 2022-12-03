@@ -91,13 +91,13 @@ export type BuildManifest = {
   integrations: Record<string, Record<string, any>>;
 }
 
-export function buildYaml(manifest: BuildManifest) {
+export function buildYaml(manifest: BuildManifest, branchName: string) {
   let outputPath = 'out';
   let yaml = `name: Valist Deploy
 on:
   push:
     branches:
-      - main
+      - ${branchName}
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -255,9 +255,9 @@ export const getCurrentCommit = async (
   };
 };
 
-export async function createPullRequest(octokit: Octokit, valistConfig: string, owner: string, repo: string) {
+export async function createPullRequest(octokit: Octokit, valistConfig: string, owner: string, repo: string, branchName: string) {
   // Get current commit
-  const currentCommit = await getCurrentCommit(octokit, owner, repo);
+  const currentCommit = await getCurrentCommit(octokit, owner, repo, branchName);
   console.log('Current Commit', currentCommit);
 
   // Upload file blob
@@ -319,7 +319,7 @@ export async function createPullRequest(octokit: Octokit, valistConfig: string, 
     title: PR_TITLE,
     body: 'Adds valist publish to CI/CD pipeline!',
     head: 'feature/valist',
-    base: 'main',
+    base: branchName,
   });
   console.log('pull request', pullRequest);
 };

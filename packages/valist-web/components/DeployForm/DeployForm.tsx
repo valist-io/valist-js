@@ -25,7 +25,7 @@ interface DeployFormProps {
   client: Octokit | null;
   account: string;
   project: string;
-  linkRepo: (valistConfig: string) => Promise<void>;
+  linkRepo: (valistConfig: string, branchName: string) => Promise<void>;
   unlinkRepo: () => Promise<void>;
   publicKey: string;
   setPrivateKey: (value: string) => void;
@@ -52,6 +52,7 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
   const [userRepos, setUserRepos] = useState<string[]>([]);
   const [repoWorkflows, setRepoWorkflows] = useState<any[]>([]);
   const [repoSecrets, setRepoSecrets] = useState<string[]>([]);
+  const [branch, setBranch] = useState<string>('main');
   const owner = props?.repoPath?.split('/')[0];
   const repo = props?.repoPath?.split('/')[1];
 
@@ -78,7 +79,7 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
       integrations: {},
     },
   });
-  const [valistConfig, setValistConfig] = useState<string>(buildYaml(form.values as BuildManifest));
+  const [valistConfig, setValistConfig] = useState<string>(buildYaml(form.values as BuildManifest, branch));
 
   const steps = [
     { label: "Step 1", description: "Connect your repo", text: "Step 1: Connect your repository!" },
@@ -134,16 +135,17 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
 
   const _createPr = async () => {
     if (!props.client || !owner || !repo) return;
-    await props.linkRepo(valistConfig);
+    await props.linkRepo(valistConfig, branch);
   };
 
   // update valist config
   useEffect(() => {
     const config = buildYaml(
       (form.values as BuildManifest),
+      branch,
     );
     setValistConfig(config);
-  } ,[form.values]);
+  } ,[form.values, branch]);
 
   // request user repositories if no repo set
   useEffect(() => {
@@ -222,10 +224,11 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
       return (
         <section>
           <SelectRepo
-            value={props.repoPath}
+            repo={props.repoPath}
             repos={userRepos}
-            onChange={_selectRepo} 
-            onRepoSelect={async () => {}}
+            onRepoChange={_selectRepo}
+            branch={branch}
+            onBranchChange={setBranch}
           />
           <AddKey
             account={props.account} 

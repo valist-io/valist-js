@@ -12,6 +12,7 @@ export async function linkRepo(
   projectId: string,
   projectMeta: ProjectMeta,
   repository: string,
+  branch: string,
   publicKey: string,
   privateKey: string,
   valistConfig: string,
@@ -44,7 +45,7 @@ export async function linkRepo(
       await addSecret(client, owner, repo, 'VALIST_SIGNER', privateKey);
       setStatusStep(3);
 
-      await createPullRequest(client, valistConfig, owner, repo);
+      await createPullRequest(client, valistConfig, owner, repo, branch);
       setStatusStep(4);
     
       const linkTransaction = await valist.setProjectMeta(projectId, { ...projectMeta, repository });

@@ -65,7 +65,7 @@ const Deployments: NextPage = () => {
     },
   ];
 
-  const _linkRepo = async (valistConfig: string) => {
+  const _linkRepo = async (valistConfig: string, branch: string) => {
     if (!meta || !client) return;
     setLoading(true);
     await linkRepo(
@@ -73,6 +73,7 @@ const Deployments: NextPage = () => {
       projectId,
       meta,
       repoPath,
+      branch,
       publicKey,
       privateKey,
       valistConfig,
