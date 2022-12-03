@@ -157,7 +157,10 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
           if (names.length !== 0) _selectRepo(names[0]);
         });
       } catch (err) {
-        if (String(err).includes('Bad credentials')) {
+        console.log('Error fetching repos');
+        console.log('Error', err);
+        if (String(err).includes('Bad')) {
+          console.log('Bad creds, getting new ones...');
           sessionStorage.removeItem('github-session');
           props.renewAuth();
         }
