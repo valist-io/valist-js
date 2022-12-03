@@ -54,6 +54,7 @@ const Deployments: NextPage = () => {
 
   const [showStatus, setShowStatus] = useState<boolean>(false);
   const [statusStep, setStatusStep] = useState<number>(1);
+  const [renewToken, setRenewToken] = useState<boolean>(false);
 
   const gitProviders = [
     {
@@ -83,7 +84,7 @@ const Deployments: NextPage = () => {
     );
     setLoading(false);  
   };
-  
+
   const breadcrumbs = [
     { title: accountName, href: `/${accountName}` },
     { title: projectName, href: `/${accountName}/${projectName}` },
@@ -116,7 +117,7 @@ const Deployments: NextPage = () => {
     console.log('gitProviders', gitProviders);
     console.log('------------');
 
-    if (!isLoading && !client && !code && CLIENT_ID && router.isReady) {
+    if (!isLoading && (!client || renewToken) && !code && CLIENT_ID && router.isReady) {
       console.log('Starting redirect...');
       window.location.assign(mkurl(CLIENT_ID, router));
     }
@@ -155,6 +156,7 @@ const Deployments: NextPage = () => {
           publicKey={publicKey}
           setPrivateKey={setPrivateKey}
           setPublicKey={setPublicKey}
+          renewAuth={setRenewToken}
           onRepoSelect={((repo: string) => {
             setRepoPath(repo);
           })}   

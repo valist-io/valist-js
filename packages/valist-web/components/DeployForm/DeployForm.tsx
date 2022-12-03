@@ -29,6 +29,7 @@ interface DeployFormProps {
   publicKey: string;
   setPrivateKey: (value: string) => void;
   setPublicKey: (value: string) => void;
+  renewAuth: any;
   gitProviders: GitProvider[];
   repoPath: string;
   isLinked: boolean;
@@ -146,14 +147,21 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
   // request user repositories if no repo set
   useEffect(() => {
     if (props.client && !props.repoPath) {
-      getRepos(props.client).then((repos) => {
-        const names = repos?.data?.map((repo) => {
-          return repo.full_name;
+      try {
+        getRepos(props.client).then((repos) => {
+          const names = repos?.data?.map((repo) => {
+            return repo.full_name;
+          });
+  
+          setUserRepos(names);
+          if (names.length !== 0) _selectRepo(names[0]);
         });
-
-        setUserRepos(names);
-        if (names.length !== 0) _selectRepo(names[0]);
-      });
+      } catch (err) {
+        if (String(err).includes('Bad credentials')) {
+          sessionStorage.removeItem('github-session');
+          props.renewAuth();
+        }
+      }
     };
   }, [props.client]);
 

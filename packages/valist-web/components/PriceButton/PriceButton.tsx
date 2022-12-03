@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { EditButton, Item } from '@valist/ui';
+import { EditButton } from '@valist/ui';
 import { PriceModal } from '@/components/PriceModal';
 import { getTokenSymbol, getTokenLogo } from '@/utils/tokens';
 import { Avatar, Group, Stack, Text, Title, useMantineTheme } from '@mantine/core';
@@ -15,7 +15,6 @@ export function PriceButton(props: PriceButtonProps) {
   const [opened, setOpened] = useState(false);
   const theme = useMantineTheme();
   const color = theme.colorScheme === 'dark' ? theme.colors.gray[9] : theme.colors.gray[4];
-
 
   return (
     <>
