@@ -55,7 +55,7 @@ export async function createRelease(
     utils.showLoading('Uploading files');
     if (image) {
       meta.image = await utils.writeFile(image, valist, (progress: number) => {
-        utils.updateLoading(`Uploading ${image?.name}: ${progress}`);
+        utils.updateLoading(`Uploading ${image?.name}: ${progress}%`);
       });
     }
 
@@ -69,7 +69,7 @@ export async function createRelease(
       
       if (web?.length !== 0) {
         webCID = await valist.writeFolder(web, false, (progress: number) => {
-          utils.updateLoading(`Uploading release archive for web: ${progress}`);
+          utils.updateLoading(`Uploading release archive for web: ${progress}%`);
         });
         meta.platforms.web = {
           external_url: webCID,
@@ -79,7 +79,7 @@ export async function createRelease(
 
       if (nonWebFiles && nonWebFiles?.length !== 0) {
         nativeCID = await valist.writeFolder(nonWebFiles, true, (progress: number) => {
-          utils.updateLoading(`Uploading release archive for native: ${progress}`);
+          utils.updateLoading(`Uploading release archive for native: ${progress}%`);
         });
 
         Object.keys(_nonWebFiles).forEach((platform) => {
