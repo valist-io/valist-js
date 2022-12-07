@@ -11,6 +11,7 @@ export function useEntityIds(accountName: string = '') {
 
   const { data, loading } = useQuery(query, { 
     variables: { address: address?.toLowerCase() ?? '' },
+    pollInterval: 5000,
   });
 
   const _accounts = data?.user?.accounts ?? [];
@@ -41,10 +42,12 @@ export function useEntities(accountName: string = '') {
 
   const accountsData = useQuery(accountsQuery, {
     variables: { ids: accountIds },
+    pollInterval: 5000,
   });
 
   const projectsData = useQuery(projectsQuery, {
-    variables: { ids: projectIds }, 
+    variables: { ids: projectIds },
+    pollInterval: 5000,
   });
 
   const accounts = accountsData.data?.accounts ?? [];
