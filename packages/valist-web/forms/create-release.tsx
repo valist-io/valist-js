@@ -4,7 +4,7 @@ import { ReleaseMeta, Client, SupportedPlatform, PlatformsMeta } from '@valist/s
 import { Event } from 'ethers';
 import { handleEvent } from './events';
 import * as utils from './utils';
-import { versionRegex } from './common';
+import { normalizeError, versionRegex } from './common';
 import { Anchor } from '@mantine/core';
 import { getBlockExplorer } from '@/components/Activity';
 
@@ -106,8 +106,7 @@ export async function createRelease(
 
     return true;
   } catch (error: any) {
-    utils.showError(error);
-    console.log(error);
+    utils.showError(normalizeError(error));
   } finally {
     utils.hideLoading();
   }

@@ -5,6 +5,7 @@ import { handleEvent } from './events';
 import * as utils from './utils';
 import { Anchor } from '@mantine/core';
 import { getBlockExplorer } from '@/components/Activity';
+import { normalizeError } from './common';
 
 export interface FormValues {
   displayName: string;
@@ -61,8 +62,7 @@ export async function updateAccount(
 
     return true;
   } catch (error: any) {
-    utils.showError(error);
-    console.log(error);
+    utils.showError(normalizeError(error));
   } finally {
     utils.hideLoading();
   }
@@ -94,8 +94,7 @@ export async function addAccountMember(
 
     return true;
   } catch (error: any) {
-    utils.showError(error);
-    console.log(error);
+    utils.showError(normalizeError(error));
   } finally {
     utils.hideLoading();
   }
@@ -127,8 +126,7 @@ export async function removeAccountMember(
 
     return true;
   } catch (error: any) {
-    utils.showError(error);
-    console.log(error);
+    utils.showError(normalizeError(error));
   } finally {
     utils.hideLoading();
   }

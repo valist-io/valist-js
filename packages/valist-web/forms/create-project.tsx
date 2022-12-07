@@ -4,7 +4,7 @@ import { ProjectMeta, Client } from '@valist/sdk';
 import { Event } from 'ethers';
 import { handleEvent } from './events';
 import * as utils from './utils';
-import { shortnameRegex, refineYouTube } from './common';
+import { shortnameRegex, refineYouTube, normalizeError } from './common';
 import { Anchor } from '@mantine/core';
 import { getBlockExplorer } from '@/components/Activity';
 
@@ -106,8 +106,7 @@ export async function createProject(
 
     return true;
   } catch(error: any) {
-    utils.showError(error);
-    console.log(error);
+    utils.showError(normalizeError(error));
   } finally {
     utils.hideLoading();
   }

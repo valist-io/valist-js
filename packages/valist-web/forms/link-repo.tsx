@@ -6,6 +6,7 @@ import { Octokit } from '@octokit/core';
 import { Anchor } from '@mantine/core';
 import { getBlockExplorer } from '@/components/Activity';
 import { handleEvent } from './events';
+import { normalizeError } from './common';
 
 export async function linkRepo(
   address: string | undefined,
@@ -57,8 +58,7 @@ export async function linkRepo(
       setStatusStep(5);
     }
   } catch (error: any) {
-    utils.showError(error);
-    console.log(error);
+    utils.showError(normalizeError(error));
   } finally {
     utils.hideLoading();
   }

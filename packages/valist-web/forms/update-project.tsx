@@ -3,7 +3,7 @@ import { ApolloCache } from '@apollo/client';
 import { ProjectMeta, Client } from '@valist/sdk';
 import { handleEvent } from './events';
 import * as utils from './utils';
-import { refineYouTube } from './common';
+import { normalizeError, refineYouTube } from './common';
 import { Anchor } from '@mantine/core';
 import { getBlockExplorer } from '@/components/Activity';
 
@@ -108,8 +108,7 @@ export async function updateProject(
 
     return true;
   } catch(error: any) {
-    utils.showError(error);
-    console.log(error);
+    utils.showError(normalizeError(error));
   } finally {
     utils.hideLoading();
   };
@@ -141,8 +140,7 @@ export async function addProjectMember(
 
     return true;
   } catch (error: any) {
-    utils.showError(error);
-    console.log(error);
+    utils.showError(normalizeError(error));
   } finally {
     utils.hideLoading();
   }
@@ -174,8 +172,7 @@ export async function removeProjectMember(
 
     return true;
   } catch (error: any) {
-    utils.showError(error);
-    console.log(error);
+    utils.showError(normalizeError(error));
   } finally {
     utils.hideLoading();
   }

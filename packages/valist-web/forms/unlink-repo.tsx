@@ -4,6 +4,7 @@ import { Client, ProjectMeta } from "@valist/sdk";
 import { Anchor } from '@mantine/core';
 import { getBlockExplorer } from '@/components/Activity';
 import { handleEvent } from './events';
+import { normalizeError } from './common';
 
 export async function unlinkRepo(
   address: string | undefined,
@@ -27,8 +28,7 @@ export async function unlinkRepo(
     const receipt = await transaction.wait();
     receipt.events?.forEach(event => handleEvent(event, cache));
   } catch (error: any) {
-    utils.showError(error);
-    console.log(error);
+    utils.showError(normalizeError(error));
   } finally {
     utils.hideLoading();
   }

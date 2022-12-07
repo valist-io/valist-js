@@ -3,7 +3,7 @@ import { ApolloCache } from '@apollo/client';
 import { AccountMeta, Client } from '@valist/sdk';
 import { handleEvent } from './events';
 import * as utils from './utils';
-import { shortnameRegex } from './common';
+import { normalizeError, shortnameRegex } from './common';
 import { Anchor } from '@mantine/core';
 import { getBlockExplorer } from '@/components/Activity';
 
@@ -72,8 +72,8 @@ export async function createAccount(
 
     return true;
   } catch (error: any) {
-    utils.showError(error);
-    console.log(error);
+    console.log('error Obj', error);
+    utils.showError(normalizeError(error));
   } finally {
     utils.hideLoading();
   }

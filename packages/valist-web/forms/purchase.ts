@@ -3,6 +3,7 @@ import { ethers } from 'ethers';
 import { Client } from '@valist/sdk';
 import { handleEvent } from './events';
 import * as utils from './utils';
+import { normalizeError } from './common';
 
 export async function purchaseProduct(
   address: string | undefined,
@@ -27,8 +28,7 @@ export async function purchaseProduct(
 
     return true;
   } catch (error: any) {
-    utils.showError(error);
-    console.log(error);
+    utils.showError(normalizeError(error));
   } finally {
     utils.hideLoading();
   }
