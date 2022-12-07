@@ -10,12 +10,12 @@ import { ReactNode } from 'react';
 const LOADING_ID = 'valist-loading-notification';
 const ERROR_ID = 'valist-error-notification';
 
-export const showError = (error: any) => showNotification({
+export const showError = (error: string) => showNotification({
   id: ERROR_ID,
   autoClose: false,
   color: 'red',
   title: 'Error',
-  message: error.data?.message ?? error.message,
+  message: error,
 });
 
 export const showErrorMessage = (error: any) => {

@@ -4,7 +4,7 @@ import { ReleaseMeta, Client, SupportedPlatform, PlatformsMeta } from '@valist/s
 import { Event } from 'ethers';
 import { handleEvent } from './events';
 import * as utils from './utils';
-import { versionRegex } from './common';
+import { normalizeError, versionRegex } from './common';
 import { Anchor } from '@mantine/core';
 import { getBlockExplorer } from '@/components/Activity';
 
@@ -55,7 +55,7 @@ export async function createRelease(
     utils.showLoading('Uploading files');
     if (image) {
       meta.image = await utils.writeFile(image, valist, (progress: number) => {
-        utils.updateLoading(`Uploading ${image?.name}: ${progress}`);
+        utils.updateLoading(`Uploading ${image?.name}: ${progress}%`);
       });
     }
 
@@ -69,7 +69,7 @@ export async function createRelease(
       
       if (web?.length !== 0) {
         webCID = await valist.writeFolder(web, false, (progress: number) => {
-          utils.updateLoading(`Uploading release archive for web: ${progress}`);
+          utils.updateLoading(`Uploading release archive for web: ${progress}%`);
         });
         meta.platforms.web = {
           external_url: webCID,
@@ -79,7 +79,7 @@ export async function createRelease(
 
       if (nonWebFiles && nonWebFiles?.length !== 0) {
         nativeCID = await valist.writeFolder(nonWebFiles, true, (progress: number) => {
-          utils.updateLoading(`Uploading release archive for native: ${progress}`);
+          utils.updateLoading(`Uploading release archive for native: ${progress}%`);
         });
 
         Object.keys(_nonWebFiles).forEach((platform) => {
@@ -106,8 +106,7 @@ export async function createRelease(
 
     return true;
   } catch (error: any) {
-    utils.showError(error);
-    console.log(error);
+    utils.showError(normalizeError(error));
   } finally {
     utils.hideLoading();
   }

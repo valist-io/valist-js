@@ -17,3 +17,18 @@ export const defaultTags = [
 export const defaultTypes = [
   'web', 'native', 'cli',
 ];
+
+export const normalizeError = (error: unknown) => {
+  const errorString = String(error);
+  const notMember = 'err-not-member';
+  const nameClaimed = 'err-name-claimed';
+  const deniedSignature = 'User denied message signature';
+  const exceedsBalance = 'ERC20: transfer amount exceeds balance';
+
+  console.log('error', errorString);
+  if (errorString.includes(deniedSignature)) return 'User denied message signature.';
+  if (errorString.includes(notMember)) return 'Name already claimed.';
+  if (errorString.includes(nameClaimed)) return 'Not a member.';
+  if (errorString.includes(exceedsBalance)) return 'ERC20: transfer amount exceeds balance.';
+  return errorString;
+};

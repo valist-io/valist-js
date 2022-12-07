@@ -3,7 +3,7 @@ import { ApolloCache } from '@apollo/client';
 import { ProjectMeta, Client } from '@valist/sdk';
 import { handleEvent } from './events';
 import * as utils from './utils';
-import { refineYouTube } from './common';
+import { normalizeError, refineYouTube } from './common';
 import { Anchor } from '@mantine/core';
 import { getBlockExplorer } from '@/components/Activity';
 
@@ -75,13 +75,13 @@ export async function updateProject(
 
     if (image) {
       meta.image = await utils.writeFile(image, valist, (progress: number) => {
-        utils.updateLoading(`Uploading ${image.name}: ${progress}`);
+        utils.updateLoading(`Uploading ${image.name}: ${progress}%`);
       });
     };
 
     if (mainCapsule) {
       meta.main_capsule = await utils.writeFile(mainCapsule, valist, (progress: number) => {
-        utils.updateLoading(`Uploading ${mainCapsule.name}: ${progress}`);
+        utils.updateLoading(`Uploading ${mainCapsule.name}: ${progress}%`);
       });
     };
 
@@ -92,7 +92,7 @@ export async function updateProject(
 
     for (const item of gallery) {
       const src = await utils.writeFile(item, valist, (progress: number) => {  
-        utils.updateLoading(`Uploading ${item.name}: ${progress}`);
+        utils.updateLoading(`Uploading ${item.name}: ${progress}%`);
       });
       meta.gallery?.push({ name: '', type: 'image', src });
     };
@@ -108,8 +108,7 @@ export async function updateProject(
 
     return true;
   } catch(error: any) {
-    utils.showError(error);
-    console.log(error);
+    utils.showError(normalizeError(error));
   } finally {
     utils.hideLoading();
   };
@@ -141,8 +140,7 @@ export async function addProjectMember(
 
     return true;
   } catch (error: any) {
-    utils.showError(error);
-    console.log(error);
+    utils.showError(normalizeError(error));
   } finally {
     utils.hideLoading();
   }
@@ -174,8 +172,7 @@ export async function removeProjectMember(
 
     return true;
   } catch (error: any) {
-    utils.showError(error);
-    console.log(error);
+    utils.showError(normalizeError(error));
   } finally {
     utils.hideLoading();
   }
