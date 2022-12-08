@@ -51,7 +51,7 @@ export function ConfigureBuilds(props: ConfigureBuildsProps):JSX.Element {
                       style={{ margin: 20, width: '40%' }}
                       label={input.label}
                       required={input?.required}
-                      {...props.form.getInputProps(`build.${platform}.${input.name}`)}
+                      {...props.form.getInputProps(`build.0.${input.name}`)}
                     />
                   }
                   {!input.select &&
@@ -60,7 +60,7 @@ export function ConfigureBuilds(props: ConfigureBuildsProps):JSX.Element {
                       style={{ margin: 20, width: '40%' }}
                       label={input?.label}
                       required={input?.required}
-                      {...props.form.getInputProps(`build.${platform}.${input.name}`)}
+                      {...props.form.getInputProps(`build.0.${input.name}`)}
                     />
                   }
                 </Fragment>

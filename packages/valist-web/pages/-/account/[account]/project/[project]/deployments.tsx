@@ -20,6 +20,7 @@ import { ProjectMeta } from '@valist/sdk';
 import { linkRepo } from '@/forms/link-repo';
 import { Anchor, Button, Center, Loader, Modal, Text } from '@mantine/core';
 import { unlinkRepo } from '@/forms/unlink-repo';
+import { CreateProject } from '@/components/DeployForm/screens/CreateProject';
 
 function mkurl(CLIENT_ID: string, router: NextRouter) {
   const obj = { pathname: router?.pathname, query: router?.query };
@@ -155,6 +156,14 @@ const Deployments: NextPage = () => {
       </Layout>
     );
   };
+
+    if (true) {
+      return (
+        <Layout>
+          <CreateProject />
+        </Layout>
+      );
+    };
 
   return (
     <Layout>

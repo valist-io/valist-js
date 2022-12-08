@@ -58,28 +58,30 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
 
   const form = useForm({
     initialValues: {
-      build: {
-        web: {
+      build: [
+        {
+          name: 'web',
           environment: 'node16',
           framework: 'next',
           installCommand: 'npm install',
           buildCommand: 'npm run build && npx next export',
           outputFolder: 'out',
         },
-      },
-      publish: {
-        valist: {
+      ],
+      publish: [
+        {
+          name: 'valist',
           privateKey: '${{ secrets.VALIST_SIGNER }}',
           account: props.account,
           project: props.project,
           release: '${{ env.TIMESTAMP }}',
           path: 'out',
         },
-      },
-      integrations: {},
+      ],
+      integrations: [],
     },
   });
-  const [valistConfig, setValistConfig] = useState<string>(buildYaml(form.values as BuildManifest, branch));
+  const [valistConfig, setValistConfig] = useState<string>(buildYaml(form.values as any, branch));
 
   const steps = [
     { label: "Step 1", description: "Connect your repo", text: "Step 1: Connect your repository!" },
@@ -194,11 +196,11 @@ export function DeployForm(props: DeployFormProps): JSX.Element {
   // if framework changes update defaults
   useEffect(() => {
     // @ts-ignore
-    const { installCommand, buildCommand, outputFolder } =  webFrameworkDefaults[form.values.build.web.framework];
-    form.setFieldValue("build.web.installCommand", installCommand || '');
-    form.setFieldValue("build.web.buildCommand", buildCommand || '');
-    form.setFieldValue("build.web.outputFolder", outputFolder || '');
-  }, [form.values.build.web.framework]);
+    const { installCommand, buildCommand, outputFolder } =  webFrameworkDefaults[form?.values?.build[0].framework];
+    form.setFieldValue("build.0.installCommand", installCommand || '');
+    form.setFieldValue("build.0.buildCommand", buildCommand || '');
+    form.setFieldValue("build.0.outputFolder", outputFolder || '');
+  }, [form.values.build[0].framework]);
 
   useEffect(() => {
     _createKeyPair();

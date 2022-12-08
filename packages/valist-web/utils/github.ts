@@ -86,13 +86,13 @@ export const publishingMethod: Record<PublishingMethod, CreateFunction> = {
 };
 
 export type BuildManifest = {
-  build: Record<'web', Record<string, any>>;
-  publish: Record<PublishingMethod, Record<string, any>>;
-  integrations: Record<string, Record<string, any>>;
+  build: Record<string, any>[];
+  publish: Record<string, any>[];
+  integrations: Record<string, any>[];
 }
 
 export function buildYaml(manifest: BuildManifest, branchName: string) {
-  let outputPath = manifest.build.web.outputFolder;
+  let outputPath = manifest.build[0].outputFolder;
   let yaml = `name: Valist Deploy
 on:
   push:
@@ -107,7 +107,7 @@ jobs:
 `;
 
   // loop through build targets
-  for (const [key, value] of Object.entries(manifest.build)) {
+  for (const value of manifest.build) {
     if (value?.environment) {
       yaml = yaml.concat(
         // @ts-ignore Add base environment
@@ -127,10 +127,10 @@ jobs:
   }
 
   // loop through publishing methods
-  for (const [key, value] of Object.entries(manifest.publish)) {
+  for (const value of manifest.publish) {
     yaml = yaml.concat(
       // @ts-ignore Add publishing method
-      publishingMethod[key]({ ...value, outputPath }),
+      publishingMethod[value.name]({ ...value, outputPath }),
     );
   }
 
