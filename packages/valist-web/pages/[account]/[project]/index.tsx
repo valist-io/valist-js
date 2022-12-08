@@ -329,7 +329,7 @@ const ProjectPage: NextPage = () => {
                         <Text>0</Text>
                       </Group> */}
                       <Group position="apart">
-                        <Text>Valist Link</Text>
+                        <Text>Valist Link (Beta)</Text>
                         <Anchor target="_blank" href={`https://${projectName}--${accountName}.on.valist.io`}>
                           https://{projectName}--{accountName}.on.valist.io
                         </Anchor>
