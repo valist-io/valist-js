@@ -5,11 +5,13 @@ import { MemoryBlockStore } from 'ipfs-car/blockstore/memory';
 import { packToBlob } from 'ipfs-car/pack/blob'
 import { ImportCandidate, ImportCandidateStream } from 'ipfs-core-types/src/utils';
 import { getFilesFromPath, toImportCandidate } from './utils';
+import FormData from 'form-data';
 
 import { AccountMeta, PlatformsMeta, ProjectMeta, ReleaseMeta, SupportedPlatform, FileObject, ReleaseConfig } from './types';
 import { fetchGraphQL, Account, Project, Release } from './graphql';
 import { generateID, getAccountID, getProjectID, getReleaseID } from './utils';
 import * as queries from './graphql/queries';
+import { IPFSHTTPClient } from 'ipfs-http-client';
 
 
 // minimal ABI for interacting with erc20 tokens
@@ -21,6 +23,7 @@ export default class Client {
 	constructor(
 		private registry: ethers.Contract,
 		private license: ethers.Contract,
+		private ipfs: IPFSHTTPClient,
 		private ipfsGateway: string,
 		private subgraphUrl: string
 	) { }
@@ -353,15 +356,16 @@ export default class Client {
 			wrapWithDirectory: false,
 		});
 
-		const auth = await axios.post(`https://pin-new.valist.io`);
-		const upload = await axios.put(auth.data, await car.arrayBuffer(), {
-			maxBodyLength: Infinity,
-			headers: { 'x-amz-meta-import': 'car' },
-		});
+		let formData = new FormData();
+		formData.append('path', car);
 
-		if (upload.headers['x-amz-meta-cid'] !== cid.toString()) {
-			throw new Error(`Generated CID ${cid} did not match response ${upload.headers['x-amz-meta-cid']}`);
+		const upload = await axios.post('https://pin.valist.io/api/v0/dag/import', formData);
+
+		if (upload.data?.Root?.Cid['/'] !== cid.toString()) {
+			throw new Error(`Generated CID ${cid} did not match response ${upload.data?.Root?.Cid['/']}`);
 		}
+
+		console.log('json upload', upload.data)
 
 		return `${this.ipfsGateway}/ipfs/${cid.toString()}`;
 	}
@@ -377,19 +381,22 @@ export default class Client {
 
 		var config = {
 			maxBodyLength: Infinity,
-			headers: { 'x-amz-meta-import': 'car' },
 			onUploadProgress: function (progressEvent: { loaded: number; total: number; }) {
 				var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
 				if (onProgress) onProgress(percentCompleted);
 			}
 		};
 
-		const auth = await axios.post(`https://pin-new.valist.io`);
-		const upload = await axios.put(auth.data, await car.arrayBuffer(), config);
+		let formData = new FormData();
+		formData.append('path', car);
 
-		if (upload.headers['x-amz-meta-cid'] !== cid.toString()) {
-			throw new Error(`Generated CID ${cid} did not match response ${upload.headers['x-amz-meta-cid']}`);
+		const upload = await axios.post('https://pin.valist.io/api/v0/dag/import', formData, config);
+
+		if (upload.data?.Root?.Cid['/'] !== cid.toString()) {
+			throw new Error(`Generated CID ${cid} did not match response ${upload.data?.Root?.Cid['/']}`);
 		}
+
+		console.log('file upload', upload.data);
 
 		return `${this.ipfsGateway}/ipfs/${cid.toString()}`;
 	}
@@ -412,19 +419,22 @@ export default class Client {
 
 		var config = {
 			maxBodyLength: Infinity,
-			headers: { 'x-amz-meta-import': 'car' },
 			onUploadProgress: function (progressEvent: { loaded: number; total: number; }) {
 				var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
 				if (onProgress) onProgress(percentCompleted);
 			}
 		};
 
-		const auth = await axios.post(`https://pin-new.valist.io`);
-		const upload = await axios.put(auth.data, await car.arrayBuffer(), config);
+		let formData = new FormData();
+		formData.append('path', car);
 
-		if (upload.headers['x-amz-meta-cid'] !== cid.toString()) {
-			throw new Error(`Generated CID ${cid} did not match response ${upload.headers['x-amz-meta-cid']}`);
+		const upload = await axios.post('https://pin.valist.io/api/v0/dag/import', formData, config);
+
+		if (upload.data?.Root?.Cid['/'] !== cid.toString()) {
+			throw new Error(`Generated CID ${cid} did not match response ${upload.data?.Root?.Cid['/']}`);
 		}
+
+		console.log('folder upload', upload.data);
 
 		return `${this.ipfsGateway}/ipfs/${cid.toString()}`;
 	}
