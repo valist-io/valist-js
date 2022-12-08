@@ -1,5 +1,4 @@
 import { ethers } from 'ethers';
-import { create } from 'ipfs-http-client';
 import { expect } from 'chai';
 import { describe, beforeEach, it } from 'mocha';
 
@@ -27,13 +26,9 @@ describe('valist client', async function() {
 		const license = await License.deploy(registry.address);
 		await license.deployed();
 
-		const ipfs = create({ url: 'https://pin.valist.io' });
 		const ipfsGateway = 'https://gateway.valist.io';
 		const subgraphAddress = 'https://api.thegraph.com/subgraphs/name/valist-io/valistmumbai';
-
-		const valist = new Client(registry, license, ipfs, ipfsGateway, subgraphAddress);
-
-		console.log(await valist.writeJSON(JSON.stringify({"test":"test"})));
+		const valist = new Client(registry, license, ipfsGateway, subgraphAddress);
 
 		const address = await signer.getAddress();
 		const members = [address];

@@ -17,7 +17,7 @@
     "electron:start-live": "node ./live-runner.js",
     "electron:start": "npm run build && electron --inspect=5858 ./",
     "electron:pack": "npm run build && electron-builder build --dir -c ./electron-builder.config.json",
-    "electron:make": "dotenv npm run build && electron-builder build -c ./electron-builder.config.json -p always"
+    "electron:make": "npm run build && electron-builder build -c ./electron-builder.config.json -p always"
   },
   "dependencies": {
     "@capacitor-community/electron": "^4.1.1",
@@ -34,7 +34,7 @@
     "dotenv": "^16.0.1",
     "dotenv-cli": "^6.0.0",
     "electron": "^19.0.0",
-    "electron-builder": "~22.14.13",
+    "electron-builder": "^23.6.0",
     "electron-builder-notarize": "^1.5.0",
     "electron-rebuild": "^3.2.7",
     "typescript": "~4.3.5"

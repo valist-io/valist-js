@@ -1,12 +1,12 @@
 import type { NextPage } from 'next';
-import { useContext, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import useSWRImmutable from 'swr/immutable';
 import { useQuery } from '@apollo/client';
 import { Breadcrumbs } from '@valist/ui';
 import { Layout } from '@/components/Layout';
-import { ValistContext } from '@/components/ValistProvider';
 import { getChainId } from '@/utils/config';
+import { useValist } from '@/utils/valist';
 import query from '@/graphql/ProjectPage.graphql';
 
 import {
@@ -18,7 +18,7 @@ const ProjectPage: NextPage = () => {
   const chainId = getChainId();
 
   const router = useRouter();
-  const valist = useContext(ValistContext);
+  const valist = useValist();
 
   const accountName = `${router.query.account}`;
   const accountId = valist.generateID(chainId, accountName);

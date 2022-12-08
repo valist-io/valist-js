@@ -5,7 +5,7 @@ import {
 } from '@mantine/core';
 
 import React, { useContext } from 'react';
-import { useClipboard, useHover, useMediaQuery } from '@mantine/hooks';
+import { useClipboard } from '@mantine/hooks';
 import * as Icon from 'tabler-icons-react';
 
 export interface AddressContextType {
@@ -26,16 +26,13 @@ export interface AddressProps {
 }
 
 export function Address(props: AddressProps) {
-  const { hovered, ref } = useHover();
   const clipboard = useClipboard();
   const { resolveName } = useContext(AddressContext);
-  
-  const isMobile = useMediaQuery('(max-width: 800px)', false);
   const { data: name } = resolveName(props.address);
 
   const label = name
     ? name
-    : (props.truncate || isMobile)
+    : props.truncate
     ? `${props.address.slice(0, 6)}..${props.address.slice(-4)}`
     : props.address;
 
@@ -44,14 +41,10 @@ export function Address(props: AddressProps) {
       style={props.style} 
       onClick={() => clipboard.copy(props.address)}
     >
-      <Group spacing={2} ref={ref} noWrap>
+      <Group spacing={2} noWrap>
         <Text style={{ fontSize: props.size }}>
           { label }
         </Text>
-        { hovered && (clipboard.copied
-          ? <Icon.Check size={props.size} />
-          : <Icon.Copy size={props.size} />
-        )}
       </Group>
     </UnstyledButton>
   );

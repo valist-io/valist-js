@@ -10,6 +10,7 @@
     "android:sync": "cap sync android",
     "electron:sync": "cap sync electron",
     "electron:open": "cap open electron",
+    "electron:make": "npm run build --prefix=./electron",
     "build:sdk": "npm run build --workspace=@valist/sdk",
     "build:ui": "npm run build --workspace=@valist/ui",
     "build:web": "npm run build --workspace=@valist/web",
@@ -24,8 +25,9 @@
   "devDependencies": {
     "concurrently": "^7.2.2",
     "@capacitor-community/electron": "latest",
-    "@capacitor/android": "^3.6.0",
-    "@capacitor/cli": "^3.6.0",
-    "@capacitor/core": "^3.6.0"
+    "@capacitor/android": "^4.3.0",
+    "@capacitor/ios": "^4.3.0",
+    "@capacitor/cli": "^4.3.0",
+    "@capacitor/core": "^4.3.0"
   }
 }

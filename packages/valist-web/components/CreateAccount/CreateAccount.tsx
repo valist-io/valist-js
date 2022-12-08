@@ -1,17 +1,15 @@
-import type { NextPage } from 'next';
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import { useApolloClient } from '@apollo/client';
 import { useListState } from '@mantine/hooks';
 import { useForm, zodResolver } from '@mantine/form';
-import { ValistContext } from '@/components/ValistProvider';
-import { AccountContext } from '@/components/AccountProvider';
 import { AddressInput } from '@/components/AddressInput';
 import { NameInput } from '@/components/NameInput';
 import { getChainId } from '@/utils/config';
+import { useValist } from '@/utils/valist';
 
-import { 
+import {
   schema,
   FormValues,
   createAccount, 
@@ -34,17 +32,16 @@ import {
 } from '@valist/ui';
 
 export interface CreateAccountProps {
-  afterCreate?: () => void;
+  onboard?: boolean;
+  setAccount?: (value: string) => void;
 }
 
 export function CreateAccount(props: CreateAccountProps) {
-  const router = useRouter();
   const { cache } = useApolloClient();
   const { address } = useAccount();
   const chainId = getChainId();
-
-  const valist = useContext(ValistContext);
-  const { setAccount } = useContext(AccountContext);
+  const valist = useValist();
+  const router = useRouter();
 
   // form values
   const [loading, setLoading] = useState(false);
@@ -90,12 +87,10 @@ export function CreateAccount(props: CreateAccountProps) {
       cache,
       chainId,
     ).then((success) => {
-      if (success) {
-        setAccount(values.accountName);
-        props.afterCreate?.();
-      }
+      if (success && !props.onboard) router.push('/');
+      if (success && props.setAccount) props.setAccount(form.values.accountName);
     }).finally(() => {
-      setLoading(false);  
+      setLoading(false);
     });
   };
 

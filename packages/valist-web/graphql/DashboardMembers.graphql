@@ -1,0 +1,17 @@
+query DashboardUsers($ids: [String!]){
+  users(where: { id_in: $ids }) {
+    id
+    accounts {
+      id
+      name
+    }
+    projects {
+      id
+      name
+      account {
+        id
+        name
+      }
+    }
+  }
+}

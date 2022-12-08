@@ -1,162 +1,198 @@
+import { useState } from 'react';
 import type { NextPage } from 'next';
-import { useContext, useState } from 'react';
-import { useAccount } from 'wagmi';
-import { useRouter } from 'next/router';
-import { useQuery } from '@apollo/client';
-import { useConnectModal } from '@rainbow-me/rainbowkit';
+import Image from 'next/image';
 import { NextLink } from '@mantine/next';
-import { useMediaQuery } from '@mantine/hooks';
+import { Carousel } from '@mantine/carousel';
 import { Layout } from '@/components/Layout';
 import { Metadata } from '@/components/Metadata';
-import { AccountContext } from '@/components/AccountProvider';
-import { Activity } from '@/components/Activity';
-import { CreateAccount } from '@/components/CreateAccount';
-import { CreateProject } from '@/components/CreateProject';
-import query from '@/graphql/DashboardPage.graphql';
+import { DiscoveryCard } from '@/components/DiscoveryCard';
+import { filterAddresses } from '@/utils/config';
+import { featuredApps, featuredGames, featuredTestnet } from '@/utils/discover';
+import { client } from '@/components/ApolloProvider';
+import query from '@/graphql/Discover.graphql';
 
-import { 
-  Title, 
+import {
   Group,
+  SimpleGrid,
   Stack,
-  Grid,
+  Title,
   Text,
+  useMantineTheme,
 } from '@mantine/core';
 
 import {
   Button,
   Card,
-  CardGrid,
-  InfoButton,
-  ProjectCard,
-  MemberStack,
-  List,
-  NoProjects,
-  Welcome,
-  CheckboxList,
+  DiscoveryFooter,
 } from '@valist/ui';
 
-const IndexPage: NextPage = () => {
-  const router = useRouter();
-  const { account } = useContext(AccountContext);
-  const { openConnectModal } = useConnectModal();
-  const { isConnected } = useAccount();
+export interface DiscoverProps {
+  recent: any[];
+  newest: any[];
+}
 
-  const [onboarding, setOnboarding] = useState(false);
-  const [infoOpened, setInfoOpened] = useState(false);
-  const showInfo = useMediaQuery('(max-width: 1400px)', false);
+const Discover: NextPage<DiscoverProps> = (props) => {
+  const theme = useMantineTheme();
+  const [offset, setOffset] = useState(12);
 
-  const { data, loading } = useQuery(query, { 
-    variables: { accountId: account?.id ?? '' },
-  });
-
-  const projects = data?.account?.projects ?? [];
-  const members = data?.account?.members ?? [];
-  const logs = data?.account?.logs ?? [];
-
-  const steps = [
-    { label: 'Connect Wallet', checked: isConnected },
-    { label: 'Create Account', checked: onboarding || !!account },
-    { label: 'Create Project (Optional)', checked: false },
-  ];
-
-  if (!loading && (!account || onboarding)) {
-    return (
-      <Layout>
-        <Grid>
-          <Grid.Col md={4}>
-            <CheckboxList items={steps} />
-          </Grid.Col>
-          <Grid.Col md={8}>
-            { !isConnected && 
-              <Welcome button={
-                <Button onClick={openConnectModal}>Connect Wallet</Button>
-              } />
-            }
-            { isConnected && !onboarding && 
-              <CreateAccount afterCreate={() => setOnboarding(true)} />
-            }
-            { isConnected && onboarding && 
-              <CreateProject afterCreate={() => setOnboarding(false)} />
-            }
-          </Grid.Col>
-        </Grid>
-      </Layout>
-    );
-  }
-
-  return (
-    <Layout padding={0}>
-      { showInfo &&
-        <Group style={{ height: 66 }} position="right">
-            <InfoButton 
-              opened={infoOpened}
-              onClick={() => setInfoOpened(!infoOpened)} 
-            />
-        </Group>
-      }
-      <div style={{ padding: 40 }}>
-        <Group position="apart" mb="xl" style={{ marginBottom: 10 }}>
-          <Title style={{ display: "block" }}>Hello & Welcome 👋🏽</Title>
-          <NextLink href={`/-/account/${account?.name}/create/project`}>
-            <Button>Create Project</Button>
+	return (
+    <Layout padding={0} hideNavbar>
+      <div style={{ height: 500, position: 'relative' }}>
+        <Image
+          style={{ zIndex: -1 }}
+          layout="fill"
+          objectFit="cover"
+          objectPosition="center"
+          alt="Shattered Realms"
+          src="/images/discovery/shattered_realms.jpg"
+          priority
+        />
+        <Stack align="center" justify="center" style={{ height: 500 }}>
+          <Title color="white" size={96}>Shattered Realms</Title>
+          <Text color="white" size={24}>Action, Adventure, RPG</Text>
+          <NextLink href="/shatteredrealms/game">
+            <Button>View Game</Button>
           </NextLink>
-        </Group>
-        <Text style={{ display: "block", marginBottom: 32 }}>Explore your recently Published or Edited projects.</Text>
-        <Grid>
-          { (!showInfo || !infoOpened) &&
-            <Grid.Col xl={8}>
-              { projects.length === 0 && 
-                <NoProjects action={() => router.push(`/-/account/${account?.name}/create/project`)} />
-              }
-              { projects.length !== 0 && 
-                <CardGrid>
-                  {projects.map((project: any, index: number) =>
-                    <Metadata key={index} url={project.metaURI}>
-                      {(data: any) =>
-                        <NextLink
-                          style={{ textDecoration: 'none' }}
-                          href={`/${account?.name}/${project.name}`}
-                        >
-                          <ProjectCard
-                            title={project.name} 
-                            secondary={data?.name}
-                            description={data?.short_description} 
-                            image={data?.image} 
-                          />
-                        </NextLink>
-                      }
-                    </Metadata>,
-                  )}
-                </CardGrid>
-              }
-            </Grid.Col>
-          }
-          { (!showInfo || infoOpened) &&
-            <Grid.Col xl={4}>
-              <Stack spacing={24}>
-                <Card>
-                  <Stack spacing={24}>
-                    <Title order={5}>Members</Title>
-                    <MemberStack members={members.map((member: any) => member.id)} />
-                  </Stack>
-                </Card>
-                <Card>
-                  <Stack spacing={24}>
-                    <Title order={5}>Recent Activity</Title>
-                    <List>
-                      {logs.slice(0, 4).map((log: any, index: number) => 
-                        <Activity key={index} {...log} />,
-                      )}
-                    </List>
-                  </Stack>
-                </Card>
-              </Stack>
-            </Grid.Col>
-          }
-        </Grid>
+        </Stack>
       </div>
+      <div style={{ padding: '56px 64px' }}>
+        <Stack>
+          <Title size={32}>Featured Games</Title>
+          <Carousel
+            height={340}
+            slideGap={32}
+            slideSize={280}
+            align="start"
+            dragFree
+            loop
+          >
+            {featuredGames.map((item: any, index: number) => 
+              <Carousel.Slide key={index}>
+                <DiscoveryCard {...item} />
+              </Carousel.Slide>,
+            )}
+          </Carousel>
+        </Stack>
+        <Stack pt={100}>
+          <Title size={32}>Featured dApps</Title>
+          <Carousel
+            height={340}
+            slideGap={32}
+            slideSize={280}
+            align="start"
+            dragFree
+            loop
+          >
+            {featuredApps.map((item: any, index: number) => 
+              <Carousel.Slide key={index}>
+                <DiscoveryCard {...item} />
+              </Carousel.Slide>,
+            )}
+          </Carousel>
+        </Stack>
+        <Stack pt={100}>
+          <Title size={32}>Featured on Testnet</Title>
+          <Carousel
+            height={340}
+            slideGap={32}
+            slideSize={280}
+            align="start"
+            dragFree
+            loop
+          >
+            {featuredTestnet.map((item: any, index: number) => 
+              <Carousel.Slide key={index}>
+                <DiscoveryCard {...item} />
+              </Carousel.Slide>,
+            )}
+          </Carousel>
+        </Stack>
+        <Stack pt={100}>
+          <Title size={32}>Recently Updated</Title>
+          <SimpleGrid
+            breakpoints={[
+              { minWidth: 'sm', cols: 1, spacing: 24 },
+              { minWidth: 'md', cols: 2, spacing: 24 },
+              { minWidth: 'lg', cols: 4, spacing: 16 },
+            ]}
+          >
+            {props.recent.slice(0, 8).map((project: any, index: number) =>
+              <Metadata key={index} url={project.metaURI}>
+                {(data: any) => (
+                  <DiscoveryCard link={`/${project.account.name}/${project?.name}`} {...data} /> 
+                )}
+              </Metadata>,
+            )}
+          </SimpleGrid>
+        </Stack>
+        <Stack pt={100}>
+          <Title size={32}>Newest Apps and Games</Title>
+          <SimpleGrid
+            breakpoints={[
+              { minWidth: 'sm', cols: 1, spacing: 24 },
+              { minWidth: 'md', cols: 2, spacing: 24 },
+              { minWidth: 'lg', cols: 4, spacing: 16 },
+            ]}
+          >
+            {props.newest.slice(0, offset).map((project: any, index: number) =>
+              <Metadata key={index} url={project.metaURI}>
+                {(data: any) => (
+                  <DiscoveryCard link={`/${project.account.name}/${project?.name}`} {...data} /> 
+                )}
+              </Metadata>,
+            )}
+          </SimpleGrid>
+          <Group position="center">
+            <Button onClick={() => setOffset(offset + 12)}>
+              Load More
+            </Button>
+          </Group>
+        </Stack>
+      </div>
+      <div style={{ height: 584, position: 'relative' }}>
+        <Image
+          style={{ zIndex: -1 }}
+          layout="fill"
+          objectFit="cover"
+          objectPosition="center"
+          alt="Shattered Realms"
+          src={`/images/discovery/publish_promo_${theme.colorScheme}.jpg`}
+          priority
+        />
+        <Stack spacing={0} align="start" justify="center" p={64} style={{ height: '100%' }}>
+          <Title color="white" size={56}>Publish Today</Title>
+          <Text color="white" size={24} mt={24}>Have your software, webapp, or game</Text>
+          <Text color="white" size={24} mb={40}>hosted on Valist to be truly decentralized!</Text>
+          <NextLink href="/-/dashboard">
+            <Button style={{ background: 'linear-gradient(90deg, #FF9A9E 0%, #FAD0C4 99%, #FAD0C4 100%)' }}>
+              Publish Now
+            </Button>
+          </NextLink>
+        </Stack>
+      </div>
+      <DiscoveryFooter />
     </Layout>
-  );
+	);
 };
 
-export default IndexPage;
+export default Discover;
+
+export async function getStaticProps() {
+  const variables = { order: 'desc', filterAddresses };
+  const { data } = await client.query({ query, variables });
+
+  const projectMap = new Map<string, any>();
+  const releases = data?.releases ?? [];
+
+  releases.map((r: any) => r.project)
+    .forEach((p: any) => projectMap.set(p.id, p));
+
+  const recent = Array.from(projectMap.values());
+  const newest = recent.slice()
+    .sort((a: any, b: any) => b.blockTime.localeCompare(a.blockTime));
+
+  return {
+    props: { recent, newest },
+    revalidate: 1 * 60 * 60,
+  };
+}

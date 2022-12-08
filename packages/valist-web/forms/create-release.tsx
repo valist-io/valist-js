@@ -1,11 +1,10 @@
 import { z } from 'zod';
 import { ApolloCache } from '@apollo/client';
-import { ReleaseMeta, Client, InstallMeta } from '@valist/sdk';
-import type { FileWithPath } from 'file-selector';
+import { ReleaseMeta, Client, SupportedPlatform, PlatformsMeta } from '@valist/sdk';
 import { Event } from 'ethers';
 import { handleEvent } from './events';
 import * as utils from './utils';
-import { versionRegex } from './common';
+import { normalizeError, versionRegex } from './common';
 import { Anchor } from '@mantine/core';
 import { getBlockExplorer } from '@/components/Activity';
 
@@ -32,8 +31,7 @@ export async function createRelease(
   address: string | undefined,
   projectId: string,
   image: File | undefined,
-  files: FileWithPath[],
-  install: InstallMeta | undefined,
+  filesObject: Record<string, File[]>,
   values: FormValues,
   valist: Client,
   cache: ApolloCache<any>,
@@ -46,27 +44,56 @@ export async function createRelease(
       throw new Error('connect your wallet to continue');
     }
 
-    if (files.length === 0) {
+    if (Object.values(filesObject).flat(1).length === 0) {
       throw new Error('files cannot be empty');
     }
 
-    const meta: ReleaseMeta = {
-      name: values.displayName,
-      description: values.description,
-    };
-
-    if (install) meta.install = install;
+    const meta: ReleaseMeta = new ReleaseMeta();
+    meta.name = values.displayName;
+    meta.description = values.description;
 
     utils.showLoading('Uploading files');
     if (image) {
       meta.image = await utils.writeFile(image, valist, (progress: number) => {
-        utils.updateLoading(`Uploading ${image?.name}: ${progress}`);
+        utils.updateLoading(`Uploading ${image?.name}: ${progress}%`);
       });
     }
 
-    meta.external_url = await valist.writeFolder(files, false, (progress: number) => {
-      utils.updateLoading(`Uploading release archive: ${progress}`);
-    });
+    if (filesObject) {
+      let { web, ..._nonWebFiles } = filesObject;
+      const nonWebFiles = Object.values(_nonWebFiles).flat(1);
+      
+      meta.platforms = new PlatformsMeta();
+
+      let webCID, nativeCID = '';
+      
+      if (web?.length !== 0) {
+        webCID = await valist.writeFolder(web, false, (progress: number) => {
+          utils.updateLoading(`Uploading release archive for web: ${progress}%`);
+        });
+        meta.platforms.web = {
+          external_url: webCID,
+          name: 'web',
+        };
+      };
+
+      if (nonWebFiles && nonWebFiles?.length !== 0) {
+        nativeCID = await valist.writeFolder(nonWebFiles, true, (progress: number) => {
+          utils.updateLoading(`Uploading release archive for native: ${progress}%`);
+        });
+
+        Object.keys(_nonWebFiles).forEach((platform) => {
+          if (meta.platforms && filesObject[platform] && filesObject[platform].length !== 0) {
+            meta.platforms[platform as SupportedPlatform] = {
+              external_url: `${nativeCID}/${filesObject[platform][0].name}`,
+              name: filesObject[platform][0].name,
+            };
+          }
+        });
+      };
+
+      meta.external_url = webCID || nativeCID;
+    };
 
     utils.updateLoading('Creating transaction');
     const transaction = await valist.createRelease(projectId, values.releaseName, meta);
@@ -79,8 +106,7 @@ export async function createRelease(
 
     return true;
   } catch (error: any) {
-    utils.showError(error);
-    console.log(error);
+    utils.showError(normalizeError(error));
   } finally {
     utils.hideLoading();
   }

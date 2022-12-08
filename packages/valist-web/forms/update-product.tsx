@@ -5,6 +5,7 @@ import { Anchor } from '@mantine/core';
 import { Client } from '@valist/sdk';
 import { handleEvent } from './events';
 import * as utils from './utils';
+import { normalizeError } from './common';
 
 export async function setProductRoyalty(
   address: string | undefined,
@@ -33,8 +34,7 @@ export async function setProductRoyalty(
 
     return true;
   } catch (error: any) {
-    utils.showError(error);
-    console.log(error);
+    utils.showError(normalizeError(error));
   } finally {
     utils.hideLoading();
   }
@@ -66,8 +66,7 @@ export async function setProductLimit(
 
     return true;
   } catch (error: any) {
-    utils.showError(error);
-    console.log(error);
+    utils.showError(normalizeError(error));
   } finally {
     utils.hideLoading();
   }
@@ -102,8 +101,7 @@ export async function setProductPrice(
 
     return true;
   } catch (error: any) {
-    utils.showError(error);
-    console.log(error);
+    utils.showError(normalizeError((error)));
   } finally {
     utils.hideLoading();
   }
@@ -138,8 +136,7 @@ export async function withdrawProductBalance(
 
     return true;
   } catch (error: any) {
-    utils.showError(error);
-    console.log(error);
+    utils.showError(normalizeError(error));
   } finally {
     utils.hideLoading();
   }

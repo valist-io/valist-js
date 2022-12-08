@@ -26,14 +26,23 @@ export const magic = ({ chains }: any): Wallet => ({
   },
 });
 
-export const connectors = (chains: Chain[]) => connectorsForWallets([
-  {
-    groupName: 'Popular',
-    wallets: [
-      magic({ chains }),
-      wallet.rainbow({ chains }),
-      wallet.metaMask({ chains }),
-      wallet.walletConnect({ chains }),
-    ],
-  },
-]);
+export const connectors = (chains: Chain[]) => {
+  const wallets = [
+    magic({ chains }),
+    wallet.rainbow({ chains }),
+    wallet.walletConnect({ chains }),
+  ];
+
+  const isSapphire = typeof window !== 'undefined' 
+    && typeof window.sapphire !== 'undefined';
+
+  if (isSapphire) {
+    wallets.push(wallet.injected({ chains }));
+  } else {
+    wallets.push(wallet.metaMask({ chains }));
+  }
+
+  return connectorsForWallets([
+    { groupName: 'Popular', wallets },
+  ]);
+};

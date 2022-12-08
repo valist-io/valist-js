@@ -1,14 +1,14 @@
 import type { NextPage } from 'next';
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import useSWRImmutable from 'swr/immutable';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import { useApolloClient, useQuery } from '@apollo/client';
 import { useForm, zodResolver } from '@mantine/form';
 import { Layout } from '@/components/Layout';
-import { ValistContext } from '@/components/ValistProvider';
 import { AddressInput } from '@/components/AddressInput';
 import { getChainId } from '@/utils/config';
+import { useValist } from '@/utils/valist';
 import query from '@/graphql/UpdateAccountPage.graphql';
 
 import { 
@@ -42,8 +42,7 @@ const SettingsPage: NextPage = () => {
   const { cache } = useApolloClient();
   const { address } = useAccount();
   const chainId = getChainId();
-
-  const valist = useContext(ValistContext);
+  const valist = useValist();
 
   const accountName = `${router.query.account}`;
   const accountId = valist.generateID(chainId, accountName);
@@ -130,7 +129,7 @@ const SettingsPage: NextPage = () => {
     return (
       <Layout>
         <_404 
-          message={"The account you are looking for doesn't seem to exist, no biggie click on the button below to create it!."}
+          message={"The account you are looking for doesn't seem to exist, no biggie click on the button below to create it!"}
           action={
             <Button onClick={() => router.push(`/-/create/account`)}>Create account</Button>
           }

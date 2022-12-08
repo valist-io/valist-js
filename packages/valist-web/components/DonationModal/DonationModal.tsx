@@ -17,10 +17,13 @@ import { useState } from 'react';
 import { erc20ABI, useContract, usePrepareSendTransaction, useSendTransaction, useSigner } from 'wagmi';
 import { getBlockExplorer } from '../Activity';
 import { DonationInput } from '../DonationInput';
+import { sendStats } from '@valist/sdk';
 
 export interface DonationModalProps {
   opened: boolean;
+  accountName: string;
   projectName: string;
+  releaseName: string;
   projectType: string;
   donationAddress: string;
   releaseURL:string;
@@ -87,6 +90,12 @@ export function DonationModal(props: DonationModalProps) {
     }
   };
 
+  const _sendStats = async () => {
+    if (props.accountName && props.projectName && props.releaseName) {
+      await fetch(`/api/stats/${props.accountName}/${props.projectName}/${props.releaseName}`, { method: 'PUT' });
+    }
+  };
+
   return (
     <Modal
       opened={props.opened}
@@ -99,7 +108,7 @@ export function DonationModal(props: DonationModalProps) {
           <Text>
             This app is free but is accepting donations. <br/> Please consider supporting the creator by paying what you think is fair.
           </Text>
-          <Anchor target="_blank" href={props?.releaseURL || ''} style={{ textDecoration: 'underline' }}>
+          <Anchor onClick={_sendStats} target="_blank" href={props?.releaseURL || ''} style={{ textDecoration: 'underline' }}>
             No thanks, {props.projectType === 'web' ?  'launch the application.' : 'show me the download.'}
           </Anchor>
           <br/>
@@ -116,7 +125,7 @@ export function DonationModal(props: DonationModalProps) {
           <Text style={{ fontSize: 35 }}>
             Thankyou for your contribution! ❤️
           </Text>
-          <Anchor target="_blank" style={{ fontSize: 35, textDecoration: 'underline' }} href={props?.releaseURL || ''}>
+          <Anchor onClick={_sendStats} target="_blank" style={{ fontSize: 35, textDecoration: 'underline' }} href={props?.releaseURL || ''}>
             {props.projectType === 'web' ?  'Launch application' : 'Download'}
           </Anchor>
         </Stack>

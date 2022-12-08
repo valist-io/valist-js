@@ -30,5 +30,5 @@ export function MemberStack(props: MemberStackProps) {
 }
 
 MemberStack.defaultProps = {
-  limit: 5,
+  limit: 9,
 };

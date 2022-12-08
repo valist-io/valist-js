@@ -1,5 +1,4 @@
 import { ethers } from 'ethers';
-import { create as createIPFS } from 'ipfs-http-client';
 import { RelayProvider, GSNConfig } from '@opengsn/provider';
 import type WalletConnectProvider from '@walletconnect/web3-provider';
 import Client from './client';
@@ -39,9 +38,8 @@ export function createReadOnly(provider: Provider, options: Partial<Options>): C
 
   const ipfsHost = options.ipfsHost || 'https://pin.valist.io';
   const ipfsGateway = options.ipfsGateway || 'https://gateway.valist.io';
-  const ipfs = createIPFS({ url: ipfsHost });
 
-  return new Client(registry, license, ipfs, ipfsGateway, subgraphUrl);
+  return new Client(registry, license, ipfsGateway, subgraphUrl);
 }
 
 export async function createRelaySigner({ provider }: ethers.providers.Web3Provider, options: Partial<Options>): Promise<ethers.providers.JsonRpcSigner> {
@@ -54,9 +52,6 @@ export async function createRelaySigner({ provider }: ethers.providers.Web3Provi
 		relayLookupWindowBlocks: 990,
 		relayRegistrationLookupBlocks: 990,
 		pastEventsQueryMaxPageSize: 990,
-    preferredRelays: [
-      'https://relay-polygon.enzyme.finance/gsn1'
-    ],
     loggerConfiguration: {
       logLevel: 'error'
     }
@@ -106,9 +101,9 @@ export async function create(provider: Provider, options: Partial<Options>): Pro
     options.chainId = network.chainId;
   }
 
-  const subgraphUrl = options.subgraphUrl || graphql.getSubgraphUrl(options.chainId);
-  const registryAddress = options.registryAddress || contracts.getRegistryAddress(options.chainId);
-  const licenseAddress = options.licenseAddress || contracts.getLicenseAddress(options.chainId);
+  const subgraphUrl = options.subgraphUrl || graphql.getSubgraphUrl(options.chainId || 137);
+  const registryAddress = options.registryAddress || contracts.getRegistryAddress(options.chainId || 137);
+  const licenseAddress = options.licenseAddress || contracts.getLicenseAddress(options.chainId || 137);
 
   let registry: ethers.Contract;
   let license: ethers.Contract;
@@ -119,7 +114,7 @@ export async function create(provider: Provider, options: Partial<Options>): Pro
 
     // if meta transactions enabled setup opengsn relay signer
     let metaSigner: ethers.providers.JsonRpcSigner;
-    if (options.metaTx && contracts.chainIds.includes(options.chainId)) {
+    if (options.metaTx && contracts.chainIds.includes(options.chainId || 137)) {
       metaSigner = await createRelaySigner(web3Provider, options);
       console.log('Meta-transactions enabled');
     } else {
@@ -136,9 +131,8 @@ export async function create(provider: Provider, options: Partial<Options>): Pro
 
   const ipfsHost = options.ipfsHost || 'https://pin.valist.io';
   const ipfsGateway = options.ipfsGateway || 'https://gateway.valist.io';
-  const ipfs = createIPFS({ url: ipfsHost });
 
-  return new Client(registry, license, ipfs, ipfsGateway, subgraphUrl);
+  return new Client(registry, license, ipfsGateway, subgraphUrl);
 }
 
 export * from './types';

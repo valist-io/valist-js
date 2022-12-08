@@ -1,22 +1,22 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  async headers() {
-    return [
-      {
-        source: "/:path*",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "s-maxage=1, stale-while-revalidate=59",
-          },
-        ],
-      },
-    ];
-  },
   assetPrefix: process.env.IPFS_BUILD ? './' : undefined,
   publicRuntimeConfig: {
     CHAIN_ID: process.env.CHAIN_ID || 137,
+    CLIENT_ID: process.env.CLIENT_ID,
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'gateway.valist.io',
+      },
+      {
+        protocol: 'https',
+        hostname: 'pbs.twimg.com',
+      },
+    ],
   },
   webpack: function (config, options) {
     if (!options.isServer) {
@@ -32,9 +32,21 @@ const nextConfig = {
       loader: 'graphql-tag/loader',
     });
 
+    const path = require('path');
+    config.resolve.alias['bn.js'] = path.resolve(__dirname, '..', '..', 'node_modules', 'bn.js');
+
     config.plugins.push(new options.webpack.IgnorePlugin({ resourceRegExp: /^electron$/ }));
     return config;
   },
-  // trailingSlash: true,
 };
-module.exports = nextConfig;
+
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
+
+const withPWA = require('next-pwa')({
+  disable: process.env.NODE_ENV === 'development',
+  dest: 'public',
+});
+
+module.exports = withBundleAnalyzer(withPWA(nextConfig));

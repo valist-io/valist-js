@@ -1,16 +1,14 @@
-import type { NextPage } from 'next';
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import { useApolloClient, useQuery } from '@apollo/client';
 import { useListState } from '@mantine/hooks';
 import { useForm, zodResolver } from '@mantine/form';
-import { ValistContext } from '@/components/ValistProvider';
-import { AccountContext } from '@/components/AccountProvider';
 import { AddressInput } from '@/components/AddressInput';
 import { NameInput } from '@/components/NameInput';
 import { defaultTags, defaultTypes } from '@/forms/common';
 import { getChainId } from '@/utils/config';
+import { useValist } from '@/utils/valist';
 import query from '@/graphql/CreateProjectPage.graphql';
 
 import { 
@@ -40,7 +38,8 @@ import {
 } from '@valist/ui';
 
 export interface CreateProjectProps {
-  afterCreate?: () => void;
+  onboard?: boolean;
+  account?: string;
 }
 
 export function CreateProject(props: CreateProjectProps) {
@@ -48,17 +47,17 @@ export function CreateProject(props: CreateProjectProps) {
   const { cache } = useApolloClient();
   const { address } = useAccount();
   const chainId = getChainId();
+  const valist = useValist();
 
-  const valist = useContext(ValistContext);
-  const { account } = useContext(AccountContext);
+  const accountName = props.account || `${router.query.account}`;
+  const accountId = valist.generateID(chainId, accountName);
 
   const { data } = useQuery(query, {
-    variables: { id: account?.id ?? '' },
+    variables: { id: accountId },
   });
-
-  const accountName = `${router.query.account}`;
-  const accountId = valist.generateID(chainId, accountName);
+  
   const accountMembers = data?.account?.members ?? [];
+  console.log('accountName', accountName);
 
   // form values
   const [loading, setLoading] = useState(false);
@@ -98,7 +97,7 @@ export function CreateProject(props: CreateProjectProps) {
     setLoading(true);
     createProject(
       address,
-      account?.id,
+      accountId,
       image,
       mainCapsule,
       gallery,
@@ -108,10 +107,7 @@ export function CreateProject(props: CreateProjectProps) {
       cache,
       chainId,
     ).then(success => {
-      if (success) {
-        props.afterCreate?.();
-        router.push('/');
-      }
+      if (success) router.push('/-/dashboard');
     }).finally(() => {
       setLoading(false);  
     });
@@ -166,6 +162,7 @@ export function CreateProject(props: CreateProjectProps) {
               data={defaultTypes}
               placeholder="Select type"
               nothingFound="Nothing found"
+              required
               searchable
               creatable
               getCreateLabel={(query) => `+ Create ${query}`}

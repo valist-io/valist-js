@@ -4,6 +4,7 @@ all: install frontend cli
 
 install:
 	npm install
+	npm install --prefix=electron
 
 sdk:
 	npm run build --workspace @valist/sdk
@@ -19,9 +20,13 @@ web:
 cli:
 	npm run build --workspace @valist/cli
 
-electron: web
+electron: frontend
 	npm run electron:sync
 	npm run electron:open
+
+electron-sign: frontend
+	npm run electron:sync
+	npm run electron:make --prefix=./electron
 
 frontend: sdk ui web
 
@@ -38,6 +43,6 @@ test:
 	npm run test
 
 clean:
-	git clean -dfx
+	git clean -dfx --exclude=".env"
 
 .PHONY: packages electron

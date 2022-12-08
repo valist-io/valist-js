@@ -1,5 +1,6 @@
 import type { NextPage } from 'next';
-import { useContext, useState, useEffect } from 'react';
+import { Capacitor } from '@capacitor/core';
+import { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import useSWRImmutable from 'swr/immutable';
@@ -7,19 +8,21 @@ import * as Icon from 'tabler-icons-react';
 import { useQuery } from '@apollo/client';
 import { useMediaQuery } from '@mantine/hooks';
 import { Layout } from '@/components/Layout';
-import { ValistContext } from '@/components/ValistProvider';
 import { Activity } from '@/components/Activity';
 import { getChainId } from '@/utils/config';
+import { useValist } from '@/utils/valist';
+import { DonationModal } from '@/components/DonationModal';
 import query from '@/graphql/ProjectPage.graphql';
 
 import {
   _404,
+  Actions,
+  Action,
   Button,
   Breadcrumbs,
   Card,
   InfoButton,
-  ItemHeader,
-  ItemHeaderAction,
+  Item,
   Gallery,
   List,
   Markdown,
@@ -38,22 +41,25 @@ import {
   Grid,
   Tooltip,
 } from '@mantine/core';
-import { checkIsElectron, getApps, install, launch } from '@/components/Electron';
-import { DonationModal } from '@/components/DonationModal';
-import { sendStats } from '@valist/sdk';
+import { isReleaseMetaV2, platformNames, ProjectMeta, ReleaseMeta, ReleaseMetaV1, SupportedPlatform, supportedPlatforms } from '@valist/sdk';
 
-declare global {
-  interface Window {
-      valist: any;
-  }
-}
+const platformIcons: Record<SupportedPlatform , JSX.Element> = {
+  'web': <Icon.World />,
+  'darwin_amd64': <Icon.BrandApple />,
+  'darwin_arm64': <Icon.BrandApple />,
+  'android_arm64': <Icon.BrandAndroid />,
+  'linux_amd64': <Icon.BrandUbuntu />,
+  'linux_arm64': <Icon.BrandUbuntu />,
+  'windows_amd64': <Icon.BrandWindows />,
+};
 
 const ProjectPage: NextPage = () => {
   const chainId = getChainId();
   const { address } = useAccount();
+  const isCap = Capacitor.getPlatform() !== 'web';
 
   const router = useRouter();
-  const valist = useContext(ValistContext);
+  const valist = useValist();
 
   const accountName = `${router.query.account}`;
   const accountId = valist.generateID(chainId, accountName);
@@ -67,21 +73,18 @@ const ProjectPage: NextPage = () => {
   const projectMembers = data?.project?.members ?? [];
   const members = [...accountMembers, ...projectMembers];
 
-  const logs = data?.project?.logs ?? [];
-  const releases = data?.project?.releases ?? [];
+  const logs = data?.project?.logs || [];
+  const releases = data?.project?.releases || [];
   const latestRelease = data?.project?.releases?.[0];
 
-  const { data: projectMeta } = useSWRImmutable(data?.project?.metaURI);
-  const { data: releaseMeta } = useSWRImmutable(latestRelease?.metaURI);
+  const { data: projectMeta } = useSWRImmutable<ProjectMeta>(data?.project?.metaURI);
+  const { data: releaseMeta } = useSWRImmutable<ReleaseMeta | ReleaseMetaV1>(latestRelease?.metaURI);
 
   const [infoOpened, setInfoOpened] = useState(false);
   const showInfo = useMediaQuery('(max-width: 1400px)', false);
 
   const [donationOpen, setDonationOpen] = useState(false);
   const [balance, setBalance] = useState(0);
-  const [isElectron, setIsElectron] = useState<boolean>(false);
-  const [isInstalled, setIsInstalled] = useState<boolean>(false);
-  const [installPercent, setInstallPercent] = useState<number>(0);
 
   // update balance when address or projectId changes
   useEffect(() => {
@@ -91,30 +94,6 @@ const ProjectPage: NextPage = () => {
         .then(value => setBalance(value?.toNumber() ?? 0));  
     }
   }, [address, projectId]);
-
-  // check if isElectron
-  useEffect(() => {
-    setIsElectron(checkIsElectron());
-  }, []);
-
-  // check if app is installed & if project type is native
-  useEffect(() => {
-    if (window.valist && projectMeta?.type === 'native') {
-      getApps().then((apps: any) => {
-        console.log('List Installed Valist Apps:');
-        console.log(apps);
-
-        if(projectId in apps) {
-          setIsInstalled(true);
-        }
-      });
-    }
-  }, [projectId, projectMeta]);
-
-  const setProgress = (progress: number) => {
-    setInstallPercent(Math.floor(progress * 100));
-    if (installPercent === 100) setIsInstalled(true);
-  };
 
   const isPriced = !!data?.product?.currencies?.find(
     (curr: any) => curr.price !== '0',
@@ -128,59 +107,46 @@ const ProjectPage: NextPage = () => {
     (other: any) => other.id.toLowerCase() === address?.toLowerCase(),
   );
 
-  const launchUrl = projectMeta?.launch_external 
-    ? projectMeta?.external_url 
-    : releaseMeta?.external_url;
-
-  const leftActions: ItemHeaderAction[] = [
+  const actions: Action[] = [
     {
       label: 'Settings', 
       icon: Icon.Settings, 
       href: `/-/account/${accountName}/project/${projectName}/settings`, 
       hide: !(isAccountMember || isProjectMember),
+      side: 'left',
     },
     {
       label: 'Pricing', 
       icon: Icon.Tag, 
       href: `/-/account/${accountName}/project/${projectName}/pricing`, 
       hide: !(isAccountMember || isProjectMember),
+      side: 'left',
     },
-  ];
-
-  const rightActions: ItemHeaderAction[] = [
+    {
+      label: 'Deployments', 
+      icon: Icon.Rocket, 
+      href: `/-/account/${accountName}/project/${projectName}/deployments`, 
+      hide: !(isAccountMember || isProjectMember),
+      side: 'left',
+    },
     {
       label: 'New Release',
       icon: Icon.News,
       href: `/-/account/${accountName}/project/${projectName}/create/release`,
       variant: 'subtle',
       hide: !(isAccountMember || isProjectMember),
+      side: 'right',
     },
-  ];
-
-  if (isPriced && balance === 0) {
-    rightActions.push({
+    {
       label: 'Purchase',
       icon: Icon.ShoppingCart,
       href: `/-/account/${accountName}/project/${projectName}/checkout`,
       variant: 'primary',
-    });
-  } else if (projectMeta?.type === 'native' && isElectron && !isInstalled) {
-    rightActions.push({
-      label: `Install${installPercent > 0 ? ` (${installPercent})` : ""}`,
-      icon: Icon.Download,
-      action: () => install(valist, accountName, projectName, projectMeta?.type, setProgress),
-      variant: 'primary',
-    });
-  } else if (projectMeta?.type === 'web' && isElectron) {
-    rightActions.push({
-      label: 'Launch',
-      icon: Icon.Rocket,
-      action: () => launch(data?.project, projectMeta?.type, releaseMeta?.external_url, valist),
-      variant: 'primary',
-    });
-  } else if(projectMeta && (releases.length !== 0 || projectMeta?.launch_external)){
-    rightActions.push({
-      label: (projectMeta.type === 'native' || projectMeta.type === 'web') ? 'Launch' : 'Download',
+      hide: !(isPriced && balance === 0 && !isCap),
+      side: 'right',
+    },
+    {
+      label: (projectMeta?.type === 'native' || projectMeta?.type === 'web') ? 'Launch' : 'Download',
       icon: Icon.Rocket,
       action: async () => {
         if (projectMeta?.prompt_donation) {
@@ -190,54 +156,68 @@ const ProjectPage: NextPage = () => {
           await fetch(`/api/stats/${accountName}/${projectName}/${latestRelease?.name}`, { method: 'PUT' });
         }
       },
+      hide: (isPriced && balance === 0) || !(projectMeta && (releases.length !== 0 || projectMeta?.launch_external)),
       variant: 'primary',
-    });
-  }
+      side: 'right',
+    },
+  ];
 
   const breadcrumbs = [
     { title: accountName, href: `/${accountName}` },
     { title: projectName, href: `/${accountName}/${projectName}` },
   ];
 
-  const isWeb = projectMeta?.type === 'web';
-  const isDarwin = releaseMeta?.install?.darwin_amd64 || releaseMeta?.install?.darwin_amd64;
-  const isAndroid = releaseMeta?.install?.android_arm64;
-  const isWindows = releaseMeta?.install?.windows_amd64 || releaseMeta?.install?.windows_386;
-  const isLinux = releaseMeta?.install?.linux_amd64 || releaseMeta?.install?.linux_arm64;
-  const isUnknown = !isWeb && !isDarwin && !isAndroid && !isWindows && !isLinux;
+  let platforms: { icon: JSX.Element, name: string, url: string }[] = [
+    {
+      icon: <Icon.FileUnknown/>,
+      name: 'Unknown',
+      url: releaseMeta?.external_url || '',
+    },
+  ];
 
-  const platforms: Record<string, {icon: JSX.Element, enabled: boolean}> = {
-    Web: {
-      icon: <Icon.World />,
-      enabled: isWeb,
-    },
-    macOS: {
-      icon: <Icon.BrandApple />,
-      enabled: isDarwin,
-    },
-    Android: {
-      icon: <Icon.BrandAndroid />,
-      enabled: isAndroid,
-    },
-    Windows: {
-      icon: <Icon.BrandWindows />,
-      enabled: isWindows,
-    },
-    Linux: {
-      icon: <Icon.BrandUbuntu />,
-      enabled: isLinux,
-    },
-    Unknown: {
-      icon: <div>Unknown</div>,
-      enabled: isUnknown,
-    },
-  };
+  if (releaseMeta) {
+    if (isReleaseMetaV2(releaseMeta)) {
+      if (releaseMeta.platforms) { // v2 always has platform field
+        platforms = [];
+        Object.keys(releaseMeta.platforms).forEach((platform) => {
+          if (releaseMeta.platforms) {
+            platforms.push({
+              icon: platformIcons[platform as SupportedPlatform],
+              name: platformNames[platform as SupportedPlatform],
+              url: releaseMeta?.platforms[platform as SupportedPlatform]?.external_url || '',
+            });
+          }
+        });
+      }
+    } else {
+      if (releaseMeta.install) { // if native type
+        platforms = [];
+        Object.keys(releaseMeta.install).forEach((platform) => {
+          if (releaseMeta.install) {
+            platforms.push({
+              icon: platformIcons[platform as SupportedPlatform],
+              name: platformNames[platform as SupportedPlatform],
+              url: `${releaseMeta.external_url}/${releaseMeta?.install[platform as SupportedPlatform]}`,
+            });
+          }
+        });
+      } else { // if web type
+        platforms = [
+          {
+            icon: <Icon.World/>,
+            name: platformNames['web'],
+            url: releaseMeta?.external_url || '',
+          },
+        ];
+      }
+    }
+  }
 
   if (!loading && !data?.project) {
     return (
       <Layout>
         <_404 
-          message={"The project you are looking for doesn't seem to exist, no biggie, click on the button below to create it!"}
+          message={"The project you are looking for doesn't seem to exist -- no biggie, click on the button below to create it!"}
           action={
             <Button onClick={() => router.push(`/-/account/${accountName}/create/project`)}>Create project</Button>
           }
@@ -250,10 +230,12 @@ const ProjectPage: NextPage = () => {
     <Layout padding={0}>
       <DonationModal 
         opened={donationOpen}
-        projectName={`${accountName}/${projectName}`}
-        projectType={projectMeta?.type}
-        releaseURL={releaseMeta?.external_url}
-        donationAddress={projectMeta?.donation_address}
+        accountName={accountName}
+        projectName={projectName}
+        releaseName={latestRelease?.name}
+        projectType={projectMeta?.type || 'web'}
+        releaseURL={releaseMeta?.external_url || ''}
+        donationAddress={projectMeta?.donation_address || ''}
         onClose={() => setDonationOpen(false)}       
       />
       <Group mt={40} pl={40} position="apart">
@@ -266,13 +248,15 @@ const ProjectPage: NextPage = () => {
         }
       </Group>
       <div style={{ padding: 40 }}>
-        <ItemHeader
-          name={projectName}
-          label={projectMeta?.name}
-          image={projectMeta?.image}
-          leftActions={leftActions}
-          rightActions={rightActions}
-        />
+        <Group spacing={24} mb="xl" noWrap>
+          <Item 
+            name={projectMeta?.name || projectName}
+            label={projectMeta?.short_description}
+            image={projectMeta?.image}
+            large
+          />
+          <Actions actions={actions} />
+        </Group>
         <Grid>
           { (!showInfo || !infoOpened) &&
             <Grid.Col xl={8}>
@@ -345,26 +329,42 @@ const ProjectPage: NextPage = () => {
                         <Text>0</Text>
                       </Group> */}
                       <Group position="apart">
+                        <Text>Valist Link (Beta)</Text>
+                        <Anchor target="_blank" href={`https://${projectName}--${accountName}.on.valist.io`}>
+                          https://{projectName}--{accountName}.on.valist.io
+                        </Anchor>
+                      </Group>
+                      {releaseMeta?.external_url &&
+                        <Group position="apart">
+                          <Text>IPFS Link</Text>
+                          <Anchor target="_blank" style={{ maxWidth: 300, overflow: 'hidden' }} href={releaseMeta?.external_url}>
+                            {releaseMeta?.external_url}
+                          </Anchor>
+                        </Group>
+                      }
+                      <Group position="apart">
                         <Text>Members</Text>
                         <MemberStack 
                           size={28} 
                           members={members.map(member => member.id)} 
                         />
                       </Group>
-                      <Group position="apart">
+                      <Group style={{ overflow: 'hidden' }} position="apart">
                         <Text>Version</Text>
                         <Text>{latestRelease?.name}</Text>
                       </Group>
                       <Group position="apart">
                         <Text>Platforms</Text>
                         <div style={{ display: 'flex' }}>
-                          {Object.keys(platforms)?.map((platform:string) => (
-                            <div key={platform}>
-                              {platforms[platform].enabled &&
-                                <Tooltip label={platform}>
+                          {platforms.map((platform) => (
+                            <div key={platform.url}>
+                              {platform.url &&
+                                <Tooltip label={platform.name}>
                                   {/* requires wrapping div */}
-                                  <div >
-                                    {platforms[platform]?.icon}
+                                  <div>
+                                    <a target="_blank" rel="noreferrer" href={platform.url} style={{ color: 'inherit', textDecoration: 'none' }}>
+                                      {platform.icon}
+                                    </a>
                                   </div>
                                 </Tooltip>
                               }

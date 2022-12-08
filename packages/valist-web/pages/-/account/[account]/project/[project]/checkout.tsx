@@ -1,25 +1,31 @@
 import type { NextPage } from 'next';
-import { useContext, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import useSWRImmutable from 'swr/immutable';
 import { useQuery, useApolloClient } from '@apollo/client';
 import { Layout } from '@/components/Layout';
-import { ValistContext } from '@/components/ValistProvider';
 import { purchaseProduct } from '@/forms/purchase';
 import { getChainId } from '@/utils/config';
+import { useValist } from '@/utils/valist';
 import { tokens, findToken, formatUnits } from '@/utils/tokens';
 import query from '@/graphql/ProjectPage.graphql';
 
 import {
-  Item,
+  Address,
   Button,
   Breadcrumbs,
+  Card,
+  Divider,
+  Item,
+  List,
+  RadioCard,
 } from '@valist/ui';
 
 import {
+  Avatar,
   Group,
-  Select,
+  Grid,
   Stack,
   Title,
   Text,
@@ -31,16 +37,20 @@ const Checkout: NextPage = () => {
   const { cache } = useApolloClient();
   const { address } = useAccount();
   const chainId = getChainId();
+  const valist = useValist();
 
   const [loading, setLoading] = useState(false);
+  const [isGift, setIsGift] = useState(false);
   const [recipient, setRecipient] = useState('');
+  const [payment, setPayment] = useState(0);
 
-  // update recipient when address changes
   useEffect(() => {
-    setRecipient(address ?? '');
-  }, [address]);
-
-  const valist = useContext(ValistContext);
+    if (isGift) {
+      setRecipient('');
+    } else {
+      setRecipient(address ?? '');
+    }
+  }, [isGift, address]);
 
   const accountName = `${router.query.account}`;
   const accountId = valist.generateID(chainId, accountName);
@@ -55,37 +65,24 @@ const Checkout: NextPage = () => {
   const limit = data?.product?.limit ?? 0;
   const currencies = data?.product?.currencies ?? [];
 
-  const [token, setToken] = useState('0x0000000000000000000000000000000000000000');
-
-  // update token to first currency
-  useEffect(() => {
-    if (data && currencies.length > 0) {
-      setToken(currencies[0].token);
-    }
-  }, [data]);
-
-  const values = currencies.map((curr: any) => {
+  const tokens = currencies.map((curr: any) => {
     const price = formatUnits(curr.token, curr.price);
     const token = findToken(curr.token);
-
-    return {
-      value: token?.address.toLowerCase(),
-      label: `${price} ${token?.symbol}`,
-    };
+    return { ...token, price };
   });
 
   const purchase = () => {
+    const _token = tokens[payment].address;
+
     setLoading(true);
     purchaseProduct(
       recipient,
       projectId,
-      token,
+      _token,
       valist,
       cache,
     ).then(success => {
-      if (success) {
-        router.push(`/${accountName}/${projectName}`);
-      }
+      if (success) router.push(`/${accountName}/${projectName}`);
     }).finally(() => {
       setLoading(false);
     });
@@ -98,41 +95,89 @@ const Checkout: NextPage = () => {
   ];
 
   return (
-    <Layout>
-      <div style={{ paddingBottom: 32 }}>
+    <Layout padding={0}>
+      <Group mt={40} pl={40} position="apart">
         <Breadcrumbs items={breadcrumbs} />
+      </Group>
+      <div style={{ padding: 40 }}>
+        <Grid>
+          <Grid.Col xl={8}>
+            <Stack>
+              <Group spacing={24}>
+                <Avatar 
+                  radius="md"
+                  size={92} 
+                  src={projectMeta?.image} 
+                />
+                <Stack spacing={0}>
+                  <Title order={3}>{projectName}</Title>
+                  <Text>{projectMeta?.name}</Text>
+                </Stack>
+              </Group>
+              <Divider style={{ margin: '24px 0' }} />
+              <Title>Receiving Address</Title>
+              <Text mb={8}>This is the address that will own the Software License.</Text>
+              <RadioCard
+                label="For Myself"
+                checked={!isGift}
+                onChange={() => setIsGift(false)}
+                disabled={loading}
+              />
+              <RadioCard
+                label="For an External Address"
+                checked={isGift}
+                onChange={() => setIsGift(true)}
+                disabled={loading}
+              >
+                <TextInput 
+                  label="Address" 
+                  value={recipient} 
+                  onChange={(event) => setRecipient(event.currentTarget.value)} 
+                />
+              </RadioCard>
+              <Title mt={24} mb={8}>Payment Options</Title>
+              { tokens.map((token: any, index: number) =>
+                <RadioCard
+                  key={index}
+                  label={<Item name={token.symbol} label={token.name} image={token.logoURI} />}
+                  rightLabel={token.price}
+                  checked={index === payment}
+                  onChange={() => setPayment(index)}
+                  disabled={loading}
+                />,
+              )}
+            </Stack>
+          </Grid.Col>
+          <Grid.Col xl={4}>
+            <Card>
+              <Stack spacing={24}>
+                <Title order={5}>Summary</Title>
+                <List>
+                  <Group position="apart">
+                    <Text>Recipient</Text>
+                    <Address address={recipient ?? ''} truncate />
+                  </Group>
+                  <Group position="apart">
+                    <Text>Payment</Text>
+                    <Text>{ tokens?.[payment]?.symbol }</Text>
+                  </Group>
+                  <Group position="apart">
+                    <Text>Amount</Text>
+                    <Text>{ tokens?.[payment]?.price }</Text>
+                  </Group>
+                </List>
+                <Button 
+                  onClick={() => purchase()}
+                  style={{ marginTop: 16 }}
+                  disabled={loading}
+                >
+                  Confirm Payment
+                </Button>
+              </Stack>
+            </Card>
+          </Grid.Col>
+        </Grid>
       </div>
-      <Stack style={{ maxWidth: 784 }}>
-        <Title mt="lg">Checkout</Title>
-        <Text color="dimmed">Purchase a Software License NFTs.</Text>
-        <Group my="lg" position="apart">
-          <Item 
-            name={projectName}
-            label={projectMeta?.name}
-            image={projectMeta?.image}
-          />
-          <Select 
-            data={values} 
-            value={token}
-            onChange={(val) => setToken(val ?? '')}
-          />
-        </Group>
-        <TextInput 
-          label="Recipient"
-          placeholder="Address or ENS"
-          value={recipient}
-          onChange={e => setRecipient(e.target.value)}
-          disabled={loading}
-        />
-        <Group>
-          <Button
-            disabled={loading}
-            onClick={purchase}
-          >
-            Purchase
-          </Button>
-        </Group>
-      </Stack>
     </Layout>
   );
 };

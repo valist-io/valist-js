@@ -1,9 +1,9 @@
-import { string, z } from 'zod';
+import { z } from 'zod';
 import { ApolloCache } from '@apollo/client';
 import { ProjectMeta, Client } from '@valist/sdk';
 import { handleEvent } from './events';
 import * as utils from './utils';
-import { refineYouTube } from './common';
+import { normalizeError, refineYouTube } from './common';
 import { Anchor } from '@mantine/core';
 import { getBlockExplorer } from '@/components/Activity';
 
@@ -18,6 +18,7 @@ export interface FormValues {
   tags: string[];
   launchExternal: boolean;
   promptDonation: boolean;
+  linkRepository: boolean;
 }
 
 export const schema = z.object({
@@ -34,6 +35,7 @@ export const schema = z.object({
   tags: z.string().array(),
   promptDonation: z.boolean(),
   launchExternal: z.boolean(),
+  linkRepository: z.boolean(),
 });
 
 export async function updateProject(
@@ -42,6 +44,7 @@ export async function updateProject(
   image: File | undefined,
   mainCapsule: File | undefined,
   gallery: File[],
+  repository: string,
   values: FormValues,
   valist: Client,
   cache: ApolloCache<any>,
@@ -54,8 +57,6 @@ export async function updateProject(
       throw new Error('connect your wallet to continue');
     }
 
-    console.log('hello from updateProject');
-
     const meta: ProjectMeta = {
       name: values.displayName,
       short_description: values.shortDescription,
@@ -64,6 +65,7 @@ export async function updateProject(
       type: values.type,
       tags: values.tags,
       gallery: [],
+      repository,
       launch_external: values.launchExternal,
       donation_address: values.donationAddress,
       prompt_donation: values.promptDonation,
@@ -73,13 +75,13 @@ export async function updateProject(
 
     if (image) {
       meta.image = await utils.writeFile(image, valist, (progress: number) => {
-        utils.updateLoading(`Uploading ${image.name}: ${progress}`);
+        utils.updateLoading(`Uploading ${image.name}: ${progress}%`);
       });
     };
 
     if (mainCapsule) {
       meta.main_capsule = await utils.writeFile(mainCapsule, valist, (progress: number) => {
-        utils.updateLoading(`Uploading ${mainCapsule.name}: ${progress}`);
+        utils.updateLoading(`Uploading ${mainCapsule.name}: ${progress}%`);
       });
     };
 
@@ -90,7 +92,7 @@ export async function updateProject(
 
     for (const item of gallery) {
       const src = await utils.writeFile(item, valist, (progress: number) => {  
-        utils.updateLoading(`Uploading ${item.name}: ${progress}`);
+        utils.updateLoading(`Uploading ${item.name}: ${progress}%`);
       });
       meta.gallery?.push({ name: '', type: 'image', src });
     };
@@ -106,8 +108,7 @@ export async function updateProject(
 
     return true;
   } catch(error: any) {
-    utils.showError(error);
-    console.log(error);
+    utils.showError(normalizeError(error));
   } finally {
     utils.hideLoading();
   };
@@ -139,8 +140,7 @@ export async function addProjectMember(
 
     return true;
   } catch (error: any) {
-    utils.showError(error);
-    console.log(error);
+    utils.showError(normalizeError(error));
   } finally {
     utils.hideLoading();
   }
@@ -172,8 +172,7 @@ export async function removeProjectMember(
 
     return true;
   } catch (error: any) {
-    utils.showError(error);
-    console.log(error);
+    utils.showError(normalizeError(error));
   } finally {
     utils.hideLoading();
   }

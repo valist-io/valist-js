@@ -4,7 +4,7 @@ import { ProjectMeta, Client } from '@valist/sdk';
 import { Event } from 'ethers';
 import { handleEvent } from './events';
 import * as utils from './utils';
-import { shortnameRegex, refineYouTube } from './common';
+import { shortnameRegex, refineYouTube, normalizeError } from './common';
 import { Anchor } from '@mantine/core';
 import { getBlockExplorer } from '@/components/Activity';
 
@@ -73,13 +73,13 @@ export async function createProject(
     utils.showLoading('Uploading files');
     if (image) {
       meta.image = await utils.writeFile(image, valist, (progress: number) => {
-        utils.updateLoading(`Uploading ${image?.name}: ${progress}`);
+        utils.updateLoading(`Uploading ${image?.name}: ${progress}%`);
       });
     }
 
     if (mainCapsule) {
       meta.image = await utils.writeFile(mainCapsule, valist, (progress: number) => {
-        utils.updateLoading(`Uploading ${mainCapsule?.name}: ${progress}`);
+        utils.updateLoading(`Uploading ${mainCapsule?.name}: ${progress}%`);
       });
     }
 
@@ -90,7 +90,7 @@ export async function createProject(
 
     for (const item of gallery) {
       const src = await utils.writeFile(item, valist, (progress: number) => {  
-        utils.updateLoading(`Uploading ${item.name}: ${progress}`);
+        utils.updateLoading(`Uploading ${item.name}: ${progress}%`);
       });
       meta.gallery?.push({ name: '', type: 'image', src });
     }
@@ -106,8 +106,7 @@ export async function createProject(
 
     return true;
   } catch(error: any) {
-    utils.showError(error);
-    console.log(error);
+    utils.showError(normalizeError(error));
   } finally {
     utils.hideLoading();
   }

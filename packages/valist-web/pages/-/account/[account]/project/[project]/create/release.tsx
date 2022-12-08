@@ -1,14 +1,15 @@
 import type { NextPage } from 'next';
 import type { FileWithPath } from 'file-selector';
-import { useState, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAccount } from 'wagmi';
+import { Collapse } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
 import { useApolloClient, useQuery } from '@apollo/client';
 import { Layout } from '@/components/Layout';
-import { ValistContext } from '@/components/ValistProvider';
 import { NameInput } from '@/components/NameInput';
 import { getChainId } from '@/utils/config';
+import { useValist } from '@/utils/valist';
 import query from '@/graphql/CreateReleasePage.graphql';
 
 import {
@@ -36,13 +37,13 @@ import {
   ScrollArea,
   Tabs,
 } from '@mantine/core';
-import { InstallMeta, ProjectMeta } from '@valist/sdk';
+import { ProjectMeta, SupportedPlatform, platformNames } from '@valist/sdk';
 import { Metadata } from '@/components/Metadata';
 
 const CreateReleasePage: NextPage = () => {
   const router = useRouter();
   const { cache } = useApolloClient();
-  const valist = useContext(ValistContext);
+  const valist = useValist();
 
   const { address } = useAccount();
   const chainId = getChainId();
@@ -63,10 +64,10 @@ const CreateReleasePage: NextPage = () => {
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState<File>();
   const [files, setFiles] = useState<FileWithPath[]>([]);
-  const [filesObject, setFilesObject] = useState<Record<string, any>>({});
-  const [platforms, setPlatforms] = useState<string[]>(["windows_arm64", "windows_amd64", "linux_arm64", "linux_amd64", "darwin_arm64", "darwin_amd64", "android_arm64"]);
+  const [filesObject, setFilesObject] = useState<Record<string, File[]>>({});
   const [activeTab, setActiveTab] = useState<string | null>();
-  
+  const [opened, setOpened] = useState(false);
+
   const form = useForm<FormValues>({
     validate: zodResolver(schema),
     validateInputOnChange: true,
@@ -83,28 +84,12 @@ const CreateReleasePage: NextPage = () => {
 
   const submit = (values: FormValues) => {
     setLoading(true);
-    const platformFiles = Object.values(filesObject);
-    const isInstall = Object.keys(filesObject).length !== 0;
-    let installMeta: InstallMeta | undefined = undefined;
-
-    if (isInstall) {
-      installMeta = new InstallMeta();
-      Object.keys(filesObject).forEach((platform) => {
-        if (filesObject[platform]) {
-          // @ts-ignore
-          installMeta[platform] = filesObject[platform].name;
-        }
-      });
-    };
-
-    const _files =  isInstall ? platformFiles : files;
 
     createRelease(
       address,
       projectId,
       image,
-      _files,
-      installMeta,
+      filesObject,
       values,
       valist,
       cache,
@@ -124,9 +109,16 @@ const CreateReleasePage: NextPage = () => {
     { title: 'Create Release', href: `/-/account/${accountName}/project/${projectName}/create/release` },
   ];
 
+  useEffect(() => {
+    const _filesObject = { ...filesObject };
+    _filesObject.web = files;
+    setFilesObject(_filesObject);
+    console.log('filesObject', filesObject);
+  }, [files]);
+
   return (
     <Metadata url={data?.project?.metaURI}>
-      {(data: ProjectMeta) => (
+      {(projectMeta: ProjectMeta) => (
         <form onSubmit={form.onSubmit(submit)}>
           <Layout>
             <div style={{ paddingBottom: 32 }}>
@@ -190,46 +182,57 @@ const CreateReleasePage: NextPage = () => {
               <Tabs.Panel value="files">
                 <Stack style={{ maxWidth: 784 }}>
                   <Title mt="lg">Files</Title>
-                  {!['native', 'cli'].includes(data?.type as string) &&
-                  <>
-                    <Text color="dimmed">Upload your release files.</Text>
-                    <FileInput
-                      onChange={setFiles}
-                      value={files}
-                      disabled={loading}
-                    />
-                    <ScrollArea style={{ height: 300 }}>
-                    <Stack spacing={12}>
-                      {files.map((file: FileWithPath, index: number) => 
-                        <File
-                          key={index} 
-                          path={file.path ?? file.name} 
-                          size={file.size} 
-                        />,
-                      )}
-                    </Stack>
-                  </ScrollArea>
-                  </>
-                  }
-                  {['native', 'cli'].includes(data?.type as string) &&
-                    <>
                       <Text color="dimmed">Upload your release files to the designated platform target.</Text>
                       <Text weight={900} color="dimmed">At least one platform is required.</Text>
-                      <br/>
-                      {platforms.map((platform, index) => (
+                      <h3>Web</h3>
+                      {(Object.keys(platformNames) as SupportedPlatform[]).map((platform, index) => (
                         <div key={index}>
-                          <Text style={{ display: 'inline-block', width: 150 }}>{platform}</Text>
-                          <FileButton setFiles={(_files: File[]) => {
-                            setFilesObject({ ...filesObject, [platform]: _files });
-                          }} />
-                          {filesObject[platform] && filesObject[platform].length !== 0 && 
-                            <span style={{ marginLeft: 20 }}>- {filesObject[platform].name}</span>
+                          <Text style={{ display: 'inline-block', width: 300 }}>{platformNames[platform]}</Text>
+
+                          {platform === 'web' &&
+                            <>
+                              <FileButton directory={true} setFiles={(_files: File[]) => {
+                                setFilesObject({ ...filesObject, [platform]: _files });
+                              }} />
+                              {filesObject[platform] && filesObject[platform].length !== 0  &&
+                                 <span style={{ marginLeft: 20, cursor: 'pointer' }} onClick={() => setOpened((o) => !o)}>
+                                 - {filesObject[platform].length} files
+                                </span>
+                              }
+                              <Collapse in={opened}>
+                                <ScrollArea style={{ height: 300 }}>
+                                  <Stack spacing={12}>
+                                    {filesObject?.web?.map((file: FileWithPath, index: number) => 
+                                      <File
+                                        key={index}
+                                        path={file.webkitRelativePath || file.path || file.name}
+                                        size={file.size}
+                                      />,
+                                    )}
+                                  </Stack>
+                                </ScrollArea>
+                              </Collapse>
+                              <br/>
+                              <br/>
+                              <h3>Desktop / Mobile</h3>
+                            </>
+                          }
+
+                          {platform !== 'web' &&
+                            <>
+                              <FileButton setFiles={(_files: File[]) => {
+                                setFilesObject({ ...filesObject, [platform]: _files });
+                              }} />
+                              {filesObject[platform] && filesObject[platform].length !== 0  &&
+                                <span style={{ marginLeft: 20 }}>
+                                - {filesObject[platform].length} files
+                              </span>
+                              }
+                            </>
                           }
                         </div>
                       ))}
                       <br />
-                   </>
-                  }
                 </Stack>
                 <Group mt="lg">
                   <Button
