@@ -6,11 +6,11 @@ import * as Icon from 'tabler-icons-react';
 import { useRouter } from 'next/router';
 import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
 import { Layout } from '@/components/Layout';
-import { Metadata } from '@/components/Metadata';
 import { Activity } from '@/components/Activity';
 import { ProjectCard } from '@/components/ProjectCard';
 import { CreateAccount } from '@/components/CreateAccount';
 import { CreateProject } from '@/components/CreateProject';
+import { AccountSelect } from '@/components/AccountSelect';
 import { useDashboard } from '@/utils/dashboard';
 
 import {
@@ -25,7 +25,6 @@ import {
 } from '@mantine/core';
 
 import {
-  AccountSelect,
   Actions,
   Action,
   Button,
@@ -42,27 +41,20 @@ const IndexPage: NextPage = () => {
   const router = useRouter();
   const { address } = useAccount();
 
-  const [accountNames, setAccountNames] = useLocalStorage<Record<string, string>>({
-    key: 'accountNames',
-    defaultValue: {},
-  });
-
   const [onboardingSkips, setOnboardingSkips] = useLocalStorage<Record<string, boolean>>({ 
     key: 'onboardingSkips',
     defaultValue: {}, 
   });
 
-  const setAccountName = (name: string) => setAccountNames(current => ({ ...current, [`${address}`]: name }));
+  const onboarding = address ? onboardingSkips[address] : false;
   const skipOnboarding = () => setOnboardingSkips(current => ({ ...current, [`${address}`]: true }));
 
   const [step, setStep] = useState(0);
+  const [accountName, setAccountName] = useState('');
   const [infoOpened, setInfoOpened] = useState(false);
 
   const showInfo = useMediaQuery('(max-width: 1400px)', false);
   const isMobile = useMediaQuery('(max-width: 992px)', false);
-
-  const accountName = address ? accountNames[address] : '';
-  const onboarding = address ? onboardingSkips[address] : false;
 
   const { accounts, projects, members, logs, loading } = useDashboard(accountName);
   const account: any = accounts.find((a: any) => a.name === accountName);
@@ -133,22 +125,10 @@ const IndexPage: NextPage = () => {
   return (
     <Layout padding={0}>
       <Group mt={40} pl={40} position="apart">
-        <AccountSelect
-          name={accountName || 'All Accounts'}
+        <AccountSelect 
           value={accountName}
-          image={accountMeta?.image}
-          href="/-/create/account"
           onChange={setAccountName}
-        >
-          <AccountSelect.Option value="" name="All Accounts" />
-          {accounts.map((acc: any, index: number) => 
-            <Metadata key={index} url={acc.metaURI}>
-              {(data: any) => ( 
-                <AccountSelect.Option value={acc.name} name={acc.name} image={data?.image} /> 
-              )}
-            </Metadata>,
-          )}
-        </AccountSelect>
+        />
         { showInfo &&
           <InfoButton 
             opened={infoOpened}
