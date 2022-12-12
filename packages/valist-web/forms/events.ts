@@ -6,6 +6,7 @@ function normalizeID(id: BigNumber){
 }
 
 function accountCreated(event: Event, cache: ApolloCache<any>) {
+  // @ts-ignore
   const { _accountID, _metaURI, _name } = event.args;
 
   const account = {
@@ -29,6 +30,7 @@ function accountCreated(event: Event, cache: ApolloCache<any>) {
 }
 
 function accountUpdated(event: Event, cache: ApolloCache<any>) {
+  // @ts-ignore
   const { _accountID, _metaURI } = event.args;
 
   const account = {
@@ -50,6 +52,7 @@ function accountUpdated(event: Event, cache: ApolloCache<any>) {
 }
 
 function accountMemberAdded(event: Event, cache: ApolloCache<any>) {
+  // @ts-ignore
   const { _accountID, _member } = event.args;
 
   const account = {
@@ -94,6 +97,7 @@ function accountMemberAdded(event: Event, cache: ApolloCache<any>) {
 }
 
 function accountMemberRemoved(event: Event, cache: ApolloCache<any>) {
+  // @ts-ignore
   const { _accountID, _member } = event.args;
 
   const account = {
@@ -138,6 +142,7 @@ function accountMemberRemoved(event: Event, cache: ApolloCache<any>) {
 }
 
 function projectCreated(event: Event, cache: ApolloCache<any>) {
+  // @ts-ignore
   const { _accountID, _projectID, _metaURI, _name } = event.args;
 
   const account = {
@@ -175,6 +180,7 @@ function projectCreated(event: Event, cache: ApolloCache<any>) {
 }
 
 function projectUpdated(event: Event, cache: ApolloCache<any>) {
+  // @ts-ignore
   const { _projectID, _metaURI } = event.args;
 
   const project = {
@@ -196,6 +202,7 @@ function projectUpdated(event: Event, cache: ApolloCache<any>) {
 }
 
 function projectMemberAdded(event: Event, cache: ApolloCache<any>) {
+  // @ts-ignore
   const { _projectID, _member } = event.args;
 
   const project = {
@@ -240,6 +247,7 @@ function projectMemberAdded(event: Event, cache: ApolloCache<any>) {
 }
 
 function projectMemberRemoved(event: Event, cache: ApolloCache<any>) {
+  // @ts-ignore
   const { _projectID, _member } = event.args;
 
   const project = {
@@ -284,6 +292,7 @@ function projectMemberRemoved(event: Event, cache: ApolloCache<any>) {
 }
 
 function releaseCreated(event: Event, cache: ApolloCache<any>) {
+  // @ts-ignore
   const { _projectID, _releaseID, _metaURI, _name } = event.args;
 
   const project = {
