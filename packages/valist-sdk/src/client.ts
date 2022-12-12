@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { BigNumber, ethers } from 'ethers';
+import { BigNumber, ethers, PopulatedTransaction } from 'ethers';
 import { ContractTransaction } from '@ethersproject/contracts';
 import { MemoryBlockStore } from 'ipfs-car/blockstore/memory';
 import { packToBlob } from 'ipfs-car/pack/blob'
@@ -13,6 +13,8 @@ import { generateID, getAccountID, getProjectID, getReleaseID } from './utils';
 import * as queries from './graphql/queries';
 import { IPFSHTTPClient } from 'ipfs-http-client';
 
+import { sendMetaTx, sendTx } from './metatx';
+
 
 // minimal ABI for interacting with erc20 tokens
 const erc20ABI = [
@@ -25,7 +27,9 @@ export default class Client {
 		private license: ethers.Contract,
 		private ipfs: IPFSHTTPClient,
 		private ipfsGateway: string,
-		private subgraphUrl: string
+		private subgraphUrl: string,
+		private provider: ethers.providers.Web3Provider,
+		private metaTx: boolean = true,
 	) { }
 
 	async createAccount(name: string, meta: AccountMeta, members: string[]): Promise<ContractTransaction> {
@@ -36,6 +40,7 @@ export default class Client {
 	async createProject(accountID: ethers.BigNumberish, name: string, meta: ProjectMeta, members: string[]): Promise<ContractTransaction> {
 		const metaURI = await this.writeJSON(JSON.stringify(meta));
 		return await this.registry.createProject(accountID, name, metaURI, members);
+
 	}
 
 	async uploadRelease(config: ReleaseConfig): Promise<ReleaseMeta> {
@@ -437,6 +442,22 @@ export default class Client {
 		console.log('folder upload', upload.data);
 
 		return `${this.ipfsGateway}/ipfs/${cid.toString()}`;
+	}
+
+	private async sendTx(functionName: string, params: PopulatedTransaction): Promise<ethers.providers.TransactionResponse> {
+		let hash = this.metaTx
+			? await sendMetaTx(this.provider, functionName, params)
+			: await sendTx(this.provider, functionName, params);
+
+		let tx;
+		do {
+			console.log('fetching tx object for', hash);
+			tx = await this.provider.getTransaction(hash);
+		} while (tx == null);
+
+		console.log('tx object', tx);
+
+		return tx;
 	}
 
 	generateID = generateID

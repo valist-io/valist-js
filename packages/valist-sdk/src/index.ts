@@ -27,7 +27,7 @@ export interface Options {
  * @param provider Provider to use for transactions
  * @param options Additional client options
  */
-export function createReadOnly(provider: Provider, options: Partial<Options>): Client {
+export function createReadOnly(provider: ethers.providers.Web3Provider, options: Partial<Options>): Client {
   const chainId = options.chainId || 137;
 
   const subgraphUrl = options.subgraphUrl || graphql.getSubgraphUrl(chainId);
@@ -41,54 +41,7 @@ export function createReadOnly(provider: Provider, options: Partial<Options>): C
   const ipfsGateway = options.ipfsGateway || 'https://gateway.valist.io';
   const ipfs = createIPFS({ url: ipfsHost });
 
-  return new Client(registry, license, ipfs, ipfsGateway, subgraphUrl);
-}
-
-export async function createRelaySigner({ provider }: ethers.providers.Web3Provider, options: Partial<Options>): Promise<ethers.providers.JsonRpcSigner> {
-	const paymasterAddress = contracts.getPaymasterAddress(options.chainId);
-
-	// recommended settings for polygon see below for more info
-	// https://docs.opengsn.org/networks/polygon/polygon.html
-	const config: Partial<GSNConfig> = {
-		paymasterAddress,
-		relayLookupWindowBlocks: 990,
-		relayRegistrationLookupBlocks: 990,
-		pastEventsQueryMaxPageSize: 990,
-    loggerConfiguration: {
-      logLevel: 'error'
-    }
-	};
-
-  // fix for wallet connect provider not returning standard responses
-  // replace this once opengsn is able to handle an ethers wrapped signer
-  if ((provider as WalletConnectProvider).isWalletConnect) {
-    const walletConnectProvider = provider as WalletConnectProvider;
-    walletConnectProvider.send = async (args: any, callback: any) => {
-      walletConnectProvider.request(args)
-        .then((result: any) => callback(null, { result }))
-        .catch((error: any) => callback(error, undefined));
-    }
-    walletConnectProvider.sendAsync = (args: any, callback: any) => {
-      walletConnectProvider.request(args)
-        .then((result: any) => callback(null, { result }))
-        .catch((error: any) => callback(error, undefined));
-    }
-  }
-
-	// @ts-ignore
-	const relayProvider = RelayProvider.newProvider({ provider, config });
-	await relayProvider.init();
-
-	// add the wallet account if set
-	let signerAddress: string | undefined;
-	if (options.wallet) {
-		relayProvider.addAccount(options.wallet.privateKey);
-		signerAddress = options.wallet.address;
-	}
-
-	// @ts-ignore
-	const metaProvider = new ethers.providers.Web3Provider(relayProvider);
-	return metaProvider.getSigner(signerAddress);
+  return new Client(registry, license, ipfs, ipfsGateway, subgraphUrl, provider, options.metaTx);
 }
 
 /**
@@ -97,7 +50,7 @@ export async function createRelaySigner({ provider }: ethers.providers.Web3Provi
  * @param provider Provider to use for transactions
  * @param options Additional client options
  */
-export async function create(provider: Provider, options: Partial<Options>): Promise<Client> {
+export async function create(provider: ethers.providers.Web3Provider, options: Partial<Options>): Promise<Client> {
   if (!options.chainId) {
     const network = await provider.getNetwork();
     options.chainId = network.chainId;
@@ -114,17 +67,7 @@ export async function create(provider: Provider, options: Partial<Options>): Pro
   if (web3Provider.provider && web3Provider.getSigner) {
     const web3Signer = web3Provider.getSigner();
 
-    // if meta transactions enabled setup opengsn relay signer
-    let metaSigner: ethers.providers.JsonRpcSigner;
-    if (options.metaTx && contracts.chainIds.includes(options.chainId || 137)) {
-      metaSigner = await createRelaySigner(web3Provider, options);
-      console.log('Meta-transactions enabled');
-    } else {
-      console.log('Meta-transactions disabled');
-      metaSigner = web3Signer;
-    }
-
-    registry = new ethers.Contract(registryAddress, contracts.registryABI, metaSigner);
+    registry = new ethers.Contract(registryAddress, contracts.registryABI, web3Signer);
     license = new ethers.Contract(licenseAddress, contracts.licenseABI, web3Signer);
   } else {
     registry = new ethers.Contract(registryAddress, contracts.registryABI, provider);
@@ -135,7 +78,7 @@ export async function create(provider: Provider, options: Partial<Options>): Pro
   const ipfsGateway = options.ipfsGateway || 'https://gateway.valist.io';
   const ipfs = createIPFS({ url: ipfsHost });
 
-  return new Client(registry, license, ipfs, ipfsGateway, subgraphUrl);
+  return new Client(registry, license, ipfs, ipfsGateway, subgraphUrl, web3Provider, options.metaTx);
 }
 
 export * from './types';
