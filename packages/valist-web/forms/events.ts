@@ -1,236 +1,356 @@
 import { ApolloCache, Reference, gql } from '@apollo/client';
 import { BigNumber, Event, utils } from 'ethers';
 
-import AccountCreated from '@/graphql/fragments/AccountCreated.graphql';
-import AccountMembers from '@/graphql/fragments/AccountMembers.graphql';
-import AccountProjects from '@/graphql/fragments/AccountProjects.graphql';
-import ProjectMembers from '@/graphql/fragments/ProjectMembers.graphql';
-import ProjectReleases from '@/graphql/fragments/ProjectReleases.graphql';
-
-const entityID = (id: BigNumber) => utils.hexZeroPad(id.toHexString(), 32);
+function normalizeID(id: BigNumber){
+  return utils.hexZeroPad(id.toHexString(), 32);
+}
 
 function accountCreated(event: Event, cache: ApolloCache<any>) {
-  const accountId = entityID(event.args?.['_accountID']);
+  const { _accountID, _metaURI, _name } = event.args;
+
+  const account = {
+    __typename: 'Account',
+    id: normalizeID(_accountID),
+    metaURI: _metaURI,
+    name: _name,
+  };
 
   cache.writeFragment({
-    id: `Account:${accountId}`,
-    fragment: AccountCreated,
-    data: {
-      __typename: 'Account',
-      id: accountId,
-      metaURI: event.args?.['_metaURI'],
-      name: event.args?.['_name'],
-    },
+    id: cache.identify(account),
+    data: account,
+    fragment: gql`
+      fragment CreateAccount on Account {
+        id
+        metaURI
+        name
+      }
+    `,
   });
 }
 
 function accountUpdated(event: Event, cache: ApolloCache<any>) {
-  const accountId = entityID(event.args?.['_accountID']);
+  const { _accountID, _metaURI } = event.args;
 
-  cache.modify({
-    id: `Account:${accountId}`,
-    fields: {
-      metaURI(existingMetaURI) {
-        return event.args?.['_metaURI'];
-      },
-    },
+  const account = {
+    __typename: 'Account',
+    id: normalizeID(_accountID),
+    metaURI: _metaURI,
+  };
+
+  cache.writeFragment({
+    id: cache.identify(account),
+    data: account,
+    fragment: gql`
+      fragment UpdateAccount on Account {
+        id
+        metaURI
+      }
+    `,
   });
 }
 
 function accountMemberAdded(event: Event, cache: ApolloCache<any>) {
-  const accountId = entityID(event.args?.['_accountID']);
-  const userId = event.args?.['_member']?.toLowerCase();
+  const { _accountID, _member } = event.args;
+
+  const account = {
+    __typename: 'Account',
+    id: normalizeID(_accountID),
+  };
 
   const user = {
     __typename: 'User',
-    id: userId,
+    id: _member.toLowerCase(),
   };
 
-  // add the user to the account
-  const accountRef = cache.updateFragment({
-    id: `Account:${accountId}`,
-    fragment: AccountMembers,
-  }, (data: any) => {
-    const members = data?.members ?? [];
-    return { members: [...members, user] };
+  cache.updateFragment({
+    id: cache.identify(user),
+    fragment: gql`
+      fragment UpdateUser on User {
+        id
+        accounts {
+          id
+        }
+      }
+    `,
+  }, (data) => {
+    const accounts = [...data?.accounts, account];
+    return { ...user, ...data, accounts };
   });
 
-  // add the account to the user
-  cache.modify({
-    id: `User:${userId}`,
-    fields: {
-      accounts(existingAccounts = []) {
-        return [...existingAccounts, accountRef];
-      },
-    },
+  cache.updateFragment({
+    id: cache.identify(account),
+    fragment: gql`
+      fragment UpdateAccount on Account {
+        id
+        members {
+          id
+        }
+      }
+    `,
+  }, (data) => {
+    const members = data?.members ?? [];
+    return { ...account, ...data, members: [...members, user] };
   });
 }
 
 function accountMemberRemoved(event: Event, cache: ApolloCache<any>) {
-  const accountId = entityID(event.args?.['_accountID']);
-  const userId = event.args?.['_member']?.toLowerCase();
+  const { _accountID, _member } = event.args;
 
-  // remove the user from the account
+  const account = {
+    __typename: 'Account',
+    id: normalizeID(_accountID),
+  };
+
+  const user = {
+    __typename: 'User',
+    id: _member.toLowerCase(),
+  };
+
   cache.updateFragment({
-    id: `Account:${accountId}`,
-    fragment: AccountMembers,
-  }, (data: any) => {
-    const members = data?.members?.filter((other: any) => other.id !== userId);
-    return { members };
+    id: cache.identify(user),
+    fragment: gql`
+      fragment UpdateUser on User {
+        id
+        accounts {
+          id
+        }
+      }
+    `,
+  }, (data) => {
+    const accounts = data?.accounts?.filter((other: any) => other.id !== account.id);
+    return { ...user, ...data, accounts: accounts ?? [] };
   });
 
-  // remove the account from the user
-  cache.modify({
-    id: `User:${userId}`,
-    fields: {
-      accounts(existingAccounts = [], { readField }) {
-        return existingAccounts.filter(
-          (ref: Reference) => accountId !== readField('id', ref),
-        );
-      },
-    },
+  cache.updateFragment({
+    id: cache.identify(account),
+    fragment: gql`
+      fragment UpdateAccount on Account {
+        id
+        members {
+          id
+        }
+      }
+    `,
+  }, (data) => {
+    const members = data?.members?.filter((other: any) => other.id !== user.id);
+    return { ...account, ...data, members: members ?? [] };
   });
 }
 
 function projectCreated(event: Event, cache: ApolloCache<any>) {
-  const accountId = entityID(event.args?.['_accountID']);
-  const projectId = entityID(event.args?.['_projectID']);
+  const { _accountID, _projectID, _metaURI, _name } = event.args;
+
+  const account = {
+    __typename: 'Account',
+    id: normalizeID(_accountID),
+  };
 
   const project = {
     __typename: 'Project',
-    id: projectId,
-    metaURI: event.args?.['_metaURI'],
-    name: event.args?.['_name'],
+    id: normalizeID(_projectID),
+    metaURI: _metaURI,
+    name: _name,
+    account,
   };
 
   cache.updateFragment({
-    id: `Account:${accountId}`,
-    fragment: AccountProjects,
+    id: cache.identify(account),
+    fragment: gql`
+      fragment UpdateAccount on Account {
+        id
+        projects {
+          id
+          metaURI
+          name
+          account {
+            id
+          }
+        }
+      }
+    `,
   }, (data) => {
     const projects = data?.projects ?? [];
-    return { projects: [...projects, project] };
+    return { ...account, ...data, projects: [...projects, project] };
   });
 }
 
 function projectUpdated(event: Event, cache: ApolloCache<any>) {
-  const projectId = entityID(event.args?.['_projectID']);
+  const { _projectID, _metaURI } = event.args;
 
-  cache.modify({
-    id: `Project:${projectId}`,
-    fields: {
-      metaURI(existingMetaURI) {
-        return event.args?.['_metaURI'];
-      },
-    },
+  const project = {
+    __typename: 'Project',
+    id: normalizeID(_projectID),
+    metaURI: _metaURI,
+  };
+
+  cache.writeFragment({
+    id: cache.identify(project),
+    data: project,
+    fragment: gql`
+      fragment UpdateProject on Project {
+        id
+        metaURI
+      }
+    `,
   });
 }
 
 function projectMemberAdded(event: Event, cache: ApolloCache<any>) {
-  const projectId = entityID(event.args?.['_projectID']);
-  const userId = event.args?.['_member']?.toLowerCase();
+  const { _projectID, _member } = event.args;
+
+  const project = {
+    __typename: 'Project',
+    id: normalizeID(_projectID),
+  };
 
   const user = {
     __typename: 'User',
-    id: userId,
+    id: _member.toLowerCase(),
   };
 
-  // add the user to the project
-  const projectRef = cache.updateFragment({
-    id: `Project:${projectId}`,
-    fragment: ProjectMembers,
-  }, (data: any) => {
-    const members = data?.members ?? [];
-    return { members: [...members, user] };
+  cache.updateFragment({
+    id: cache.identify(user),
+    fragment: gql`
+      fragment UpdateUser on User {
+        id
+        projects {
+          id
+        }
+      }
+    `,
+  }, (data) => {
+    const projects = data?.projects ?? [];
+    return { ...user, ...data, projects: [...projects, project] };
   });
 
-  // add the project to the user
-  cache.modify({
-    id: `User:${userId}`,
-    fields: {
-      projects(existingProjects = []) {
-        return [...existingProjects, projectRef];
-      },
-    },
+  cache.updateFragment({
+    id: cache.identify(project),
+    fragment: gql`
+      fragment UpdateProject on Project {
+        id
+        members {
+          id
+        }
+      }
+    `,
+  }, (data) => {
+    const members = data?.members ?? [];;
+    return { ...project, ...data, members: [...members, user] };
   });
 }
 
 function projectMemberRemoved(event: Event, cache: ApolloCache<any>) {
-  const projectId = entityID(event.args?.['_projectID']);
-  const userId = event.args?.['_member']?.toLowerCase();
+  const { _projectID, _member } = event.args;
 
-  // remove the user from the project
+  const project = {
+    __typename: 'Project',
+    id: normalizeID(_projectID),
+  };
+
+  const user = {
+    __typename: 'User',
+    id: _member.toLowerCase(),
+  };
+
   cache.updateFragment({
-    id: `Project:${projectId}`,
-    fragment: ProjectMembers,
-  }, (data: any) => {
-    const members = data?.members?.filter((other: any) => other.id !== userId);
-    return { members };
+    id: cache.identify(user),
+    fragment: gql`
+      fragment UpdateUser on User {
+        id
+        projects {
+          id
+        }
+      }
+    `,
+  }, (data) => {
+    const projects = data?.projects?.filter((other: any) => other.id !== project.id);
+    return { ...user, ...data, projects: projects ?? [] };
   });
 
-  // remove the project from the user
-  cache.modify({
-    id: `User:${userId}`,
-    fields: {
-      projects(existingProjects = [], { readField }) {
-        return existingProjects.filter(
-          (ref: Reference) => projectId !== readField('id', ref),
-        );
-      },
-    },
+  cache.updateFragment({
+    id: cache.identify(project),
+    fragment: gql`
+      fragment UpdateProject on Project {
+        id
+        members {
+          id
+        }
+      }
+    `,
+  }, (data) => {
+    const members = data?.members?.filter((other: any) => other.id !== user.id);
+    return { ...project, ...data, members: members ?? [] };
   });
 }
 
 function releaseCreated(event: Event, cache: ApolloCache<any>) {
-  const projectId = entityID(event.args?.['_projectID']);
-  const releaseId = entityID(event.args?.['_releaseID']);
+  const { _projectID, _releaseID, _metaURI, _name } = event.args;
+
+  const project = {
+    __typename: 'Project',
+    id: normalizeID(_projectID),
+  };
 
   const release = {
     __typename: 'Release',
-    id: releaseId,
-    metaURI: event.args?.['_metaURI'],
-    name: event.args?.['_name'],
+    id: normalizeID(_releaseID),
+    metaURI: _metaURI,
+    name: _name,
+    project,
   };
 
   cache.updateFragment({
-    id: `Project:${projectId}`,
-    fragment: ProjectReleases,
+    id: cache.identify(project),
+    fragment: gql`
+      fragment UpdateProject on Project {
+        id
+        releases(orderBy: blockTime, orderDirection: "desc") {
+          id
+          metaURI
+          name
+          project {
+            id
+          }
+        }
+      }
+    `,
   }, (data) => {
     const releases = data?.releases ?? [];
-    return { releases: [release, ...releases] };
+    return { ...project, ...data, releases: [release, ...releases] };
   });
-}
-
-function releaseApproved(event: Event, cache: ApolloCache<any>) {
-  console.warn(`${event.event} handler not implemented`);
-}
-
-function releaseRevoked(event: Event, cache: ApolloCache<any>) {
-  console.warn(`${event.event} handler not implemented`);
 }
 
 export function handleEvent(event: Event, cache: ApolloCache<any>) {
   switch (event.event) {
     case 'AccountCreated':
-      return accountCreated(event, cache);
+      accountCreated(event, cache);
+      break;
     case 'AccountUpdated':
-      return accountUpdated(event, cache);
+      accountUpdated(event, cache);
+      break;
     case 'AccountMemberAdded':
-      return accountMemberAdded(event, cache);
+      accountMemberAdded(event, cache);
+      break;
     case 'AccountMemberRemoved':
-      return accountMemberRemoved(event, cache);
+      accountMemberRemoved(event, cache);
+      break;
     case 'ProjectCreated':
-      return projectCreated(event, cache);
+      projectCreated(event, cache);
+      break;
     case 'ProjectUpdated':
-      return projectUpdated(event, cache);
+      projectUpdated(event, cache);
+      break;
     case 'ProjectMemberAdded':
-      return projectMemberAdded(event, cache);
+      projectMemberAdded(event, cache);
+      break;
     case 'ProjectMemberRemoved':
-      return projectMemberRemoved(event, cache);
+      projectMemberRemoved(event, cache);
+      break;
     case 'ReleaseCreated':
-      return releaseCreated(event, cache);
-    case 'ReleaseApproved':
-      return releaseApproved(event, cache);
-    case 'ReleaseRevoked':
-      return releaseRevoked(event, cache);
+      releaseCreated(event, cache);
+      break;
+    default:
+      console.warn(`${event.event} handler not implemented`);
+      break;
   }
 }

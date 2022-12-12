@@ -1,5 +1,0 @@
-fragment AccountCreated on Account {
-  id
-  metaURI
-  name
-}

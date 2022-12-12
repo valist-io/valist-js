@@ -67,7 +67,10 @@ const ProjectPage: NextPage = () => {
   const projectName = `${router.query.project}`;
   const projectId = valist.generateID(accountId, projectName);
 
-  const { data, loading } = useQuery(query, { variables: { projectId } });
+  const { data, loading } = useQuery(query, { 
+    variables: { projectId },
+    pollInterval: 5000,
+  });
 
   const accountMembers = data?.project?.account?.members ?? [];
   const projectMembers = data?.project?.members ?? [];
