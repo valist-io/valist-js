@@ -73,8 +73,8 @@ function accountMemberAdded(event: Event, cache: ApolloCache<any>) {
       }
     `,
   }, (data) => {
-    const accounts = [...data?.accounts, account];
-    return { ...user, ...data, accounts };
+    const accounts = data?.accounts ?? [];
+    return { ...user, ...data, accounts: [...accounts, account] };
   });
 
   cache.updateFragment({
@@ -234,7 +234,7 @@ function projectMemberAdded(event: Event, cache: ApolloCache<any>) {
       }
     `,
   }, (data) => {
-    const members = data?.members ?? [];;
+    const members = data?.members ?? [];
     return { ...project, ...data, members: [...members, user] };
   });
 }
