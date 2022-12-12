@@ -85,7 +85,6 @@ const Deployments: NextPage = () => {
       setStatusStep,
     );
     setLoading(false);
-    router.push(`/-/account/${accountName}/project/${projectName}`);  
   };
 
   const _unlinkRepo = async () => {
@@ -203,10 +202,16 @@ const Deployments: NextPage = () => {
         {statusStep === 5 &&
           <div>
             Successfully created pull request for 
-            <Anchor href={`https://github.com/${repoPath}`}>
-              https://github.com/{repoPath}
-            </Anchor>
-            <Button onClick={() => setShowStatus(false)}>Close</Button>
+            <Center>
+              <Anchor target='_blank' href={`https://github.com/${repoPath}/pulls`}>
+                https://github.com/{repoPath}/pulls
+              </Anchor>
+            </Center>
+            <Center>
+              <Button onClick={() => router?.push(`/${accountName}/${projectName}`)}>
+                Close
+              </Button>
+            </Center>
           </div>
         }
       </Modal>}

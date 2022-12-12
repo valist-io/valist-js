@@ -1,29 +1,17 @@
 import { NextPage } from 'next';
 import { useEffect, useState } from 'react';
+import { useAccount } from 'wagmi';
 import useSWRImmutable from 'swr/immutable';
 import { Group, SimpleGrid } from '@mantine/core';
-import { useLocalStorage } from '@mantine/hooks';
+import { MemberCard } from '@valist/ui';
 import { Layout } from '@/components/Layout';
-import { Metadata } from '@/components/Metadata';
+import { AccountSelect } from '@/components/AccountSelect';
 import { useMembers } from '@/utils/dashboard';
-
-import {
-  AccountSelect,
-  MemberCard,
-} from '@valist/ui';
-import { useAccount } from 'wagmi';
 
 const MembersPage: NextPage = () => {
   const { address } = useAccount();
-  
-  const [accountNames, setAccountNames] = useLocalStorage<Record<string, string>>({
-    key: 'accountNames',
-    defaultValue: {},
-  });
+  const [accountName, setAccountName] = useState('');  
 
-  const setAccountName = (name: string) => setAccountNames(current => ({ ...current, [`${address}`]: name }));
-
-  const accountName = address ? accountNames[address] : '';
   const { accounts, members } = useMembers(accountName);
   const account: any = accounts.find((a: any) => a.name === accountName);
   const { data: accountMeta } = useSWRImmutable(account?.metaURI);
@@ -38,22 +26,10 @@ const MembersPage: NextPage = () => {
   return (
     <Layout padding={0}>
       <Group mt={40} pl={40} position="apart">
-        <AccountSelect
-          name={accountName || 'All Accounts'}
+        <AccountSelect 
           value={accountName}
-          image={accountMeta?.image}
-          href="/-/create/account"
           onChange={setAccountName}
-        >
-          <AccountSelect.Option value="" name="All Accounts" />
-          {accounts.map((acc: any, index: number) => 
-            <Metadata key={index} url={acc.metaURI}>
-              {(data: any) => (
-                <AccountSelect.Option value={acc.name} name={acc.name} image={data?.image} />
-              )}
-            </Metadata>,
-          )}
-        </AccountSelect>
+        />
       </Group>
       <div style={{ padding: 40 }}>
         <SimpleGrid 

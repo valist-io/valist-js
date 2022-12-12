@@ -112,3 +112,26 @@ export function useMembers(accountName: string = '') {
 
   return { members, accounts, loading: _loading };
 }
+
+export function useAccounts() {
+  const { address, isReconnecting } = useAccount();
+
+  const { data, loading } = useQuery(query, { 
+    variables: { address: address?.toLowerCase() ?? '' },
+    pollInterval: 5000,
+  });
+
+  const _accounts = data?.user?.accounts ?? [];
+  const _projects = data?.user?.projects ?? [];
+
+  const accountMap = new Map<string, any>();
+  
+  _accounts.forEach((a: any) => accountMap.set(a.id, a));
+  
+  _projects.map((p: any) => p.account)
+    .forEach((a: any) => accountMap.set(a.id, a));
+
+  const accounts = Array.from(accountMap.values());
+
+  return { accounts, loading: (loading || isReconnecting) };
+}

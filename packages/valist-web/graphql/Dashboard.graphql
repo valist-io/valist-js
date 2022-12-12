@@ -4,6 +4,7 @@ query Dashboard($address: String!){
     accounts {
       id
       name
+      metaURI
       projects {
         id
         name
@@ -15,6 +16,7 @@ query Dashboard($address: String!){
       account {
         id
         name
+        metaURI
       }
     }
   }

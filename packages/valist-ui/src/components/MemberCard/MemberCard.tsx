@@ -23,7 +23,7 @@ export function MemberCard(props: MemberCardProps) {
         <Address address={props.address} size={24} truncate />
         <Group spacing={4} noWrap>
           { props.accounts.slice(0, 2).map((account: any, index: number) => 
-            <Anchor href={`/${account.name}`} size="sm">
+            <Anchor href={`/${account.name}`} size="sm" key={index}>
               {account.name}{index != props.accounts.length - 1 && ','}
             </Anchor>
           )}
