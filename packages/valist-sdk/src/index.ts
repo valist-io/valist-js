@@ -27,7 +27,7 @@ export interface Options {
  * @param provider Provider to use for transactions
  * @param options Additional client options
  */
-export function createReadOnly(provider: ethers.providers.Web3Provider, options: Partial<Options>): Client {
+export function createReadOnly(provider: ethers.providers.Web3Provider | ethers.providers.JsonRpcProvider, options: Partial<Options>): Client {
   const chainId = options.chainId || 137;
 
   const subgraphUrl = options.subgraphUrl || graphql.getSubgraphUrl(chainId);
@@ -41,7 +41,7 @@ export function createReadOnly(provider: ethers.providers.Web3Provider, options:
   const ipfsGateway = options.ipfsGateway || 'https://gateway.valist.io';
   const ipfs = createIPFS({ url: ipfsHost });
 
-  return new Client(registry, license, ipfs, ipfsGateway, subgraphUrl, provider, options.metaTx);
+  return new Client(registry, license, ipfs, ipfsGateway, subgraphUrl, provider as ethers.providers.Web3Provider, options.metaTx);
 }
 
 /**
@@ -50,7 +50,7 @@ export function createReadOnly(provider: ethers.providers.Web3Provider, options:
  * @param provider Provider to use for transactions
  * @param options Additional client options
  */
-export async function create(provider: ethers.providers.Web3Provider, options: Partial<Options>): Promise<Client> {
+export async function create(provider: ethers.providers.Web3Provider | ethers.providers.JsonRpcProvider, options: Partial<Options>): Promise<Client> {
   if (!options.chainId) {
     const network = await provider.getNetwork();
     options.chainId = network.chainId;
