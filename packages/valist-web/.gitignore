@@ -39,3 +39,6 @@ yarn-error.log*
 **/public/workbox-*.js.map
 **/public/sw.js
 **/public/sw.js.map
+/test-results/
+/playwright-report/
+/playwright/.cache/
