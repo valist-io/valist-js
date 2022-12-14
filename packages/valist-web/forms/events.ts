@@ -356,8 +356,7 @@ export function handleEvent(event: Event, cache: ApolloCache<any>) {
       projectMemberRemoved(event, cache);
       break;
     case 'ReleaseCreated':
-      // this doesn't work properly due to ordering in the graphql query
-      // releaseCreated(event, cache);
+      releaseCreated(event, cache);
       break;
     default:
       console.warn(`${event.event} handler not implemented`);
