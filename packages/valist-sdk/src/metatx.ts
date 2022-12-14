@@ -27,28 +27,32 @@ const forwardRequestType = [
 	{ name: 'data', type: 'bytes' },
 ];
 
-/* on dashboard page, this script helps scrape these values quickly:
-const table = document.getElementsByTagName('table')[0]
-let functionIDMap = {}
-for (let i = 1; i < table.rows.length; ++i) {
-    functionIDMap[table.rows[i].children[1].textContent] = table.rows[i].children[2].textContent
-}
-*/
-const functionIDMap: Record<string, string> = {
-  'addProjectMember': '0f0b5bc4-406f-4935-839b-10b4874d2467',
-  'addTeamMember': '11bbda4c-ad7b-4bca-a117-b87b2a1a7a85',
-  'approveRelease': '9557bd7e-088c-44fc-a9a4-26d0a90a6958',
-  'createProject': '6e1c96cb-8df6-4a1e-b1b4-a9333891cd97',
-  'createRelease': 'becea6b7-0d29-438a-ab4d-908ddc2d6de5',
-  'createTeam': 'f671e0a9-6177-44f6-bff1-608858a8d845',
-  'rejectRelease': '5369c7e3-2b01-43d9-88a9-96e94631014e',
-  'removeProjectMember': 'e876f70d-a1a8-4a96-b0db-aa8ab8a6462f',
-  'removeTeamMember': 'd1fbe756-7f61-47d0-a24d-15a13319f974',
-  'setProjectMetaURI': 'eeab2716-4d6f-4e36-95f1-0114d39f5ab8',
-  'setTeamBeneficiary': '3c000312-09e1-4329-a664-cff59b868c0b',
-  'setTeamMetaURI': 'e3bac177-e3f2-4e29-901e-a5614830f5f3',
-  'createLicense': '9fd3f38c-5d54-40e3-861a-7c6134f1d174',
-  'mintLicense': 'e40098f1-0e12-4a04-af14-00550f26bded'
+const functionIDMapPolygon: Record<string, string> = {
+  'addAccountMember': 'c1729f2a-9506-4b22-9138-a95a17ce47af',
+  'addProjectMember': 'a980b5e1-4819-42be-a49f-9c1747cf8d05',
+  'approveRelease': '301f41c9-8087-4d57-bc5b-29e1ed6db644',
+  'createAccount': '41541ef8-dce6-4aaf-9cb1-115be68eb73e',
+  'createProject': '943a1019-428d-4ef9-a8cf-04dfab6db639',
+  'createRelease': 'f9414c87-d41b-4b3a-94c4-a6046250a845',
+  'removeAccountMember': '45b06907-6086-4e69-89b2-92698b436063',
+  'removeProjectMember': '85eef2f4-24c7-4a1a-ac09-e833440d0531',
+  'revokeRelease': '6bd7a911-d6b8-4f90-9bb4-13cd89a3dc3c',
+  'setAccountMetaURI': '02162d2d-4832-45c4-8826-c52a99679751',
+  'setProjectMetaURI': '3c1956c7-3d6e-4764-8704-83e84ae0b519',
+};
+
+const functionIDMapMumbai: Record<string, string> = {
+  'addAccountMember': '56912eec-511f-432a-9747-9feaf947ab8d',
+  'addProjectMember': '80191ad6-ed10-462d-8cc3-f52f20d7df84',
+  'approveRelease': '3cb3ff68-ef7b-4b70-a773-d7bad0347894',
+  'createAccount': 'b3f7b13a-722f-437a-b416-e735f82ad114',
+  'createProject': '9249eb1f-c9a3-489c-9e43-999c91224d4d',
+  'createRelease': '8de50c88-b1e0-48cd-be94-999027374692',
+  'removeAccountMember': '10341a14-da5c-48bf-a823-a2e0bd459c33',
+  'removeProjectMember': 'd83d318a-2239-4bf6-abef-5cfe6312a66c',
+  'revokeRelease': '0cb27135-72a9-41b4-9666-301fca43f62f',
+  'setAccountMetaURI': '69cca256-ad9a-4dcd-8275-8d63364bd164',
+  'setProjectMetaURI': '8deb7a85-93eb-40ca-b192-8c3b41608210',
 };
 
 // pass the networkId to get GSN forwarder contract addresses
@@ -155,6 +159,10 @@ const getDomainSeperator = (networkId: number) => {
     return domainSeparator;
 };
 
+// biconomy public api keys
+const polygonAPI = '9Jk9qeZLi.56894f4d-0437-47c1-b9da-16b269c7bab7';
+const mumbaiAPI = 'qLW9TRUjQ.f77d2f86-c76a-4b9c-b1ee-0453d0ead878';
+
 const sendTx = async (
     provider: Web3Provider | JsonRpcProvider,
     functionName: string,
@@ -192,22 +200,24 @@ const sendMetaTx = async (
       data: `${tx.data}`,
       deadline: '',
     });
+
+    console.log('network ID', networkID, forwarder, request)
   
     const domainSeparator = getDomainSeperator(networkID);
     const dataToSign = getDataToSignForEIP712(request, networkID);
   
-    const sig = await provider.send('eth_signTypedData_v4', [account, dataToSign]);
+    const sig = await provider.send('eth_signTypedData_v3', [account, dataToSign]);
   
     const resp = await fetch('https://api.biconomy.io/api/v2/meta-tx/native', {
       method: 'POST',
       headers: {
         // public biconomy key
-        'x-api-key': '9Jk9qeZLi.56894f4d-0437-47c1-b9da-16b269c7bab7',
+        'x-api-key': networkID == 80001 ? mumbaiAPI : polygonAPI,
         'Content-Type': 'application/json;charset=utf-8',
       },
       body: JSON.stringify({
         to: tx.to,
-        apiId: functionIDMap[functionName],
+        apiId: networkID == 80001 ? functionIDMapMumbai[functionName] : functionIDMapPolygon[functionName],
         params: [request, domainSeparator, sig],
         from: account,
         signatureType: 'EIP712_SIGN',
