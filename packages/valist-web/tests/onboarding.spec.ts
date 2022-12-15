@@ -1,25 +1,6 @@
-import { expect, Page } from '@playwright/test';
+import { expect } from '@playwright/test';
 import { test } from './fixtures';
-
-import { 
-  Web3RequestKind,
-  Web3ProviderBackend,
-  IWeb3Provider,
-} from 'headless-web3-provider';
-
-async function connectWallet(page: Page, wallet: Web3ProviderBackend) {
-  // open connect modal
-  await page.getByRole('banner').getByRole('button', { name: 'Connect Wallet' }).click();
-
-  // connect to metamask
-  await page.getByRole('button', { name: 'MetaMask' }).click();
-
-  // wait for eth_accounts or eth_requestAccounts
-  await new Promise(resolve => setTimeout(resolve, 1000));
-
-  // authorize eth_accounts or eth_requestAccounts
-  wallet.authorizeAll();
-}
+import { connectWallet } from './helpers';
 
 test('onboarding-step-1', async({ page, injectWeb3Provider, signers }) => {
   // start at dashboard
@@ -65,6 +46,7 @@ test('onboarding-complete', async ({ page, injectWeb3Provider, signers }) => {
   await connectWallet(page, wallet);
 
   // make sure onboarding is hidden
+  await expect(page.getByText('Hello & Welcome to Valist 🎉')).toBeHidden();
   await expect(page.getByText('Account Details')).toBeHidden();
   await expect(page.getByText('Project Details')).toBeHidden();
 });
