@@ -1,7 +1,0 @@
-fragment ProjectReleases on Project {
-  releases(orderBy: blockTime, orderDirection: "desc") {
-    id
-    metaURI
-    name
-  }
-}

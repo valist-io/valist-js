@@ -48,7 +48,10 @@ const AccountPage: NextPage = () => {
   const accountName = `${router.query.account}`;
   const accountId = valist.generateID(chainId, accountName);
 
-  const { data, loading } = useQuery(query, { variables: { accountId } });
+  const { data, loading } = useQuery(query, { 
+    variables: { accountId },
+    pollInterval: 5000,
+  });
   const { data: meta } = useSWRImmutable(data?.account?.metaURI);
 
   const [infoOpened, setInfoOpened] = useState(false);

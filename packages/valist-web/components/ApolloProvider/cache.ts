@@ -2,6 +2,15 @@ import type { InMemoryCacheConfig } from '@apollo/client';
 
 export const config: InMemoryCacheConfig = {
   typePolicies: {
+    Project: {
+      fields: {
+        releases: {
+          merge(existing = [], incoming: any[]) {
+            return [...incoming, ...existing];
+          },
+        },
+      },
+    },
     Query: {
       fields: {
         user: {

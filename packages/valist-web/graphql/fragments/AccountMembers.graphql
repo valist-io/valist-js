@@ -1,5 +1,0 @@
-fragment AccountMembers on Account {
-  members {
-    id
-  }
-}
