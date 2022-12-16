@@ -11,10 +11,10 @@ test('name-taken', async ({ page, injectWeb3Provider, signers }) => {
   // connect wallet
   await connectWallet(page, wallet);
 
-  // navigate to new release
+  // navigate to new project
   await page.getByText('New Project').click();
 
-  // enter taken release name
+  // enter taken project name
   await page.getByLabel('Project Name').fill('yolo');
 
   // error should be shown

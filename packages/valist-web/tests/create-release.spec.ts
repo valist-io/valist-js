@@ -23,3 +23,37 @@ test('name-taken', async ({ page, injectWeb3Provider, signers }) => {
   // continue button disabled
   await expect(page.getByRole('button', { name: 'Continue' })).toBeDisabled();
 });
+
+test('create-transaction', async ({ page, injectWeb3Provider, signers }) => {
+  const wallet = await injectWeb3Provider(signers[2]);
+
+  // start at project page
+  await page.goto('/yolo/yolo');
+
+  // connect wallet
+  await connectWallet(page, wallet);
+
+  // navigate to new release
+  await page.getByText('New Release').click();
+
+  const releaseName = Date.now().toString();
+  await page.getByLabel('Release Name').fill(releaseName);
+  await page.getByLabel('Display Name').fill(releaseName);
+  await page.getByLabel('Description').fill('playwright test');
+
+  // go to next tab
+  await page.getByRole('button', { name: 'Continue' }).click();
+
+  await page.locator('input[type="file"]').nth(1).setInputFiles({
+    name: 'file.txt',
+    mimeType: 'text/plain',
+    buffer: Buffer.from('this is test')
+  });
+
+  // create project
+  await page.getByRole('button', { name: 'Create' }).click();
+
+  // wait for loading dialog
+  await expect(page.getByText('Uploading')).toBeVisible();
+  await expect(page.getByText('Creating transaction')).toBeVisible();
+});

@@ -21,16 +21,18 @@ type Web3Test = {
 }
 
 export const test = base.extend<Web3Test>({
-  rpcUrl: 'https://rpc.valist.io/mumbai',
+  rpcUrl: 'https://rpc.valist.io',
 
-  chainId: 80001,
+  chainId: 137,
 
   signers: [
     // this signer has 0 accounts and 0 projects
     '0xdca135777b1197f47f10390c531f5b27a84f89446e99b27795151d1821af495a',
     // this signer has 1 account and 0 projects
+    // account name "jalapeno"
     '0xc267561ef4e17dbb84e669dff65f266fcfb79667f41813b50cd0e270f4e98472',
     // this signer has 1 account and 1 project
+    // account name "yolo" project name "yolo"
     '0xb8e433a8af8461b3216de7ad99e189aa40feaaf3826144ca28c23b8f12273b2d',
   ],
 
