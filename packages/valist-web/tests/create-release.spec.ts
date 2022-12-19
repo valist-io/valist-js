@@ -36,14 +36,16 @@ test('create-transaction', async ({ page, injectWeb3Provider, signers }) => {
   // navigate to new release
   await page.getByText('New Release').click();
 
+  // use a unique name
   const releaseName = Date.now().toString();
+
+  // Basic Info
   await page.getByLabel('Release Name').fill(releaseName);
   await page.getByLabel('Display Name').fill(releaseName);
   await page.getByLabel('Description').fill('playwright test');
 
-  // go to next tab
+  // Files
   await page.getByRole('button', { name: 'Continue' }).click();
-
   await page.locator('input[type="file"]').nth(1).setInputFiles({
     name: 'file.txt',
     mimeType: 'text/plain',
@@ -54,6 +56,5 @@ test('create-transaction', async ({ page, injectWeb3Provider, signers }) => {
   await page.getByRole('button', { name: 'Create' }).click();
 
   // wait for loading dialog
-  await expect(page.getByText('Uploading')).toBeVisible();
   await expect(page.getByText('Creating transaction')).toBeVisible();
 });

@@ -5,17 +5,14 @@ import { connectWallet } from './helpers';
 test('name-taken', async ({ page, injectWeb3Provider, signers }) => {
   const wallet = await injectWeb3Provider(signers[2]);
 
-  // start at account page
-  await page.goto('/yolo');
+  // navigate to new account
+  await page.goto('/-/create/account');
 
   // connect wallet
   await connectWallet(page, wallet);
 
-  // navigate to new project
-  await page.getByText('New Project').click();
-
-  // enter taken project name
-  await page.getByLabel('Project Name').fill('yolo');
+  // enter taken account name
+  await page.getByLabel('Account Name').fill('yolo');
 
   // error should be shown
   await expect(page.getByText('Name has been taken')).toBeVisible();
@@ -27,32 +24,25 @@ test('name-taken', async ({ page, injectWeb3Provider, signers }) => {
 test('create-transaction', async ({ page, injectWeb3Provider, signers }) => {
   const wallet = await injectWeb3Provider(signers[2]);
 
-  // start at account page
-  await page.goto('/yolo');
+  // navigate to new account
+  await page.goto('/-/create/account');
 
   // connect wallet
   await connectWallet(page, wallet);
 
-  // navigate to new project
-  await page.getByText('New Project').click();
+  // use a unique name
+  const accountName = Date.now().toString();
 
   // Basic Info
-  await page.getByLabel('Project Name').fill('new-project');
-  await page.getByLabel('Display Name').fill('new-project');
-  await page.getByPlaceholder('Select type').click();
-  await page.getByRole('option', { name: 'web' }).click();
-  
-  // Descriptions
-  await page.getByRole('button', { name: 'Continue' }).click();
-  await page.getByLabel('Short Description').fill('playwright test');
+  await page.getByLabel('Account Name').fill(accountName);
+  await page.getByLabel('Display Name').fill(accountName);
+  await page.getByLabel('Website').fill('https://yolo.com');
+  await page.getByLabel('Description').fill('playwright test');
 
   // Members
   await page.getByRole('button', { name: 'Continue' }).click();
 
-  // Media
-  await page.getByRole('button', { name: 'Continue' }).click();
-
-  // create project
+  // create account
   await page.getByRole('button', { name: 'Create' }).click();
 
   // wait for loading dialog
