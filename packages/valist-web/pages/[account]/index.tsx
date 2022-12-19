@@ -89,7 +89,7 @@ const AccountPage: NextPage = () => {
 
   if (!loading && !data?.account) {
     return (
-      <Layout>
+      <Layout title={`404 not found`}>
         <_404 
           message={"The account you are looking for doesn't seem to exist, no biggie click on the button below to create it!"}
           action={
@@ -101,7 +101,7 @@ const AccountPage: NextPage = () => {
   };
 
   return (
-    <Layout padding={0}>
+    <Layout padding={0} title={`${accountName}`}>
       <Group mt={40} pl={40} position="apart">
         <Breadcrumbs items={breadcrumbs} />
         { showInfo &&
