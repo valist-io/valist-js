@@ -16,7 +16,7 @@ const Registry = new ethers.ContractFactory(contracts.registryABI, contracts.reg
 const License = new ethers.ContractFactory(contracts.licenseABI, contracts.licenseBytecode, signer);
 
 describe('download', () => {
-	it('should download a release', async function() {
+  it('should download a release', async function () {
     const registry = await Registry.deploy(ethers.constants.AddressZero);
     await registry.deployed();
 
@@ -53,17 +53,17 @@ describe('download', () => {
     await createProjectTx.wait();
 
     const createReleaseTx = await valist.createRelease(projectID, 'v0.0.1', release);
-    await createProjectTx.wait();
+    await createReleaseTx.wait();
 
     const tmp = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'valist-test-'));
-    
+
     Download.provider = provider;
     await Download.run(['valist/cli/v0.0.1', tmp]);
 
     try {
-      await fs.promises.stat(path.join(tmp, 'cli.tar'));  
-    } catch(err: any) {
-      expect.fail('file does not exist');      
+      await fs.promises.stat(path.join(tmp, 'cli.tar'));
+    } catch (err: any) {
+      expect.fail('file does not exist');
     }
   });
 });

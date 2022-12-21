@@ -26,8 +26,8 @@ export function FileButton(props: FileButtonProps):JSX.Element {
           type="file"
           id="files"
           /* @ts-expect-error */
-          directory=""
-          webkitdirectory=""
+          webkitdirectory="true" 
+          mozdirectory="true"
         />
         <label className={classes.root} htmlFor="files">Choose Folder</label>
       </>

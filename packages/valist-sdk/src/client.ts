@@ -1,18 +1,13 @@
 import axios from 'axios';
 import { BigNumber, ethers } from 'ethers';
 import { ContractTransaction } from '@ethersproject/contracts';
-import { MemoryBlockStore } from 'ipfs-car/blockstore/memory';
-import { packToBlob } from 'ipfs-car/pack/blob'
-import { ImportCandidate, ImportCandidateStream } from 'ipfs-core-types/src/utils';
-import { getFilesFromPath, toImportCandidate } from './utils';
-import FormData from 'form-data';
+import { getFilesFromPath } from './utils';
 
 import { AccountMeta, PlatformsMeta, ProjectMeta, ReleaseMeta, SupportedPlatform, FileObject, ReleaseConfig } from './types';
 import { fetchGraphQL, Account, Project, Release } from './graphql';
 import { generateID, getAccountID, getProjectID, getReleaseID } from './utils';
 import * as queries from './graphql/queries';
 import { IPFSHTTPClient } from 'ipfs-http-client';
-
 
 // minimal ABI for interacting with erc20 tokens
 const erc20ABI = [
@@ -29,12 +24,12 @@ export default class Client {
 	) { }
 
 	async createAccount(name: string, meta: AccountMeta, members: string[]): Promise<ContractTransaction> {
-		const metaURI = await this.writeJSON(JSON.stringify(meta));
+		const metaURI = await this.writeJSON(meta);
 		return await this.registry.createAccount(name, metaURI, members);
 	}
 
 	async createProject(accountID: ethers.BigNumberish, name: string, meta: ProjectMeta, members: string[]): Promise<ContractTransaction> {
-		const metaURI = await this.writeJSON(JSON.stringify(meta));
+		const metaURI = await this.writeJSON(meta);
 		return await this.registry.createProject(accountID, name, metaURI, members);
 	}
 
@@ -50,16 +45,13 @@ export default class Client {
 
 		let webCID, nativeCID = '';
 
-		let filesObject: Record<string, FileObject[]> = {};
+		let filesObject: Record<string, (File | FileObject)[]> = {};
 
 		const platforms = Object.keys(config.platforms);
 
 		for (let i = 0; i < platforms.length; i++) {
 			if (config.platforms[platforms[i] as SupportedPlatform]) {
 				filesObject[platforms[i]] = await getFilesFromPath(config.platforms[platforms[i] as SupportedPlatform]);
-				if (platforms[i] !== 'web') {
-					filesObject[platforms[i]][0].name = require('path').join(platforms[i], filesObject[platforms[i]][0].name); // @TODO make this support more than one file
-				}
 			}
 		}
 
@@ -75,17 +67,15 @@ export default class Client {
 		};
 
 		if (Object.keys(filesObject).length > 0) {
-		
-			const nonWebFiles: FileObject[] = Object.values(filesObject).flat(1);
-
+			const nonWebFiles: (File | FileObject)[] = Object.values(filesObject).flat(1);
 			nativeCID = await this.writeFolder(nonWebFiles, true);
 
 			Object.keys(filesObject).forEach((platform) => {
 				if (release.platforms && filesObject[platform] && filesObject[platform].length !== 0) {
-				release.platforms[platform as SupportedPlatform] = {
-					external_url: `${nativeCID}/${filesObject[platform][0].name}`,
-					name: require('path').basename((filesObject[platform][0].name)),
-				};
+					release.platforms[platform as SupportedPlatform] = {
+						external_url: `${nativeCID}/${filesObject[platform][0].name}`,
+						name: require('path').basename((filesObject[platform][0].name)),
+					};
 				}
 			});
 		}
@@ -102,7 +92,7 @@ export default class Client {
 	}
 
 	async createRelease(projectID: ethers.BigNumberish, name: string, meta: ReleaseMeta): Promise<ContractTransaction> {
-		const metaURI = await this.writeJSON(JSON.stringify(meta));
+		const metaURI = await this.writeJSON(meta);
 		return await this.registry.createRelease(projectID, name, metaURI);
 	}
 
@@ -341,105 +331,96 @@ export default class Client {
 		return data.user ? data.user.projects : [];
 	}
 
-	async writeJSON(data: string): Promise<string> {
-		let buffer: Buffer | Blob;
+	getFileBaseName(filePath: string) {
+		return filePath.split('/').pop() || filePath;
+	}
+
+	isBrowserFile(file: File | FileObject): file is File {
+		return (file as File).lastModified !== undefined;
+	};
+
+	async writeJSON(data: Object): Promise<string> {
+		let buffer: Blob | Buffer;
+		let string = JSON.stringify(data);
+
 		if (typeof window === 'undefined') {
-			buffer = Buffer.from(data);
-
+			buffer = Buffer.from(JSON.stringify(data));
 		} else {
-			buffer = new Blob([data], { type: 'application/json' });
+			buffer = new Blob([string], { type: 'application/json' });
 		}
 
-		const { root: cid, car } = await packToBlob({
-			input: buffer,
-			blockstore: new MemoryBlockStore(),
-			wrapWithDirectory: false,
-		});
+		const res = await this.ipfs.add(buffer, { cidVersion: 1 });
+		console.log('json-file link', `${this.ipfsGateway}/ipfs/${res.cid.toString()}`);
+		return `${this.ipfsGateway}/ipfs/${res.cid.toString()}`;
+	};
 
-		let formData = new FormData();
-		formData.append('path', car);
+	async writeFile(file: File | FileObject, wrapWithDirectory = false, onProgress?: (percent: number) => void) {
+		if (typeof file === 'undefined') throw new Error("file === undefined, must pin at least one file");
 
-		const upload = await axios.post('https://pin.valist.io/api/v0/dag/import', formData);
+		let fileData, fileSize: number;
+		const baseFileName = this.getFileBaseName(file.name);
+		const path = wrapWithDirectory ? `/${baseFileName}/${baseFileName}` : baseFileName;
 
-		if (upload.data?.Root?.Cid['/'] !== cid.toString()) {
-			throw new Error(`Generated CID ${cid} did not match response ${upload.data?.Root?.Cid['/']}`);
+		if (this.isBrowserFile(file)) {
+			fileData = {
+				content: file,
+				path: file.name,
+			};
+			fileSize = file.size;
+		} else {
+			const fileStream = file.stream();
+			fileData = { content: fileStream, path };
+			fileSize = require('fs').statSync(fileStream.path).size;
 		}
 
-		console.log('json upload', upload.data)
-
-		return `${this.ipfsGateway}/ipfs/${cid.toString()}`;
-	}
-
-	async writeFile(file: ImportCandidate | ImportCandidateStream | FileObject, wrapWithDirectory = false, onProgress?: (percent: number) => void): Promise<string> {
-		const { root: cid, car } = await packToBlob({
-			input: typeof window === 'undefined'
-				? toImportCandidate(file as File)
-				: [({ path: (file as any).path, content: file })] as ImportCandidate,
-			blockstore: new MemoryBlockStore(), // @TODO make this fs-based in node.js
+		// @ts-ignore
+		const res = await this.ipfs.add(fileData, {
 			wrapWithDirectory,
+			cidVersion: 1,
+			// progress: (length) => {
+			// 	if (onProgress) onProgress(length / fileSize * 100);
+			// }
 		});
+		console.log('single-file link', `${this.ipfsGateway}/ipfs/${res.cid.toString()}`);
+		return `${this.ipfsGateway}/ipfs/${res.cid.toString()}`;
+	};
 
-		var config = {
-			maxBodyLength: Infinity,
-			onUploadProgress: function (progressEvent: { loaded: number; total: number; }) {
-				var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-				if (onProgress) onProgress(percentCompleted);
+	async writeFolder(files: (File | FileObject)[], wrapWithDirectory = false, onProgress?: (percent: number) => void) {
+		if (files.length == 0) throw new Error("files.length == 0, must pin at least one file");
+
+		const fileData: { content: File | any, path: string }[] = [];
+		const firstFile = files[0];
+		const wrap = wrapWithDirectory || (this.isBrowserFile(firstFile) ? (firstFile.webkitRelativePath ? false : true) : false);
+
+		for (const file of files) {
+			let filePath, fileContent;
+
+			if (this.isBrowserFile(file)) {
+				fileContent = file;
+				filePath = file.webkitRelativePath || file.name;
+			} else {
+				fileContent = file.stream();
+				filePath = file.name;
 			}
-		};
 
-		let formData = new FormData();
-		formData.append('path', car);
-
-		const upload = await axios.post('https://pin.valist.io/api/v0/dag/import', formData, config);
-
-		if (upload.data?.Root?.Cid['/'] !== cid.toString()) {
-			throw new Error(`Generated CID ${cid} did not match response ${upload.data?.Root?.Cid['/']}`);
-		}
-
-		console.log('file upload', upload.data);
-
-		return `${this.ipfsGateway}/ipfs/${cid.toString()}`;
-	}
-
-	async writeFolder(files: ImportCandidate | ImportCandidateStream | FileObject[], wrapWithDirectory = false, onProgress?: (percent: number) => void): Promise<string> {
-
-		let toWrap = wrapWithDirectory;
-		const toPush = typeof window === 'undefined'
-			? (files as File[]).map(toImportCandidate)
-			: (files as ImportCandidate[]).map((file: any) => {
-				const path = file.webkitRelativePath || file.path || file.name;
-				return ({ path, content: file });
+			fileData.push({
+				content: fileContent,
+				path: filePath,
 			});
-
-		const { root: cid, car } = await packToBlob({
-			input: toPush,
-			blockstore: new MemoryBlockStore(), // @TODO make this fs-based in node.js
-			wrapWithDirectory: toWrap,
-		});
-
-		var config = {
-			maxBodyLength: Infinity,
-			onUploadProgress: function (progressEvent: { loaded: number; total: number; }) {
-				var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-				if (onProgress) onProgress(percentCompleted);
-			}
-		};
-
-		let formData = new FormData();
-		formData.append('path', car);
-
-		const upload = await axios.post('https://pin.valist.io/api/v0/dag/import', formData, config);
-
-		if (upload.data?.Root?.Cid['/'] !== cid.toString()) {
-			throw new Error(`Generated CID ${cid} did not match response ${upload.data?.Root?.Cid['/']}`);
 		}
 
-		console.log('folder upload', upload.data);
+		const cids: string[] = [];
+		for await (const res of this.ipfs.addAll(fileData, {
+			cidVersion: 1,
+			wrapWithDirectory: wrap,
+		})) {
+			cids.push(res.cid.toString());
+		}
+		console.log('multi-file link', `${this.ipfsGateway}/ipfs/${cids[cids.length - 1]}`);
+		return `${this.ipfsGateway}/ipfs/${cids[cids.length - 1]}`;
+	};
 
-		return `${this.ipfsGateway}/ipfs/${cid.toString()}`;
-	}
-
-	generateID = generateID
+	generateID = generateID;
 
 	getAccountID = getAccountID;
 
