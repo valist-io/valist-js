@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import { useApolloClient } from '@apollo/client';
@@ -44,6 +44,7 @@ export function CreateAccount(props: CreateAccountProps) {
   const router = useRouter();
 
   // form values
+  const openRef = useRef<() => void>(null);
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState<File>();
   const [members, membersHandlers] = useListState<string>([]);
@@ -102,21 +103,33 @@ export function CreateAccount(props: CreateAccountProps) {
         onTabChange={setActiveTab}
       >
         <Tabs.List grow>
-          <Tabs.Tab value="basic">Basic Info</Tabs.Tab>
+          <Tabs.Tab value="basic">Account Info</Tabs.Tab>
           <Tabs.Tab value="members">Members</Tabs.Tab>
         </Tabs.List>
         <Tabs.Panel value="basic">
           <Stack style={{ maxWidth: 784 }}>
-            <Title mt="lg">Basic Info</Title>
-            <Text color="dimmed">This is your public account info.</Text>
-            <Title order={2}>Account Image</Title>
-            <ImageInput 
-              width={300}
-              height={300}
-              onChange={setImage} 
-              value={image}
-              disabled={loading}
-            />
+            <Title mt="lg">Set up your Account</Title>
+            <Text color="dimmed">Tell us a bit about your account.</Text>
+            <Group spacing={40} grow>
+              <ImageInput 
+                width={300}
+                height={300}
+                onChange={setImage} 
+                value={image}
+                disabled={loading}
+                openRef={openRef}
+              />
+              <Stack align="flex-start">
+                <Title order={2}>Account Image</Title>
+                <Text>
+                  Click below to upload or drag and drop. 
+                  Formats available are SVG, PNG, JPG (max. 800x800px)
+                </Text>
+                <Button mt={24} onClick={openRef.current}>
+                  Change Image
+                </Button>
+              </Stack>
+            </Group>
             <Title order={2}>Account Details</Title>
             <NameInput 
               label="Account Name (cannot be changed)"
@@ -148,13 +161,13 @@ export function CreateAccount(props: CreateAccountProps) {
               variant="primary"
               disabled={!(form.values.accountName && form.values.displayName)}
             >
-              Continue
+              Proceed to Add Members
             </Button>
           </Group>
         </Tabs.Panel>
         <Tabs.Panel value="members">
           <Stack style={{ maxWidth: 784 }}>
-            <Title mt="lg">Members</Title>
+            <Title mt="lg">Add Members</Title>
             <Text color="dimmed">Members can perform the following actions:</Text>
             <List>
               <List.Item>Update account info</List.Item>
@@ -164,7 +177,6 @@ export function CreateAccount(props: CreateAccountProps) {
               <List.Item>Update project info</List.Item>
               <List.Item>Publish new releases</List.Item>
             </List>
-            <Title order={2}>Account Admins</Title>
             <AddressInput
               onSubmit={addMember}
               disabled={loading}
@@ -187,7 +199,7 @@ export function CreateAccount(props: CreateAccountProps) {
               type="submit"
               disabled={loading}
             >
-              Create
+              Complete Create Account
             </Button>
           </Group>
         </Tabs.Panel>

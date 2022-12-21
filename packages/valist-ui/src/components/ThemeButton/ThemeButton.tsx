@@ -11,7 +11,7 @@ export function ThemeButton() {
       variant="transparent"
     >
       { colorScheme === 'dark' && <Sun size={18} />}
-      { colorScheme === 'light' && <MoonStars size={18} />}
+      { colorScheme === 'light' && <MoonStars color="#1E1D26" size={18} />}
     </ActionIcon>
   );
 }

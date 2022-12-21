@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import { useApolloClient, useQuery } from '@apollo/client';
@@ -60,6 +60,7 @@ export function CreateProject(props: CreateProjectProps) {
   console.log('accountName', accountName);
 
   // form values
+  const openRef = useRef<() => void>(null);
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState<File>();
   const [mainCapsule, setMainCapsule] = useState<File>();
@@ -128,16 +129,31 @@ export function CreateProject(props: CreateProjectProps) {
         </Tabs.List>
         <Tabs.Panel value="basic">
           <Stack style={{ maxWidth: 784 }}>
-            <Title mt="lg">Basic Info</Title>
-            <Text color="dimmed">This is your public account info.</Text>
-            <Title order={2}>Project Image</Title>
-            <ImageInput 
-              width={300}
-              height={300}
-              onChange={setImage} 
-              value={image}
-              disabled={loading}
-            />
+            <Title mt="lg">Create Project</Title>
+            <Text color="dimmed">
+              Ready to distribute your software in a decentralized way?
+              Let us help you get started.
+            </Text>
+            <Group spacing={40} grow>
+              <ImageInput 
+                width={300}
+                height={300}
+                onChange={setImage} 
+                value={image}
+                disabled={loading}
+                openRef={openRef}
+              />
+              <Stack align="flex-start">
+                <Title order={2}>Project Image</Title>
+                <Text>
+                  Click below to upload or drag and drop. 
+                  Formats available are SVG, PNG, JPG (max. 800x800px)
+                </Text>
+                <Button mt={24} onClick={openRef.current}>
+                  Change Image
+                </Button>
+              </Stack>
+            </Group>
             <Title order={2}>Project Details</Title>
             <NameInput 
               label="Project Name (cannot be changed)"

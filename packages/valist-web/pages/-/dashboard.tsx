@@ -96,7 +96,7 @@ const IndexPage: NextPage = () => {
         <Grid>
           <Grid.Col md={3} pr={40} mb={40}>
             <Stack align={isMobile ? 'flex-start' : 'flex-end'}>
-              <Stepper active={step} orientation="vertical">
+              <Stepper active={step} orientation="vertical" color="purple.3">
                 <Stepper.Step label="Step 1" description="Connect Wallet" />
                 <Stepper.Step label="Step 2" description="Create Account" />
                 <Stepper.Step label="Step 3" description="Create Project" />

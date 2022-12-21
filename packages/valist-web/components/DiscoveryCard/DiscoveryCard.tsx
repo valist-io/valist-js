@@ -13,13 +13,15 @@ export interface DiscoveryCardProps {
 export function DiscoveryCard(props: DiscoveryCardProps) {
   return (
     <Anchor href={props.link ?? '/'} style={{ textDecoration: 'none' }}>
-      <Card style={{ maxWidth: 350 }}>
-        <Image 
+      <Card style={{ maxWidth: 350 }} padding={16}>
+        <Image
+          style={{ borderRadius: 8 }}
           src={props.image ?? '/images/valist.png'}
           alt={props.name} 
-          width={248}
+          width={232}
           height={184}
-          objectFit="contain"
+          objectFit="cover"
+          objectPosition="center"
         />
         <Title size={18} mt={16} style={{ height: 24 }}>
           {props.name}

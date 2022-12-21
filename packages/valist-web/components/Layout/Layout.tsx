@@ -4,10 +4,8 @@ import { useRouter } from 'next/router';
 import { useMediaQuery } from '@mantine/hooks';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import * as Icons from 'tabler-icons-react';
-import { NextLink } from '@mantine/next';
 
 import { 
-  ActionIcon,
   Anchor,
   Center,
   Group,
@@ -48,54 +46,25 @@ export function Layout(props: LayoutProps) {
           onSearch={(value: string) => router.push(`/-/search/${value}`)}
         >
           <ThemeButton />
-          <ActionIcon component={NextLink} href="/-/gas" variant="transparent">
-            <Icons.GasStation size={18} />
-          </ActionIcon>
           <Anchor target="_blank" href="https://docs.valist.io">Docs</Anchor>
-          {(router.asPath === "/") && 
-            <Anchor href={'/-/dashboard'}>
-              Dashboard
-            </Anchor>
-          }
           <ConnectButton chainStatus="icon" showBalance={false} />
         </Header>
       }
       navbar={
         <Navbar opened={opened}>
           <Navbar.Section mt={40} grow>
-          <Navbar.Link 
-            icon={Icons.World} 
-            text='Discover'
-            href='/'
-          />
-          <Navbar.Link 
-            icon={Icons.Command} 
-            text='Dashboard'
-            href='/-/dashboard'
-            active={router.asPath === '/-/dashboard'} 
-          />
-          {isMobile &&
-              <>
-                <Navbar.Link 
-                  icon={Icons.Settings} 
-                  text="Settings"
-                  href="/-/settings"
-                  active={router.asPath === '/-/settings'} 
-                />
-                <Navbar.Link 
-                  icon={Icons.GasStation} 
-                  text="Gas Tank"
-                  href="/-/gas"
-                  active={router.asPath === '/-/gas'} 
-                />
-                <Navbar.Link
-                  icon={Icons.Notebook} 
-                  text="Docs"
-                  href="https://docs.valist.io"
-                  target="_blank"
-                />
-              </>
-            }
+            <Navbar.Link 
+              icon={Icons.World} 
+              text='Discover'
+              href='/'
+              active={router.asPath === '/'}
+            />
+            <Navbar.Link 
+              icon={Icons.Command} 
+              text='Dashboard'
+              href='/-/dashboard'
+              active={router.asPath === '/-/dashboard'}
+            />
             <Navbar.Link 
               icon={Icons.Users} 
               text="Members"
@@ -114,6 +83,14 @@ export function Layout(props: LayoutProps) {
               href={`/-/library`}
               active={router.asPath === `/-/library`} 
             />
+            {isMobile &&
+              <Navbar.Link
+                icon={Icons.Notebook} 
+                text="Docs"
+                href="https://docs.valist.io"
+                target="_blank"
+              />
+            }
           </Navbar.Section>
           <Navbar.Section px={30} py="md">
             <div style={{ display: 'flex', gap: 30 }}>

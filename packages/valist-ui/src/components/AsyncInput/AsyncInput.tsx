@@ -16,6 +16,7 @@ export interface AsyncInputProps {
   placeholder?: string;
   onKeyPress?: React.KeyboardEventHandler<HTMLInputElement>;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  style?: React.CSSProperties;
 }
 
 export function AsyncInput(props: AsyncInputProps) {

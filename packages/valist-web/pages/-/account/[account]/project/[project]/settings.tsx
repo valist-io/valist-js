@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import useSWRImmutable from 'swr/immutable';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
@@ -68,6 +68,7 @@ const Project: NextPage = () => {
   const [isLinked, setIsLinked] = useState<boolean>(false);
 
   // form values
+  const openRef = useRef<() => void>(null);
   const [loading, setLoading] = useState(true);
   const [image, setImage] = useState<File | string>('');
   const [mainCapsule, setMainCapsule] = useState<File | string>('');
@@ -203,14 +204,26 @@ const Project: NextPage = () => {
             <Stack style={{ maxWidth: 784 }}>
               <Title mt="lg">Basic Info</Title>
               <Text color="dimmed">This is your public account info.</Text>
-              <Title order={2}>Project Image</Title>
-              <ImageInput 
-                width={300}
-                height={300}
-                onChange={setImage} 
-                value={image}
-                disabled={loading}
-              />
+              <Group spacing={40} grow>
+                <ImageInput 
+                  width={300}
+                  height={300}
+                  onChange={setImage} 
+                  value={image}
+                  disabled={loading}
+                  openRef={openRef}
+                />
+                <Stack align="flex-start">
+                  <Title order={2}>Project Image</Title>
+                  <Text>
+                    Click below to upload or drag and drop. 
+                    Formats available are SVG, PNG, JPG (max. 800x800px)
+                  </Text>
+                  <Button mt={24} onClick={openRef.current}>
+                    Change Image
+                  </Button>
+                </Stack>
+              </Group>
               <Title order={2}>Project Details</Title>
               <TextInput 
                 label="Project Name (cannot be changed)"
