@@ -130,12 +130,12 @@ export default class Client {
 	}
 
 	async setAccountMeta(accountID: ethers.BigNumberish, meta: AccountMeta): Promise<ContractTransaction> {
-		const metaURI = await this.writeJSON(JSON.stringify(meta));
+		const metaURI = await this.writeJSON(meta);
 		return await this.registry.setAccountMetaURI(accountID, metaURI);
 	}
 
 	async setProjectMeta(projectID: ethers.BigNumberish, meta: ProjectMeta): Promise<ContractTransaction> {
-		const metaURI = await this.writeJSON(JSON.stringify(meta));
+		const metaURI = await this.writeJSON(meta);
 		return await this.registry.setProjectMetaURI(projectID, metaURI);
 	}
 
