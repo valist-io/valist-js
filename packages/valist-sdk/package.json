@@ -47,11 +47,9 @@
   "dependencies": {
     "@opengsn/provider": "^2.2.6",
     "@walletconnect/web3-provider": "^1.7.8",
-    "axios": "^0.26.0",
+    "axios": "^1.0.0",
     "ethers": "^5.5.4",
     "files-from-path": "^0.2.6",
-    "form-data": "^4.0.0",
-    "ipfs-car": "^0.8.1",
     "ipfs-http-client": "^56.0.3"
   }
 }

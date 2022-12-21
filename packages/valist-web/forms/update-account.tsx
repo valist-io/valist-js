@@ -46,7 +46,7 @@ export async function updateAccount(
 
     utils.showLoading('Uploading files');
     if (image) {
-      meta.image = await utils.writeFile(image, valist, (progress: number) => {  
+      meta.image = await valist.writeFile(image, false, (progress: number) => {  
         utils.updateLoading(`Uploading ${image.name}: ${progress}%`);
       });
     }

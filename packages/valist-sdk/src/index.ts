@@ -37,27 +37,27 @@ export function createReadOnly(provider: Provider, options: Partial<Options>): C
   const registry = new ethers.Contract(registryAddress, contracts.registryABI, provider);
   const license = new ethers.Contract(licenseAddress, contracts.licenseABI, provider);
 
-  const ipfsHost = options.ipfsHost || 'https://pin.valist.io';
-  const ipfsGateway = options.ipfsGateway || 'https://gateway.valist.io';
-  const ipfs = createIPFS({ url: ipfsHost });
+  // @ts-expect-error
+  const ipfs = createIPFS(options.ipfsHost || 'https://pin-infura.valist.io');
+  const ipfsGateway = options.ipfsGateway || 'https://ipfs.valist.io';
 
   return new Client(registry, license, ipfs, ipfsGateway, subgraphUrl);
 }
 
 export async function createRelaySigner({ provider }: ethers.providers.Web3Provider, options: Partial<Options>): Promise<ethers.providers.JsonRpcSigner> {
-	const paymasterAddress = contracts.getPaymasterAddress(options.chainId);
+  const paymasterAddress = contracts.getPaymasterAddress(options.chainId);
 
-	// recommended settings for polygon see below for more info
-	// https://docs.opengsn.org/networks/polygon/polygon.html
-	const config: Partial<GSNConfig> = {
-		paymasterAddress,
-		relayLookupWindowBlocks: 990,
-		relayRegistrationLookupBlocks: 990,
-		pastEventsQueryMaxPageSize: 990,
+  // recommended settings for polygon see below for more info
+  // https://docs.opengsn.org/networks/polygon/polygon.html
+  const config: Partial<GSNConfig> = {
+    paymasterAddress,
+    relayLookupWindowBlocks: 990,
+    relayRegistrationLookupBlocks: 990,
+    pastEventsQueryMaxPageSize: 990,
     loggerConfiguration: {
       logLevel: 'error'
     }
-	};
+  };
 
   // fix for wallet connect provider not returning standard responses
   // replace this once opengsn is able to handle an ethers wrapped signer
@@ -75,20 +75,20 @@ export async function createRelaySigner({ provider }: ethers.providers.Web3Provi
     }
   }
 
-	// @ts-ignore
-	const relayProvider = RelayProvider.newProvider({ provider, config });
-	await relayProvider.init();
+  // @ts-ignore
+  const relayProvider = RelayProvider.newProvider({ provider, config });
+  await relayProvider.init();
 
-	// add the wallet account if set
-	let signerAddress: string | undefined;
-	if (options.wallet) {
-		relayProvider.addAccount(options.wallet.privateKey);
-		signerAddress = options.wallet.address;
-	}
+  // add the wallet account if set
+  let signerAddress: string | undefined;
+  if (options.wallet) {
+    relayProvider.addAccount(options.wallet.privateKey);
+    signerAddress = options.wallet.address;
+  }
 
-	// @ts-ignore
-	const metaProvider = new ethers.providers.Web3Provider(relayProvider);
-	return metaProvider.getSigner(signerAddress);
+  // @ts-ignore
+  const metaProvider = new ethers.providers.Web3Provider(relayProvider);
+  return metaProvider.getSigner(signerAddress);
 }
 
 /**
@@ -131,10 +131,9 @@ export async function create(provider: Provider, options: Partial<Options>): Pro
     license = new ethers.Contract(licenseAddress, contracts.licenseABI, provider);
   }
 
-  const ipfsHost = options.ipfsHost || 'https://pin.valist.io';
+  // @ts-expect-error
+  const ipfs = createIPFS(options.ipfsHost || 'https://pin-infura.valist.io');
   const ipfsGateway = options.ipfsGateway || 'https://gateway.valist.io';
-  const ipfs = createIPFS({ url: ipfsHost });
-
   return new Client(registry, license, ipfs, ipfsGateway, subgraphUrl);
 }
 
