@@ -48,7 +48,7 @@ export default class Download extends Command {
 
     const provider = await this.provider(flags.network);
     const valist = await create(provider, { metaTx: false });
-    // @ts-expect-error
+    // @ts-expect-error weird IPFS types
     const ipfs = createIPFS('https://pin-infura.valist.io');
 
     const { chainId } = await provider.getNetwork();
