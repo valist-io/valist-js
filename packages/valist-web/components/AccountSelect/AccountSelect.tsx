@@ -1,18 +1,14 @@
-import { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { AccountSelect as AccountSelectUI } from '@valist/ui';
 import { useLocalStorage } from '@mantine/hooks';
 import useSWRImmutable from 'swr/immutable';
 import { useAccount } from 'wagmi';
 import { Metadata } from '@/components/Metadata';
+import { AccountContext } from '@/components/AccountProvider';
 import { useAccounts } from '@/utils/dashboard';
 
-export interface AccountSelectProps {
-  value?: string;
-  onChange: (value: string) => void;
-}
-
-export function AccountSelect(props: AccountSelectProps) {
-  const { value, onChange } = props;
+export function AccountSelect() {
+  const { account: value, setAccount: onChange } = useContext(AccountContext);
 
   const [accountNames, setAccountNames] = useLocalStorage<Record<string, string>>({
     key: 'accountNames',

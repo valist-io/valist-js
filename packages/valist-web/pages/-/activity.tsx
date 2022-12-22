@@ -1,5 +1,5 @@
 import { NextPage } from 'next';
-import { useEffect, useState } from 'react';
+import { useEffect, useContext } from 'react';
 import { useAccount } from 'wagmi';
 import useSWRImmutable from 'swr/immutable';
 import { Group } from '@mantine/core';
@@ -7,12 +7,12 @@ import { useLocalStorage } from '@mantine/hooks';
 import { List, Card } from '@valist/ui';
 import { Layout } from '@/components/Layout';
 import { Activity } from '@/components/Activity';
-import { AccountSelect } from '@/components/AccountSelect';
+import { AccountContext } from '@/components/AccountProvider';
 import { useDashboard } from '@/utils/dashboard';
 
 const ActivityPage: NextPage = () => {
   const { address } = useAccount();
-  const [accountName, setAccountName] = useState('');
+  const { account: accountName } = useContext(AccountContext);
 
   const { accounts, logs } = useDashboard(accountName);
   const account: any = accounts.find((a: any) => a.name === accountName);
@@ -20,12 +20,6 @@ const ActivityPage: NextPage = () => {
 
   return (
     <Layout padding={0}>
-      <Group mt={40} pl={40} position="apart">
-        <AccountSelect 
-          value={accountName}
-          onChange={setAccountName}
-        />
-      </Group>
       <div style={{ padding: 40 }}>
         <Card>
           <List>

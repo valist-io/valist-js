@@ -43,7 +43,7 @@ const Discover: NextPage<DiscoverProps> = (props) => {
             height: 500,
             borderRadius: 8,
             position: 'relative',
-            background: 'rgba(0, 0, 0, 0.6)'
+            background: 'rgba(0, 0, 0, 0.6)',
           }}
         >
           <Image

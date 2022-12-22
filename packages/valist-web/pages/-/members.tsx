@@ -1,16 +1,16 @@
 import { NextPage } from 'next';
-import { useEffect, useState } from 'react';
+import { useEffect, useContext } from 'react';
 import { useAccount } from 'wagmi';
 import useSWRImmutable from 'swr/immutable';
 import { Group, SimpleGrid } from '@mantine/core';
 import { MemberCard } from '@valist/ui';
 import { Layout } from '@/components/Layout';
-import { AccountSelect } from '@/components/AccountSelect';
+import { AccountContext } from '@/components/AccountProvider';
 import { useMembers } from '@/utils/dashboard';
 
 const MembersPage: NextPage = () => {
   const { address } = useAccount();
-  const [accountName, setAccountName] = useState('');  
+  const { account: accountName } = useContext(AccountContext);
 
   const { accounts, members } = useMembers(accountName);
   const account: any = accounts.find((a: any) => a.name === accountName);
@@ -25,12 +25,6 @@ const MembersPage: NextPage = () => {
 
   return (
     <Layout padding={0}>
-      <Group mt={40} pl={40} position="apart">
-        <AccountSelect 
-          value={accountName}
-          onChange={setAccountName}
-        />
-      </Group>
       <div style={{ padding: 40 }}>
         <SimpleGrid 
           breakpoints={[

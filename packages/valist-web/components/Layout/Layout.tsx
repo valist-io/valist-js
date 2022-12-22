@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useMediaQuery } from '@mantine/hooks';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import * as Icons from 'tabler-icons-react';
+import { useAccount } from 'wagmi';
+import { AccountSelect } from '@/components/AccountSelect';
 
 import { 
   Anchor,
   Center,
+  Divider,
   Group,
 } from '@mantine/core';
 
@@ -30,6 +33,14 @@ export interface LayoutProps {
 export function Layout(props: LayoutProps) {
   const router = useRouter();
   const [opened, setOpened] = useState(false);
+  
+  const { isConnected } = useAccount();
+  const [connected, setConnected] = useState(false);
+
+  // fix server side hydration
+  useEffect(() => {
+    setConnected(isConnected);
+  }, [isConnected]);
 
   const isMobile = useMediaQuery('(max-width: 768px)', false);
   const hideNavbar = !isMobile && props.hideNavbar;
@@ -52,7 +63,13 @@ export function Layout(props: LayoutProps) {
       }
       navbar={
         <Navbar opened={opened}>
-          <Navbar.Section mt={40} grow>
+          <Navbar.Section mt={24} grow>
+            { connected &&
+              <div style={{ padding: '0 32px' }}>
+                <AccountSelect />
+                <Divider color="#F0F0F9" mt={16} mb={8} />
+              </div>
+            }
             <Navbar.Link 
               icon={Icons.World} 
               text='Discover'
@@ -65,24 +82,28 @@ export function Layout(props: LayoutProps) {
               href='/-/dashboard'
               active={router.asPath === '/-/dashboard'}
             />
-            <Navbar.Link 
-              icon={Icons.Users} 
-              text="Members"
-              href={`/-/members`}
-              active={router.asPath === `/-/members`} 
-            />
-            <Navbar.Link 
-              icon={Icons.Hourglass} 
-              text="Activity"
-              href="/-/activity"
-              active={router.asPath === '/-/activity'} 
-            />
-            <Navbar.Link 
-              icon={Icons.Apps} 
-              text="Library"
-              href={`/-/library`}
-              active={router.asPath === `/-/library`} 
-            />
+            { connected &&
+              <>
+                <Navbar.Link 
+                  icon={Icons.Users} 
+                  text="Members"
+                  href={`/-/members`}
+                  active={router.asPath === `/-/members`} 
+                />
+                <Navbar.Link 
+                  icon={Icons.Hourglass} 
+                  text="Activity"
+                  href="/-/activity"
+                  active={router.asPath === '/-/activity'} 
+                />
+                <Navbar.Link 
+                  icon={Icons.Apps} 
+                  text="Library"
+                  href={`/-/library`}
+                  active={router.asPath === `/-/library`} 
+                />
+              </>
+            }
             {isMobile &&
               <Navbar.Link
                 icon={Icons.Notebook} 

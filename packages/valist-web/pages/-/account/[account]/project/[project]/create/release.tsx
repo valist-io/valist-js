@@ -153,7 +153,7 @@ const CreateReleasePage: NextPage = () => {
                         Click below to upload or drag and drop. 
                         Formats available are SVG, PNG, JPG (max. 800x800px)
                       </Text>
-                      <Button mt={24} onClick={openRef.current}>
+                      <Button onClick={() => openRef?.current?.()}>
                         Change Image
                       </Button>
                     </Stack>
