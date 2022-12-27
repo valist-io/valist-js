@@ -12,10 +12,12 @@ import {
   Center,
   Divider,
   Group,
+  Menu,
 } from '@mantine/core';
 
 import { 
   AppShell,
+  CircleButton,
   Footer,
   Navbar,
   Header,
@@ -45,6 +47,12 @@ export function Layout(props: LayoutProps) {
   const isMobile = useMediaQuery('(max-width: 768px)', false);
   const hideNavbar = !isMobile && props.hideNavbar;
 
+  const externalLinks = [
+    { label: 'Report a bug', href: '', icon: Icons.Bug },
+    { label: 'Docs', href: 'https://docs.valist.io', icon: Icons.Notebook },
+    { label: 'Have a complaint?', href: '', icon: Icons.MessageReport },
+  ];
+
   return (
     <AppShell
       padding={props.padding}
@@ -57,7 +65,27 @@ export function Layout(props: LayoutProps) {
           onSearch={(value: string) => router.push(`/-/search/${value}`)}
         >
           <ThemeButton />
-          <Anchor target="_blank" href="https://docs.valist.io">Docs</Anchor>
+          <Menu shadow="md" width={200} position="bottom">
+            <Menu.Target>
+              <CircleButton 
+                label="Need help?"
+                icon={Icons.QuestionMark}
+              />
+            </Menu.Target>   
+            <Menu.Dropdown>
+              {externalLinks.map((link, index) =>
+                <Menu.Item
+                  key={index}
+                  component="a"
+                  target="_blank"
+                  icon={<link.icon size={14} />}
+                  href={link.href}
+                >
+                  {link.label}
+                </Menu.Item>,
+              )}
+            </Menu.Dropdown>         
+          </Menu>
           <ConnectButton chainStatus="icon" showBalance={false} />
         </Header>
       }
@@ -104,14 +132,15 @@ export function Layout(props: LayoutProps) {
                 />
               </>
             }
-            {isMobile &&
+            {isMobile && externalLinks.map((link, index) => 
               <Navbar.Link
-                icon={Icons.Notebook} 
-                text="Docs"
-                href="https://docs.valist.io"
+                key={index}
+                icon={link.icon} 
+                text={link.label}
+                href={link.href}
                 target="_blank"
-              />
-            }
+              />,
+            )}
           </Navbar.Section>
           <Navbar.Section px={30} py="md">
             <div style={{ display: 'flex', gap: 30 }}>
