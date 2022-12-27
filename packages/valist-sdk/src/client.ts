@@ -53,7 +53,6 @@ export default class Client {
 			if (config.platforms[platforms[i] as SupportedPlatform]) {
 				filesObject[platforms[i]] = await getFilesFromPath(config.platforms[platforms[i] as SupportedPlatform]);
 				if (platforms[i] !== 'web') {
-					const platform = platforms[i];
 					/* @TODO make this support more than one file
 					@ts-expect-error overwrite readOnly name property to include full filePath */
 					filesObject[platforms[i]][0].name = require('path').join(platforms[i], filesObject[platforms[i]][0].name);
@@ -356,7 +355,7 @@ export default class Client {
 		}
 
 		const res = await this.ipfs.add(buffer, { cidVersion: 1 });
-		console.log('json-file link', `${this.ipfsGateway}/ipfs/${res.cid.toString()}`);
+
 		return `${this.ipfsGateway}/ipfs/${res.cid.toString()}`;
 	};
 
@@ -387,7 +386,7 @@ export default class Client {
 			// 	if (onProgress) onProgress(length / fileSize * 100);
 			// }
 		});
-		console.log('single-file link', `${this.ipfsGateway}/ipfs/${res.cid.toString()}`);
+
 		return `${this.ipfsGateway}/ipfs/${res.cid.toString()}`;
 	};
 
@@ -422,7 +421,7 @@ export default class Client {
 		})) {
 			cids.push(res.cid.toString());
 		}
-		console.log('multi-file link', `${this.ipfsGateway}/ipfs/${cids[cids.length - 1]}`);
+
 		return `${this.ipfsGateway}/ipfs/${cids[cids.length - 1]}`;
 	};
 
