@@ -52,6 +52,12 @@ export default class Client {
 		for (let i = 0; i < platforms.length; i++) {
 			if (config.platforms[platforms[i] as SupportedPlatform]) {
 				filesObject[platforms[i]] = await getFilesFromPath(config.platforms[platforms[i] as SupportedPlatform]);
+				if (platforms[i] !== 'web') {
+					const platform = platforms[i];
+					/* @TODO make this support more than one file
+					@ts-expect-error overwrite readOnly name property to include full filePath */
+					filesObject[platforms[i]][0].name = require('path').join(platforms[i], filesObject[platforms[i]][0].name);
+				}
 			}
 		}
 
