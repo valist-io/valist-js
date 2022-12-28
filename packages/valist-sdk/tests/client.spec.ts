@@ -12,6 +12,7 @@ import {
 } from '../src/index';
 import * as contracts from '../src/contracts';
 import { FileObject, getFilesFromPath } from 'files-from-path';
+import { ImportCandidate } from 'ipfs-core-types/src/utils';
 
 const ganache = require("ganache");
 const provider = new ethers.providers.Web3Provider(ganache.provider());
@@ -49,16 +50,22 @@ describe('valist client', async function () {
 	});
 
 	describe('valist ipfs pinning', async function () {
-		let nestedFiles: FileObject[];
+		let nestedFiles: ImportCandidate[];
 		let singleFile: FileObject[];
-		let multipleFiles: FileObject[];
+		let multipleFiles: ImportCandidate[];
 
 		before(async () => {
-			nestedFiles = await getFilesFromPath('./data/data');
-			singleFile = await getFilesFromPath('./data/data3');
-			multipleFiles = await getFilesFromPath('./data/data/data2');
+			nestedFiles = (await getFilesFromPath('./data/data')).map(file => ({
+				content: file.stream(),
+				path: file.name,
+			}));
 
-			console.log('nestedFiles', nestedFiles);
+			singleFile = await getFilesFromPath('./data/data3');
+
+			multipleFiles = (await getFilesFromPath('./data/data/data2')).map(file => ({
+				content: file.stream(),
+				path: file.name,
+			}));
 		});
 
 		describe('valist (writeFile)', async function () {

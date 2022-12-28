@@ -8,6 +8,7 @@ import { fetchGraphQL, Account, Project, Release } from './graphql';
 import { generateID, getAccountID, getProjectID, getReleaseID } from './utils';
 import * as queries from './graphql/queries';
 import { IPFSHTTPClient } from 'ipfs-http-client';
+import { ImportCandidate } from 'ipfs-core-types/src/utils';
 
 // minimal ABI for interacting with erc20 tokens
 const erc20ABI = [
@@ -43,44 +44,48 @@ export default class Client {
 
 		release.platforms = new PlatformsMeta();
 
-		let webCID, nativeCID = '';
-
-		let filesObject: Record<string, (File | FileObject)[]> = {};
-
+		let filesObject: Record<string, (FileObject)[]> = {};
 		const platforms = Object.keys(config.platforms);
 
 		for (let i = 0; i < platforms.length; i++) {
 			if (config.platforms[platforms[i] as SupportedPlatform]) {
 				filesObject[platforms[i]] = await getFilesFromPath(config.platforms[platforms[i] as SupportedPlatform]);
-				if (platforms[i] !== 'web') {
-					const platform = platforms[i];
-					/* @TODO make this support more than one file
-					@ts-expect-error overwrite readOnly name property to include full filePath */
-					filesObject[platforms[i]][0].name = require('path').join(platforms[i], filesObject[platforms[i]][0].name);
-				}
 			}
 		}
 
-		if (filesObject['web']) {
-			webCID = await this.writeFolder(filesObject['web'], false);
+		const { web, ...nonWebFiles } = filesObject;
+		let webCID, nativeCID = '';
+
+		const webIC: ImportCandidate[] = web.map(file => ({
+			path: file.name,
+			content: file.stream(),
+		}));
+
+		const nonWebIC: ImportCandidate[] = Object.entries(nonWebFiles)
+			.flatMap(([platform, files]) => files
+				.map(file => ({
+					path: require('path').join(platform, require('path').basename(file.name)),
+					content: file.stream(),
+				}),
+				));
+
+		if (webIC.length > 0) {
+			webCID = await this.writeFolder(webIC, false);
 
 			release.platforms.web = {
 				external_url: webCID,
 				name: 'web',
 			};
-
-			delete filesObject['web'];
 		};
 
-		if (Object.keys(filesObject).length > 0) {
-			const nonWebFiles: (File | FileObject)[] = Object.values(filesObject).flat(1);
-			nativeCID = await this.writeFolder(nonWebFiles, true);
+		if (nonWebIC.length > 0) {
+			nativeCID = await this.writeFolder(nonWebIC, true);
 
 			Object.keys(filesObject).forEach((platform) => {
 				if (release.platforms && filesObject[platform] && filesObject[platform].length !== 0) {
 					release.platforms[platform as SupportedPlatform] = {
 						external_url: `${nativeCID}/${filesObject[platform][0].name}`,
-						name: require('path').basename((filesObject[platform][0].name)),
+						name: require('path').join(platform, require('path').basename((filesObject[platform][0].name))),
 					};
 				}
 			});
@@ -358,7 +363,7 @@ export default class Client {
 		const res = await this.ipfs.add(buffer, { cidVersion: 1 });
 		console.log('json-file link', `${this.ipfsGateway}/ipfs/${res.cid.toString()}`);
 		return `${this.ipfsGateway}/ipfs/${res.cid.toString()}`;
-	};
+	}
 
 	async writeFile(file: File | FileObject, wrapWithDirectory = false, onProgress?: (percent: number) => void) {
 		if (typeof file === 'undefined') throw new Error("file === undefined, must pin at least one file");
@@ -379,52 +384,27 @@ export default class Client {
 			fileSize = require('fs').statSync(fileStream.path).size;
 		}
 
-		// @ts-ignore
 		const res = await this.ipfs.add(fileData, {
 			wrapWithDirectory,
 			cidVersion: 1,
-			// progress: (length) => {
-			// 	if (onProgress) onProgress(length / fileSize * 100);
-			// }
 		});
 		console.log('single-file link', `${this.ipfsGateway}/ipfs/${res.cid.toString()}`);
 		return `${this.ipfsGateway}/ipfs/${res.cid.toString()}`;
-	};
+	}
 
-	async writeFolder(files: (File | FileObject)[], wrapWithDirectory = false, onProgress?: (percent: number) => void) {
+	async writeFolder(files: ImportCandidate[], wrapWithDirectory = false, onProgress?: (percent: number) => void) {
 		if (files.length == 0) throw new Error("files.length == 0, must pin at least one file");
 
-		const fileData: { content: File | any, path: string }[] = [];
-		const firstFile = files[0];
-		const wrap = wrapWithDirectory || (this.isBrowserFile(firstFile) ? (firstFile.webkitRelativePath ? false : true) : false);
-
-		for (const file of files) {
-			let filePath, fileContent;
-
-			if (this.isBrowserFile(file)) {
-				fileContent = file;
-				filePath = file.webkitRelativePath || file.name;
-			} else {
-				fileContent = file.stream();
-				filePath = file.name;
-			}
-
-			fileData.push({
-				content: fileContent,
-				path: filePath,
-			});
-		}
-
 		const cids: string[] = [];
-		for await (const res of this.ipfs.addAll(fileData, {
+		for await (const res of this.ipfs.addAll(files, {
 			cidVersion: 1,
-			wrapWithDirectory: wrap,
+			wrapWithDirectory,
 		})) {
 			cids.push(res.cid.toString());
 		}
 		console.log('multi-file link', `${this.ipfsGateway}/ipfs/${cids[cids.length - 1]}`);
 		return `${this.ipfsGateway}/ipfs/${cids[cids.length - 1]}`;
-	};
+	}
 
 	generateID = generateID;
 
