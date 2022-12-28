@@ -24,7 +24,7 @@ async function createClient(registry: ethers.Contract, license: ethers.Contract)
 	const ipfsGateway = 'https://gateway.valist.io';
 	// @ts-expect-error
 	const ipfs = createIPFS('https://pin-infura.valist.io');
-	const valist = new Client(registry, license, ipfs, ipfsGateway, subgraphAddress);
+	const valist = new Client(registry, license, ipfs, ipfsGateway, subgraphAddress, provider, false);
 	return valist;
 }
 
