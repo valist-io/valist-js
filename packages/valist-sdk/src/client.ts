@@ -361,7 +361,7 @@ export default class Client {
 		}
 
 		const res = await this.ipfs.add(buffer, { cidVersion: 1 });
-		console.log('json-file link', `${this.ipfsGateway}/ipfs/${res.cid.toString()}`);
+
 		return `${this.ipfsGateway}/ipfs/${res.cid.toString()}`;
 	}
 
@@ -388,7 +388,7 @@ export default class Client {
 			wrapWithDirectory,
 			cidVersion: 1,
 		});
-		console.log('single-file link', `${this.ipfsGateway}/ipfs/${res.cid.toString()}`);
+
 		return `${this.ipfsGateway}/ipfs/${res.cid.toString()}`;
 	}
 
@@ -402,7 +402,7 @@ export default class Client {
 		})) {
 			cids.push(res.cid.toString());
 		}
-		console.log('multi-file link', `${this.ipfsGateway}/ipfs/${cids[cids.length - 1]}`);
+
 		return `${this.ipfsGateway}/ipfs/${cids[cids.length - 1]}`;
 	}
 
