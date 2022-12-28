@@ -112,5 +112,7 @@ export default class Publish extends Command {
     ${release.external_url}
     ipfs://${release.external_url.replace('https://gateway.valist.io/ipfs/', '')}
     `);
+    
+    this.exit(0);
   }
 }
