@@ -447,11 +447,8 @@ export default class Client {
 		let tx;
 
 		do {
-			console.log('fetching tx object for', hash);
 			tx = await this.provider.getTransaction(hash);
 		} while (tx == null);
-
-		console.log('tx object', tx);
 
 		return tx;
 	}
