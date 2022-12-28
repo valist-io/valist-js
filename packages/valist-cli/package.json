@@ -19,6 +19,7 @@
   "dependencies": {
     "@oclif/core": "^1.8.0",
     "@oclif/plugin-help": "^5",
+    "@truffle/hdwallet-provider": "^2.1.4",
     "@valist/sdk": "*",
     "ethers": "^5.5.4",
     "inquirer": "^8.2.4",

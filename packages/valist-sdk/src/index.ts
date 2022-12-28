@@ -64,7 +64,7 @@ export async function create(provider: Provider, options: Partial<Options>): Pro
   // @ts-expect-error
   const ipfs = createIPFS(options.ipfsHost || 'https://pin-infura.valist.io');
   const ipfsGateway = options.ipfsGateway || 'https://gateway.valist.io';
-  return new Client(registry, license, ipfs, ipfsGateway, subgraphUrl, options.wallet?.provider || provider as any, options.metaTx);
+  return new Client(registry, license, ipfs, ipfsGateway, subgraphUrl, provider as ethers.providers.Web3Provider, options.metaTx);
 }
 
 export * from './types';

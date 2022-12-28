@@ -438,7 +438,8 @@ export default class Client {
 		const txReq = {
 			from: await this.provider.getSigner().getAddress(),
 			...unsigned,
-		}
+		};
+
 		let hash = this.metaTx
 			? await sendMetaTx(this.provider, txReq)
 			: await sendTx(this.provider, unsigned);
