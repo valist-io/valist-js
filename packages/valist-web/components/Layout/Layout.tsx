@@ -37,7 +37,7 @@ export function Layout(props: LayoutProps) {
   const [opened, setOpened] = useState(false);
   
   const { isConnected } = useAccount();
-  const [connected, setConnected] = useState(false);
+  const [connected, setConnected] = useState(true);
 
   // fix server side hydration
   useEffect(() => {

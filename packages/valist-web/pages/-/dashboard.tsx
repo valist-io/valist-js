@@ -49,7 +49,7 @@ const IndexPage: NextPage = () => {
   const onboarding = address ? onboardingSkips[address] : false;
   const skipOnboarding = () => setOnboardingSkips(current => ({ ...current, [`${address}`]: true }));
 
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(3);
   const { account: accountName } = useContext(AccountContext);
   const [infoOpened, setInfoOpened] = useState(false);
 
