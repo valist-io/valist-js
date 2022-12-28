@@ -62,7 +62,8 @@ export const signTypedData = async (signer: any, from: string, data: any) => {
 
 export const buildRequest = async (forwarder: any, input: any) => {
   const nonce = await forwarder.getNonce(input.from).then((nonce: number) => nonce.toString());
-  return { value: 0, gas: 1e6, nonce, ...input };
+  const gasLimit = await forwarder.provider.estimateGas(input);
+  return { value: 0, gas: gasLimit.toHexString(), nonce, ...input };
 };
 
 export const buildTypedData = async (forwarder: any, request: any) => {
@@ -88,7 +89,8 @@ export const sendTx = async (provider: ethers.providers.Web3Provider, unsigned: 
   const value = unsigned.value ? unsigned.value.toHexString() : '0x0';
 
   const txResp = await provider.send('eth_sendTransaction', [{ ...unsigned, gasLimit, gasPrice, value }]);
-  return txResp.hash;
+
+  return txResp;
 };
 
 export const sendMetaTx = async (provider: ethers.providers.Web3Provider, unsigned: PopulatedTransaction) => {
@@ -102,4 +104,3 @@ export const sendMetaTx = async (provider: ethers.providers.Web3Provider, unsign
 
   return JSON.parse(req.data.result)['txHash'];
 };
-4

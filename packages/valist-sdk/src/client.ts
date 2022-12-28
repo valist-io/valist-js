@@ -442,7 +442,7 @@ export default class Client {
 
 		let hash = this.metaTx
 			? await sendMetaTx(this.provider, txReq)
-			: await sendTx(this.provider, unsigned);
+			: await sendTx(this.provider, txReq);
 
 		let tx;
 
