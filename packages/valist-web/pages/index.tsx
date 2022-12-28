@@ -119,9 +119,10 @@ const Discover: NextPage<DiscoverProps> = (props) => {
             <Title size={32}>Recently Updated</Title>
             <SimpleGrid
               breakpoints={[
-                { minWidth: 'sm', cols: 1, spacing: 24 },
-                { minWidth: 'md', cols: 2, spacing: 24 },
-                { minWidth: 'lg', cols: 4, spacing: 16 },
+                { minWidth: 'sm', cols: 1, spacing: 32 },
+                { minWidth: 'md', cols: 2, spacing: 32 },
+                { minWidth: 'lg', cols: 3, spacing: 32 },
+                { minWidth: 'xl', cols: 4, spacing: 32 },
               ]}
             >
               {props.recent.slice(0, 8).map((project: any, index: number) =>
@@ -137,9 +138,10 @@ const Discover: NextPage<DiscoverProps> = (props) => {
             <Title size={32}>Newest Apps and Games</Title>
             <SimpleGrid
               breakpoints={[
-                { minWidth: 'sm', cols: 1, spacing: 24 },
-                { minWidth: 'md', cols: 2, spacing: 24 },
-                { minWidth: 'lg', cols: 4, spacing: 16 },
+                { minWidth: 'sm', cols: 1, spacing: 32 },
+                { minWidth: 'md', cols: 2, spacing: 32 },
+                { minWidth: 'lg', cols: 3, spacing: 32 },
+                { minWidth: 'xl', cols: 4, spacing: 32 },
               ]}
             >
               {props.newest.slice(0, offset).map((project: any, index: number) =>
@@ -150,7 +152,7 @@ const Discover: NextPage<DiscoverProps> = (props) => {
                 </Metadata>,
               )}
             </SimpleGrid>
-            <Group position="center">
+            <Group position="center" mt={32}>
               <Button onClick={() => setOffset(offset + 12)}>
                 Load More
               </Button>

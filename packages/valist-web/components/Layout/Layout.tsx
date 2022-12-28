@@ -13,6 +13,7 @@ import {
   Divider,
   Group,
   Menu,
+  useMantineTheme,
 } from '@mantine/core';
 
 import { 
@@ -44,6 +45,7 @@ export function Layout(props: LayoutProps) {
     setConnected(isConnected);
   }, [isConnected]);
 
+  const theme = useMantineTheme();
   const isMobile = useMediaQuery('(max-width: 768px)', false);
   const hideNavbar = !isMobile && props.hideNavbar;
 
@@ -107,7 +109,15 @@ export function Layout(props: LayoutProps) {
             { connected &&
               <div style={{ padding: '0 32px' }}>
                 <AccountSelect />
-                <Divider color="#F0F0F9" mt={16} mb={8} />
+                <Divider 
+                  color={
+                    theme.colorScheme === 'dark'
+                      ? theme.colors.gray[6]
+                      : theme.colors.gray[1]
+                  }
+                  mt={16}
+                  mb={8} 
+                />
               </div>
             }
             <Navbar.Link 
