@@ -158,19 +158,13 @@ const CreateReleasePage: NextPage = () => {
                       </Button>
                     </Stack>
                   </Group>
-                  <Title order={2}>Release Details</Title>
                   <NameInput 
-                    label="Release Name (cannot be changed)"
+                    label="Display Name"
                     placeholder={latestReleaseName}
                     disabled={loading}
                     parentId={projectId}
                     required
-                    {...form.getInputProps('releaseName')}
-                  />
-                  <TextInput 
-                    label="Display Name"
-                    disabled={loading}
-                    required
+                    onSanitize={value => form.setFieldValue('releaseName', value)}
                     {...form.getInputProps('displayName')}
                   />
                   <Textarea

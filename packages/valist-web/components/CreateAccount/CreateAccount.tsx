@@ -61,11 +61,6 @@ export function CreateAccount(props: CreateAccountProps) {
     membersHandlers.append(member);
   };
 
-  // update the members list when current address changes
-  useEffect(() => {
-    membersHandlers.setState(address ? [address] : []);
-  }, [address]);
-
   const form = useForm<FormValues>({
     validate: zodResolver(schema),
     validateInputOnChange: true,
@@ -94,6 +89,11 @@ export function CreateAccount(props: CreateAccountProps) {
       setLoading(false);
     });
   };
+
+  // update the members list when current address changes
+  useEffect(() => {
+    membersHandlers.setState(address ? [address] : []);
+  }, [address]);
 
   return (
     <form onSubmit={form.onSubmit(submit)}>
@@ -130,18 +130,12 @@ export function CreateAccount(props: CreateAccountProps) {
                 </Button>
               </Stack>
             </Group>
-            <Title order={2}>Account Details</Title>
             <NameInput 
-              label="Account Name (cannot be changed)"
+              label="Display Name"
               disabled={loading}
               parentId={chainId}
               required
-              {...form.getInputProps('accountName')}
-            />
-            <TextInput 
-              label="Display Name"
-              disabled={loading}
-              required 
+              onSanitize={value => form.setFieldValue('accountName', value)}
               {...form.getInputProps('displayName')}
             />
             <TextInput 

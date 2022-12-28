@@ -48,9 +48,21 @@ export function Layout(props: LayoutProps) {
   const hideNavbar = !isMobile && props.hideNavbar;
 
   const externalLinks = [
-    { label: 'Report a bug', href: '', icon: Icons.Bug },
-    { label: 'Docs', href: 'https://docs.valist.io', icon: Icons.Notebook },
-    { label: 'Have a complaint?', href: '', icon: Icons.MessageReport },
+    { 
+      label: 'Docs',
+      href: 'https://docs.valist.io',
+      icon: Icons.Notebook,
+    },
+    { 
+      label: 'Report a bug',
+      href: 'https://github.com/valist-io/valist-js/issues/new/choose',
+      icon: Icons.Bug,
+    },
+    { 
+      label: 'Have a complaint?',
+      href: 'https://valist.io/discord',
+      icon: Icons.MessageReport,
+    },
   ];
 
   return (
@@ -65,7 +77,7 @@ export function Layout(props: LayoutProps) {
           onSearch={(value: string) => router.push(`/-/search/${value}`)}
         >
           <ThemeButton />
-          <Menu shadow="md" width={200} position="bottom">
+          <Menu width={200} position="bottom" withArrow>
             <Menu.Target>
               <CircleButton 
                 label="Need help?"

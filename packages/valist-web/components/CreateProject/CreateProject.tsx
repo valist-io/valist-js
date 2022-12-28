@@ -154,18 +154,12 @@ export function CreateProject(props: CreateProjectProps) {
                 </Button>
               </Stack>
             </Group>
-            <Title order={2}>Project Details</Title>
             <NameInput 
-              label="Project Name (cannot be changed)"
+              label="Display Name"
               disabled={loading}
               parentId={accountId}
               required
-              {...form.getInputProps('projectName')}
-            />
-            <TextInput 
-              label="Display Name"
-              disabled={loading}
-              required 
+              onSanitize={value => form.setFieldValue('projectName', value)}
               {...form.getInputProps('displayName')}
             />
             <TextInput 
