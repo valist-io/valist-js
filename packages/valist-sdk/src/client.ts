@@ -29,13 +29,13 @@ export default class Client {
 	async createAccount(name: string, meta: AccountMeta, members: string[]): Promise<ContractTransaction> {
 		const metaURI = await this.writeJSON(meta);
 		const unsigned = await this.registry.populateTransaction.createAccount(name, metaURI, members);
-		return this.sendTx(unsigned);
+		return await this.sendTx(unsigned);
 	}
 
 	async createProject(accountID: ethers.BigNumberish, name: string, meta: ProjectMeta, members: string[]): Promise<ContractTransaction> {
 		const metaURI = await this.writeJSON(meta);
 		const unsigned = await this.registry.populateTransaction.createProject(accountID, name, metaURI, members);
-		return this.sendTx(unsigned);
+		return await this.sendTx(unsigned);
 	}
 
 	async uploadRelease(config: ReleaseConfig): Promise<ReleaseMeta> {
@@ -138,43 +138,43 @@ export default class Client {
 	async setAccountMeta(accountID: ethers.BigNumberish, meta: AccountMeta): Promise<ContractTransaction> {
 		const metaURI = await this.writeJSON(meta);
 		const unsigned = await this.registry.populateTransaction.setAccountMetaURI(accountID, metaURI);
-		return this.sendTx(unsigned);
+		return await this.sendTx(unsigned);
 	}
 
 	async setProjectMeta(projectID: ethers.BigNumberish, meta: ProjectMeta): Promise<ContractTransaction> {
 		const metaURI = await this.writeJSON(meta);
 		const unsigned = await this.registry.populateTransaction.setProjectMetaURI(projectID, metaURI);
-		return this.sendTx(unsigned);
+		return await this.sendTx(unsigned);
 	}
 
 	async addAccountMember(accountID: ethers.BigNumberish, address: string): Promise<ContractTransaction> {
 		const unsigned = await this.registry.populateTransaction.addAccountMember(accountID, address);
-		return this.sendTx(unsigned);
+		return await this.sendTx(unsigned);
 	}
 
 	async removeAccountMember(accountID: ethers.BigNumberish, address: string): Promise<ContractTransaction> {
 		const unsigned = await this.registry.populateTransaction.removeAccountMember(accountID, address);
-		return this.sendTx(unsigned);
+		return await this.sendTx(unsigned);
 	}
 
 	async addProjectMember(projectID: ethers.BigNumberish, address: string): Promise<ContractTransaction> {
 		const unsigned = await this.registry.populateTransaction.addProjectMember(projectID, address);
-		return this.sendTx(unsigned);
+		return await this.sendTx(unsigned);
 	}
 
 	async removeProjectMember(projectID: ethers.BigNumberish, address: string): Promise<ContractTransaction> {
 		const unsigned = await this.registry.populateTransaction.removeProjectMember(projectID, address);
-		return this.sendTx(unsigned);
+		return await this.sendTx(unsigned);
 	}
 
 	async approveRelease(releaseID: ethers.BigNumberish): Promise<ContractTransaction> {
 		const unsigned = await this.registry.populateTransaction.approveRelease(releaseID);
-		return this.sendTx(unsigned);
+		return await this.sendTx(unsigned);
 	}
 
 	async revokeRelease(releaseID: ethers.BigNumberish): Promise<ContractTransaction> {
 		const unsigned = await this.registry.populateTransaction.approveRelease(releaseID);
-		return this.sendTx(unsigned);
+		return await this.sendTx(unsigned);
 	}
 
 	async setProductLimit(projectID: ethers.BigNumberish, limit: ethers.BigNumberish): Promise<ContractTransaction> {
