@@ -154,9 +154,10 @@ export function CreateProject(props: CreateProjectProps) {
               </Stack>
             </Group>
             <NameInput 
-              label="Display Name"
+              label="Display Name (can be changed later)"
               disabled={loading}
               parentId={accountId}
+              message={"The following project name will be registered and cannot be changed: "}
               required
               onSanitize={value => form.setFieldValue('projectName', value)}
               {...form.getInputProps('displayName')}

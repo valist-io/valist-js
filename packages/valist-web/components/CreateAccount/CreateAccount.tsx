@@ -131,9 +131,10 @@ export function CreateAccount(props: CreateAccountProps) {
               </Stack>
             </Group>
             <NameInput 
-              label="Display Name"
+              label="Display Name (can be changed later)"
               disabled={loading}
               parentId={chainId}
+              message={"The following username will be registered and cannot be changed: "}
               required
               onSanitize={value => form.setFieldValue('accountName', value)}
               {...form.getInputProps('displayName')}

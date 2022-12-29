@@ -165,7 +165,9 @@ const CreateReleasePage: NextPage = () => {
                     placeholder={latestReleaseName}
                     disabled={loading}
                     parentId={projectId}
+                    message={"The following release tag will be used and cannot be changed: "}
                     required
+                    isRelease
                     onSanitize={value => form.setFieldValue('releaseName', value)}
                     {...form.getInputProps('displayName')}
                   />

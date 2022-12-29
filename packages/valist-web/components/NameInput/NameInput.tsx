@@ -10,12 +10,14 @@ import * as Icon from 'tabler-icons-react';
 import { AsyncInput } from '@valist/ui';
 import { useState, useEffect } from 'react';
 import { useValist } from '@/utils/valist';
+import { shortnameFilterRegex, versionFilterRegex } from '@/forms/common';
 
-const sanitize = (raw: string) => raw
-  .replaceAll(/[^\w\s-.]/g, '') // remove invalid characters
+const sanitize = (raw: string, isRelease?: boolean) => raw
+  .replaceAll(isRelease ? versionFilterRegex : shortnameFilterRegex, '') // remove invalid characters
   .replaceAll(/\s+/g, '-')      // replace whitespace with -
   .replace(/^-+/, '')           // remove - at start
-  .replace(/-+$/, '');          // remove - at end
+  .replace(/-+$/, '')           // remove - at end
+  .toLowerCase();               // lowercase everything
 
 export interface NameInputProps {
   parentId: string | number;
@@ -27,6 +29,8 @@ export interface NameInputProps {
   value?: string;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   onSanitize?: (value: string) => void;
+  message: string;
+  isRelease?: boolean;
 }
 
 export function NameInput(props: NameInputProps) {
@@ -79,11 +83,18 @@ export function NameInput(props: NameInputProps) {
   }, [valid, sanitized]);
 
   useEffect(() => {
-    setSanitized(sanitize(props.value ?? ''));
+    setSanitized(sanitize(props.value ?? '', props.isRelease));
   }, [props.value]);
 
 	return (
     <Stack>
+      {sanitized &&
+        <Group spacing={4}>
+          <Icon.AlertTriangle color="orange" size={20} />
+          {props.message}
+          <Code style={{ fontSize: 15 }}>{sanitized}</Code>
+        </Group>
+      }
       <AsyncInput
         value={props.value}
         error={error ?? props.error}
@@ -95,11 +106,6 @@ export function NameInput(props: NameInputProps) {
         valid={valid}
         onChange={props.onChange}
       />
-      <Group spacing={4}>
-        <Icon.AlertTriangle color="orange" size={20} />
-        <Text size="sm">Registry name cannot be changed once created</Text>
-        {sanitized && <Code>{sanitized}</Code>}
-      </Group>
     </Stack>
   );
 }
