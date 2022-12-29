@@ -30,6 +30,8 @@ export const schema = z.object({
 
 export async function createRelease(
   address: string | undefined,
+  accountName: string,
+  projectName: string,
   projectId: string,
   image: File | undefined,
   filesObject: Record<string, File[]>,
@@ -52,6 +54,7 @@ export async function createRelease(
     const meta: ReleaseMeta = new ReleaseMeta();
     meta.platforms = new PlatformsMeta();
     meta.name = values.displayName;
+    meta.path = `${accountName}/${projectName}/${meta.name}`;
     meta.description = values.description;
 
     utils.showLoading('Uploading files');
@@ -65,28 +68,18 @@ export async function createRelease(
       const { web, ...nonWebFiles } = filesObject;
       let webCID, nativeCID = '';
 
-      const webIC:ImportCandidate[] = web.map(file => ({
+      const webIC: ImportCandidate[] = web.map(file => ({
         path: file.webkitRelativePath,
         content: file,
       }));
 
-      const nonWebIC:ImportCandidate[] = Object.entries(nonWebFiles)
+      const nonWebIC: ImportCandidate[] = Object.entries(nonWebFiles)
         .flatMap(([platform, files]) => files
           .map(file => ({
             path: `${platform}/${file.name}`,
             content: file,
           }),
         ));
-
-      if (webIC.length !== 0) {
-        webCID = await valist.writeFolder(webIC, false, (progress: number) => {
-          utils.updateLoading(`Uploading release archive for web: ${progress}%`);
-        });
-        meta.platforms.web = {
-          external_url: webCID,
-          name: 'web',
-        };
-      };
 
       if (nonWebIC.length !== 0) {
         nativeCID = await valist.writeFolder(nonWebIC, true, (progress: number) => {
@@ -101,6 +94,16 @@ export async function createRelease(
             };
           }
         });
+      };
+
+      if (webIC.length !== 0) {
+        webCID = await valist.writeFolder(webIC, false, (progress: number) => {
+          utils.updateLoading(`Uploading release archive for web: ${progress}%`);
+        });
+        meta.platforms.web = {
+          external_url: webCID,
+          name: 'web',
+        };
       };
 
       meta.external_url = webCID || nativeCID;
