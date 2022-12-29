@@ -162,7 +162,7 @@ const CreateReleasePage: NextPage = () => {
                   </Group>
                   <NameInput 
                     label="Display Name"
-                    placeholder={latestReleaseName}
+                    placeholder={`Previous release: ${latestReleaseName}`}
                     disabled={loading}
                     parentId={projectId}
                     message={"The following release tag will be used and cannot be changed: "}
