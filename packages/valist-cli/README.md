@@ -14,7 +14,7 @@ $ npm install -g @valist/cli
 $ valist COMMAND
 running command...
 $ valist (--version)
-@valist/cli/2.6.0 darwin-arm64 node-v16.13.0
+@valist/cli/2.7.0 darwin-arm64 node-v16.13.0
 $ valist --help [COMMAND]
 USAGE
   $ valist COMMAND
@@ -53,7 +53,7 @@ EXAMPLES
   $ valist download ipfs/go-ipfs/v0.12.2 ~/Downloads/
 ```
 
-_See code: [dist/commands/download.ts](https://github.com/valist-io/valist-js/blob/v2.6.0/dist/commands/download.ts)_
+_See code: [dist/commands/download.ts](https://github.com/valist-io/valist-js/blob/v2.7.0/dist/commands/download.ts)_
 
 ## `valist help [COMMAND]`
 
@@ -90,7 +90,7 @@ EXAMPLES
   $ valist import
 ```
 
-_See code: [dist/commands/import.ts](https://github.com/valist-io/valist-js/blob/v2.6.0/dist/commands/import.ts)_
+_See code: [dist/commands/import.ts](https://github.com/valist-io/valist-js/blob/v2.7.0/dist/commands/import.ts)_
 
 ## `valist keygen`
 
@@ -107,7 +107,7 @@ EXAMPLES
   $ valist keygen
 ```
 
-_See code: [dist/commands/keygen.ts](https://github.com/valist-io/valist-js/blob/v2.6.0/dist/commands/keygen.ts)_
+_See code: [dist/commands/keygen.ts](https://github.com/valist-io/valist-js/blob/v2.7.0/dist/commands/keygen.ts)_
 
 ## `valist publish [PACKAGE] [PATH]`
 
@@ -135,5 +135,5 @@ EXAMPLES
   $ valist publish ipfs/go-ipfs/v0.12.3 dist/
 ```
 
-_See code: [dist/commands/publish.ts](https://github.com/valist-io/valist-js/blob/v2.6.0/dist/commands/publish.ts)_
+_See code: [dist/commands/publish.ts](https://github.com/valist-io/valist-js/blob/v2.7.0/dist/commands/publish.ts)_
 <!-- commandsstop -->

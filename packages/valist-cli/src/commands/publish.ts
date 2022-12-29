@@ -108,7 +108,7 @@ export default class Publish extends Command {
     CliUx.ux.log(`successfully published ${config.account}/${config.project}/${config.release}!`);
 
     CliUx.ux.log(`view the release at:
-    https://app.valist.io/${config.account}/${config.project}/${config.release}
+    https://app.valist.io/${config.account}/${config.project}
     ${release.external_url}
     ipfs://${release.external_url.replace('https://gateway.valist.io/ipfs/', '')}
     `);
