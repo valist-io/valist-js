@@ -1,17 +1,15 @@
-import { ActionIcon, useMantineColorScheme } from '@mantine/core';
+import { useMantineColorScheme } from '@mantine/core';
 import { Sun, MoonStars } from 'tabler-icons-react';
+import { CircleButton } from '../CircleButton';
 
 export function ThemeButton() {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 
   return (
-    <ActionIcon
+    <CircleButton
       onClick={() => toggleColorScheme()}
-      title="Toggle color scheme"
-      variant="transparent"
-    >
-      { colorScheme === 'dark' && <Sun size={18} />}
-      { colorScheme === 'light' && <MoonStars size={18} />}
-    </ActionIcon>
+      label="Toggle color scheme"
+      icon={colorScheme === 'dark' ? Sun : MoonStars}
+    />
   );
 }

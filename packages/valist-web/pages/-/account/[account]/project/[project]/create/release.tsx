@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import type { FileWithPath } from 'file-selector';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { useAccount } from 'wagmi';
 import { Collapse } from '@mantine/core';
@@ -61,6 +61,7 @@ const CreateReleasePage: NextPage = () => {
   const latestReleaseName = data?.project?.releases?.[0]?.name;
 
   // form values
+  const openRef = useRef<() => void>(null);
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState<File>();
   const [files, setFiles] = useState<FileWithPath[]>([]);
@@ -139,27 +140,33 @@ const CreateReleasePage: NextPage = () => {
                 <Stack style={{ maxWidth: 784 }}>
                   <Title mt="lg">Basic Info</Title>
                   <Text color="dimmed">This is your public release info.</Text>
-                  <Title order={2}>Release Image</Title>
-                  <ImageInput 
-                    width={300}
-                    height={300}
-                    onChange={setImage} 
-                    value={image}
-                    disabled={loading}
-                  />
-                  <Title order={2}>Release Details</Title>
+                  <Group spacing={40} grow>
+                    <ImageInput 
+                      width={300}
+                      height={300}
+                      onChange={setImage} 
+                      value={image}
+                      disabled={loading}
+                      openRef={openRef}
+                    />
+                    <Stack align="flex-start">
+                      <Title order={2}>Release Image</Title>
+                      <Text>
+                        Click below to upload or drag and drop. 
+                        Formats available are SVG, PNG, JPG (max. 800x800px)
+                      </Text>
+                      <Button onClick={() => openRef?.current?.()}>
+                        Change Image
+                      </Button>
+                    </Stack>
+                  </Group>
                   <NameInput 
-                    label="Release Name (cannot be changed)"
+                    label="Display Name"
                     placeholder={latestReleaseName}
                     disabled={loading}
                     parentId={projectId}
                     required
-                    {...form.getInputProps('releaseName')}
-                  />
-                  <TextInput 
-                    label="Display Name"
-                    disabled={loading}
-                    required
+                    onSanitize={value => form.setFieldValue('releaseName', value)}
                     {...form.getInputProps('displayName')}
                   />
                   <Textarea

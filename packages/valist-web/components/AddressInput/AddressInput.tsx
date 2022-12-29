@@ -1,4 +1,5 @@
 import { AsyncInput, Button } from '@valist/ui';
+import { Group } from '@mantine/core';
 import { ethers } from 'ethers';
 import { useState, useEffect, KeyboardEvent } from 'react';
 import { useEnsAddress } from 'wagmi';
@@ -47,8 +48,9 @@ export function AddressInput(props: AddressProps) {
   };
 
   return (
-    <>
+    <Group align="end" grow>
       <AsyncInput
+        style={{ maxWidth: '100%' }}
         label={props?.label || "Add member"}
         placeholder="Address or ENS"
         value={value} 
@@ -60,9 +62,13 @@ export function AddressInput(props: AddressProps) {
         onKeyPress={submit}
         onChange={(event) => setValue(event.currentTarget.value)}
       />
-      <Button style={{ width: 150 }} onClick={(e: KeyboardEvent<HTMLElement>) => submit(e, true)}>
+      <Button
+        style={{ maxWidth: 80, height: 44 }}
+        disabled={props.disabled || isLoading || !isValid}
+        onClick={(e: KeyboardEvent<HTMLElement>) => submit(e, true)}
+      >
         Add
       </Button>
-    </>
+    </Group>
   );
 }

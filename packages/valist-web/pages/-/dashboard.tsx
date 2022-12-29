@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useAccount } from 'wagmi';
 import useSWRImmutable from 'swr/immutable';
 import * as Icon from 'tabler-icons-react';
@@ -10,7 +10,7 @@ import { Activity } from '@/components/Activity';
 import { ProjectCard } from '@/components/ProjectCard';
 import { CreateAccount } from '@/components/CreateAccount';
 import { CreateProject } from '@/components/CreateProject';
-import { AccountSelect } from '@/components/AccountSelect';
+import { AccountContext } from '@/components/AccountProvider';
 import { useDashboard } from '@/utils/dashboard';
 
 import {
@@ -49,8 +49,8 @@ const IndexPage: NextPage = () => {
   const onboarding = address ? onboardingSkips[address] : false;
   const skipOnboarding = () => setOnboardingSkips(current => ({ ...current, [`${address}`]: true }));
 
-  const [step, setStep] = useState(0);
-  const [accountName, setAccountName] = useState('');
+  const [step, setStep] = useState(3);
+  const { account: accountName } = useContext(AccountContext);
   const [infoOpened, setInfoOpened] = useState(false);
 
   const showInfo = useMediaQuery('(max-width: 1400px)', false);
@@ -96,7 +96,7 @@ const IndexPage: NextPage = () => {
         <Grid>
           <Grid.Col md={3} pr={40} mb={40}>
             <Stack align={isMobile ? 'flex-start' : 'flex-end'}>
-              <Stepper active={step} orientation="vertical">
+              <Stepper active={step} orientation="vertical" color="purple.3">
                 <Stepper.Step label="Step 1" description="Connect Wallet" />
                 <Stepper.Step label="Step 2" description="Create Account" />
                 <Stepper.Step label="Step 3" description="Create Project" />
@@ -124,11 +124,7 @@ const IndexPage: NextPage = () => {
 
   return (
     <Layout padding={0}>
-      <Group mt={40} pl={40} position="apart">
-        <AccountSelect 
-          value={accountName}
-          onChange={setAccountName}
-        />
+      <Group mt={40} position="right">
         { showInfo &&
           <InfoButton 
             opened={infoOpened}

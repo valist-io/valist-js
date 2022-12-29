@@ -36,118 +36,129 @@ const Discover: NextPage<DiscoverProps> = (props) => {
   const [offset, setOffset] = useState(12);
 
 	return (
-    <Layout padding={0} hideNavbar>
-      <div style={{ height: 500, position: 'relative' }}>
-        <Image
-          style={{ zIndex: -1 }}
-          layout="fill"
-          objectFit="cover"
-          objectPosition="center"
-          alt="Shattered Realms"
-          src="/images/discovery/shattered_realms.jpg"
-          priority
-        />
-        <Stack align="center" justify="center" style={{ height: 500 }}>
-          <Title color="white" size={96}>Shattered Realms</Title>
-          <Text color="white" size={24}>Action, Adventure, RPG</Text>
-          <NextLink href="/shatteredrealms/game">
-            <Button>View Game</Button>
-          </NextLink>
-        </Stack>
-      </div>
-      <div style={{ padding: '56px 64px' }}>
-        <Stack>
-          <Title size={32}>Featured Games</Title>
-          <Carousel
-            height={340}
-            slideGap={32}
-            slideSize={280}
-            align="start"
-            dragFree
-            loop
-          >
-            {featuredGames.map((item: any, index: number) => 
-              <Carousel.Slide key={index}>
-                <DiscoveryCard {...item} />
-              </Carousel.Slide>,
-            )}
-          </Carousel>
-        </Stack>
-        <Stack pt={100}>
-          <Title size={32}>Featured dApps</Title>
-          <Carousel
-            height={340}
-            slideGap={32}
-            slideSize={280}
-            align="start"
-            dragFree
-            loop
-          >
-            {featuredApps.map((item: any, index: number) => 
-              <Carousel.Slide key={index}>
-                <DiscoveryCard {...item} />
-              </Carousel.Slide>,
-            )}
-          </Carousel>
-        </Stack>
-        <Stack pt={100}>
-          <Title size={32}>Featured on Testnet</Title>
-          <Carousel
-            height={340}
-            slideGap={32}
-            slideSize={280}
-            align="start"
-            dragFree
-            loop
-          >
-            {featuredTestnet.map((item: any, index: number) => 
-              <Carousel.Slide key={index}>
-                <DiscoveryCard {...item} />
-              </Carousel.Slide>,
-            )}
-          </Carousel>
-        </Stack>
-        <Stack pt={100}>
-          <Title size={32}>Recently Updated</Title>
-          <SimpleGrid
-            breakpoints={[
-              { minWidth: 'sm', cols: 1, spacing: 24 },
-              { minWidth: 'md', cols: 2, spacing: 24 },
-              { minWidth: 'lg', cols: 4, spacing: 16 },
-            ]}
-          >
-            {props.recent.slice(0, 8).map((project: any, index: number) =>
-              <Metadata key={index} url={project.metaURI}>
-                {(data: any) => (
-                  <DiscoveryCard link={`/${project.account.name}/${project?.name}`} {...data} /> 
-                )}
-              </Metadata>,
-            )}
-          </SimpleGrid>
-        </Stack>
-        <Stack pt={100}>
-          <Title size={32}>Newest Apps and Games</Title>
-          <SimpleGrid
-            breakpoints={[
-              { minWidth: 'sm', cols: 1, spacing: 24 },
-              { minWidth: 'md', cols: 2, spacing: 24 },
-              { minWidth: 'lg', cols: 4, spacing: 16 },
-            ]}
-          >
-            {props.newest.slice(0, offset).map((project: any, index: number) =>
-              <Metadata key={index} url={project.metaURI}>
-                {(data: any) => (
-                  <DiscoveryCard link={`/${project.account.name}/${project?.name}`} {...data} /> 
-                )}
-              </Metadata>,
-            )}
-          </SimpleGrid>
-          <Group position="center">
-            <Button onClick={() => setOffset(offset + 12)}>
-              Load More
-            </Button>
-          </Group>
-        </Stack>
+    <Layout padding={0}>
+      <div style={{ padding: 40 }}>
+        <div 
+          style={{ 
+            height: 500,
+            borderRadius: 8,
+            position: 'relative',
+            background: 'rgba(0, 0, 0, 0.6)',
+          }}
+        >
+          <Image
+            style={{ zIndex: -1, borderRadius: 8 }}
+            layout="fill"
+            objectFit="cover"
+            objectPosition="center"
+            alt="Shattered Realms"
+            src="/images/discovery/shattered_realms.jpg"
+            priority
+          />
+          <Stack align="center" justify="center" style={{ height: 500 }}>
+            <Title color="white" size={96}>Shattered Realms</Title>
+            <Text color="white" size={24}>Action, Adventure, RPG</Text>
+            <NextLink href="/shatteredrealms/game">
+              <Button>View Game</Button>
+            </NextLink>
+          </Stack>
+        </div>
+        <div style={{ paddingTop: 44 }}>
+          <Stack>
+            <Title size={32}>Featured Games</Title>
+            <Carousel
+              height={340}
+              slideGap={32}
+              slideSize={280}
+              align="start"
+              dragFree
+              loop
+            >
+              {featuredGames.map((item: any, index: number) => 
+                <Carousel.Slide key={index}>
+                  <DiscoveryCard {...item} />
+                </Carousel.Slide>,
+              )}
+            </Carousel>
+          </Stack>
+          <Stack pt={100}>
+            <Title size={32}>Featured dApps</Title>
+            <Carousel
+              height={340}
+              slideGap={32}
+              slideSize={280}
+              align="start"
+              dragFree
+              loop
+            >
+              {featuredApps.map((item: any, index: number) => 
+                <Carousel.Slide key={index}>
+                  <DiscoveryCard {...item} />
+                </Carousel.Slide>,
+              )}
+            </Carousel>
+          </Stack>
+          <Stack pt={100}>
+            <Title size={32}>Featured on Testnet</Title>
+            <Carousel
+              height={340}
+              slideGap={32}
+              slideSize={280}
+              align="start"
+              dragFree
+              loop
+            >
+              {featuredTestnet.map((item: any, index: number) => 
+                <Carousel.Slide key={index}>
+                  <DiscoveryCard {...item} />
+                </Carousel.Slide>,
+              )}
+            </Carousel>
+          </Stack>
+          <Stack pt={100}>
+            <Title size={32}>Recently Updated</Title>
+            <SimpleGrid
+              breakpoints={[
+                { minWidth: 'sm', cols: 1, spacing: 32 },
+                { minWidth: 'md', cols: 2, spacing: 32 },
+                { minWidth: 'lg', cols: 3, spacing: 32 },
+                { minWidth: 'xl', cols: 4, spacing: 32 },
+              ]}
+            >
+              {props.recent.slice(0, 8).map((project: any, index: number) =>
+                <Metadata key={index} url={project.metaURI}>
+                  {(data: any) => (
+                    <DiscoveryCard link={`/${project.account.name}/${project?.name}`} {...data} /> 
+                  )}
+                </Metadata>,
+              )}
+            </SimpleGrid>
+          </Stack>
+          <Stack pt={100}>
+            <Title size={32}>Newest Apps and Games</Title>
+            <SimpleGrid
+              breakpoints={[
+                { minWidth: 'sm', cols: 1, spacing: 32 },
+                { minWidth: 'md', cols: 2, spacing: 32 },
+                { minWidth: 'lg', cols: 3, spacing: 32 },
+                { minWidth: 'xl', cols: 4, spacing: 32 },
+              ]}
+            >
+              {props.newest.slice(0, offset).map((project: any, index: number) =>
+                <Metadata key={index} url={project.metaURI}>
+                  {(data: any) => (
+                    <DiscoveryCard link={`/${project.account.name}/${project?.name}`} {...data} /> 
+                  )}
+                </Metadata>,
+              )}
+            </SimpleGrid>
+            <Group position="center" mt={32}>
+              <Button onClick={() => setOffset(offset + 12)}>
+                Load More
+              </Button>
+            </Group>
+          </Stack>
+        </div>
       </div>
       <div style={{ height: 584, position: 'relative' }}>
         <Image

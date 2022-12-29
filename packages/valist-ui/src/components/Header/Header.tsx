@@ -12,6 +12,7 @@ import {
 import React, { useState } from 'react';
 import * as Icon from 'tabler-icons-react';
 import useStyles from './Header.styles';
+import { CircleButton } from '../CircleButton';
 import { Logo } from '../Logo';
 
 export interface HeaderProps {
@@ -87,13 +88,11 @@ export function Header(props: HeaderProps) {
                 />
               </Group>
             </Drawer>
-            <ActionIcon
-              title="Search"
-              variant="transparent"
+            <CircleButton 
+              icon={Icon.Search}
+              label="Search"
               onClick={() => setSearchOpened(true)}
-            >
-              <Icon.Search size={18} strokeWidth={3} />
-            </ActionIcon>
+            />
             {!props.hideNavbar &&
               <Burger
                 size="sm"
