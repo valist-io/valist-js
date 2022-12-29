@@ -10,6 +10,7 @@ import * as queries from './graphql/queries';
 import { IPFSHTTPClient } from 'ipfs-http-client';
 import { sendMetaTx, sendTx } from './metatx';
 import { ImportCandidate } from 'ipfs-core-types/src/utils';
+import path from 'path';
 
 // minimal ABI for interacting with erc20 tokens
 const erc20ABI = [
@@ -69,10 +70,24 @@ export default class Client {
 		const nonWebIC: ImportCandidate[] = Object.entries(nonWebFiles)
 			.flatMap(([platform, files]) => files
 				.map(file => ({
-					path: require('path').join(platform, require('path').basename(file.name)),
+					path: path.join(platform, path.basename(file.name)),
 					content: file.stream(),
 				}),
-				));
+			));
+
+		if (nonWebIC.length > 0) {
+			nativeCID = await this.writeFolder(nonWebIC, true);
+
+			Object.keys(filesObject).forEach((platform) => {
+				if (release.platforms && filesObject[platform] && filesObject[platform].length !== 0) {
+					const fileName = path.basename((filesObject[platform][0].name)); // @TODO make this work with folders
+					release.platforms[platform as SupportedPlatform] = {
+						external_url: path.join(nativeCID, platform, fileName),
+						name: fileName,
+					};
+				}
+			});
+		}
 
 		if (webIC.length > 0) {
 			webCID = await this.writeFolder(webIC, false);
@@ -82,19 +97,6 @@ export default class Client {
 				name: 'web',
 			};
 		};
-
-		if (nonWebIC.length > 0) {
-			nativeCID = await this.writeFolder(nonWebIC, true);
-
-			Object.keys(filesObject).forEach((platform) => {
-				if (release.platforms && filesObject[platform] && filesObject[platform].length !== 0) {
-					release.platforms[platform as SupportedPlatform] = {
-						external_url: `${nativeCID}/${filesObject[platform][0].name}`,
-						name: require('path').join(platform, require('path').basename((filesObject[platform][0].name))),
-					};
-				}
-			});
-		}
 
 		release.external_url = webCID || nativeCID;
 

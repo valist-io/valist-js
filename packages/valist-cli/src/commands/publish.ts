@@ -7,8 +7,6 @@ import * as flags from '../flags';
 import { select } from '../keys';
 import HDWalletProvider from '@truffle/hdwallet-provider';
 
-const Web3HttpProvider = require('web3-providers-http'); // eslint-disable-line @typescript-eslint/no-var-requires
-
 export default class Publish extends Command {
   static provider?: Provider
 

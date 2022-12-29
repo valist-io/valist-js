@@ -37,7 +37,7 @@ export function createReadOnly(provider: Provider, options: Partial<Options>): C
 
   // @ts-expect-error
   const ipfs = createIPFS(options.ipfsHost || 'https://pin-infura.valist.io');
-  const ipfsGateway = options.ipfsGateway || 'https://ipfs.valist.io';
+  const ipfsGateway = options.ipfsGateway || 'https://gateway.valist.io';
 
   return new Client(registry, license, ipfs, ipfsGateway, subgraphUrl, provider as ethers.providers.Web3Provider, false);
 }
