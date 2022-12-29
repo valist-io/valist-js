@@ -109,13 +109,6 @@ export const featuredApps: any[] = [
     type: 'web',
   },
   {
-    image: 'https://gateway.valist.io/ipfs/bafkreidizb6xussoa4xp2hlu63expjugdr3hisk4yr36mujkm5k3obesb4',
-    name: 'Clover',
-    description: 'Clover enables DAOs to store files collectively while allowing them to chat.',
-    link: '/lucid/clover',
-    type: 'web',
-  },
-  {
     image: 'https://gateway.valist.io/ipfs/bafkreidbzttzxd5p3kvwrptoy2qvw4ypx54wvqwyl7ze2ga36er5mfrnt4',
     name: 'Right Share',
     description: 'Hassle-free Even though it\’s a Web3 Application, we hide everything that\’s no needed away from you for the best sharing experience. No wallet, no gas!',
@@ -128,13 +121,6 @@ export const featuredApps: any[] = [
     description: 'Decentralized database built on top of ceramic and cached using redis for fast response times.',
     link: '/blockchainaholic/dearwebthree',
     type: 'native',
-  },
-  {
-    image: 'https://gateway.valist.io/ipfs/bafybeiblhylduxfwxqn5ucmrjml4tnpg5rmphumln4jsedkakkzitxmd5a',
-    name: 'Pecunia',
-    description: 'Safe and Secure Cryptocurrency Estate Planning using ZK Snarks and Chainlink Keepers.',
-    link: '/pecunia/pecunia',
-    type: 'web',
   },
   {
     image: 'https://gateway.valist.io/ipfs/QmWhnyhXb1ahhsuWBRvXdpNg51KH8f2zfkJyyhmpqBvuSa',
@@ -151,13 +137,6 @@ export const featuredApps: any[] = [
     type: 'web',
   },
   {
-    image: 'https://gateway.valist.io/ipfs/bafybeib74veyjuejwcc6tt26fs4x5thhc4hwn6vpkchwxgnmiub7x7g5oa',
-    name: 'Sound Click',
-    description: 'SoundClick was created for you; the writer, the performer, the beat maker, the producer, the engineer, the record label, the publisher, the videographer, the artist, and the CREATOR.',
-    link: '/4metaverse-marcial-yahoo/sound-click',
-    type: 'web',
-  },
-  {
     image: 'https://gateway.valist.io/ipfs/bafkreiazt2xf5nbvy7vruiz3mfnbgqgbcm6ysv2quvfirgrttpv25ahrya',
     name: 'Unblock Receipts',
     description: 'UnblockReceipts gives you a receipt for your gas fees on Ethereum that you can use in expense reports.',
@@ -169,13 +148,6 @@ export const featuredApps: any[] = [
     name: 'Lens Note',
     description: 'LensNote enables you to create and share personal notes which can be reacted, collected, and mirrored.',
     link: '/blockchainaholic/lensnote',
-    type: 'web',
-  },
-  {
-    image: 'https://pbs.twimg.com/profile_images/1499209010637152259/5ZYfm1jB_400x400.png',
-    name: 'HashChat',
-    description: 'An encrypted, cross-chain messaging platform built on web3 wallets.',
-    link: '/max/hashchat',
     type: 'web',
   },
   {

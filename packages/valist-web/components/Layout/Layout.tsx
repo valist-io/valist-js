@@ -8,7 +8,6 @@ import { useAccount } from 'wagmi';
 import { AccountSelect } from '@/components/AccountSelect';
 
 import { 
-  Anchor,
   Center,
   Divider,
   Group,
