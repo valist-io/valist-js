@@ -13,7 +13,7 @@ const Registry = new ethers.ContractFactory(contracts.registryABI, contracts.reg
 const License = new ethers.ContractFactory(contracts.licenseABI, contracts.licenseBytecode, signer);
 
 describe('publish', () => {
-  it('should create a release', async function() {
+  it('should create a release', async function () {
     const registry = await Registry.deploy(ethers.constants.AddressZero);
     await registry.deployed();
 
@@ -45,12 +45,16 @@ describe('publish', () => {
     await createProjectTx.wait();
 
     Publish.provider = provider;
-    await Publish.run([
-      'valist/cli/v0.0.1', 
-      'README.md',
-      '--private-key=4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d',
-      '--no-meta-tx'
-    ]);
+    try {
+      await Publish.run([
+        'valist/cli/v0.0.1',
+        'README.md',
+        '--private-key=4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d',
+        '--no-meta-tx'
+      ]);
+    } catch (e: any) {
+      if (e.oclif.exit !== 0) throw e;
+    }
 
     const releaseExists = await valist.releaseExists(releaseID);
     expect(releaseExists).to.be.true;

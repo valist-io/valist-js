@@ -88,6 +88,8 @@ const CreateReleasePage: NextPage = () => {
 
     createRelease(
       address,
+      accountName,
+      projectName,
       projectId,
       image,
       filesObject,

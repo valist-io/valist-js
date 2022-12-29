@@ -41,8 +41,8 @@ export const schema = z.object({
 export async function updateProject(
   address: string | undefined,
   projectId: string,
-  image: File | undefined,
-  mainCapsule: File | undefined,
+  image: File | string,
+  mainCapsule: File | string,
   gallery: File[],
   repository: string,
   values: FormValues,
@@ -73,14 +73,18 @@ export async function updateProject(
 
     utils.showLoading('Uploading files');
 
-    if (image) {
-      meta.image = await utils.writeFile(image, valist, (progress: number) => {
+    if (typeof image === 'string') {
+      meta.image = image;
+    } else {
+      meta.image = await valist.writeFile(image, false, (progress: number) => {
         utils.updateLoading(`Uploading ${image.name}: ${progress}%`);
       });
     };
 
-    if (mainCapsule) {
-      meta.main_capsule = await utils.writeFile(mainCapsule, valist, (progress: number) => {
+    if (typeof mainCapsule === 'string') {
+      meta.main_capsule = mainCapsule;
+    } else {
+      meta.main_capsule = await valist.writeFile(mainCapsule, false, (progress: number) => {
         utils.updateLoading(`Uploading ${mainCapsule.name}: ${progress}%`);
       });
     };
@@ -91,7 +95,7 @@ export async function updateProject(
     };
 
     for (const item of gallery) {
-      const src = await utils.writeFile(item, valist, (progress: number) => {  
+      const src = await valist.writeFile(item, false, (progress: number) => {  
         utils.updateLoading(`Uploading ${item.name}: ${progress}%`);
       });
       meta.gallery?.push({ name: '', type: 'image', src });

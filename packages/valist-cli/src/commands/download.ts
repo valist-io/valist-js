@@ -48,13 +48,14 @@ export default class Download extends Command {
 
     const provider = await this.provider(flags.network);
     const valist = await create(provider, { metaTx: false });
-    const ipfs = createIPFS({ url: 'https://pin.valist.io' });
+    // @ts-expect-error weird IPFS types
+    const ipfs = createIPFS('https://pin-infura.valist.io');
 
-    const {chainId} = await provider.getNetwork();
+    const { chainId } = await provider.getNetwork();
     const accountID = valist.generateID(chainId, parts[0]);
     const projectID = valist.generateID(accountID, parts[1]);
-    const releaseID = parts.length === 2 
-      ? await valist.getLatestReleaseID(projectID) 
+    const releaseID = parts.length === 2
+      ? await valist.getLatestReleaseID(projectID)
       : valist.generateID(projectID, parts[2]);
 
     CliUx.ux.action.start('fetching package metadata');

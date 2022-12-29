@@ -151,8 +151,8 @@ const Project: NextPage = () => {
     updateProject(
       address,
       projectId,
-      image as File,
-      mainCapsule as File,
+      image,
+      mainCapsule,
       gallery,
       repo,
       values,
