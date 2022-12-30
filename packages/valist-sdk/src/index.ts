@@ -1,11 +1,10 @@
-import { ethers } from 'ethers';
+import { ethers, providers } from 'ethers';
 import { create as createIPFS } from 'ipfs-http-client';
 import Client from './client';
 import * as contracts from './contracts';
 import * as graphql from './graphql';
 
-// providers accepted by the client constructor helpers
-export type Provider = ethers.providers.JsonRpcProvider | ethers.providers.Web3Provider;
+export type Provider = providers.Provider | ethers.Signer;
 
 // additional options for configuring the client
 export interface Options {
@@ -25,7 +24,7 @@ export interface Options {
  * @param provider Provider to use for transactions
  * @param options Additional client options
  */
-export function createReadOnly(provider: Provider, options: Partial<Options>): Client {
+export function createReadOnly(provider: providers.JsonRpcProvider, options: Partial<Options>): Client {
   const chainId = options.chainId || 137;
 
   const subgraphUrl = options.subgraphUrl || graphql.getSubgraphUrl(chainId);
@@ -39,16 +38,32 @@ export function createReadOnly(provider: Provider, options: Partial<Options>): C
   const ipfs = createIPFS(options.ipfsHost || 'https://pin-infura.valist.io');
   const ipfsGateway = options.ipfsGateway || 'https://gateway.valist.io';
 
-  return new Client(registry, license, ipfs, ipfsGateway, subgraphUrl, provider as ethers.providers.Web3Provider, false);
+  return new Client(registry, license, ipfs, ipfsGateway, subgraphUrl, undefined, false);
 }
 
 /**
  * Create a Valist client using the given JSON RPC provider.
  * 
- * @param provider Provider to use for transactions
+ * @param providerOrSigner Provider or signer to use for transactions
  * @param options Additional client options
  */
-export async function create(provider: Provider, options: Partial<Options>): Promise<Client> {
+export async function create(providerOrSigner: Provider, options: Partial<Options>): Promise<Client> {
+  let signer: ethers.Signer | undefined;
+  let provider: providers.Provider | undefined;
+
+  // coerce the signer and provider out of the merged types
+  if (ethers.Signer.isSigner(providerOrSigner)) {
+    signer = providerOrSigner as ethers.Signer;
+    provider = signer.provider;
+  } else {
+    provider = providerOrSigner as providers.Web3Provider;
+    signer = (provider as providers.Web3Provider).getSigner();
+  }
+
+  if (!provider) {
+    throw new Error('invalid provider');
+  }
+
   if (!options.chainId) {
     const network = await provider.getNetwork();
     options.chainId = network.chainId;
@@ -64,7 +79,8 @@ export async function create(provider: Provider, options: Partial<Options>): Pro
   // @ts-expect-error
   const ipfs = createIPFS(options.ipfsHost || 'https://pin-infura.valist.io');
   const ipfsGateway = options.ipfsGateway || 'https://gateway.valist.io';
-  return new Client(registry, license, ipfs, ipfsGateway, subgraphUrl, provider as ethers.providers.Web3Provider, options.metaTx);
+
+  return new Client(registry, license, ipfs, ipfsGateway, subgraphUrl, signer, options.metaTx);
 }
 
 export * from './types';

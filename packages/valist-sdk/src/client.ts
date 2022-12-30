@@ -24,7 +24,7 @@ export default class Client {
 		private ipfs: IPFSHTTPClient,
 		private ipfsGateway: string,
 		private subgraphUrl: string,
-		private provider: ethers.providers.Web3Provider,
+		private signer?: ethers.Signer,
 		private metaTx: boolean = true,
 	) { }
 
@@ -423,19 +423,21 @@ export default class Client {
 	}
 
 	async sendTx(unsigned: PopulatedTransaction): Promise<ethers.providers.TransactionResponse> {
+		if (!this.signer) throw new Error('valist client is read-only');
+
 		const txReq = {
-			from: await this.provider.getSigner().getAddress(),
+			from: await this.signer.getAddress(),
 			...unsigned,
 		};
 
 		let hash = this.metaTx
-			? await sendMetaTx(this.provider, txReq)
-			: await sendTx(this.provider, txReq);
+			? await sendMetaTx(this.signer, txReq)
+			: await sendTx(this.signer, txReq);
 
 		let tx;
 
 		do {
-			tx = await this.provider.getTransaction(hash);
+			tx = await this.registry.provider.getTransaction(hash);
 		} while (tx == null);
 
 		return tx;

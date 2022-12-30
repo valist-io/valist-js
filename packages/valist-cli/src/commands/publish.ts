@@ -1,14 +1,13 @@
 import { Command, CliUx } from '@oclif/core';
 import { ethers } from 'ethers';
-import { create, Provider, ReleaseConfig } from '@valist/sdk';
+import { create, ReleaseConfig } from '@valist/sdk';
 import YAML from 'yaml';
 import * as fs from 'node:fs';
 import * as flags from '../flags';
 import { select } from '../keys';
-import HDWalletProvider from '@truffle/hdwallet-provider';
 
 export default class Publish extends Command {
-  static provider?: Provider
+  static provider?: ethers.Signer;
 
   static description = 'Publish a release'
 
@@ -34,15 +33,11 @@ export default class Publish extends Command {
     },
   ]
 
-  async provider(network: string, privateKey: string): Promise<Provider> {
+  async provider(network: string, privateKey: string): Promise<ethers.Signer> {
     if (Publish.provider) return Publish.provider;
 
-    const wallet = new HDWalletProvider({
-      privateKeys: [privateKey],
-      providerOrUrl: network
-    });
-
-    return new ethers.providers.Web3Provider(wallet as any);
+    const provider = new ethers.providers.JsonRpcProvider(network);
+    return new ethers.Wallet(privateKey, provider);
   }
 
   public async run(): Promise<void> {
@@ -70,9 +65,9 @@ export default class Publish extends Command {
     const provider = await this.provider(flags.network, privateKey);
     const valist = await create(provider, { metaTx });
 
-    const address = await provider.getSigner().getAddress();
+    const address = await provider.getAddress();
+    const chainId = await provider.getChainId();
 
-    const { chainId } = await provider.getNetwork();
     const accountID = valist.generateID(chainId, config.account);
     const projectID = valist.generateID(accountID, config.project);
     const releaseID = valist.generateID(projectID, config.release);

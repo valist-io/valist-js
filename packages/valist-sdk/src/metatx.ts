@@ -1,6 +1,9 @@
 // adapted from OZ Defender Workshop https://github.com/OpenZeppelin/workshops/blob/9402515b42efe1b4b3c5d8621fc78b55e7078386/25-defender-metatx-api/src/signer.js
 import { ethers, PopulatedTransaction } from "ethers";
+import { TypedDataSigner } from "@ethersproject/abstract-signer";
 import axios from "axios";
+
+type Signer = ethers.Signer & TypedDataSigner;
 
 const ForwarderABI = [{"inputs":[{"components":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"uint256","name":"gas","type":"uint256"},{"internalType":"uint256","name":"nonce","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"}],"internalType":"struct MinimalForwarder.ForwardRequest","name":"req","type":"tuple"},{"internalType":"bytes","name":"signature","type":"bytes"}],"name":"execute","outputs":[{"internalType":"bool","name":"","type":"bool"},{"internalType":"bytes","name":"","type":"bytes"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"}],"name":"getNonce","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"components":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"uint256","name":"gas","type":"uint256"},{"internalType":"uint256","name":"nonce","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"}],"internalType":"struct MinimalForwarder.ForwardRequest","name":"req","type":"tuple"},{"internalType":"bytes","name":"signature","type":"bytes"}],"name":"verify","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}];
 
@@ -39,7 +42,6 @@ const getAutotaskURL = (chainId: number) => {
 export const getMetaTxTypeData = (chainId: number, verifyingContract: string) => {
   return {
     types: {
-      EIP712Domain,
       ForwardRequest,
     },
     domain: {
@@ -50,14 +52,6 @@ export const getMetaTxTypeData = (chainId: number, verifyingContract: string) =>
     },
     primaryType: 'ForwardRequest',
   }
-};
-
-export const signTypedData = async (signer: any, from: string, data: any) => {
-  const isHardhat = data.domain.chainId == 31337;
-  const [method, argData] = isHardhat
-    ? ['eth_signTypedData', data]
-    : ['eth_signTypedData_v4', JSON.stringify(data)]
-  return await signer.send(method, [from, argData]);
 };
 
 export const buildRequest = async (forwarder: any, input: any) => {
@@ -72,33 +66,33 @@ export const buildTypedData = async (forwarder: any, request: any) => {
   return { ...typeData, message: request };
 };
 
-export const signMetaTxRequest = async (signer: ethers.providers.Web3Provider, forwarder: ethers.Contract, input: PopulatedTransaction) => {
+export const signMetaTxRequest = async (signer: Signer, forwarder: ethers.Contract, input: PopulatedTransaction) => {
   const request = await buildRequest(forwarder, input);
-  const toSign = await buildTypedData(forwarder, request);
-  const signature = await signTypedData(signer, input.from as string, toSign);
+  const { domain, types, message } = await buildTypedData(forwarder, request);
+  const signature = await signer._signTypedData(domain, types, message);
 
   return { signature, request };
 };
 
-export const sendTx = async (provider: ethers.providers.Web3Provider, unsigned: PopulatedTransaction): Promise<string> => {
-  unsigned.gasLimit = await provider.estimateGas(unsigned);
-  unsigned.gasPrice = await provider.getGasPrice();
+export const sendTx = async (signer: ethers.Signer, unsigned: PopulatedTransaction): Promise<string> => {
+  unsigned.gasLimit = await signer.estimateGas(unsigned);
+  unsigned.gasPrice = await signer.getGasPrice();
 
   const gasLimit = unsigned.gasLimit?.toHexString();
   const gasPrice = unsigned.gasPrice?.toHexString();
   const value = unsigned.value ? unsigned.value.toHexString() : '0x0';
 
-  const txResp = await provider.send('eth_sendTransaction', [{ ...unsigned, gasLimit, gasPrice, value }]);
+  const { hash } = await signer.sendTransaction({ ...unsigned, gasLimit, gasPrice, value });
 
-  return txResp;
+  return hash;
 };
 
-export const sendMetaTx = async (provider: ethers.providers.Web3Provider, unsigned: PopulatedTransaction) => {
-  const chainId = (await provider.getNetwork()).chainId;
+export const sendMetaTx = async (signer: ethers.Signer, unsigned: PopulatedTransaction) => {
+  const chainId = await signer.getChainId();
   const forwarderAddress = getForwarderContract(chainId);
-  const forwarder = new ethers.Contract(forwarderAddress, ForwarderABI, provider);
+  const forwarder = new ethers.Contract(forwarderAddress, ForwarderABI, signer);
 
-  const request = await signMetaTxRequest(provider, forwarder, unsigned);
+  const request = await signMetaTxRequest(signer as Signer, forwarder, unsigned);
 
   const req = await axios.post(getAutotaskURL(chainId), JSON.stringify(request), { headers: { 'Content-Type': 'application/json' } });
 
