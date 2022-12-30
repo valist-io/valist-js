@@ -1,5 +1,5 @@
 import { Command, CliUx } from '@oclif/core';
-import { create, Provider } from '@valist/sdk';
+import { create } from '@valist/sdk';
 import { create as createIPFS } from 'ipfs-http-client';
 import { ethers } from 'ethers';
 import * as flags from '../flags';
@@ -7,7 +7,7 @@ import * as path from 'node:path';
 import * as fs from 'node:fs';
 
 export default class Download extends Command {
-  static provider?: Provider
+  static provider?: ethers.providers.Provider;
 
   static description = 'Download a package.'
 
@@ -33,7 +33,7 @@ export default class Download extends Command {
     'network': flags.network,
   }
 
-  async provider(network: string): Promise<Provider> {
+  async provider(network: string): Promise<ethers.providers.Provider> {
     if (Download.provider) return Download.provider;
     return new ethers.providers.JsonRpcProvider(network);
   }

@@ -46,7 +46,7 @@ export function ImageInput(props: ImageInputProps) {
     <AspectRatio 
       ref={ref} 
       ratio={props.width / props.height} 
-      style={{ maxWidth: props.width }}
+      style={{ width: props.width, height: props.height }}
     >
       <Dropzone
         style={{ padding: 0, border: '2px dashed #ced4da' }}

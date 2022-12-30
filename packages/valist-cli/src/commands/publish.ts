@@ -1,15 +1,13 @@
 import { Command, CliUx } from '@oclif/core';
 import { ethers } from 'ethers';
-import { create, Provider, ReleaseConfig } from '@valist/sdk';
+import { create, ReleaseConfig } from '@valist/sdk';
 import YAML from 'yaml';
 import * as fs from 'node:fs';
 import * as flags from '../flags';
 import { select } from '../keys';
 
-const Web3HttpProvider = require('web3-providers-http'); // eslint-disable-line @typescript-eslint/no-var-requires
-
 export default class Publish extends Command {
-  static provider?: Provider
+  static provider?: ethers.Signer;
 
   static description = 'Publish a release'
 
@@ -35,10 +33,11 @@ export default class Publish extends Command {
     },
   ]
 
-  async provider(network: string): Promise<Provider> {
+  async provider(network: string, privateKey: string): Promise<ethers.Signer> {
     if (Publish.provider) return Publish.provider;
-    const provider = new Web3HttpProvider(network);
-    return new ethers.providers.Web3Provider(provider);
+
+    const provider = new ethers.providers.JsonRpcProvider(network);
+    return new ethers.Wallet(privateKey, provider);
   }
 
   public async run(): Promise<void> {
@@ -63,17 +62,18 @@ export default class Publish extends Command {
     const privateKey = flags['private-key'] || await select();
     const metaTx = flags['meta-tx'];
 
-    const provider = await this.provider(flags.network);
-    const wallet = new ethers.Wallet(privateKey);
-    const valist = await create(provider, { metaTx, wallet });
+    const provider = await this.provider(flags.network, privateKey);
+    const valist = await create(provider, { metaTx });
 
-    const { chainId } = await provider.getNetwork();
+    const address = await provider.getAddress();
+    const chainId = await provider.getChainId();
+
     const accountID = valist.generateID(chainId, config.account);
     const projectID = valist.generateID(accountID, config.project);
     const releaseID = valist.generateID(projectID, config.release);
 
-    const isAccountMember = await valist.isAccountMember(accountID, wallet.address);
-    const isProjectMember = await valist.isProjectMember(projectID, wallet.address);
+    const isAccountMember = await valist.isAccountMember(accountID, address);
+    const isProjectMember = await valist.isProjectMember(projectID, address);
 
     if (!(isAccountMember || isProjectMember)) {
       this.error('user is not an account or project member');
@@ -101,9 +101,11 @@ export default class Publish extends Command {
     CliUx.ux.log(`successfully published ${config.account}/${config.project}/${config.release}!`);
 
     CliUx.ux.log(`view the release at:
-    https://app.valist.io/${config.account}/${config.project}/${config.release}
+    https://app.valist.io/${config.account}/${config.project}
     ${release.external_url}
     ipfs://${release.external_url.replace('https://gateway.valist.io/ipfs/', '')}
     `);
+    
+    this.exit(0);
   }
 }

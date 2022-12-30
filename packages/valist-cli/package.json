@@ -1,6 +1,6 @@
 {
   "name": "@valist/cli",
-  "version": "2.6.0",
+  "version": "2.7.1",
   "description": "Valist CLI",
   "author": "Valist, Inc.",
   "bin": {
@@ -25,7 +25,6 @@
     "ipfs-http-client": "^56.0.3",
     "ipfs-utils": "^9.0.7",
     "keytar": "^7.9.0",
-    "web3-providers-http": "^1.7.3",
     "yaml": "^2.1.0"
   },
   "devDependencies": {

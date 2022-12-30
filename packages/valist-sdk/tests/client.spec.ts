@@ -11,6 +11,8 @@ import {
 	generateID,
 } from '../src/index';
 import * as contracts from '../src/contracts';
+import { FileObject, getFilesFromPath } from 'files-from-path';
+import { ImportCandidate } from 'ipfs-core-types/src/utils';
 
 const ganache = require("ganache");
 const provider = new ethers.providers.Web3Provider(ganache.provider());
@@ -22,9 +24,9 @@ const License = new ethers.ContractFactory(contracts.licenseABI, contracts.licen
 async function createClient(registry: ethers.Contract, license: ethers.Contract) {
 	const subgraphAddress = 'https://api.thegraph.com/subgraphs/name/valist-io/valistmumbai';
 	const ipfsGateway = 'https://gateway.valist.io';
-	// @ts-expect-error
+	// @ts-expect-error weird IPFS JS types
 	const ipfs = createIPFS('https://pin-infura.valist.io');
-	const valist = new Client(registry, license, ipfs, ipfsGateway, subgraphAddress);
+	const valist = new Client(registry, license, ipfs, ipfsGateway, subgraphAddress, provider.getSigner(), false);
 	return valist;
 }
 
@@ -47,10 +49,58 @@ describe('valist client', async function () {
 		address = await signer.getAddress();
 	});
 
-	describe('list data', async () => {
-		const address = await signer.getAddress();
-		const members = [address];
+	describe('valist ipfs pinning', async function () {
+		let nestedFiles: ImportCandidate[];
+		let singleFile: FileObject[];
+		let multipleFiles: ImportCandidate[];
 
+		before(async () => {
+			nestedFiles = (await getFilesFromPath('./data/data')).map(file => ({
+				content: file.stream(),
+				path: file.name,
+			}));
+
+			singleFile = await getFilesFromPath('./data/data3');
+
+			multipleFiles = (await getFilesFromPath('./data/data/data2')).map(file => ({
+				content: file.stream(),
+				path: file.name,
+			}));
+		});
+
+		describe('valist (writeFile)', async function () {
+			it('should write file', async () => {
+				const res = await valist.writeFile(singleFile[0], false);
+				expect(res).to.equal('https://gateway.valist.io/ipfs/bafkreifnd4m4zim2zjs6vmkyxfca5dsk4sxrzc7cfvg6djg32k46sfj2im');
+			});
+
+			it('should write file and wrap with directory', async () => {
+				const res = await valist.writeFile(singleFile[0], true);
+				expect(res).to.equal('https://gateway.valist.io/ipfs/bafybeif7pyzm6q7jwja2pcrikkwk47pzuru5ty7xs3ccocu5sjmyqerqzu');
+			});
+		});
+
+		describe('valist (writeJSON)', async function () {
+			it('should write json', async () => {
+				const res = await valist.writeJSON({ test: 'hello world' });
+				expect(res).to.equal('https://gateway.valist.io/ipfs/bafkreic77yghmzpvua4o5omh6xrxrlnxfbr4chji6umy2sl42vfouzmgse');
+			});
+		});
+
+		describe('valist (writeFolder)', async function () {
+			it('should write multiple files to folder', async () => {
+				const res = await valist.writeFolder(multipleFiles);
+				expect(res).to.equal('https://gateway.valist.io/ipfs/bafybeia6iljxfei53gy5s5wxas2li62kviynguvwfnox3nhstyotwaysk4');
+			});
+
+			it('should write nested files to folder', async () => {
+				const res = await valist.writeFolder(nestedFiles);
+				expect(res).to.equal('https://gateway.valist.io/ipfs/bafybeiedqri5gw24cr6jxnznfgmxqrra3l372cur4lghn25tmqh4tpcose');
+			});
+		});
+	});
+
+	describe('valist (createAccount)', async function () {
 		const account = new AccountMeta();
 		account.image = 'https://gateway.valist.io/ipfs/Qm456';
 		account.name = 'valist';
@@ -58,34 +108,38 @@ describe('valist client', async function () {
 		account.external_url = 'https://valist.io';
 
 		it('should create account', async () => {
-			const createAccountTx = await valist.createAccount('valist', account, members);
+			const createAccountTx = await valist.createAccount('valist', account, [address]);
 			await createAccountTx.wait();
 
 			const otherAccount = await valist.getAccountMeta(accountID);
 			expect(otherAccount).to.deep.equal(account);
 		});
+	});
+
+	describe('valist (createProject)', async function () {
+		const project = new ProjectMeta();
+		project.image = 'https://gateway.valist.io/ipfs/Qm456';
+		project.name = 'sdk';
+		project.description = 'Valist Typescript SDK';
+		project.external_url = 'https://github.com/valist-io/valist-js';
 
 		it('should create project', async () => {
-			const project = new ProjectMeta();
-			project.image = 'https://gateway.valist.io/ipfs/Qm456';
-			project.name = 'sdk';
-			project.description = 'Valist Typescript SDK';
-			project.external_url = 'https://github.com/valist-io/valist-js';
-
-			const createProjectTx = await valist.createProject(accountID, 'sdk', project, members);
+			const createProjectTx = await valist.createProject(accountID, 'sdk', project, [address]);
 			await createProjectTx.wait();
 
 			const otherProject = await valist.getProjectMeta(projectID);
 			expect(otherProject).to.deep.equal(project);
 		});
+	});
+
+	describe('valist (publishRelease)', async function () {
+		const release = new ReleaseMeta();
+		release.image = 'https://gateway.valist.io/ipfs/Qm456';
+		release.name = 'sdk@v0.5.0';
+		release.description = 'Release v0.5.0';
+		release.external_url = 'https://gateway.valist.io/ipfs/Qm123';
 
 		it('should publish release', async () => {
-			const release = new ReleaseMeta();
-			release.image = 'https://gateway.valist.io/ipfs/Qm456';
-			release.name = 'sdk@v0.5.0';
-			release.description = 'Release v0.5.0';
-			release.external_url = 'https://gateway.valist.io/ipfs/Qm123';
-
 			const createReleaseTx = await valist.createRelease(projectID, 'v0.5.0', release);
 			await createReleaseTx.wait();
 
@@ -93,6 +147,7 @@ describe('valist client', async function () {
 			expect(otherRelease).to.deep.equal(release);
 		});
 	});
+});
 
 	// describe('list data', async () => {
 	// 	it('list', async () => {
@@ -104,7 +159,6 @@ describe('valist client', async function () {
 
 	// 		const releases = await valist.listReleases();
 	// 		expect(releases).to.be.an('array');
-
 	// 		const accountProjects = await valist.listAccountProjects('0x936b6ef8e862c038230e8b4d88e776d01dce42e7f15affd8d80c58eedfc4edf9');
 	// 		expect(accountProjects).to.be.an('array');
 
@@ -118,22 +172,20 @@ describe('valist client', async function () {
 	// 		expect(userProjects).to.be.an('array');
 	// 	});
 	// });
-});
 
-// describe('valist uploadRelease', async function () {
-// 	const valist = await create(provider, { metaTx: false });
-// 	const accountName = 'testAccount';
-// 	const projectName = 'testProject';
-// 	const releaseName = '0.0.1';
+	// describe('valist uploadRelease', async function () {
+	// 	const valist = await create(provider, { metaTx: false });
+	// 	const accountName = 'testAccount';
+	// 	const projectName = 'testProject';
+	// 	const releaseName = '0.0.1';
 
-// 	const { chainId } = await provider.getNetwork();
-// 	const accountID = valist.generateID(chainId, accountName);
-// 	const projectID = valist.generateID(accountID, projectName);
-// 	const releaseID = valist.generateID(projectID, releaseName);
+	// 	const { chainId } = await provider.getNetwork();
+	// 	const accountID = valist.generateID(chainId, accountName);
+	// 	const projectID = valist.generateID(accountID, projectName);
+	// 	const releaseID = valist.generateID(projectID, releaseName);
 
-// 	it('should uploadRelease', async () => {
-// 		let config = new ReleaseConfig(accountName, projectName, releaseName);
-// 		const release = await valist.uploadRelease(config);
-// 		const tx = await valist.createRelease(projectID, config.release, release);
-// 	});
-// });
+	// 	it('should uploadRelease', async () => {
+	// 		let config = new ReleaseConfig(accountName, projectName, releaseName);
+	// 		const release = await valist.uploadRelease(config);
+	// 		const tx = await valist.createRelease(projectID, config.release, release);
+	// 	});

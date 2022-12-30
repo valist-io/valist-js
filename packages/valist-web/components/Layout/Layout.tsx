@@ -1,20 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useMediaQuery } from '@mantine/hooks';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import * as Icons from 'tabler-icons-react';
-import { NextLink } from '@mantine/next';
+import { useAccount } from 'wagmi';
+import { AccountSelect } from '@/components/AccountSelect';
 
 import { 
-  ActionIcon,
-  Anchor,
   Center,
+  Divider,
   Group,
+  Menu,
+  useMantineTheme,
 } from '@mantine/core';
 
 import { 
   AppShell,
+  CircleButton,
   Footer,
   Navbar,
   Header,
@@ -32,9 +35,36 @@ export interface LayoutProps {
 export function Layout(props: LayoutProps) {
   const router = useRouter();
   const [opened, setOpened] = useState(false);
+  
+  const { isConnected } = useAccount();
+  const [connected, setConnected] = useState(true);
 
+  // fix server side hydration
+  useEffect(() => {
+    setConnected(isConnected);
+  }, [isConnected]);
+
+  const theme = useMantineTheme();
   const isMobile = useMediaQuery('(max-width: 768px)', false);
   const hideNavbar = !isMobile && props.hideNavbar;
+
+  const externalLinks = [
+    { 
+      label: 'Docs',
+      href: 'https://docs.valist.io',
+      icon: Icons.Notebook,
+    },
+    { 
+      label: 'Report a bug',
+      href: 'https://github.com/valist-io/valist-js/issues/new/choose',
+      icon: Icons.Bug,
+    },
+    { 
+      label: 'Have a complaint?',
+      href: 'https://valist.io/discord',
+      icon: Icons.MessageReport,
+    },
+  ];
 
   return (
     <AppShell
@@ -48,72 +78,90 @@ export function Layout(props: LayoutProps) {
           onSearch={(value: string) => router.push(`/-/search/${value}`)}
         >
           <ThemeButton />
-          <ActionIcon component={NextLink} href="/-/gas" variant="transparent">
-            <Icons.GasStation size={18} />
-          </ActionIcon>
-          <Anchor target="_blank" href="https://docs.valist.io">Docs</Anchor>
-          {(router.asPath === "/") && 
-            <Anchor href={'/-/dashboard'}>
-              Dashboard
-            </Anchor>
-          }
+          <Menu width={200} position="bottom" withArrow>
+            <Menu.Target>
+              <CircleButton 
+                label="Need help?"
+                icon={Icons.QuestionMark}
+              />
+            </Menu.Target>   
+            <Menu.Dropdown>
+              {externalLinks.map((link, index) =>
+                <Menu.Item
+                  key={index}
+                  component="a"
+                  target="_blank"
+                  icon={<link.icon size={14} />}
+                  href={link.href}
+                >
+                  {link.label}
+                </Menu.Item>,
+              )}
+            </Menu.Dropdown>         
+          </Menu>
           <ConnectButton chainStatus="icon" showBalance={false} />
         </Header>
       }
       navbar={
         <Navbar opened={opened}>
-          <Navbar.Section mt={40} grow>
-          <Navbar.Link 
-            icon={Icons.World} 
-            text='Discover'
-            href='/'
-          />
-          <Navbar.Link 
-            icon={Icons.Command} 
-            text='Dashboard'
-            href='/-/dashboard'
-            active={router.asPath === '/-/dashboard'} 
-          />
-          {isMobile &&
+          <Navbar.Section mt={24} grow>
+            { connected &&
+              <div style={{ padding: '0 32px' }}>
+                <AccountSelect />
+                <Divider 
+                  color={
+                    theme.colorScheme === 'dark'
+                      ? theme.colors.gray[6]
+                      : theme.colors.gray[1]
+                  }
+                  mt={16}
+                  mb={8} 
+                />
+              </div>
+            }
+            <Navbar.Link 
+              icon={Icons.World} 
+              text='Discover'
+              href='/'
+              active={router.asPath === '/'}
+            />
+            <Navbar.Link 
+              icon={Icons.Command} 
+              text='Dashboard'
+              href='/-/dashboard'
+              active={router.asPath === '/-/dashboard'}
+            />
+            { connected &&
               <>
                 <Navbar.Link 
-                  icon={Icons.Settings} 
-                  text="Settings"
-                  href="/-/settings"
-                  active={router.asPath === '/-/settings'} 
+                  icon={Icons.Users} 
+                  text="Members"
+                  href={`/-/members`}
+                  active={router.asPath === `/-/members`} 
                 />
                 <Navbar.Link 
-                  icon={Icons.GasStation} 
-                  text="Gas Tank"
-                  href="/-/gas"
-                  active={router.asPath === '/-/gas'} 
+                  icon={Icons.Hourglass} 
+                  text="Activity"
+                  href="/-/activity"
+                  active={router.asPath === '/-/activity'} 
                 />
-                <Navbar.Link
-                  icon={Icons.Notebook} 
-                  text="Docs"
-                  href="https://docs.valist.io"
-                  target="_blank"
+                <Navbar.Link 
+                  icon={Icons.Apps} 
+                  text="Library"
+                  href={`/-/library`}
+                  active={router.asPath === `/-/library`} 
                 />
               </>
             }
-            <Navbar.Link 
-              icon={Icons.Users} 
-              text="Members"
-              href={`/-/members`}
-              active={router.asPath === `/-/members`} 
-            />
-            <Navbar.Link 
-              icon={Icons.Hourglass} 
-              text="Activity"
-              href="/-/activity"
-              active={router.asPath === '/-/activity'} 
-            />
-            <Navbar.Link 
-              icon={Icons.Apps} 
-              text="Library"
-              href={`/-/library`}
-              active={router.asPath === `/-/library`} 
-            />
+            {isMobile && externalLinks.map((link, index) => 
+              <Navbar.Link
+                key={index}
+                icon={link.icon} 
+                text={link.label}
+                href={link.href}
+                target="_blank"
+              />,
+            )}
           </Navbar.Section>
           <Navbar.Section px={30} py="md">
             <div style={{ display: 'flex', gap: 30 }}>

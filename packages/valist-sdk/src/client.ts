@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { BigNumber, ethers } from 'ethers';
+import { BigNumber, ethers, PopulatedTransaction } from 'ethers';
 import { ContractTransaction } from '@ethersproject/contracts';
 import { getFilesFromPath } from './utils';
 
@@ -8,6 +8,9 @@ import { fetchGraphQL, Account, Project, Release } from './graphql';
 import { generateID, getAccountID, getProjectID, getReleaseID } from './utils';
 import * as queries from './graphql/queries';
 import { IPFSHTTPClient } from 'ipfs-http-client';
+import { sendMetaTx, sendTx } from './metatx';
+import { ImportCandidate } from 'ipfs-core-types/src/utils';
+import path from 'path';
 
 // minimal ABI for interacting with erc20 tokens
 const erc20ABI = [
@@ -20,17 +23,21 @@ export default class Client {
 		private license: ethers.Contract,
 		private ipfs: IPFSHTTPClient,
 		private ipfsGateway: string,
-		private subgraphUrl: string
+		private subgraphUrl: string,
+		private signer?: ethers.Signer,
+		private metaTx: boolean = true,
 	) { }
 
 	async createAccount(name: string, meta: AccountMeta, members: string[]): Promise<ContractTransaction> {
 		const metaURI = await this.writeJSON(meta);
-		return await this.registry.createAccount(name, metaURI, members);
+		const unsigned = await this.registry.populateTransaction.createAccount(name, metaURI, members);
+		return await this.sendTx(unsigned);
 	}
 
 	async createProject(accountID: ethers.BigNumberish, name: string, meta: ProjectMeta, members: string[]): Promise<ContractTransaction> {
 		const metaURI = await this.writeJSON(meta);
-		return await this.registry.createProject(accountID, name, metaURI, members);
+		const unsigned = await this.registry.populateTransaction.createProject(accountID, name, metaURI, members);
+		return await this.sendTx(unsigned);
 	}
 
 	async uploadRelease(config: ReleaseConfig): Promise<ReleaseMeta> {
@@ -43,10 +50,7 @@ export default class Client {
 
 		release.platforms = new PlatformsMeta();
 
-		let webCID, nativeCID = '';
-
-		let filesObject: Record<string, (File | FileObject)[]> = {};
-
+		let filesObject: Record<string, (FileObject)[]> = {};
 		const platforms = Object.keys(config.platforms);
 
 		for (let i = 0; i < platforms.length; i++) {
@@ -55,30 +59,44 @@ export default class Client {
 			}
 		}
 
-		if (filesObject['web']) {
-			webCID = await this.writeFolder(filesObject['web'], false);
+		const { web, ...nonWebFiles } = filesObject;
+		let webCID, nativeCID = '';
+
+		const webIC: ImportCandidate[] = web.map(file => ({
+			path: file.name,
+			content: file.stream(),
+		}));
+
+		const nonWebIC: ImportCandidate[] = Object.entries(nonWebFiles)
+			.flatMap(([platform, files]) => files
+				.map(file => ({
+					path: path.join(platform, path.basename(file.name)),
+					content: file.stream(),
+				}),
+			));
+
+		if (nonWebIC.length > 0) {
+			nativeCID = await this.writeFolder(nonWebIC, true);
+
+			Object.keys(filesObject).forEach((platform) => {
+				if (release.platforms && filesObject[platform] && filesObject[platform].length !== 0) {
+					const fileName = path.basename((filesObject[platform][0].name)); // @TODO make this work with folders
+					release.platforms[platform as SupportedPlatform] = {
+						external_url: path.join(nativeCID, platform, fileName),
+						name: fileName,
+					};
+				}
+			});
+		}
+
+		if (webIC.length > 0) {
+			webCID = await this.writeFolder(webIC, false);
 
 			release.platforms.web = {
 				external_url: webCID,
 				name: 'web',
 			};
-
-			delete filesObject['web'];
 		};
-
-		if (Object.keys(filesObject).length > 0) {
-			const nonWebFiles: (File | FileObject)[] = Object.values(filesObject).flat(1);
-			nativeCID = await this.writeFolder(nonWebFiles, true);
-
-			Object.keys(filesObject).forEach((platform) => {
-				if (release.platforms && filesObject[platform] && filesObject[platform].length !== 0) {
-					release.platforms[platform as SupportedPlatform] = {
-						external_url: `${nativeCID}/${filesObject[platform][0].name}`,
-						name: require('path').basename((filesObject[platform][0].name)),
-					};
-				}
-			});
-		}
 
 		release.external_url = webCID || nativeCID;
 
@@ -93,7 +111,8 @@ export default class Client {
 
 	async createRelease(projectID: ethers.BigNumberish, name: string, meta: ReleaseMeta): Promise<ContractTransaction> {
 		const metaURI = await this.writeJSON(meta);
-		return await this.registry.createRelease(projectID, name, metaURI);
+		const unsigned = await this.registry.populateTransaction.createRelease(projectID, name, metaURI);
+		return await this.sendTx(unsigned);
 	}
 
 	async accountExists(accountID: ethers.BigNumberish): Promise<boolean> {
@@ -131,36 +150,44 @@ export default class Client {
 
 	async setAccountMeta(accountID: ethers.BigNumberish, meta: AccountMeta): Promise<ContractTransaction> {
 		const metaURI = await this.writeJSON(meta);
-		return await this.registry.setAccountMetaURI(accountID, metaURI);
+		const unsigned = await this.registry.populateTransaction.setAccountMetaURI(accountID, metaURI);
+		return await this.sendTx(unsigned);
 	}
 
 	async setProjectMeta(projectID: ethers.BigNumberish, meta: ProjectMeta): Promise<ContractTransaction> {
 		const metaURI = await this.writeJSON(meta);
-		return await this.registry.setProjectMetaURI(projectID, metaURI);
+		const unsigned = await this.registry.populateTransaction.setProjectMetaURI(projectID, metaURI);
+		return await this.sendTx(unsigned);
 	}
 
 	async addAccountMember(accountID: ethers.BigNumberish, address: string): Promise<ContractTransaction> {
-		return await this.registry.addAccountMember(accountID, address);
+		const unsigned = await this.registry.populateTransaction.addAccountMember(accountID, address);
+		return await this.sendTx(unsigned);
 	}
 
 	async removeAccountMember(accountID: ethers.BigNumberish, address: string): Promise<ContractTransaction> {
-		return await this.registry.removeAccountMember(accountID, address);
+		const unsigned = await this.registry.populateTransaction.removeAccountMember(accountID, address);
+		return await this.sendTx(unsigned);
 	}
 
 	async addProjectMember(projectID: ethers.BigNumberish, address: string): Promise<ContractTransaction> {
-		return await this.registry.addProjectMember(projectID, address);
+		const unsigned = await this.registry.populateTransaction.addProjectMember(projectID, address);
+		return await this.sendTx(unsigned);
 	}
 
 	async removeProjectMember(projectID: ethers.BigNumberish, address: string): Promise<ContractTransaction> {
-		return await this.registry.removeProjectMember(projectID, address);
+		const unsigned = await this.registry.populateTransaction.removeProjectMember(projectID, address);
+		return await this.sendTx(unsigned);
 	}
 
 	async approveRelease(releaseID: ethers.BigNumberish): Promise<ContractTransaction> {
-		return await this.registry.approveRelease(releaseID);
+		const unsigned = await this.registry.populateTransaction.approveRelease(releaseID);
+		return await this.sendTx(unsigned);
 	}
 
 	async revokeRelease(releaseID: ethers.BigNumberish): Promise<ContractTransaction> {
-		return await this.registry.approveRelease(releaseID);
+		const unsigned = await this.registry.populateTransaction.approveRelease(releaseID);
+		return await this.sendTx(unsigned);
 	}
 
 	async setProductLimit(projectID: ethers.BigNumberish, limit: ethers.BigNumberish): Promise<ContractTransaction> {
@@ -350,9 +377,9 @@ export default class Client {
 		}
 
 		const res = await this.ipfs.add(buffer, { cidVersion: 1 });
-		console.log('json-file link', `${this.ipfsGateway}/ipfs/${res.cid.toString()}`);
+
 		return `${this.ipfsGateway}/ipfs/${res.cid.toString()}`;
-	};
+	}
 
 	async writeFile(file: File | FileObject, wrapWithDirectory = false, onProgress?: (percent: number) => void) {
 		if (typeof file === 'undefined') throw new Error("file === undefined, must pin at least one file");
@@ -373,52 +400,48 @@ export default class Client {
 			fileSize = require('fs').statSync(fileStream.path).size;
 		}
 
-		// @ts-ignore
 		const res = await this.ipfs.add(fileData, {
 			wrapWithDirectory,
 			cidVersion: 1,
-			// progress: (length) => {
-			// 	if (onProgress) onProgress(length / fileSize * 100);
-			// }
 		});
-		console.log('single-file link', `${this.ipfsGateway}/ipfs/${res.cid.toString()}`);
-		return `${this.ipfsGateway}/ipfs/${res.cid.toString()}`;
-	};
 
-	async writeFolder(files: (File | FileObject)[], wrapWithDirectory = false, onProgress?: (percent: number) => void) {
+		return `${this.ipfsGateway}/ipfs/${res.cid.toString()}`;
+	}
+
+	async writeFolder(files: ImportCandidate[], wrapWithDirectory = false, onProgress?: (percent: number) => void) {
 		if (files.length == 0) throw new Error("files.length == 0, must pin at least one file");
 
-		const fileData: { content: File | any, path: string }[] = [];
-		const firstFile = files[0];
-		const wrap = wrapWithDirectory || (this.isBrowserFile(firstFile) ? (firstFile.webkitRelativePath ? false : true) : false);
-
-		for (const file of files) {
-			let filePath, fileContent;
-
-			if (this.isBrowserFile(file)) {
-				fileContent = file;
-				filePath = file.webkitRelativePath || file.name;
-			} else {
-				fileContent = file.stream();
-				filePath = file.name;
-			}
-
-			fileData.push({
-				content: fileContent,
-				path: filePath,
-			});
-		}
-
 		const cids: string[] = [];
-		for await (const res of this.ipfs.addAll(fileData, {
+		for await (const res of this.ipfs.addAll(files, {
 			cidVersion: 1,
-			wrapWithDirectory: wrap,
+			wrapWithDirectory,
 		})) {
 			cids.push(res.cid.toString());
 		}
-		console.log('multi-file link', `${this.ipfsGateway}/ipfs/${cids[cids.length - 1]}`);
+
 		return `${this.ipfsGateway}/ipfs/${cids[cids.length - 1]}`;
-	};
+	}
+
+	async sendTx(unsigned: PopulatedTransaction): Promise<ethers.providers.TransactionResponse> {
+		if (!this.signer) throw new Error('valist client is read-only');
+
+		const txReq = {
+			from: await this.signer.getAddress(),
+			...unsigned,
+		};
+
+		let hash = this.metaTx
+			? await sendMetaTx(this.signer, txReq)
+			: await sendTx(this.signer, txReq);
+
+		let tx;
+
+		do {
+			tx = await this.registry.provider.getTransaction(hash);
+		} while (tx == null);
+
+		return tx;
+	}
 
 	generateID = generateID;
 

@@ -1,12 +1,13 @@
 import { z } from 'zod';
 import { ApolloCache } from '@apollo/client';
-import { ReleaseMeta, Client, SupportedPlatform, PlatformsMeta } from '@valist/sdk';
+import { ReleaseMeta, Client, SupportedPlatform, PlatformsMeta, toImportCandidate } from '@valist/sdk';
 import { Event } from 'ethers';
 import { handleEvent } from './events';
 import * as utils from './utils';
 import { normalizeError, versionRegex } from './common';
 import { Anchor } from '@mantine/core';
 import { getBlockExplorer } from '@/components/Activity';
+import { ImportCandidate } from 'ipfs-core-types/src/utils';
 
 export interface FormValues {
   releaseName: string;
@@ -29,6 +30,8 @@ export const schema = z.object({
 
 export async function createRelease(
   address: string | undefined,
+  accountName: string,
+  projectName: string,
   projectId: string,
   image: File | undefined,
   filesObject: Record<string, File[]>,
@@ -49,7 +52,9 @@ export async function createRelease(
     }
 
     const meta: ReleaseMeta = new ReleaseMeta();
+    meta.platforms = new PlatformsMeta();
     meta.name = values.displayName;
+    meta.path = `${accountName}/${projectName}/${meta.name}`;
     meta.description = values.description;
 
     utils.showLoading('Uploading files');
@@ -60,36 +65,45 @@ export async function createRelease(
     }
 
     if (filesObject) {
-      let { web, ..._nonWebFiles } = filesObject;
-      const nonWebFiles = Object.values(_nonWebFiles).flat(1);
-      
-      meta.platforms = new PlatformsMeta();
-
+      const { web, ...nonWebFiles } = filesObject;
       let webCID, nativeCID = '';
-      
-      if (web?.length !== 0) {
-        webCID = await valist.writeFolder(web, false, (progress: number) => {
+
+      const webIC: ImportCandidate[] = web.map(file => ({
+        path: file.webkitRelativePath,
+        content: file,
+      }));
+
+      const nonWebIC: ImportCandidate[] = Object.entries(nonWebFiles)
+        .flatMap(([platform, files]) => files
+          .map(file => ({
+            path: `${platform}/${file.name}`,
+            content: file,
+          }),
+        ));
+
+      if (nonWebIC.length !== 0) {
+        nativeCID = await valist.writeFolder(nonWebIC, true, (progress: number) => {
+          utils.updateLoading(`Uploading releases for native: ${progress}%`);
+        });
+
+        Object.keys(nonWebFiles).forEach((platform) => {
+          if (meta.platforms && filesObject[platform] && filesObject[platform].length !== 0) {
+            meta.platforms[platform as SupportedPlatform] = {
+              external_url: `${nativeCID}/${platform}/${filesObject[platform][0].name}`,
+              name: filesObject[platform][0].name,
+            };
+          }
+        });
+      };
+
+      if (webIC.length !== 0) {
+        webCID = await valist.writeFolder(webIC, false, (progress: number) => {
           utils.updateLoading(`Uploading release archive for web: ${progress}%`);
         });
         meta.platforms.web = {
           external_url: webCID,
           name: 'web',
         };
-      };
-
-      if (nonWebFiles && nonWebFiles?.length !== 0) {
-        nativeCID = await valist.writeFolder(nonWebFiles, true, (progress: number) => {
-          utils.updateLoading(`Uploading releases for native: ${progress}%`);
-        });
-
-        Object.keys(_nonWebFiles).forEach((platform) => {
-          if (meta.platforms && filesObject[platform] && filesObject[platform].length !== 0) {
-            meta.platforms[platform as SupportedPlatform] = {
-              external_url: `${nativeCID}/${filesObject[platform][0].name}`,
-              name: filesObject[platform][0].name,
-            };
-          }
-        });
       };
 
       meta.external_url = webCID || nativeCID;
