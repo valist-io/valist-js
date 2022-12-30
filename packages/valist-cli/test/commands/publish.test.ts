@@ -44,7 +44,7 @@ describe('publish', () => {
     const createProjectTx = await valist.createProject(accountID, 'cli', project, members);
     await createProjectTx.wait();
 
-    Publish.provider = provider;
+    Publish.provider = signer;
     try {
       await Publish.run([
         'valist/cli/v0.0.1',
