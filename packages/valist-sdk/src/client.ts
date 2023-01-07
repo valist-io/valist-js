@@ -81,8 +81,10 @@ export default class Client {
 			Object.keys(filesObject).forEach((platform) => {
 				if (release.platforms && filesObject[platform] && filesObject[platform].length !== 0) {
 					const fileName = path.basename((filesObject[platform][0].name)); // @TODO make this work with folders
+					let url = new URL(nativeCID);
+					url.pathname = path.join(url.pathname, platform, fileName);
 					release.platforms[platform as SupportedPlatform] = {
-						external_url: path.join(nativeCID, platform, fileName),
+						external_url: url.toString(),
 						name: fileName,
 					};
 				}
