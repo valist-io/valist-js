@@ -42,7 +42,7 @@ import {
   GalleryInput,
   _404,
 } from '@valist/ui';
-import { ProjectMeta } from '@valist/sdk';
+import { ProjectMeta, GalleryMeta } from '@valist/sdk';
 
 const Project: NextPage = () => {
   const router = useRouter();
@@ -64,15 +64,19 @@ const Project: NextPage = () => {
   const projectMembers = data?.project?.members ?? [];
 
   const [activeTab, setActiveTab] = useState<string | null>();
-  const [repo, setRepo] = useState<string>('');
-  const [isLinked, setIsLinked] = useState<boolean>(false);
 
   // form values
   const openRef = useRef<() => void>(null);
   const [loading, setLoading] = useState(true);
-  const [image, setImage] = useState<File | string>('');
-  const [mainCapsule, setMainCapsule] = useState<File | string>('');
-  const [gallery, setGallery] = useState<File[]>([]);
+
+  const [image, setImage] = useState<string>('');
+  const [newImage, setNewImage] = useState<File | undefined>();
+
+  const [mainCapsule, setMainCapsule] = useState<string>('');
+  const [newMainCapsule, setNewMainCapsule] = useState<File | undefined>();
+
+  const [gallery, setGallery] = useState<string[]>([]);
+  const [newGallery, setNewGallery] = useState<(File | string)[]>([]);
 
   const form = useForm<FormValues>({
     validate: zodResolver(schema),
@@ -95,8 +99,8 @@ const Project: NextPage = () => {
   // wait for metadata to load
   useEffect(() => {
     if (meta) {
-      const youTubeLink = meta.gallery?.find((item: any) => item.type === 'youtube');
-      const galleryLinks = meta.gallery?.filter((item: any) => item.type === 'image');
+      const youTubeLink = meta.gallery?.find((item: GalleryMeta) => item.type === 'youtube');
+      const galleryLinks = meta.gallery?.filter((item: GalleryMeta) => item.type === 'image');
 
       form.setFieldValue('displayName', meta.name ?? '');
       form.setFieldValue('website', meta.external_url ?? '');
@@ -109,11 +113,10 @@ const Project: NextPage = () => {
       form.setFieldValue('promptDonation', meta.prompt_donation ?? false);
       form.setFieldValue('donationAddress', meta.donation_address || '');
 
-      setGallery(galleryLinks?.map((item: any) => item.src) ?? []);
+      setGallery(galleryLinks?.map((item: GalleryMeta) => item.src) ?? []);
       setMainCapsule(meta.main_capsule || '');
       setImage(meta.image || '');
-      setRepo(meta.repository || '');
-      if (meta.repository) setIsLinked(true);
+
       setLoading(false);
     }
   }, [meta]);
@@ -151,10 +154,10 @@ const Project: NextPage = () => {
     updateProject(
       address,
       projectId,
-      image,
-      mainCapsule,
-      gallery,
-      repo,
+      meta,
+      newImage,
+      newMainCapsule,
+      newGallery,
       values,
       valist,
       cache,
@@ -208,8 +211,8 @@ const Project: NextPage = () => {
                 <ImageInput 
                   width={300}
                   height={300}
-                  onChange={setImage} 
-                  value={image}
+                  onChange={setNewImage} 
+                  value={newImage || image}
                   disabled={loading}
                   openRef={openRef}
                 />
@@ -371,15 +374,15 @@ const Project: NextPage = () => {
               <ImageInput 
                 width={616}
                 height={353}
-                onChange={setMainCapsule} 
-                value={mainCapsule}
+                onChange={setNewMainCapsule} 
+                value={newMainCapsule || mainCapsule}
                 disabled={loading}
               />
               <Title order={2}>Gallery Images</Title>
               <Text color="dimmed">Additional images of your game or app. Recommended size is (1280x720 or 1920x1080).</Text>
               <GalleryInput
-                onChange={setGallery}
-                value={gallery}
+                onChange={setNewGallery}
+                value={newGallery.length > 0 ? newGallery : gallery}
                 disabled={loading}
               />
             </Stack>

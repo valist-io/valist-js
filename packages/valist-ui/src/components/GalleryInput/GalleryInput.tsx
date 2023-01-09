@@ -13,8 +13,8 @@ import { ImageInput } from '../ImageInput';
 import useStyles from './GalleryInput.styles';
 
 export interface GalleryInputProps {
-  onChange: (files: File[]) => void;
-  value?: File[];
+  onChange: (files: (File | string)[]) => void;
+  value?: (File | string)[];
   disabled?: boolean;
 }
 
@@ -29,7 +29,7 @@ export function GalleryInput(props: GalleryInputProps) {
     ? files[index]
     : undefined;
 
-  const update = (file: File) => {
+  const update = (file: File | string) => {
     if (index === files.length) {
       props.onChange([...files, file]);
     } else {

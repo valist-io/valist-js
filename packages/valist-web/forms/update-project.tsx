@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { ApolloCache } from '@apollo/client';
-import { ProjectMeta, Client } from '@valist/sdk';
+import { ProjectMeta, Client, GalleryMeta } from '@valist/sdk';
 import { handleEvent } from './events';
 import * as utils from './utils';
 import { normalizeError, refineYouTube } from './common';
@@ -38,13 +38,17 @@ export const schema = z.object({
   linkRepository: z.boolean(),
 });
 
+const isFile = (file: File | String): file is File => {
+  return (file as File).lastModified !== undefined;
+};
+
 export async function updateProject(
   address: string | undefined,
   projectId: string,
-  image: File | string,
-  mainCapsule: File | string,
-  gallery: File[],
-  repository: string,
+  oldMeta: ProjectMeta | undefined,
+  image: File | undefined,
+  mainCapsule: File | undefined,
+  newGallery: (File | String)[],
   values: FormValues,
   valist: Client,
   cache: ApolloCache<any>,
@@ -53,19 +57,20 @@ export async function updateProject(
   try {
   	utils.hideError();
 
-    if (!address) {
-      throw new Error('connect your wallet to continue');
-    }
+    if (!address) throw new Error('connect your wallet to continue');
+    if (!oldMeta) return;
 
     const meta: ProjectMeta = {
+      image: oldMeta.image,
+      main_capsule: oldMeta.main_capsule,
       name: values.displayName,
       short_description: values.shortDescription,
       description: values.description,
       external_url: values.website,
       type: values.type,
       tags: values.tags,
-      gallery: [],
-      repository,
+      gallery: oldMeta.gallery,
+      repository: oldMeta.repository,
       launch_external: values.launchExternal,
       donation_address: values.donationAddress,
       prompt_donation: values.promptDonation,
@@ -73,17 +78,13 @@ export async function updateProject(
 
     utils.showLoading('Uploading files');
 
-    if (typeof image === 'string') {
-      meta.image = image;
-    } else {
+    if (image) {
       meta.image = await valist.writeFile(image, false, (progress: number) => {
         utils.updateLoading(`Uploading ${image.name}: ${progress}%`);
       });
     };
 
-    if (typeof mainCapsule === 'string') {
-      meta.main_capsule = mainCapsule;
-    } else {
+    if (mainCapsule) {
       meta.main_capsule = await valist.writeFile(mainCapsule, false, (progress: number) => {
         utils.updateLoading(`Uploading ${mainCapsule.name}: ${progress}%`);
       });
@@ -94,12 +95,20 @@ export async function updateProject(
       meta.gallery?.push({ name: '', type: 'youtube', src });
     };
 
-    for (const item of gallery) {
-      const src = await valist.writeFile(item, false, (progress: number) => {  
-        utils.updateLoading(`Uploading ${item.name}: ${progress}%`);
-      });
-      meta.gallery?.push({ name: '', type: 'image', src });
-    };
+    if (newGallery.length > 0) {
+      const gallery: GalleryMeta[] = [];
+      for (const item of newGallery) {
+        if (typeof item === 'string') {
+          gallery?.push({ name: '', type: 'image', src: item });
+        } else if (isFile(item)) {
+          const src = await valist.writeFile(item, false, (progress: number) => {  
+            utils.updateLoading(`Uploading ${item.name}: ${progress}%`);
+          });
+          gallery?.push({ name: '', type: 'image', src });
+        }
+        meta.gallery = gallery;
+      };
+    }
 
     utils.updateLoading('Creating transaction');
     const transaction = await valist.setProjectMeta(projectId, meta);
