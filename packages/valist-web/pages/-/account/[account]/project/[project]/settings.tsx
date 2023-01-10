@@ -43,6 +43,7 @@ import {
   _404,
 } from '@valist/ui';
 import { ProjectMeta, GalleryMeta } from '@valist/sdk';
+import { getYouTubeEmbedURL } from '@valist/ui/dist/components/Gallery';
 
 const Project: NextPage = () => {
   const router = useRouter();
@@ -67,7 +68,8 @@ const Project: NextPage = () => {
 
   // form values
   const openRef = useRef<() => void>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [submitDisabled, setSubmitDisabled] = useState<boolean>(true);
 
   const [image, setImage] = useState<string>('');
   const [newImage, setNewImage] = useState<File | undefined>();
@@ -120,6 +122,25 @@ const Project: NextPage = () => {
       setLoading(false);
     }
   }, [meta]);
+
+  useEffect(() => {
+    const imgChange = !newImage && !newMainCapsule && newGallery.length < 1 && !form.values.youTubeLink;
+    setSubmitDisabled(imgChange && (JSON.stringify(meta) === JSON.stringify({
+      image: meta?.image,
+      main_capsule: meta?.main_capsule,
+      name: form.values.displayName,
+      short_description: form.values.shortDescription,
+      description: form.values.description,
+      external_url: form.values.website,
+      type: form.values.type,
+      tags: form.values.tags,
+      gallery: meta?.gallery,
+      repository: meta?.repository,
+      launch_external: form.values.launchExternal,
+      donation_address: form.values.donationAddress,
+      prompt_donation: form.values.promptDonation,
+    })));
+  }, [form.values, meta, newGallery, newImage, newMainCapsule]);
 
   const removeMember = (member: string) => {
     setLoading(true);
@@ -290,7 +311,7 @@ const Project: NextPage = () => {
             <Group mt="lg">
               <Button 
                 type="submit"
-                disabled={loading}
+                disabled={submitDisabled || loading}
               >
                 Save
               </Button>
@@ -323,7 +344,7 @@ const Project: NextPage = () => {
             <Group mt="lg">
               <Button
                 type="submit"
-                disabled={loading}
+                disabled={submitDisabled || loading}
               >
                 Save
               </Button>
@@ -369,6 +390,17 @@ const Project: NextPage = () => {
                 disabled={loading}
                 {...form.getInputProps('youTubeLink')}
               />
+              {form.values.youTubeLink && 
+                <iframe
+                  width="100%"
+                  style={{ minHeight: 300 }}
+                  src={getYouTubeEmbedURL(form.values.youTubeLink)}
+                  title="YouTube video player"
+                  frameBorder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowFullScreen
+                />
+              }
               <Title order={2}>Header Image</Title>
               <Text color="dimmed">This can be the cover image of your game or app. Recommended size is (616x353).</Text>
               <ImageInput 
@@ -389,7 +421,7 @@ const Project: NextPage = () => {
             <Group mt="lg">
               <Button 
                 type="submit"
-                disabled={loading}
+                disabled={submitDisabled || loading}
               >
                 Save
               </Button>

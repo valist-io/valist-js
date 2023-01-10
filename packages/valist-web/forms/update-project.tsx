@@ -75,12 +75,7 @@ export async function updateProject(
       donation_address: values.donationAddress,
       prompt_donation: values.promptDonation,
     };
-
-    if (!image && !mainCapsule && (JSON.stringify(meta) === JSON.stringify(oldMeta))) {
-      utils.showError('No values changed!');
-      return;
-    }
-
+    
     utils.showLoading('Uploading files');
     
     if (image) {

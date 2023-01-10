@@ -13,7 +13,7 @@ export interface GalleryProps {
 
 const youtubeRegex = /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/;
 
-const getYouTubeEmbedURL = (url: string) => {
+export const getYouTubeEmbedURL = (url: string) => {
   const res = url.match(youtubeRegex);
   return `https://youtube.com/embed/${res?.[1]}`;
 };
