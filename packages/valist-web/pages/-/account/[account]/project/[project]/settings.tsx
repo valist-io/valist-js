@@ -144,7 +144,7 @@ const Project: NextPage = () => {
       donation_address: form.values.donationAddress,
       prompt_donation: form.values.promptDonation,
     })));
-  }, [form.values, meta, newGallery, newImage, newMainCapsule]);
+  }, [form.values, meta, newGallery, newImage, newMainCapsule, youTubeLink]);
 
   const removeMember = (member: string) => {
     setLoading(true);

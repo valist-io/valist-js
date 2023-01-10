@@ -25,7 +25,7 @@ export const schema = z.object({
 export async function updateAccount(
   address: string | undefined,
   accountId: string,
-  image: File | string,
+  image: File | undefined,
   values: FormValues,
   valist: Client,
   cache: ApolloCache<any>,
@@ -45,9 +45,7 @@ export async function updateAccount(
     };
 
     utils.showLoading('Uploading files');
-    if (typeof image === 'string') {
-      meta.image = image;
-    } else {
+    if (image) {
       meta.image = await valist.writeFile(image, false, (progress: number) => {  
         utils.updateLoading(`Uploading ${image.name}: ${progress}%`);
       });

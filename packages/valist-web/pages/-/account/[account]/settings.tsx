@@ -36,6 +36,7 @@ import {
   MemberList,
   _404,
 } from '@valist/ui';
+import { AccountMeta } from '@valist/sdk';
 
 const SettingsPage: NextPage = () => {
   const router = useRouter();
@@ -48,14 +49,17 @@ const SettingsPage: NextPage = () => {
   const accountId = valist.generateID(chainId, accountName);
 
   const { data, loading:gqLoading } = useQuery(query, { variables: { accountId } });
-  const { data: meta } = useSWRImmutable(data?.account?.metaURI);
+  const { data: meta } = useSWRImmutable<AccountMeta>(data?.account?.metaURI);
 
   const members = data?.account?.members ?? [];
 
   // form values
   const openRef = useRef<() => void>(null);
   const [loading, setLoading] = useState(true);
-  const [image, setImage] = useState<File | string>('');
+  const [submitDisabled, setSubmitDisabled] = useState<boolean>(true);
+
+  const [image, setImage] = useState<string>('');
+  const [newImage, setNewImage] = useState<File>();
 
   const form = useForm<FormValues>({
     validate: zodResolver(schema),
@@ -70,13 +74,22 @@ const SettingsPage: NextPage = () => {
   // wait for metadata to load
   useEffect(() => {
     if (meta) {
-      form.setFieldValue('displayName', meta.name ?? '');
-      form.setFieldValue('website', meta.external_url ?? '');
-      form.setFieldValue('description', meta.description ?? '');
-      setImage(meta.image);
+      meta.name && form.setFieldValue('displayName', meta.name);
+      meta.external_url && form.setFieldValue('website', meta.external_url);
+      meta.description && form.setFieldValue('description', meta.description);
+      meta.image && setImage(meta.image);
       setLoading(false);
     }
   }, [meta]);
+
+  useEffect(() => {
+    setSubmitDisabled(!newImage && (JSON.stringify(meta) === JSON.stringify({
+      name: form.values.displayName,
+      description: form.values.description,
+      external_url: form.values.website,
+      image: meta?.image,
+    })));
+  }, [form.values, meta, newImage]);
 
   const removeMember = (member: string) => {
     setLoading(true);
@@ -111,7 +124,7 @@ const SettingsPage: NextPage = () => {
     updateAccount(
       address,
       accountId,
-      image,
+      newImage,
       values,
       valist,
       cache,
@@ -158,8 +171,8 @@ const SettingsPage: NextPage = () => {
                 <ImageInput 
                   width={300}
                   height={300}
-                  onChange={setImage} 
-                  value={image}
+                  onChange={setNewImage} 
+                  value={newImage || image}
                   disabled={loading}
                   openRef={openRef}
                 />
@@ -199,7 +212,7 @@ const SettingsPage: NextPage = () => {
             </Stack>
             <Group mt="lg">
               <Button 
-                disabled={loading} 
+                disabled={submitDisabled || loading} 
                 type="submit"
               >
                 Save
