@@ -129,7 +129,9 @@ const Project: NextPage = () => {
   useEffect(() => {
     const ytChange = form.values.youTubeLink !== youTubeLink;
     const imgChange = !newImage && !newMainCapsule && newGallery.length < 1 && !ytChange;
-    setSubmitDisabled(imgChange && (JSON.stringify(meta) === JSON.stringify({
+
+    const prevMeta = JSON.stringify(meta)?.split('').sort().join('');
+    const curMeta = JSON.stringify({
       image: meta?.image,
       main_capsule: meta?.main_capsule,
       name: form.values.displayName,
@@ -143,7 +145,9 @@ const Project: NextPage = () => {
       launch_external: form.values.launchExternal,
       donation_address: form.values.donationAddress,
       prompt_donation: form.values.promptDonation,
-    })));
+    }).split('').sort().join('');
+
+    setSubmitDisabled(imgChange && (prevMeta === curMeta));
   }, [form.values, meta, newGallery, newImage, newMainCapsule, youTubeLink]);
 
   const removeMember = (member: string) => {

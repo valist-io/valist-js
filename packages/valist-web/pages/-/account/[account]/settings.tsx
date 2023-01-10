@@ -83,12 +83,14 @@ const SettingsPage: NextPage = () => {
   }, [meta]);
 
   useEffect(() => {
-    setSubmitDisabled(!newImage && (JSON.stringify(meta) === JSON.stringify({
+    const prevMeta = JSON.stringify(meta)?.split('').sort().join('');
+    const curMeta = JSON.stringify({
       name: form.values.displayName,
       description: form.values.description,
       external_url: form.values.website,
       image: meta?.image,
-    })));
+    }).split('').sort().join('');
+    setSubmitDisabled(!newImage && prevMeta == curMeta);
   }, [form.values, meta, newImage]);
 
   const removeMember = (member: string) => {
