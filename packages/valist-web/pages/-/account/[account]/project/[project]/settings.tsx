@@ -393,7 +393,7 @@ const Project: NextPage = () => {
               {form.values.youTubeLink && 
                 <iframe
                   width="100%"
-                  style={{ minHeight: 300 }}
+                  style={{ minHeight: 353, maxWidth: 616 }}
                   src={getYouTubeEmbedURL(form.values.youTubeLink)}
                   title="YouTube video player"
                   frameBorder="0" 
