@@ -76,11 +76,12 @@ export async function updateProject(
       prompt_donation: values.promptDonation,
     };
 
-    utils.showLoading('Uploading files');
-
     if (!image && !mainCapsule && (JSON.stringify(meta) === JSON.stringify(oldMeta))) {
       utils.showError('No values changed!');
+      return;
     }
+
+    utils.showLoading('Uploading files');
     
     if (image) {
       meta.image = await valist.writeFile(image, false, (progress: number) => {
