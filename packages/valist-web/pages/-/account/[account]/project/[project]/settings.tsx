@@ -80,6 +80,8 @@ const Project: NextPage = () => {
   const [gallery, setGallery] = useState<string[]>([]);
   const [newGallery, setNewGallery] = useState<(File | string)[]>([]);
 
+  const [youTubeLink, setYouTubeLink] = useState<string>('');
+
   const form = useForm<FormValues>({
     validate: zodResolver(schema),
     validateInputOnChange: true,
@@ -101,30 +103,32 @@ const Project: NextPage = () => {
   // wait for metadata to load
   useEffect(() => {
     if (meta) {
-      const youTubeLink = meta.gallery?.find((item: GalleryMeta) => item.type === 'youtube');
+      const _youTubeLink = meta.gallery?.find((item: GalleryMeta) => item.type === 'youtube');
       const galleryLinks = meta.gallery?.filter((item: GalleryMeta) => item.type === 'image');
 
       form.setFieldValue('displayName', meta.name ?? '');
       form.setFieldValue('website', meta.external_url ?? '');
       form.setFieldValue('description', meta.description ?? '');
       form.setFieldValue('shortDescription', meta.short_description ?? '');
-      form.setFieldValue('youTubeLink', youTubeLink?.src ?? '');
+      form.setFieldValue('youTubeLink', _youTubeLink?.src ?? '');
       form.setFieldValue('tags', meta.tags ?? []);
       form.setFieldValue('type', meta.type ?? '');
       form.setFieldValue('launchExternal', meta.launch_external ?? false);
       form.setFieldValue('promptDonation', meta.prompt_donation ?? false);
       form.setFieldValue('donationAddress', meta.donation_address || '');
 
-      setGallery(galleryLinks?.map((item: GalleryMeta) => item.src) ?? []);
-      setMainCapsule(meta.main_capsule || '');
-      setImage(meta.image || '');
+      setGallery(galleryLinks?.map((item: GalleryMeta) => item.src) || []);
+      meta.main_capsule && setMainCapsule(meta.main_capsule);
+      meta.image && setImage(meta.image);
+      _youTubeLink && setYouTubeLink(_youTubeLink.src);
 
       setLoading(false);
     }
   }, [meta]);
 
   useEffect(() => {
-    const imgChange = !newImage && !newMainCapsule && newGallery.length < 1 && !form.values.youTubeLink;
+    const ytChange = form.values.youTubeLink !== youTubeLink;
+    const imgChange = !newImage && !newMainCapsule && newGallery.length < 1 && !ytChange;
     setSubmitDisabled(imgChange && (JSON.stringify(meta) === JSON.stringify({
       image: meta?.image,
       main_capsule: meta?.main_capsule,
