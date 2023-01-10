@@ -78,6 +78,10 @@ export async function updateProject(
 
     utils.showLoading('Uploading files');
 
+    if (!image && !mainCapsule && (JSON.stringify(meta) === JSON.stringify(oldMeta))) {
+      utils.showError('No values changed!');
+    }
+    
     if (image) {
       meta.image = await valist.writeFile(image, false, (progress: number) => {
         utils.updateLoading(`Uploading ${image.name}: ${progress}%`);
