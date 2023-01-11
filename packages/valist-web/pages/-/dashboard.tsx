@@ -36,6 +36,8 @@ import {
   NoProjects,
   Welcome,
 } from '@valist/ui';
+import { BannerArea } from '@/components/Banner/BannerArea';
+import { WrappedModal } from '@/components/WrappedModal';
 
 const IndexPage: NextPage = () => {
   const router = useRouter();
@@ -52,6 +54,7 @@ const IndexPage: NextPage = () => {
   const [step, setStep] = useState(3);
   const { account: accountName } = useContext(AccountContext);
   const [infoOpened, setInfoOpened] = useState(false);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
 
   const showInfo = useMediaQuery('(max-width: 1400px)', false);
   const isMobile = useMediaQuery('(max-width: 992px)', false);
@@ -134,30 +137,38 @@ const IndexPage: NextPage = () => {
       </Group>
       <div style={{ padding: 40 }}>
         { accountName &&
+        <>
           <Group spacing={24} mb="xl" align="stretch" noWrap>
-            <Avatar 
-              radius="md"
-              size={92} 
-              src={accountMeta?.image} 
-            />
-            <Stack justify="space-between">
-              <Stack spacing={0}>
-                <Title order={3}>{accountName}</Title>
-                <Text color="gray.3">{accountMeta?.name}</Text>
+              <Avatar 
+                radius="md"
+                size={92} 
+                src={accountMeta?.image} 
+              />
+              <Stack justify="space-between">
+                <Stack spacing={0}>
+                  <Title order={3}>{accountName}</Title>
+                  <Text color="gray.3">{accountMeta?.name}</Text>
+                </Stack>
+                <Group spacing={5}>
+                  <Icon.Users size={20} color="#9B9BB1" />
+                  <Text color="gray.3" mr={13}>
+                    {members.length} {members.length == 1 ? 'Member' : 'Members'}
+                  </Text>
+                  <Icon.World size={20} color="#9B9BB1" />
+                  {accountMeta?.external_url && <Anchor color="gray.3" target="_blank" href={accountMeta?.external_url}>
+                    Website
+                  </Anchor>}
+                </Group>
               </Stack>
-              <Group spacing={5}>
-                <Icon.Users size={20} color="#9B9BB1" />
-                <Text color="gray.3" mr={13}>
-                  {members.length} {members.length == 1 ? 'Member' : 'Members'}
-                </Text>
-                <Icon.World size={20} color="#9B9BB1" />
-                {accountMeta?.external_url && <Anchor color="gray.3" target="_blank" href={accountMeta?.external_url}>
-                  Website
-                </Anchor>}
-              </Group>
-            </Stack>
-            <Actions actions={actions} />
-          </Group>
+              <Actions actions={actions} />
+            </Group>
+            <BannerArea 
+              banners={['wrapped']}
+              actions={{
+                wrapped: () => setModalOpen(true),
+              }}
+            />
+        </>
         }
         <Grid>
           { (!showInfo || !infoOpened) &&
@@ -203,6 +214,17 @@ const IndexPage: NextPage = () => {
           }
         </Grid>
       </div>
+      
+      {address && 
+        <WrappedModal
+          address={address} 
+          projects={projects}
+          releases={[]}
+          logs={logs}
+          opened={modalOpen}
+          onClose={() => setModalOpen(false)}
+        />
+      }
     </Layout>
   );
 };

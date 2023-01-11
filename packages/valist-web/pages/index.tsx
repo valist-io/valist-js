@@ -18,6 +18,7 @@ import {
   Title,
   Text,
   useMantineTheme,
+  Center,
 } from '@mantine/core';
 
 import {
@@ -25,6 +26,7 @@ import {
   Card,
   DiscoveryFooter,
 } from '@valist/ui';
+import { BannerArea } from '@/components/Banner/BannerArea';
 
 export interface DiscoverProps {
   recent: any[];
@@ -38,12 +40,14 @@ const Discover: NextPage<DiscoverProps> = (props) => {
 	return (
     <Layout padding={0}>
       <div style={{ padding: 40 }}>
-        <div 
+        <BannerArea banners={['wrapped']} />
+        <div
           style={{ 
             height: 500,
             borderRadius: 8,
             position: 'relative',
             background: 'rgba(0, 0, 0, 0.6)',
+            textAlign: 'center',
           }}
         >
           <Image
@@ -56,7 +60,7 @@ const Discover: NextPage<DiscoverProps> = (props) => {
             priority
           />
           <Stack align="center" justify="center" style={{ height: 500 }}>
-            <Title color="white" size={96}>Shattered Realms</Title>
+            <Center><Title color="white" size={96}>Shattered Realms</Title></Center>
             <Text color="white" size={24}>Action, Adventure, RPG</Text>
             <NextLink href="/shatteredrealms/game">
               <Button>View Game</Button>

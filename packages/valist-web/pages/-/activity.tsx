@@ -3,7 +3,6 @@ import { useEffect, useContext } from 'react';
 import { useAccount } from 'wagmi';
 import useSWRImmutable from 'swr/immutable';
 import { Group } from '@mantine/core';
-import { useLocalStorage } from '@mantine/hooks';
 import { List, Card } from '@valist/ui';
 import { Layout } from '@/components/Layout';
 import { Activity } from '@/components/Activity';
