@@ -1,0 +1,14 @@
+query Wrapped($address: String) {
+  users(where:{id: $address}) {
+      id
+      projects {
+        id
+        name
+        metaURI
+      }
+      accounts {
+        id
+        name
+      }
+    }
+}
