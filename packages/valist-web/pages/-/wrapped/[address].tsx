@@ -148,7 +148,10 @@ export default function WrappedPage(props: { stats: Stats, data: any, logs: any,
           <Flex
             gap={16}
           >
-            {props?.meta?.image && <Image height={100} width={130} alt="project-img" src={`https://gateway.valist.io/ipfs/${props?.meta?.image.match(cidRegex)[1]}`} />}
+            {/* {props?.meta?.image && props?.meta?.image.match(cidRegex)?.length !== 0 && <Image height={100} width={130} alt="project-img" src={
+              `https://gateway.valist.io/ipfs/${props?.meta?.image.match(cidRegex)[1] || ''}`
+            } />} */}
+
             <div>
               <div style={{ fontSize: 14, color: "#FFFFFF", fontWeight: 700 }}>
                 {props?.stats?.FirstProject?.account.name}/{props?.stats?.FirstProject?.name}
@@ -166,47 +169,4 @@ export default function WrappedPage(props: { stats: Stats, data: any, logs: any,
     </Grid>
   );
 };
-
-  // const capture = () => {
-  //   // @ts-ignore
-  //   document.getElementById("capture").addEventListener("click", function() {
-  //     // @ts-ignore
-  //     html2canvas(document.querySelector('#caputure')).then(function(canvas) {
-  //         saveAs(canvas.toDataURL(), 'file-name.png');
-  //     });
-  // });
-  
-  
-  // function saveAs(uri: any, filename: any) {
-  //     var link = document.createElement('a');
-  
-  //     if (typeof link.download === 'string') {
-  
-  //         link.href = uri;
-  //         link.download = filename;
-  
-  //         //Firefox requires the link to be in the body
-  //         document.body.appendChild(link);
-  
-  //         //simulate click
-  //         link.click();
-  
-  //         //remove the link when done
-  //         document.body.removeChild(link);
-  
-  //     } else {
-  
-  //         window.open(uri);
-  
-  //     }
-  // }
-  // };
-
-  // useEffect(() => {
-  //   if (props?.users && props?.users[0] && props.users[0].projects[0]) {
-  //     // html2canvas(document.querySelector('#caputure')).then(function(canvas) {
-  //         saveAs(canvas.toDataURL(), 'file-name.png');
-  //     });
-  //   }
-  // }, [props.data.users, props.users]);
   
