@@ -30,6 +30,10 @@ export interface LayoutProps {
   children?: React.ReactNode;
   hideNavbar?: boolean;
   padding?: number;
+  description?: string,
+  image?: string,
+  video?: string,
+  url?: string,
 }
 
 export function Layout(props: LayoutProps) {
@@ -186,6 +190,27 @@ export function Layout(props: LayoutProps) {
         <title>{props.title ?? 'Valist'}</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
         <link rel="icon" href="/favicon.ico" />
+
+        {/* Basic Tags */}
+        <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        {props.title && <meta name="title" content={props.title} />}
+        {props?.description && <meta name="description" content={props.description} />}
+
+        {/* Twitter Tags */}
+        <meta property="twitter:card" content="summary" />
+        <meta property="twitter:domain" content='valist.io' />
+        {props.url && <meta property="twitter:url" content={`https://${props.url}`} />}
+        {props.title && <meta property="twitter:title" content={props.title} />}
+        {props.description && <meta property="twitter:description" content={props.description} />}
+        {props.image && <meta property="twitter:image" content={props.image} />}
+
+        {/* Open Graph Tags */}
+        {props.title && <meta property="og:title" content={props.title} />}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`https://${props.url}`} />
+        {/* <meta property={props.video ? "og:video" : "og:image"} content={props.video || props.image} /> */}
+        {props.description && <meta property="og:description" content={props.description} />}
       </Head>
       {props.children}
     </AppShell>

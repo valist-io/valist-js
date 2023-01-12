@@ -1,18 +1,18 @@
 import type { NextPage } from 'next';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
-import useSWRImmutable from 'swr/immutable';
 import * as Icon from 'tabler-icons-react';
 import { NextLink } from '@mantine/next';
 import { useMediaQuery } from '@mantine/hooks';
-import { useQuery } from '@apollo/client';
 import { Layout } from '@/components/Layout';
 import { Metadata } from '@/components/Metadata';
 import { Activity } from '@/components/Activity';
 import { getChainId } from '@/utils/config';
 import { useValist } from '@/utils/valist';
 import query from '@/graphql/AccountPage.graphql';
+import axios, { AxiosResponse } from 'axios';
+import useSWRImmutable from 'swr/immutable';
 
 import { 
   Anchor,
@@ -37,8 +37,45 @@ import {
   ProjectCard,
   List,
 } from '@valist/ui';
+import client from '@/utils/apollo';
+import { generateID } from '@valist/sdk';
+import { useQuery } from '@apollo/client';
 
-const AccountPage: NextPage = () => {
+export const getServerSideProps = async ({ params, res }: any) => {
+  const chainId = getChainId();
+  const accountName = `${params.account}`;
+  const accountId = generateID(chainId, accountName);
+  const { data } = await client.query({
+    query: query,
+    variables: { accountId },
+  });
+
+  let metaRes: AxiosResponse<any>;
+  let meta = {};
+
+  try {
+    if (data?.account) {
+      metaRes = await axios.get(data.account.metaURI);
+      meta = metaRes?.data;
+    }
+  } catch {
+    console.log('Failed to fetch meta!');
+  }
+  
+  res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=10, stale-while-revalidate=11',
+  );
+
+  return {
+    props: {
+      data,
+      meta,
+    },
+  };
+};
+
+const AccountPage: NextPage = (props: any) => {
   const chainId = getChainId();
   const { address } = useAccount();
 
@@ -48,22 +85,27 @@ const AccountPage: NextPage = () => {
   const accountName = `${router.query.account}`;
   const accountId = valist.generateID(chainId, accountName);
 
-  const { data, loading } = useQuery(query, { 
+  const { data } = useQuery(query, { 
     variables: { accountId },
     pollInterval: 5000,
   });
   const { data: meta } = useSWRImmutable(data?.account?.metaURI);
 
+  const [isMember, setIsMember] = useState<boolean>(false);
   const [infoOpened, setInfoOpened] = useState(false);
   const showInfo = useMediaQuery('(max-width: 1400px)', false);
 
-  const projects = data?.account?.projects ?? [];
-  const members = data?.account?.members ?? [];
-  const logs = data?.account?.logs ?? [];
+  const projects = data?.account?.projects || props.data?.account?.projects || [];
+  const members = data?.account?.members || props.data?.account?.members || [];
+  const logs = data?.account?.members || data?.account?.logs || [];
 
-  const isMember = !!members.find(
-    (other: any) => other.id.toLowerCase() === address?.toLowerCase(),
-  );
+  useEffect(() => {
+    const _isMember = !!members.find(
+      (other: any) => other.id.toLowerCase() === address?.toLowerCase(),
+    );
+
+    setIsMember(_isMember);
+  }, []);
 
   const actions: Action[] = [
     {
@@ -71,6 +113,7 @@ const AccountPage: NextPage = () => {
       icon: Icon.Settings, 
       href: `/-/account/${accountName}/settings`,
       variant: 'subtle',
+      hide: !isMember,
       side: 'right',
     },
     {
@@ -87,7 +130,7 @@ const AccountPage: NextPage = () => {
     { title: accountName, href: `/${accountName}` },
   ];
 
-  if (!loading && !data?.account) {
+  if (!props.data?.account) {
     return (
       <Layout title={`404 not found`}>
         <_404 
@@ -101,7 +144,13 @@ const AccountPage: NextPage = () => {
   };
 
   return (
-    <Layout padding={0} title={`${accountName}`}>
+    <Layout 
+      padding={0} 
+      title={`${accountName}`} 
+      description={meta?.short_description}
+      image={meta?.image}
+      url={`app.valist.io/${props.accountName}/${props.projectName}`}
+    >
       <Group mt={40} pl={40} position="apart">
         <Breadcrumbs items={breadcrumbs} />
         { showInfo &&
@@ -116,12 +165,12 @@ const AccountPage: NextPage = () => {
           <Avatar 
             radius="md"
             size={92} 
-            src={meta?.image} 
+            src={meta?.image || props.meta?.image} 
           />
           <Stack justify="space-between">
             <Stack spacing={0}>
               <Title order={3}>{accountName}</Title>
-              <Text color="gray.3">{meta?.name}</Text>
+              <Text color="gray.3">{props.meta?.name}</Text>
             </Stack>
             <Group spacing={5}>
               <Icon.Users size={20} color="#9B9BB1" />
@@ -129,8 +178,8 @@ const AccountPage: NextPage = () => {
                 {members.length} {members.length == 1 ? 'Member' : 'Members'}
               </Text>
               <Icon.World size={20} color="#9B9BB1" />
-              {meta?.external_url && 
-                <Anchor color="gray.3" target="_blank" href={meta?.external_url}>
+              {props.meta?.external_url && 
+                <Anchor color="gray.3" target="_blank" href={props.meta?.external_url}>
                   Website
                 </Anchor>
               }
@@ -173,11 +222,11 @@ const AccountPage: NextPage = () => {
                         <Text>Members</Text>
                         <MemberStack size={28} members={members.map((member: any) => member.id)} />
                       </Group>
-                      {meta?.external_url &&
+                      {props.meta?.external_url &&
                         <Group position="apart">
                           <Text>Website</Text>
-                          <Anchor target="_blank" href={meta?.external_url}>
-                            {meta?.external_url}
+                          <Anchor target="_blank" href={props.meta?.external_url}>
+                            {props.meta?.external_url}
                           </Anchor>
                         </Group>
                       }
