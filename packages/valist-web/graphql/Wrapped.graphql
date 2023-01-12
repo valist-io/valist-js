@@ -1,14 +1,21 @@
-query Wrapped($address: String) {
-  users(where:{id: $address}) {
-      id
-      projects {
-        id
-        name
-        metaURI
-      }
-      accounts {
-        id
-        name
-      }
+query ValistWrapped($sender: String) {
+    logs(
+        where: { sender: $sender, blockTime_lte: "1672559999" },
+        orderBy: blockTime,
+        orderDirection: asc
+    ) {
+        type
+        project {
+            account {
+                name
+            }
+            name
+            metaURI
+            releases {
+                name
+            }
+        }
+        sender
+        blockTime
     }
 }

@@ -63,7 +63,8 @@ export function WrappedModal(props: WrappedModalProps) {
             </div>
           </Flex>
 
-          <Button onClick={() => router.push(`/-/wrapped/${props.address}`)} style={{ marginTop: 112 }}>Download report</Button>
+          <Button onClick={() => router.push(`/-/wrapped/${props.address}`)} style={{ marginTop: 112 }}>Link to Wrapped PAge</Button>
+          <Button onClick={() => window.open("https://twitter.com/intent/tweet?text=IPFS%20image%20preview%20test.%20https://gateway.pinata.cloud/ipfs/QmWdsa9gxE4cmrWQZPLLBuqCk4ecwKYSNXxPurxDAKgCBX")}>Tweet Image</Button>
         </Grid.Col>
         <Grid.Col md={6} py={40} px={32} style={{ background: 'linear-gradient(270deg, #8680F8 0.01%, #4152CF 100%)' }}>
           <Flex
