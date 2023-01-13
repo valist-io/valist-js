@@ -27,7 +27,6 @@ export function WrappedModal(props: WrappedModalProps) {
       centered
       withCloseButton={false}
       style={{ backgroundColor: '#ffffff' }}
-      id="test"
     >
       <Grid>
         <Grid.Col md={6} p={40}>
@@ -75,7 +74,7 @@ export function WrappedModal(props: WrappedModalProps) {
             mb={19}
             gap={16}
           >
-            <Text size={90} color={'#F79009'} style={{ lineHeight: 1 }}>
+            <Text id="test" size={90} color={'#F79009'} style={{ lineHeight: 1 }}>
               {props.projects.length}
             </Text>
             <div>
