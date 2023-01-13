@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import edgeChromium from 'chrome-aws-lambda';
+import puppeteer from 'puppeteer-core';
 
 export default async function stats(req: NextApiRequest, res: NextApiResponse<any>) {
   if (req.method !== 'GET') {
@@ -11,7 +12,6 @@ export default async function stats(req: NextApiRequest, res: NextApiResponse<an
   const LOCAL_CHROME_EXECUTABLE = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
   const executablePath = await edgeChromium.executablePath || LOCAL_CHROME_EXECUTABLE;
 
-  const puppeteer = require("puppeteer");
   const browser = await puppeteer.launch({
     defaultViewport: {
       width: 800,
