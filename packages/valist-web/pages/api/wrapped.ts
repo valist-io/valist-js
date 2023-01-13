@@ -25,8 +25,6 @@ export default async function stats(req: NextApiRequest, res: NextApiResponse<an
     <html>
     <head>
       <meta property="twitter:image" content="data:image/png;base64,${data}" />
-
-      {/* Open Graph Tags */}
       <meta property="og:title" content="${address}" />}
       <meta property="og:type" content="website" />
       <meta property="og:url" content="https://app.valist.io" />
