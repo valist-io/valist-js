@@ -1,8 +1,7 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
 import edgeChromium from 'chrome-aws-lambda';
 import puppeteer from 'puppeteer-core';
 
-export default async function stats(req: NextApiRequest, res: NextApiResponse<any>) {
+module.exports = async (req: { method: string; query: { address: any; }; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { message: string; }): void; new(): any; }; }; send: (arg0: string) => void; }) => {
   if (req.method !== 'GET') {
     res.status(400).send({ message: 'Only GET requests allowed' });
     return;
