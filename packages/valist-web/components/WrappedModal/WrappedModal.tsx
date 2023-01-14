@@ -123,7 +123,7 @@ export function WrappedModal(props: WrappedModalProps) {
               Total Releases: {stats.ReleaseCreated}
             </div>
             <div>
-              No. of on-chain transactions: {props.logs.length}
+              No. of on-chain transactions: {stats.TotalTransactions}
             </div>
             <div>
               Software Licenses created: {stats.PriceChanged}
