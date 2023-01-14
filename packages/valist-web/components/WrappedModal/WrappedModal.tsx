@@ -135,16 +135,16 @@ export function WrappedModal(props: WrappedModalProps) {
           
           <div>
             <Text size={12} weight={400} mb={8} color="#CBC9F9">Your First Project</Text>
-            {stats?.firstProject && 
-              <Metadata url={stats.firstProject.metaURI}>
-                {(data: any) => ( 
+            {stats?.FirstProject && 
+              <Metadata url={stats.FirstProject.metaURI}>
+                {(meta: any) => ( 
                   <Flex
                     gap={16}
                   >
-                    <Image height={100} width={130} alt="project-img" src={data?.image} />
+                    <Image height={100} width={130} alt="project-img" src={meta?.image} />
                     <div>
                       <div style={{ fontSize: 14, color: "#FFFFFF", fontWeight: 700 }}>
-                        {data?.name}
+                        
                       </div>
                       <div style={{ fontSize: 12, color: "#FFFFFF", fontWeight: 400, marginBottom: 16 }}>
                         {data?.short_description}

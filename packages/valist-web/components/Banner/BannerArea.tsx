@@ -47,12 +47,8 @@ export function BannerArea(props: BannerProps) {
     Object.entries(banners).forEach(([key, value]) => {
       if (value) bannerKeys.push(key);
     });
-
-    console.log("bannerKeys", bannerKeys);
     
     const randomKey = bannerKeys[Math.floor(Math.random() * bannerKeys.length)];
-
-    console.log('randomKey', randomKey);
 
     setCurrentBanner(randomKey);
     setBannersState(banners);

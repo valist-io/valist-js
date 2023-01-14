@@ -7,6 +7,7 @@ export interface MetadataProps {
 
 export function Metadata(props: MetadataProps) {
   const { data } = useSWRImmutable(props.url);
+
   return (
     <>
       {props.children(data)}

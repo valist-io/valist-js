@@ -1,6 +1,6 @@
 import query from '@/graphql/Wrapped.graphql';
 import client from "@/utils/apollo";
-import { Avatar, Flex, Stack, Text } from '@mantine/core';
+import { Avatar, Flex, Text } from '@mantine/core';
 import Image from 'next/image';
 import axios, { AxiosResponse } from 'axios';
 import { ProjectMeta } from '@valist/sdk';
