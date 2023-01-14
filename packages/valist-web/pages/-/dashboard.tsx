@@ -218,9 +218,6 @@ const IndexPage: NextPage = () => {
       {address && 
         <WrappedModal
           address={address} 
-          projects={projects}
-          releases={[]}
-          logs={logs}
           opened={modalOpen}
           onClose={() => setModalOpen(false)}
         />

@@ -26,9 +26,10 @@ interface Stats {
 }
 
 export const getServerSideProps = async ({ params, res }: any) => {
+  const address = String(params.address).toLowerCase();
   const { data } = await client.query({
     query: query,
-    variables: { sender: String(params.address).toLowerCase() },
+    variables: { sender: address },
   });
 
   const logs: any[] = data.logs;
@@ -51,11 +52,9 @@ export const getServerSideProps = async ({ params, res }: any) => {
   stats['TotalTransactions'] = (Object.values(stats) as number[]).reduce((a: number, b: number) => a + b); // needs to come first
   stats['AccountReleases'] = (Object.values(releases).filter(Boolean) as number[]) || [0, 0].reduce((a: number, b: number) => a + b);
   stats['FirstProject'] = logs.find((event: any) => event.type == 'ProjectCreated')?.project;
-  const rankRes = await axios.get("http://localhost:3000/api/ranking");
+  const rankRes = await axios.get(`/api/ranking?address=${address}`);
   const rank = String(rankRes.data);
 
-
-  // console.log(logs);
   let metaRes: AxiosResponse<any>;
   let meta = {};
 
@@ -138,7 +137,7 @@ export default function WrappedPage(props: { stats: Stats, data: any, logs: any,
           Software Licenses created: {props.stats.PriceChanged}
         </div>
         <div>
-          Valist Ranking: {0}
+          Valist Ranking: {props?.rank || 0}
         </div>
       </Flex>
       

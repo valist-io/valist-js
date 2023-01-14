@@ -9,7 +9,6 @@ import { useEffect, useState } from 'react';
 
 export interface WrappedModalProps {
   address: string;
-  logs: any[];
   loading?: boolean;
   opened: boolean;
   onClose: () => void;
