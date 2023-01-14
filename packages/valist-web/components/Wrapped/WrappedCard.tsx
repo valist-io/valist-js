@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 import { ProjectMeta } from '@valist/sdk';
-import Image from 'next/image';
 
 interface Stats {
   ReleaseCreated?: number,

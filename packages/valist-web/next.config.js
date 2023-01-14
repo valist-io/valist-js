@@ -1,4 +1,7 @@
 /** @type {import('next').NextConfig} */
+const isDev = process.env.NODE_ENV === "development";
+var webpack = require("webpack");
+
 const nextConfig = {
   reactStrictMode: true,
   assetPrefix: process.env.IPFS_BUILD ? './' : undefined,
@@ -31,6 +34,11 @@ const nextConfig = {
       exclude: /node_modules/,
       loader: 'graphql-tag/loader',
     });
+
+    config.plugins.push(
+      new webpack.DefinePlugin({
+        __DEV__: false,
+      }));
 
     const path = require('path');
     config.resolve.alias['bn.js'] = path.resolve(__dirname, '..', '..', 'node_modules', 'bn.js');
