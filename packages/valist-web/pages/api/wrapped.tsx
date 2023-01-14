@@ -2,17 +2,23 @@ import query from '@/graphql/Wrapped.graphql';
 import { WrappedCard } from '@/components/Wrapped/WrappedCard';
 import client from '@/utils/apollo';
 import { ImageResponse } from '@vercel/og';
-import { NextApiRequest } from 'next';
+// eslint-disable-next-line @next/next/no-server-import-in-page
+import { NextRequest } from 'next/server';
 
 export const config = {
   runtime: 'experimental-edge',
 };
 
 export default async function handler(  
-  req: NextApiRequest,
+  req: NextRequest,
 ) {
   
-  const address = "0xbD8C79740Bf625F5054E86a2CE4e73879382f923";
+  const { searchParams } = new URL(req.url);
+
+  const hasAddress = searchParams.has('address');
+  const address = hasAddress
+    ? searchParams.get('address')
+    : '0x';
 
   const { data } = await client.query({
     query: query,
@@ -41,7 +47,6 @@ export default async function handler(
   stats['FirstProject'] = logs.find((event: any) => event.type == 'ProjectCreated')?.project;
   // stats['LatestProject'] = logs.findLast((event: any) => event.type == 'ProjectCreated')?.project;
 
-  // console.log(logs);
   let metaRes: any;
   let meta = {};
 

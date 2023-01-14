@@ -6,6 +6,7 @@ import axios, { AxiosResponse } from 'axios';
 import { ProjectMeta } from '@valist/sdk';
 import { cidRegex } from '@/forms/common';
 import { useEffect } from 'react';
+import Head from 'next/head';
 
 interface Stats {
   ReleaseCreated?: number,
@@ -50,7 +51,9 @@ export const getServerSideProps = async ({ params, res }: any) => {
   stats['TotalTransactions'] = (Object.values(stats) as number[]).reduce((a: number, b: number) => a + b); // needs to come first
   stats['AccountReleases'] = (Object.values(releases).filter(Boolean) as number[]) || [0, 0].reduce((a: number, b: number) => a + b);
   stats['FirstProject'] = logs.find((event: any) => event.type == 'ProjectCreated')?.project;
-  // stats['LatestProject'] = logs.findLast((event: any) => event.type == 'ProjectCreated')?.project;
+  const rankRes = await axios.get("http://localhost:3000/api/ranking");
+  const rank = String(rankRes.data);
+
 
   // console.log(logs);
   let metaRes: AxiosResponse<any>;
@@ -75,6 +78,7 @@ export const getServerSideProps = async ({ params, res }: any) => {
       stats,
       data,
       meta,
+      rank,
       logs,
       address: params.address,
     },
@@ -86,10 +90,11 @@ const normalizeGateway = (url: string) => {
   return match ? `https://gateway.valist.io/ipfs/${match[1]}` : url;
 };
 
-export default function WrappedPage(props: { stats: Stats, data: any, logs: any, meta: ProjectMeta, address: string,}) {
+export default function WrappedPage(props: { stats: Stats, data: any, logs: any, meta: ProjectMeta, address: string, rank: string,}) {
   useEffect(() => {
     // @ts-ignore
     window.data = props.logs;
+    console.log('rank', props.rank);
   }, [props?.logs]);
 
   return (
@@ -133,12 +138,25 @@ export default function WrappedPage(props: { stats: Stats, data: any, logs: any,
           Software Licenses created: {props.stats.PriceChanged}
         </div>
         <div>
-          Valist Ranking: {5}
+          Valist Ranking: {0}
         </div>
       </Flex>
       
       <div>
-        <Text size={12} weight={400} mb={8} color="#CBC9F9">Your First Project</Text>
+        <Head>
+          <meta
+            property="og:image"
+            content={`https//localhost:3000/api/wrapped?address=${props.address}`}
+          />
+
+          <meta 
+            property="twitter:image" 
+            content={`https//localhost:3000/api/wrapped?address=${props.address}`}
+          />
+        </Head>
+        <div style={{ width: 386 }}>
+          <Text size={12} weight={400} mb={8} color="#CBC9F9">Your First Project</Text>
+        </div>
         <Flex
           gap={16}
         >
@@ -149,9 +167,6 @@ export default function WrappedPage(props: { stats: Stats, data: any, logs: any,
             </div>
             <div style={{ fontSize: 12, color: "#FFFFFF", fontWeight: 400, marginBottom: 16 }}>
               {props?.meta?.short_description}
-            </div>
-            <div style={{ fontSize: 12, color: "#FFFFFF", fontWeight: 400 }}>
-              <div style={{ fontWeight: 700 }}>Last Edit: </div>
             </div>
           </div>
         </Flex>
