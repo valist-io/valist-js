@@ -1,12 +1,12 @@
+import query from '@/graphql/Wrapped.graphql';
 import { Flex, Grid, Modal, Text } from '@mantine/core';
 import { Metadata } from '../Metadata';
 import Image from 'next/image';
 import { useClipboard } from '@mantine/hooks';
+import { useQuery } from '@apollo/client';
 
 export interface WrappedModalProps {
   address: string;
-  projects: any[];
-  releases: any[];
   logs: any[];
   loading?: boolean;
   opened: boolean;
@@ -15,6 +15,35 @@ export interface WrappedModalProps {
 
 export function WrappedModal(props: WrappedModalProps) {
   const clipboard = useClipboard({ timeout: 500 });
+
+  const { data } = useQuery(query, {
+    query: query,
+    variables: { sender: String(props.address).toLowerCase() },
+  });
+
+  const logs: any[] = data?.logs || [];
+
+  const stats: any = {};
+  const releases: any = {};
+
+  if (data) {
+    for (let i = 0; i < logs.length; i++) {
+      const type = logs[i]['type'];
+      const count: number = stats[type];
+
+      stats[type] = count ? count + 1 : 1;
+
+      if (type !== 'ProductPurchased' && logs[i]?.project) {
+          const key = `${logs[i]?.project?.account?.name}/${logs[i]?.project?.name}`;
+          releases[key] = logs[i]?.project?.releases.length;
+      }
+    }
+
+    stats['TotalTransactions'] = (Object.values(stats) as number[]).reduce((a: number, b: number) => a + b); // needs to come first
+    stats['AccountReleases'] = (Object.values(releases).filter(Boolean) as number[]) || [0, 0].reduce((a: number, b: number) => a + b);
+    stats['FirstProject'] = logs.find((event: any) => event.type == 'ProjectCreated')?.project;
+    // stats['LatestProject'] = logs.findLast((event: any) => event.type == 'ProjectCreated')?.project;
+  }
 
   return (
     <Modal
@@ -70,7 +99,7 @@ export function WrappedModal(props: WrappedModalProps) {
             gap={16}
           >
             <Text id="test" size={90} color={'#F79009'} style={{ lineHeight: 1 }}>
-              {props.projects.length}
+              {stats.ProjectCreated}
             </Text>
             <div>
               <Text style={{ fontSize: 12,color: '#9B9BB1' }}>
@@ -91,13 +120,13 @@ export function WrappedModal(props: WrappedModalProps) {
             mb={24}
           >
             <div>
-              Total Releases: {props.releases.length}
+              Total Releases: {stats.ReleaseCreated}
             </div>
             <div>
               No. of on-chain transactions: {props.logs.length}
             </div>
             <div>
-              Software Licenses created: {0}
+              Software Licenses created: {stats.PriceChanged}
             </div>
             <div>
               Valist Ranking: {0}
@@ -106,8 +135,8 @@ export function WrappedModal(props: WrappedModalProps) {
           
           <div>
             <Text size={12} weight={400} mb={8} color="#CBC9F9">Your First Project</Text>
-            {props.projects.length != 0 && 
-              <Metadata url={props.projects[0].metaURI}>
+            {stats?.firstProject && 
+              <Metadata url={stats.firstProject.metaURI}>
                 {(data: any) => ( 
                   <Flex
                     gap={16}
