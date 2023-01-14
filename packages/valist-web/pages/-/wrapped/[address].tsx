@@ -146,12 +146,12 @@ export default function WrappedPage(props: { stats: Stats, data: any, logs: any,
         <Head>
           <meta
             property="og:image"
-            content={`https//localhost:3000/api/wrapped?address=${props.address}`}
+            content={`https://app.valist.io/api/wrapped?address=${props.address}`}
           />
 
-          <meta 
+          <meta
             property="twitter:image" 
-            content={`https//localhost:3000/api/wrapped?address=${props.address}`}
+            content={`https://app.valist.io/api/wrapped?address=${props.address}`}
           />
         </Head>
         <div style={{ width: 386 }}>
