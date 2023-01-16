@@ -15,6 +15,8 @@ export default async function handler(
   const VERCEL_URL = process.env.VERCEL_URL || 'https://app.valist.io';
   const { searchParams } = new URL(req.url);
 
+  console.log('URL VALUES', process.env.VERCEL_URL, VERCEL_URL); 
+
   const hasAddress = searchParams.has('address');
   const address = hasAddress
     ? searchParams.get('address')
