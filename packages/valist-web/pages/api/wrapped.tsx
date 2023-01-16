@@ -12,7 +12,9 @@ export const config = {
 export default async function handler(  
   req: NextRequest,
 ) {
-  const VERCEL_URL = process.env.VERCEL_URL || 'https://app.valist.io';
+  const VERCEL_ENV = process.env.VERCEL_ENV;
+  const isProd = (VERCEL_ENV === 'production' || VERCEL_ENV === 'preview');
+  const VERCEL_URL = isProd ? `https://${VERCEL_ENV}` : VERCEL_ENV;
   const { searchParams } = new URL(req.url);
 
   console.log('URL VALUES', process.env.VERCEL_URL, VERCEL_URL); 
