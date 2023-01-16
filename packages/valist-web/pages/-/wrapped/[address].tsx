@@ -7,6 +7,7 @@ import { ProjectMeta } from '@valist/sdk';
 import { cidRegex } from '@/forms/common';
 import { useEffect } from 'react';
 import Head from 'next/head';
+import getConfig from 'next/config';
 
 interface Stats {
   ReleaseCreated?: number,
@@ -25,7 +26,20 @@ interface Stats {
   LatestProject: any,
 }
 
+interface WrappedPageProps {
+  stats: Stats, 
+  data: any, 
+  logs: any, 
+  meta: ProjectMeta, 
+  address: string, 
+  rank: string, 
+  VERCEL_URL: string,
+}
+
 export const getServerSideProps = async ({ params, res }: any) => {
+  const { publicRuntimeConfig } = getConfig();
+  const { VERCEL_URL } = publicRuntimeConfig;
+
   const address = String(params.address).toLowerCase();
   const { data } = await client.query({
     query: query,
@@ -52,7 +66,7 @@ export const getServerSideProps = async ({ params, res }: any) => {
   stats['TotalTransactions'] = (Object.values(stats) as number[]).reduce((a: number, b: number) => a + b); // needs to come first
   stats['AccountReleases'] = (Object.values(releases).filter(Boolean) as number[]) || [0, 0].reduce((a: number, b: number) => a + b);
   stats['FirstProject'] = logs.find((event: any) => event.type == 'ProjectCreated')?.project;
-  const rankRes = await axios.get(`/api/ranking?address=${address}`);
+  const rankRes = await axios.get(`${VERCEL_URL}/api/ranking?address=${address}`);
   const rank = String(rankRes.data);
 
   let metaRes: AxiosResponse<any>;
@@ -60,7 +74,7 @@ export const getServerSideProps = async ({ params, res }: any) => {
 
   try {
     if (stats.FirstProject && stats.FirstProject.metaURI) {
-      metaRes = await axios.get(`https://gateway.valist.io/ipfs/${stats.FirstProject.metaURI.match(cidRegex)[1]}`);
+      metaRes = await axios.get(stats.FirstProject.metaURI);
       meta = metaRes?.data;
     }
   } catch(e) {
@@ -72,6 +86,8 @@ export const getServerSideProps = async ({ params, res }: any) => {
     'public, s-maxage=10, stale-while-revalidate=11',
   );
 
+  console.log('meta', meta);
+
   return {
     props: {
       stats,
@@ -80,6 +96,7 @@ export const getServerSideProps = async ({ params, res }: any) => {
       rank,
       logs,
       address: params.address,
+      VERCEL_URL,
     },
   };
 };
@@ -89,15 +106,17 @@ const normalizeGateway = (url: string) => {
   return match ? `https://gateway.valist.io/ipfs/${match[1]}` : url;
 };
 
-export default function WrappedPage(props: { stats: Stats, data: any, logs: any, meta: ProjectMeta, address: string, rank: string,}) {
+export default function WrappedPage(props: WrappedPageProps) {
   useEffect(() => {
     // @ts-ignore
     window.data = props.logs;
-    console.log('rank', props.rank);
   }, [props?.logs]);
 
+
+  console.log('meta', props.meta);
+
   return (
-    <Flex justify="center" align="center" direction="column" style={{ background: 'linear-gradient(270deg, #8680F8 0.01%, #4152CF 100%)', minHeight: 800 }}>
+    <Flex justify="center" align="center" direction="column" style={{ background: 'linear-gradient(270deg, #8680F8 0.01%, #4152CF 100%)', minHeight: '100vh' }}>
       <Flex
         align="center"
         px={15}
@@ -145,12 +164,12 @@ export default function WrappedPage(props: { stats: Stats, data: any, logs: any,
         <Head>
           <meta
             property="og:image"
-            content={`https://app.valist.io/api/wrapped?address=${props.address}`}
+            content={`${props.VERCEL_URL}/api/wrapped?address=${props.address}`}
           />
 
           <meta
             property="twitter:image" 
-            content={`https://app.valist.io/api/wrapped?address=${props.address}`}
+            content={`${props.VERCEL_URL}/api/wrapped?address=${props.address}`}
           />
         </Head>
         <div style={{ width: 386 }}>
@@ -159,7 +178,7 @@ export default function WrappedPage(props: { stats: Stats, data: any, logs: any,
         <Flex
           gap={16}
         >
-          {props?.meta?.image ? <Image height={100} width={130} alt="project-img" src={normalizeGateway(props.meta.image)} /> : <Avatar size={130} alt="no image here" color="indigo" />}
+          {props?.meta?.image ? <Image height={100} width={130} alt="project-img" src={props.meta.image} /> : <Avatar size={130} alt="no image here" color="indigo" />}
           <div>
             <div style={{ fontSize: 14, color: "#FFFFFF", fontWeight: 700 }}>
               {props?.stats?.FirstProject?.account.name}/{props?.stats?.FirstProject?.name}

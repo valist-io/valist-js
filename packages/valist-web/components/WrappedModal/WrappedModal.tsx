@@ -6,6 +6,7 @@ import { useClipboard } from '@mantine/hooks';
 import { useQuery } from '@apollo/client';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import getConfig from 'next/config';
 
 export interface WrappedModalProps {
   address: string;
@@ -15,8 +16,11 @@ export interface WrappedModalProps {
 }
 
 export function WrappedModal(props: WrappedModalProps) {
+  const { publicRuntimeConfig } = getConfig();
+  const { VERCEL_URL } = publicRuntimeConfig;
+
   const clipboard = useClipboard({ timeout: 500 });
-  const [rank, setRank] = useState();
+  const [rank, setRank] = useState<string>('0');
 
   const { data } = useQuery(query, {
     query: query,
@@ -48,10 +52,10 @@ export function WrappedModal(props: WrappedModalProps) {
 
   useEffect(() => {
     (async () => {
-      const rankRes = await axios.get(`/ranking?address=${props.address}`);
-      setRank(rankRes.data);
+      const rankRes = await axios.get(`${VERCEL_URL}/api/ranking?address=${String(props.address).toLowerCase()}`);
+      setRank(String(rankRes.data || 0));
     })();
-  }, [props.address]);
+  }, [VERCEL_URL, props.address]);
 
   return (
     <Modal
@@ -131,7 +135,7 @@ export function WrappedModal(props: WrappedModalProps) {
               Software Licenses created: {stats.PriceChanged}
             </div>
             <div>
-              Valist Ranking: {0}
+              Valist Ranking: {rank}
             </div>
           </Flex>
           
@@ -146,10 +150,10 @@ export function WrappedModal(props: WrappedModalProps) {
                     <Image height={100} width={130} alt="project-img" src={meta?.image} />
                     <div>
                       <div style={{ fontSize: 14, color: "#FFFFFF", fontWeight: 700 }}>
-                        
+                      {stats?.FirstProject?.account.name}/{stats?.FirstProject?.name}
                       </div>
                       <div style={{ fontSize: 12, color: "#FFFFFF", fontWeight: 400, marginBottom: 16 }}>
-                        {data?.short_description}
+                        {meta?.short_description}
                       </div>
                     </div>
                   </Flex>

@@ -8,6 +8,7 @@ const nextConfig = {
   publicRuntimeConfig: {
     CHAIN_ID: process.env.CHAIN_ID || 137,
     CLIENT_ID: process.env.CLIENT_ID,
+    VERCEL_URL: process.env.VERCEL_URL || `https://app.valist.io`,
   },
   images: {
     remotePatterns: [

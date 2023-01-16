@@ -18,17 +18,16 @@ interface Stats {
   LatestProject: any,
 }
 
-export interface WrappedModalProps {
-  address: string;
-  projects: any[];
-  releases: any[];
-  logs: any[];
-  loading?: boolean;
-  opened: boolean;
-  onClose: () => void;
+export interface WrappedCardProps {
+  stats: Stats, 
+  data: any, 
+  logs: any,
+  meta: ProjectMeta, 
+  address: string,
+  rank: string,
 }
 
-export function WrappedCard(props: { stats: Stats, data: any, logs: any, meta: ProjectMeta, address: string,}) {
+export function WrappedCard(props: WrappedCardProps) {
   return (
     <div style={{ padding: "64px 32px", display: "flex", alignItems: "center", flexDirection: "column", background: 'linear-gradient(270deg, #8680F8 0.01%, #4152CF 100%)', height: 491, width: 450 }}>
       <div style={{ display: 'flex', backgroundColor: '#fae8cf', borderRadius: 8, width: 386, marginBottom: 19 }}>
@@ -52,7 +51,7 @@ export function WrappedCard(props: { stats: Stats, data: any, logs: any, meta: P
           No. of on-chain transactions: {String(props.stats.TotalTransactions)}
         </div>
         <div style={{ display: "flex" }}>
-          Valist Ranking: {}
+          Valist Ranking: {props.rank}
         </div>
       </div>
       <div style={{ display: "flex", flexDirection: "column", width: 386, fontSize: 12, color: "#CBC9F9" }}>

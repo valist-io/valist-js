@@ -4,6 +4,7 @@ import client from '@/utils/apollo';
 import { ImageResponse } from '@vercel/og';
 // eslint-disable-next-line @next/next/no-server-import-in-page
 import { NextRequest } from 'next/server';
+import getConfig from 'next/config';
 
 export const config = {
   runtime: 'experimental-edge',
@@ -12,7 +13,6 @@ export const config = {
 export default async function handler(  
   req: NextRequest,
 ) {
-  
   const { searchParams } = new URL(req.url);
 
   const hasAddress = searchParams.has('address');
@@ -47,15 +47,15 @@ export default async function handler(
   stats['FirstProject'] = logs.find((event: any) => event.type == 'ProjectCreated')?.project;
   // stats['LatestProject'] = logs.findLast((event: any) => event.type == 'ProjectCreated')?.project;
 
+  const rankRes = await fetch(`${process.env.VERCEL_URL}/api/ranking?address=${address}`);
+  const rank = String((await rankRes.text() || '0'));
   let metaRes: any;
   let meta = {};
 
   try {
     if (stats.FirstProject && stats.FirstProject.metaURI) {
-      console.log(stats.FirstProject.metaURI);
       metaRes = await fetch(stats.FirstProject.metaURI);
       meta = await metaRes.json();
-      console.log('meta', meta);
     }
   } catch(e) {
     console.log('Failed to fetch meta!', e);
@@ -68,6 +68,7 @@ export default async function handler(
         data={data}
         logs={logs} 
         meta={meta}
+        rank={rank}
         address={String(address) || ''} 
       />
     ), {
