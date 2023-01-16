@@ -14,7 +14,7 @@ export default async function handler(
 ) {
   const VERCEL_ENV = process.env.VERCEL_ENV;
   const isProd = (VERCEL_ENV === 'production' || VERCEL_ENV === 'preview');
-  const VERCEL_URL = isProd ? `https://${VERCEL_ENV}` : VERCEL_ENV;
+  const VERCEL_URL = isProd ? `https://${process.env.VERCEL_ENV}` : process.env.VERCEL_ENV;
   const { searchParams } = new URL(req.url);
 
   console.log('URL VALUES', process.env.VERCEL_URL, VERCEL_URL); 

@@ -38,7 +38,11 @@ interface WrappedPageProps {
 
 export const getServerSideProps = async ({ params, res }: any) => {
   const { publicRuntimeConfig } = getConfig();
-  const { VERCEL_URL } = publicRuntimeConfig;
+  const VERCEL_ENV = publicRuntimeConfig.VERCEL_ENV;
+  const isProd = (VERCEL_ENV === 'production' || VERCEL_ENV === 'preview');
+  const VERCEL_URL = isProd ? `https://${publicRuntimeConfig.VERCEL_URL}` : publicRuntimeConfig.VERCEL_URL;
+
+  console.log('VERCEL_URL', VERCEL_URL);
 
   const address = String(params.address).toLowerCase();
   const { data } = await client.query({
