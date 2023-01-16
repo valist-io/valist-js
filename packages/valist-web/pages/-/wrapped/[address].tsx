@@ -112,9 +112,6 @@ export default function WrappedPage(props: WrappedPageProps) {
     window.data = props.logs;
   }, [props?.logs]);
 
-
-  console.log('meta', props.meta);
-
   return (
     <Flex justify="center" align="center" direction="column" style={{ background: 'linear-gradient(270deg, #8680F8 0.01%, #4152CF 100%)', minHeight: '100vh' }}>
       <Flex

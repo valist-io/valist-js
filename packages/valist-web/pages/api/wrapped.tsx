@@ -4,7 +4,6 @@ import client from '@/utils/apollo';
 import { ImageResponse } from '@vercel/og';
 // eslint-disable-next-line @next/next/no-server-import-in-page
 import { NextRequest } from 'next/server';
-import getConfig from 'next/config';
 
 export const config = {
   runtime: 'experimental-edge',
@@ -13,6 +12,7 @@ export const config = {
 export default async function handler(  
   req: NextRequest,
 ) {
+  const VERCEL_URL = process.env.VERCEL_URL || 'https://app.valist.io';
   const { searchParams } = new URL(req.url);
 
   const hasAddress = searchParams.has('address');
@@ -47,7 +47,7 @@ export default async function handler(
   stats['FirstProject'] = logs.find((event: any) => event.type == 'ProjectCreated')?.project;
   // stats['LatestProject'] = logs.findLast((event: any) => event.type == 'ProjectCreated')?.project;
 
-  const rankRes = await fetch(`${process.env.VERCEL_URL}/api/ranking?address=${address}`);
+  const rankRes = await fetch(`${VERCEL_URL}/api/ranking?address=${address}`);
   const rank = String((await rankRes.text() || '0'));
   let metaRes: any;
   let meta = {};
@@ -73,7 +73,7 @@ export default async function handler(
       />
     ), {
       width: 450,
-      height: 491,
+      height: 550,
     },
   );
 }

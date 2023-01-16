@@ -29,7 +29,7 @@ export interface WrappedCardProps {
 
 export function WrappedCard(props: WrappedCardProps) {
   return (
-    <div style={{ padding: "64px 32px", display: "flex", alignItems: "center", flexDirection: "column", background: 'linear-gradient(270deg, #8680F8 0.01%, #4152CF 100%)', height: 491, width: 450 }}>
+    <div style={{ padding: "64px 32px", display: "flex", alignItems: "center", flexDirection: "column", background: 'linear-gradient(270deg, #8680F8 0.01%, #4152CF 100%)', height: 550, width: 450 }}>
       <div style={{ display: 'flex', backgroundColor: '#fae8cf', borderRadius: 8, width: 386, marginBottom: 19 }}>
         <div style={{ fontSize: 96, padding: "5px 15px", fontWeight: 700, lineHeight: 1, color: "#F79009" }}>
           {String(props.stats.ProjectCreated)}
@@ -43,12 +43,15 @@ export function WrappedCard(props: WrappedCardProps) {
           </div>
         </div>
       </div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 15, width: 386, border: "0.5px solid #FFFFFF", padding: 16, borderRadius: 8, color: "#FFFFFF", marginBottom: 24 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 15, width: 386, border: "0.5px solid #FFFFFF", padding: 16, borderRadius: 8, color: "#FFFFFF", marginBottom: 24 }}>
         <div style={{ display: "flex" }}>
           Total Releases: {String(props.stats.ReleaseCreated)}
         </div>
         <div style={{ display: "flex" }}>
           No. of on-chain transactions: {String(props.stats.TotalTransactions)}
+        </div>
+        <div style={{ display: "flex" }}>
+          Software Licenses created: {String(props.stats.PriceChanged)}
         </div>
         <div style={{ display: "flex" }}>
           Valist Ranking: {props.rank}
