@@ -17,7 +17,9 @@ export interface WrappedModalProps {
 
 export function WrappedModal(props: WrappedModalProps) {
   const { publicRuntimeConfig } = getConfig();
-  const { VERCEL_URL } = publicRuntimeConfig;
+  const VERCEL_ENV = publicRuntimeConfig.VERCEL_ENV;
+  const isProd = (VERCEL_ENV === 'production' || VERCEL_ENV === 'preview');
+  const VERCEL_URL = isProd ? `https://${publicRuntimeConfig.VERCEL_URL}` : publicRuntimeConfig.VERCEL_URL;
 
   const clipboard = useClipboard({ timeout: 500 });
   const [rank, setRank] = useState<string>('0');
