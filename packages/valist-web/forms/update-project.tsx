@@ -101,10 +101,8 @@ export async function updateProject(
   
     const imgGallery = meta?.gallery?.filter((item: GalleryMeta) => item.type === 'image') || [];
     const isNewYt = ytLink !== values.youTubeLink;
-    if (isNewYt && values.youTubeLink) {
-      meta.gallery = [{ name: '', type: 'youtube', src: values.youTubeLink }, ...imgGallery];
-    } else if (!isNewYt && ytLink) {
-      meta.gallery = [{ name: '', type: 'youtube', src: ytLink }, ...imgGallery];
+    if ((isNewYt && values.youTubeLink) || (!isNewYt && ytLink)) {
+      meta.gallery = [{ name: '', type: 'youtube', src: values.youTubeLink || ytLink }, ...imgGallery];
     } else {
       meta.gallery = imgGallery;
     }

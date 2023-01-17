@@ -198,7 +198,6 @@ const Project: NextPage = () => {
       cache,
       chainId,
     ).then((value: ProjectMeta | undefined) => {
-      console.log('value', value);
       if (value) {
         setOldMeta(value);
         setOldGallery(gallery);
