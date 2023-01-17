@@ -152,8 +152,6 @@ const Project: NextPage = () => {
       prompt_donation: form.values.promptDonation,
     }).split('').sort().join('');
 
-    console.log('isGalleryChange', galleryChange);
-    console.log('metaChange', (prevMeta === curMeta));
     setSubmitDisabled(imgChange && (prevMeta === curMeta));
   }, [form.values, oldMeta, newImage, newMainCapsule, youTubeLink, gallery, oldGallery]);
 

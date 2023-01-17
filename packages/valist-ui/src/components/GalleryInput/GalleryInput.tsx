@@ -44,7 +44,6 @@ export function GalleryInput(props: GalleryInputProps) {
 
   const remove = (index: number) => {
     setIndex(index);
-    console.log('newFiles', files.filter((_file, _index) => _index !== index));
     props.onChange(files.filter((_file, _index) => _index !== index));
   };
 
