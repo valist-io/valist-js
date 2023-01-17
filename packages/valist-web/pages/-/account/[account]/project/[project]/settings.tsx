@@ -78,8 +78,8 @@ const Project: NextPage = () => {
   const [mainCapsule, setMainCapsule] = useState<string>('');
   const [newMainCapsule, setNewMainCapsule] = useState<File | undefined>();
 
-  const [gallery, setGallery] = useState<string[]>([]);
-  const [newGallery, setNewGallery] = useState<(File | string)[]>([]);
+  const [gallery, setGallery] = useState<(File | string)[]>([]);
+  const [oldGallery, setOldGallery] = useState<(File | string)[]>([]);
 
   const [youTubeLink, setYouTubeLink] = useState<string>('');
 
@@ -118,7 +118,9 @@ const Project: NextPage = () => {
       form.setFieldValue('promptDonation', meta.prompt_donation ?? false);
       form.setFieldValue('donationAddress', meta.donation_address || '');
 
-      setGallery(galleryLinks?.map((item: GalleryMeta) => item.src) || []);
+      const _gallery = galleryLinks?.map((item: GalleryMeta) => item.src) || [];
+      setGallery(_gallery);
+      setOldGallery(_gallery);
       meta.main_capsule && setMainCapsule(meta.main_capsule);
       meta.image && setImage(meta.image);
       _youTubeLink && setYouTubeLink(_youTubeLink.src);
@@ -130,7 +132,8 @@ const Project: NextPage = () => {
 
   useEffect(() => {
     const ytChange = form.values.youTubeLink !== youTubeLink;
-    const imgChange = !newImage && !newMainCapsule && newGallery.length < 1 && !ytChange;
+    const galleryChange = gallery.toString() !== oldGallery.toString();
+    const imgChange = !newImage && !newMainCapsule && !galleryChange && !ytChange;
 
     const prevMeta = JSON.stringify(oldMeta)?.split('').sort().join('');
     const curMeta = JSON.stringify({
@@ -149,13 +152,10 @@ const Project: NextPage = () => {
       prompt_donation: form.values.promptDonation,
     }).split('').sort().join('');
 
-    console.log('test', (prevMeta === curMeta));
+    console.log('isGalleryChange', galleryChange);
+    console.log('metaChange', (prevMeta === curMeta));
     setSubmitDisabled(imgChange && (prevMeta === curMeta));
-  }, [form.values, oldMeta, newGallery, newImage, newMainCapsule, youTubeLink]);
-
-  useEffect(() => {
-    console.log('oldMeta', oldMeta);
-  }, [oldMeta]);
+  }, [form.values, oldMeta, newImage, newMainCapsule, youTubeLink, gallery, oldGallery]);
 
   const removeMember = (member: string) => {
     setLoading(true);
@@ -194,7 +194,7 @@ const Project: NextPage = () => {
       youTubeLink,
       newImage,
       newMainCapsule,
-      newGallery,
+      gallery,
       values,
       valist,
       cache,
@@ -203,12 +203,10 @@ const Project: NextPage = () => {
       console.log('value', value);
       if (value) {
         setOldMeta(value);
+        setOldGallery(gallery);
         setNewImage(undefined);
         setNewMainCapsule(undefined);
         setYouTubeLink(form.values.youTubeLink);
-
-        const galleryLinks = value.gallery?.filter((item: GalleryMeta) => item.type === 'image');
-        setGallery(galleryLinks?.map((item: GalleryMeta) => item.src) || []);
         setMainCapsule(value.main_capsule || '');
         setImage(value.image || '');
       };
@@ -442,8 +440,8 @@ const Project: NextPage = () => {
               <Title order={2}>Gallery Images</Title>
               <Text color="dimmed">Additional images of your game or app. Recommended size is (1280x720 or 1920x1080).</Text>
               <GalleryInput
-                onChange={setNewGallery}
-                value={newGallery.length > 0 ? newGallery : gallery}
+                onChange={setGallery}
+                value={gallery}
                 disabled={loading}
               />
             </Stack>

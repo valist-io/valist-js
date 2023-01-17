@@ -49,7 +49,7 @@ export async function updateProject(
   ytLink: string,
   image: File | undefined,
   mainCapsule: File | undefined,
-  newGallery: (File | String)[],
+  gallery: (File | String)[],
   values: FormValues,
   valist: Client,
   cache: ApolloCache<any>,
@@ -69,13 +69,13 @@ export async function updateProject(
       external_url: values.website,
       type: values.type,
       tags: values.tags,
-      gallery: oldMeta.gallery,
+      gallery: [],
       repository: oldMeta.repository,
       launch_external: values.launchExternal,
       donation_address: values.donationAddress,
       prompt_donation: values.promptDonation,
     };
-
+    
     if (image) {
       meta.image = await valist.writeFile(image, false, (progress: number) => {
         utils.updateLoading(`Uploading ${image.name}: ${progress}%`);
@@ -88,23 +88,18 @@ export async function updateProject(
       });
     };
 
-    const isNewGallery = newGallery.length > 0;
-    if (!meta?.gallery || isNewGallery) meta.gallery = [];
-
-    if (isNewGallery) {
-      for (const item of newGallery) {
-        if (typeof item === 'string') {
-          meta.gallery?.push({ name: '', type: 'image', src: item });
-        } else if (isFile(item)) {
-          const src = await valist.writeFile(item, false, (progress: number) => {  
-            utils.updateLoading(`Uploading ${item.name}: ${progress}%`);
-          });
-          meta.gallery?.push({ name: '', type: 'image', src });
-        }
+    for (const item of gallery) {
+      if (typeof item === 'string') {
+        meta.gallery?.push({ name: '', type: 'image', src: item });
+      } else if (isFile(item)) {
+        const src = await valist.writeFile(item, false, (progress: number) => {  
+          utils.updateLoading(`Uploading ${item.name}: ${progress}%`);
+        });
+        meta.gallery?.push({ name: '', type: 'image', src });
       }
     }
-
-    const imgGallery = meta?.gallery?.filter((item: GalleryMeta) => item.type === 'image');
+  
+    const imgGallery = meta?.gallery?.filter((item: GalleryMeta) => item.type === 'image') || [];
     const isNewYt = ytLink !== values.youTubeLink;
     if (isNewYt && values.youTubeLink) {
       meta.gallery = [{ name: '', type: 'youtube', src: values.youTubeLink }, ...imgGallery];
@@ -114,14 +109,14 @@ export async function updateProject(
       meta.gallery = imgGallery;
     }
 
-    utils.updateLoading('Creating transaction');
-    const transaction = await valist.setProjectMeta(projectId, meta);
+    // utils.updateLoading('Creating transaction');
+    // const transaction = await valist.setProjectMeta(projectId, meta);
     
-    const message = <Anchor target="_blank"  href={getBlockExplorer(chainId, transaction.hash)}>Waiting for transaction - View transaction</Anchor>;
-    utils.updateLoading(message);
+    // const message = <Anchor target="_blank"  href={getBlockExplorer(chainId, transaction.hash)}>Waiting for transaction - View transaction</Anchor>;
+    // utils.updateLoading(message);
 
-    const receipt = await transaction.wait();
-    receipt.events?.forEach(event => handleEvent(event, cache));
+    // const receipt = await transaction.wait();
+    // receipt.events?.forEach(event => handleEvent(event, cache));
 
     return meta;
   } catch(error: any) {
