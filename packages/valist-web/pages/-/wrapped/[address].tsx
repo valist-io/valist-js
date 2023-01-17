@@ -174,7 +174,7 @@ export default function WrappedPage(props: WrappedPageProps) {
 
           {/* Twitter Tags */}
           <meta property="twitter:card" content="summary" />
-          <meta property="twitter:domain" content='valist.io' />
+          <meta property="twitter:site" content='@Valist_io' />
           <meta property="twitter:url" content={`${props.VERCEL_URL}`} />
           <meta property="twitter:title" content={'Valist Wrapped'} />
           <meta property="twitter:description" content={`Checkout ${props.address}`} />
