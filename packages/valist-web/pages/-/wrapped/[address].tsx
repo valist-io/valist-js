@@ -170,7 +170,7 @@ export default function WrappedPage(props: WrappedPageProps) {
           <meta property="og:description" content={`Checkout ${props.address}`} />
           <meta
             property="og:image"
-            content={`/images/logo.png`}
+            content={`${props.VERCEL_URL}/images/logo.png`}
           />
 
           {/* Twitter Tags */}
@@ -181,7 +181,7 @@ export default function WrappedPage(props: WrappedPageProps) {
           <meta property="twitter:description" content={`Checkout ${props.address}`} />
           <meta
             property="twitter:image" 
-            content={`/images/logo.png`}
+            content={`${props.VERCEL_URL}/images/logo.png`}
           />
         </Head>
         <div style={{ width: 386 }}>
