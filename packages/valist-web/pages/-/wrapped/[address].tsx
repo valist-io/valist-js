@@ -170,18 +170,18 @@ export default function WrappedPage(props: WrappedPageProps) {
           <meta property="og:description" content={`Checkout ${props.address}`} />
           <meta
             property="og:image"
-            content={`${props.VERCEL_URL}/images/logo.png`}
+            content={`${props.VERCEL_URL}/api/wrapped?address=${props.address}`}
           />
 
           {/* Twitter Tags */}
-          <meta property="twitter:card" content="summary" />
+          <meta property="twitter:card" content="summary_large_image" />
           <meta property="twitter:site" content='@Valist_io' />
           <meta property="twitter:url" content={`${props.VERCEL_URL}`} />
           <meta property="twitter:title" content={'Valist Wrapped'} />
           <meta property="twitter:description" content={`Checkout ${props.address}`} />
           <meta
             property="twitter:image" 
-            content={`${props.VERCEL_URL}/images/logo.png`}
+            content={`${props.VERCEL_URL}/api/wrapped?address=${props.address}`}
           />
         </Head>
         <div style={{ width: 386 }}>
