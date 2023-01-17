@@ -1,5 +1,4 @@
 /** @type {import('next').NextConfig} */
-const isDev = process.env.NODE_ENV === "development";
 var webpack = require("webpack");
 
 const nextConfig = {

@@ -42,8 +42,6 @@ export const getServerSideProps = async ({ params, res }: any) => {
   const isProd = (VERCEL_ENV === 'production' || VERCEL_ENV === 'preview');
   const VERCEL_URL = isProd ? `https://${publicRuntimeConfig.VERCEL_URL}` : publicRuntimeConfig.VERCEL_URL;
 
-  console.log('VERCEL_URL', VERCEL_URL);
-
   const address = String(params.address).toLowerCase();
   const { data } = await client.query({
     query: query,
@@ -89,8 +87,6 @@ export const getServerSideProps = async ({ params, res }: any) => {
     'Cache-Control',
     'public, s-maxage=10, stale-while-revalidate=11',
   );
-
-  console.log('meta', meta);
 
   return {
     props: {
@@ -163,11 +159,25 @@ export default function WrappedPage(props: WrappedPageProps) {
       
       <div>
         <Head>
+          {/* Basic Tags */}
+          <meta name="title" content={'Valist Wrapped'} />
+          <meta name="description" content={`Checkout ${props.address}`} />
+
+          <meta property="og:title" content={'Valist Wrapped'} />
+          <meta property="og:type" content="website" />
+          <meta property="og:url" content={`${props.VERCEL_URL}`} />
+          <meta property="og:description" content={`Checkout ${props.address}`} />
           <meta
             property="og:image"
             content={`${props.VERCEL_URL}/api/wrapped?address=${props.address}`}
           />
 
+          {/* Twitter Tags */}
+          <meta property="twitter:card" content="summary" />
+          <meta property="twitter:domain" content='valist.io' />
+          <meta property="twitter:url" content={`${props.VERCEL_URL}`} />
+          <meta property="twitter:title" content={'Valist Wrapped'} />
+          <meta property="twitter:description" content={`Checkout ${props.address}`} />
           <meta
             property="twitter:image" 
             content={`${props.VERCEL_URL}/api/wrapped?address=${props.address}`}
