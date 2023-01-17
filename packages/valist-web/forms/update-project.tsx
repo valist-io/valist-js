@@ -45,8 +45,8 @@ const isFile = (file: File | String): file is File => {
 export async function updateProject(
   address: string | undefined,
   projectId: string,
-  oldMeta: ProjectMeta | undefined,
-  youTubeLink: string,
+  oldMeta: ProjectMeta,
+  ytLink: string,
   image: File | undefined,
   mainCapsule: File | undefined,
   newGallery: (File | String)[],
@@ -54,12 +54,11 @@ export async function updateProject(
   valist: Client,
   cache: ApolloCache<any>,
   chainId: number,
-): Promise<boolean | undefined> {
+): Promise<undefined | ProjectMeta> {
   try {
-  	utils.hideError();
-
+    utils.hideError();
     if (!address) throw new Error('connect your wallet to continue');
-    if (!oldMeta) return;
+    utils.showLoading('Uploading files');
 
     const meta: ProjectMeta = {
       image: oldMeta.image,
@@ -76,9 +75,7 @@ export async function updateProject(
       donation_address: values.donationAddress,
       prompt_donation: values.promptDonation,
     };
-    
-    utils.showLoading('Uploading files');
-    
+
     if (image) {
       meta.image = await valist.writeFile(image, false, (progress: number) => {
         utils.updateLoading(`Uploading ${image.name}: ${progress}%`);
@@ -91,16 +88,10 @@ export async function updateProject(
       });
     };
 
-    const ytChanged = values.youTubeLink !== youTubeLink;
-    const galleryChanged = newGallery.length > 0;
-    if (ytChanged || galleryChanged) meta.gallery = [];
+    const isNewGallery = newGallery.length > 0;
+    if (!meta?.gallery || isNewGallery) meta.gallery = [];
 
-    if (values.youTubeLink) {
-      const src = values.youTubeLink;
-      meta.gallery?.push({ name: '', type: 'youtube', src });
-    };
-
-    if (newGallery.length > 0) {
+    if (isNewGallery) {
       for (const item of newGallery) {
         if (typeof item === 'string') {
           meta.gallery?.push({ name: '', type: 'image', src: item });
@@ -110,12 +101,17 @@ export async function updateProject(
           });
           meta.gallery?.push({ name: '', type: 'image', src });
         }
-      };
-    } else {
-      const galleryImages = oldMeta.gallery?.filter((item: GalleryMeta) => item.type === 'image') || [];
-      for (const item of galleryImages) {
-        meta.gallery?.push(item);
       }
+    }
+
+    const imgGallery = meta?.gallery?.filter((item: GalleryMeta) => item.type === 'image');
+    const isNewYt = ytLink !== values.youTubeLink;
+    if (isNewYt && values.youTubeLink) {
+      meta.gallery = [{ name: '', type: 'youtube', src: values.youTubeLink }, ...imgGallery];
+    } else if (!isNewYt && ytLink) {
+      meta.gallery = [{ name: '', type: 'youtube', src: ytLink }, ...imgGallery];
+    } else {
+      meta.gallery = imgGallery;
     }
 
     utils.updateLoading('Creating transaction');
@@ -127,13 +123,13 @@ export async function updateProject(
     const receipt = await transaction.wait();
     receipt.events?.forEach(event => handleEvent(event, cache));
 
-    return true;
+    return meta;
   } catch(error: any) {
     utils.showError(normalizeError(error));
   } finally {
     utils.hideLoading();
   };
-};
+}
 
 export async function addProjectMember(
   address: string | undefined,

@@ -60,6 +60,7 @@ const Project: NextPage = () => {
 
   const { data, loading:gqLoading } = useQuery(query, { variables: { projectId } });
   const { data: meta } = useSWRImmutable<ProjectMeta>(data?.project?.metaURI);
+  const [oldMeta, setOldMeta] = useState<ProjectMeta>({});
 
   const accountMembers = data?.project?.account?.members ?? [];
   const projectMembers = data?.project?.members ?? [];
@@ -122,6 +123,7 @@ const Project: NextPage = () => {
       meta.image && setImage(meta.image);
       _youTubeLink && setYouTubeLink(_youTubeLink.src);
 
+      setOldMeta(meta);
       setLoading(false);
     }
   }, [meta]);
@@ -130,25 +132,30 @@ const Project: NextPage = () => {
     const ytChange = form.values.youTubeLink !== youTubeLink;
     const imgChange = !newImage && !newMainCapsule && newGallery.length < 1 && !ytChange;
 
-    const prevMeta = JSON.stringify(meta)?.split('').sort().join('');
+    const prevMeta = JSON.stringify(oldMeta)?.split('').sort().join('');
     const curMeta = JSON.stringify({
-      image: meta?.image,
-      main_capsule: meta?.main_capsule,
+      image: oldMeta?.image,
+      main_capsule: oldMeta?.main_capsule,
       name: form.values.displayName,
       short_description: form.values.shortDescription,
       description: form.values.description,
       external_url: form.values.website,
       type: form.values.type,
       tags: form.values.tags,
-      gallery: meta?.gallery,
-      repository: meta?.repository,
+      gallery: oldMeta?.gallery,
+      repository: oldMeta?.repository,
       launch_external: form.values.launchExternal,
       donation_address: form.values.donationAddress,
       prompt_donation: form.values.promptDonation,
     }).split('').sort().join('');
 
+    console.log('test', (prevMeta === curMeta));
     setSubmitDisabled(imgChange && (prevMeta === curMeta));
-  }, [form.values, meta, newGallery, newImage, newMainCapsule, youTubeLink]);
+  }, [form.values, oldMeta, newGallery, newImage, newMainCapsule, youTubeLink]);
+
+  useEffect(() => {
+    console.log('oldMeta', oldMeta);
+  }, [oldMeta]);
 
   const removeMember = (member: string) => {
     setLoading(true);
@@ -183,7 +190,7 @@ const Project: NextPage = () => {
     updateProject(
       address,
       projectId,
-      meta,
+      oldMeta,
       youTubeLink,
       newImage,
       newMainCapsule,
@@ -192,7 +199,20 @@ const Project: NextPage = () => {
       valist,
       cache,
       chainId,
-    ).finally(() => {
+    ).then((value: ProjectMeta | undefined) => {
+      console.log('value', value);
+      if (value) {
+        setOldMeta(value);
+        setNewImage(undefined);
+        setNewMainCapsule(undefined);
+        setYouTubeLink(form.values.youTubeLink);
+
+        const galleryLinks = value.gallery?.filter((item: GalleryMeta) => item.type === 'image');
+        setGallery(galleryLinks?.map((item: GalleryMeta) => item.src) || []);
+        setMainCapsule(value.main_capsule || '');
+        setImage(value.image || '');
+      };
+    }).finally(() => {
       setLoading(false);  
     });
   };
