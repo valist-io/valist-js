@@ -109,14 +109,14 @@ export async function updateProject(
       meta.gallery = imgGallery;
     }
 
-    // utils.updateLoading('Creating transaction');
-    // const transaction = await valist.setProjectMeta(projectId, meta);
+    utils.updateLoading('Creating transaction');
+    const transaction = await valist.setProjectMeta(projectId, meta);
     
-    // const message = <Anchor target="_blank"  href={getBlockExplorer(chainId, transaction.hash)}>Waiting for transaction - View transaction</Anchor>;
-    // utils.updateLoading(message);
+    const message = <Anchor target="_blank"  href={getBlockExplorer(chainId, transaction.hash)}>Waiting for transaction - View transaction</Anchor>;
+    utils.updateLoading(message);
 
-    // const receipt = await transaction.wait();
-    // receipt.events?.forEach(event => handleEvent(event, cache));
+    const receipt = await transaction.wait();
+    receipt.events?.forEach(event => handleEvent(event, cache));
 
     return meta;
   } catch(error: any) {
