@@ -46,6 +46,7 @@ export async function updateProject(
   address: string | undefined,
   projectId: string,
   oldMeta: ProjectMeta | undefined,
+  youTubeLink: string,
   image: File | undefined,
   mainCapsule: File | undefined,
   newGallery: (File | String)[],
@@ -90,24 +91,31 @@ export async function updateProject(
       });
     };
 
+    const ytChanged = values.youTubeLink !== youTubeLink;
+    const galleryChanged = newGallery.length > 0;
+    if (ytChanged || galleryChanged) meta.gallery = [];
+
     if (values.youTubeLink) {
       const src = values.youTubeLink;
       meta.gallery?.push({ name: '', type: 'youtube', src });
     };
 
     if (newGallery.length > 0) {
-      const gallery: GalleryMeta[] = [];
       for (const item of newGallery) {
         if (typeof item === 'string') {
-          gallery?.push({ name: '', type: 'image', src: item });
+          meta.gallery?.push({ name: '', type: 'image', src: item });
         } else if (isFile(item)) {
           const src = await valist.writeFile(item, false, (progress: number) => {  
             utils.updateLoading(`Uploading ${item.name}: ${progress}%`);
           });
-          gallery?.push({ name: '', type: 'image', src });
+          meta.gallery?.push({ name: '', type: 'image', src });
         }
-        meta.gallery = gallery;
       };
+    } else {
+      const galleryImages = oldMeta.gallery?.filter((item: GalleryMeta) => item.type === 'image') || [];
+      for (const item of galleryImages) {
+        meta.gallery?.push(item);
+      }
     }
 
     utils.updateLoading('Creating transaction');

@@ -184,6 +184,7 @@ const Project: NextPage = () => {
       address,
       projectId,
       meta,
+      youTubeLink,
       newImage,
       newMainCapsule,
       newGallery,
