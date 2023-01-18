@@ -42,7 +42,8 @@ import {
   GalleryInput,
   _404,
 } from '@valist/ui';
-import { ProjectMeta } from '@valist/sdk';
+import { ProjectMeta, GalleryMeta } from '@valist/sdk';
+import { getYouTubeEmbedURL } from '@valist/ui/dist/components/Gallery';
 
 const Project: NextPage = () => {
   const router = useRouter();
@@ -59,20 +60,28 @@ const Project: NextPage = () => {
 
   const { data, loading:gqLoading } = useQuery(query, { variables: { projectId } });
   const { data: meta } = useSWRImmutable<ProjectMeta>(data?.project?.metaURI);
+  const [oldMeta, setOldMeta] = useState<ProjectMeta>({});
 
   const accountMembers = data?.project?.account?.members ?? [];
   const projectMembers = data?.project?.members ?? [];
 
   const [activeTab, setActiveTab] = useState<string | null>();
-  const [repo, setRepo] = useState<string>('');
-  const [isLinked, setIsLinked] = useState<boolean>(false);
 
   // form values
   const openRef = useRef<() => void>(null);
-  const [loading, setLoading] = useState(true);
-  const [image, setImage] = useState<File | string>('');
-  const [mainCapsule, setMainCapsule] = useState<File | string>('');
-  const [gallery, setGallery] = useState<File[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [submitDisabled, setSubmitDisabled] = useState<boolean>(true);
+
+  const [image, setImage] = useState<string>('');
+  const [newImage, setNewImage] = useState<File | undefined>();
+
+  const [mainCapsule, setMainCapsule] = useState<string>('');
+  const [newMainCapsule, setNewMainCapsule] = useState<File | undefined>();
+
+  const [gallery, setGallery] = useState<(File | string)[]>([]);
+  const [oldGallery, setOldGallery] = useState<(File | string)[]>([]);
+
+  const [youTubeLink, setYouTubeLink] = useState<string>('');
 
   const form = useForm<FormValues>({
     validate: zodResolver(schema),
@@ -95,28 +104,56 @@ const Project: NextPage = () => {
   // wait for metadata to load
   useEffect(() => {
     if (meta) {
-      const youTubeLink = meta.gallery?.find((item: any) => item.type === 'youtube');
-      const galleryLinks = meta.gallery?.filter((item: any) => item.type === 'image');
+      const _youTubeLink = meta.gallery?.find((item: GalleryMeta) => item.type === 'youtube');
+      const galleryLinks = meta.gallery?.filter((item: GalleryMeta) => item.type === 'image');
 
       form.setFieldValue('displayName', meta.name ?? '');
       form.setFieldValue('website', meta.external_url ?? '');
       form.setFieldValue('description', meta.description ?? '');
       form.setFieldValue('shortDescription', meta.short_description ?? '');
-      form.setFieldValue('youTubeLink', youTubeLink?.src ?? '');
+      form.setFieldValue('youTubeLink', _youTubeLink?.src ?? '');
       form.setFieldValue('tags', meta.tags ?? []);
       form.setFieldValue('type', meta.type ?? '');
       form.setFieldValue('launchExternal', meta.launch_external ?? false);
       form.setFieldValue('promptDonation', meta.prompt_donation ?? false);
       form.setFieldValue('donationAddress', meta.donation_address || '');
 
-      setGallery(galleryLinks?.map((item: any) => item.src) ?? []);
-      setMainCapsule(meta.main_capsule || '');
-      setImage(meta.image || '');
-      setRepo(meta.repository || '');
-      if (meta.repository) setIsLinked(true);
+      const _gallery = galleryLinks?.map((item: GalleryMeta) => item.src) || [];
+      setGallery(_gallery);
+      setOldGallery(_gallery);
+      meta.main_capsule && setMainCapsule(meta.main_capsule);
+      meta.image && setImage(meta.image);
+      _youTubeLink && setYouTubeLink(_youTubeLink.src);
+
+      setOldMeta(meta);
       setLoading(false);
     }
   }, [meta]);
+
+  useEffect(() => {
+    const ytChange = form.values.youTubeLink !== youTubeLink;
+    const galleryChange = gallery.toString() !== oldGallery.toString();
+    const imgChange = !newImage && !newMainCapsule && !galleryChange && !ytChange;
+
+    const prevMeta = JSON.stringify(oldMeta)?.split('').sort().join('');
+    const curMeta = JSON.stringify({
+      image: oldMeta?.image,
+      main_capsule: oldMeta?.main_capsule,
+      name: form.values.displayName,
+      short_description: form.values.shortDescription,
+      description: form.values.description,
+      external_url: form.values.website,
+      type: form.values.type,
+      tags: form.values.tags,
+      gallery: oldMeta?.gallery,
+      repository: oldMeta?.repository,
+      launch_external: form.values.launchExternal,
+      donation_address: form.values.donationAddress,
+      prompt_donation: form.values.promptDonation,
+    }).split('').sort().join('');
+
+    setSubmitDisabled(imgChange && (prevMeta === curMeta));
+  }, [form.values, oldMeta, newImage, newMainCapsule, youTubeLink, gallery, oldGallery]);
 
   const removeMember = (member: string) => {
     setLoading(true);
@@ -151,15 +188,26 @@ const Project: NextPage = () => {
     updateProject(
       address,
       projectId,
-      image,
-      mainCapsule,
+      oldMeta,
+      youTubeLink,
+      newImage,
+      newMainCapsule,
       gallery,
-      repo,
       values,
       valist,
       cache,
       chainId,
-    ).finally(() => {
+    ).then((value: ProjectMeta | undefined) => {
+      if (value) {
+        setOldMeta(value);
+        setOldGallery(gallery);
+        setNewImage(undefined);
+        setNewMainCapsule(undefined);
+        setYouTubeLink(form.values.youTubeLink);
+        setMainCapsule(value.main_capsule || '');
+        setImage(value.image || '');
+      };
+    }).finally(() => {
       setLoading(false);  
     });
   };
@@ -208,8 +256,8 @@ const Project: NextPage = () => {
                 <ImageInput 
                   width={300}
                   height={300}
-                  onChange={setImage} 
-                  value={image}
+                  onChange={setNewImage} 
+                  value={newImage || image}
                   disabled={loading}
                   openRef={openRef}
                 />
@@ -287,7 +335,7 @@ const Project: NextPage = () => {
             <Group mt="lg">
               <Button 
                 type="submit"
-                disabled={loading}
+                disabled={submitDisabled || loading}
               >
                 Save
               </Button>
@@ -320,7 +368,7 @@ const Project: NextPage = () => {
             <Group mt="lg">
               <Button
                 type="submit"
-                disabled={loading}
+                disabled={submitDisabled || loading}
               >
                 Save
               </Button>
@@ -366,13 +414,24 @@ const Project: NextPage = () => {
                 disabled={loading}
                 {...form.getInputProps('youTubeLink')}
               />
+              {form.values.youTubeLink && 
+                <iframe
+                  width="100%"
+                  style={{ minHeight: 353, maxWidth: 616 }}
+                  src={getYouTubeEmbedURL(form.values.youTubeLink)}
+                  title="YouTube video player"
+                  frameBorder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowFullScreen
+                />
+              }
               <Title order={2}>Header Image</Title>
               <Text color="dimmed">This can be the cover image of your game or app. Recommended size is (616x353).</Text>
               <ImageInput 
                 width={616}
                 height={353}
-                onChange={setMainCapsule} 
-                value={mainCapsule}
+                onChange={setNewMainCapsule} 
+                value={newMainCapsule || mainCapsule}
                 disabled={loading}
               />
               <Title order={2}>Gallery Images</Title>
@@ -386,7 +445,7 @@ const Project: NextPage = () => {
             <Group mt="lg">
               <Button 
                 type="submit"
-                disabled={loading}
+                disabled={submitDisabled || loading}
               >
                 Save
               </Button>

@@ -43,7 +43,7 @@ export async function createProject(
   accountId: string | undefined,
   image: File | undefined,
   mainCapsule: File | undefined,
-  gallery: File[],
+  gallery: (File | string)[],
   members: string[],
   values: FormValues,
   valist: Client,
@@ -89,10 +89,14 @@ export async function createProject(
     }
 
     for (const item of gallery) {
-      const src = await valist.writeFile(item, false, (progress: number) => {  
-        utils.updateLoading(`Uploading ${item.name}: ${progress}%`);
-      });
-      meta.gallery?.push({ name: '', type: 'image', src });
+      if (typeof item !== 'string') {
+        const src = await valist.writeFile(item, false, (progress: number) => {  
+          utils.updateLoading(`Uploading ${item.name}: ${progress}%`);
+        });
+        meta.gallery?.push({ name: '', type: 'image', src });
+      } else {
+        meta.gallery?.push({ name: '', type: 'image', src: item });
+      }
     }
 
     utils.updateLoading('Creating transaction');

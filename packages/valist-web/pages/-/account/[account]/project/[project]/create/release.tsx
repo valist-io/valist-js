@@ -116,7 +116,6 @@ const CreateReleasePage: NextPage = () => {
     const _filesObject = { ...filesObject };
     _filesObject.web = files;
     setFilesObject(_filesObject);
-    console.log('filesObject', filesObject);
   }, [files]);
 
   return (
