@@ -27,7 +27,7 @@ const Protected: NextPage<SiweProps> = (props) => {
       const callbackUrl = "/protected";
 
       const message = new SiweMessage({
-        domain: window.location.host,
+        domain: 'app.valist.io',
         address: address,
         statement: "Sign in with Ethereum to Valist.",
         uri: window.location.origin,

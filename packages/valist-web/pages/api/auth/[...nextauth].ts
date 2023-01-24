@@ -22,11 +22,11 @@ export default async function auth(req: any, res: any) {
       async authorize(credentials) {
         try {
           const siwe = new SiweMessage(JSON.parse(credentials?.message || "{}"));
-          const nextAuthUrl = new URL(process.env.NEXTAUTH_URL as string);
+          // const nextAuthUrl = process.env.VERCEL_URL ? new URL(`https://${process.env.VERCEL_URL}`) : new URL(process.env.NEXTAUTH_URL as string);
 
           const result = await siwe.verify({
             signature: credentials?.signature || "",
-            domain: nextAuthUrl.host,
+            domain: 'app.valist.io',
             nonce: await getCsrfToken({ req }),
           });
 
