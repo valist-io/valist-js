@@ -14,6 +14,9 @@ import { WagmiProvider, rehydrate } from '@/components/WagmiProvider';
 import { RainbowKitProvider } from '@/components/RainbowKitProvider';
 import { AccountProvider } from '@/components/AccountProvider';
 
+import { Session } from "next-auth";
+import { SessionProvider } from "next-auth/react";
+
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 const resolveName = (address: string) => useEnsName({ address, chainId: 1 }); // eslint-disable-line react-hooks/rules-of-hooks
 
@@ -26,7 +29,7 @@ const components = {
   },
 };
 
-function ValistApp(props: AppProps) {
+function ValistApp(props: AppProps<{session: Session}>) {
   const { Component, pageProps } = props;
   
   const systemColorScheme = useColorScheme();
@@ -44,19 +47,21 @@ function ValistApp(props: AppProps) {
     <SWRConfig value={{ fetcher }}>
       <AddressProvider value={{ resolveName }}>
         <WagmiProvider>
-          <RainbowKitProvider colorScheme={colorScheme}>
-            <ApolloProvider>
-              <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
-                <ThemeProvider theme={{ colorScheme, components }}>
-                  <NotificationsProvider>
-                    <AccountProvider>
-                      <Component {...pageProps} />
-                    </AccountProvider>
-                  </NotificationsProvider>
-                </ThemeProvider>
-              </ColorSchemeProvider>
-            </ApolloProvider>
-          </RainbowKitProvider>
+            <RainbowKitProvider colorScheme={colorScheme}>
+              <ApolloProvider>
+                <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
+                  <ThemeProvider theme={{ colorScheme, components }}>
+                    <NotificationsProvider>
+                      <AccountProvider>
+                        <SessionProvider session={pageProps?.session} refetchInterval={0}>
+                          <Component {...pageProps} />
+                        </SessionProvider>
+                      </AccountProvider>
+                    </NotificationsProvider>
+                  </ThemeProvider>
+                </ColorSchemeProvider>
+              </ApolloProvider>
+            </RainbowKitProvider>
         </WagmiProvider>
       </AddressProvider>
     </SWRConfig>
