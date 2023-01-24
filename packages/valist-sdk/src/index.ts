@@ -77,7 +77,7 @@ export async function create(providerOrSigner: Provider, options: Partial<Option
   const license = new ethers.Contract(licenseAddress, contracts.licenseABI, provider);
 
   // @ts-expect-error
-  const ipfs = createIPFS(options.ipfsHost || 'https://pin-infura.valist.io');
+  const ipfs = createIPFS(options.ipfsHost || 'https://pin-1.valist.io');
   const ipfsGateway = options.ipfsGateway || 'https://gateway.valist.io';
 
   return new Client(registry, license, ipfs, ipfsGateway, subgraphUrl, signer, options.metaTx);
