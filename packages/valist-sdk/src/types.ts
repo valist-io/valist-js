@@ -41,6 +41,25 @@ export class ProjectMeta {
 	public launch_external?: boolean;
 	/** repository used for deployments */
 	public repository?: string;
+	/** hardware requirements */
+	public systemRequirements?: {
+		cpu: string;
+		gpu: string;
+		memory: string;
+		disk: string;
+	};
+	/** supported compatibility layers (wine)  */
+	public wineSupport?: {
+		mac: boolean;
+		linux: boolean;
+	}
+	/** supported networks for smart contracts */
+	public networks?: NetworkMeta[]
+}
+
+export class NetworkMeta {
+	chainId?: string;
+	address?: string[];
 }
 
 export class GalleryMeta {
@@ -105,13 +124,14 @@ export class ReleaseMeta {
 	public platforms: PlatformsMeta;
 }
 
-export type SupportedPlatform = 'web' | 'darwin_amd64' | 'darwin_arm64' | 'linux_amd64' | 'linux_arm64' | 'windows_amd64' | 'android_arm64';
+export type SupportedPlatform = 'web' | 'darwin_amd64' | 'darwin_arm64' | 'linux_amd64' | 'linux_arm64' | 'windows_amd64' | 'windows_arm64' | 'android_arm64';
 
-export const supportedPlatforms: SupportedPlatform[] = ['web', 'darwin_amd64', 'darwin_arm64', 'linux_amd64', 'linux_arm64', 'windows_amd64', 'android_arm64'];
+export const supportedPlatforms: SupportedPlatform[] = ['web', 'darwin_amd64', 'darwin_arm64', 'linux_amd64', 'linux_arm64', 'windows_arm64', 'windows_amd64', 'android_arm64'];
 
 export const platformNames: Record<SupportedPlatform, string> = {
 	"web": "Web build",
 	"windows_amd64": "Windows (amd64 / Intel)",
+	"windows_arm64": "Windows (arm64)",
 	"linux_amd64": "Linux (amd64 / Intel)",
 	"linux_arm64": "Linux (arm64)",
 	"darwin_arm64": "macOS (arm64 / Apple Silicon)",
@@ -170,6 +190,11 @@ export class PlatformsMeta {
 		name: string,
 		external_url: string,
 	};
+	/** windows/arm64 path */
+	public windows_arm64?: {
+		name: string;
+		external_url: string;
+	};
 }
 
 export class ReleaseMetaV1 {
@@ -210,6 +235,8 @@ export class InstallMeta {
 	public windows_386?: string;
 	/** windows/amd64 path */
 	public windows_amd64?: string;
+	/** windows/arm64 path */
+	public windows_arm64?: string;
 }
 
 export function isReleaseMetaV1(releaseMeta: ReleaseMeta | ReleaseMetaV1): releaseMeta is ReleaseMetaV1 {
@@ -240,6 +267,7 @@ export class ReleaseConfig {
 			darwin_amd64: '',
 			darwin_arm64: '',
 			windows_amd64: '',
+			windows_arm64: '',
 			linux_amd64: '',
 			linux_arm64: '',
 			android_arm64: '',
