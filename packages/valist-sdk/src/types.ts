@@ -235,6 +235,8 @@ export class InstallMeta {
 	public windows_386?: string;
 	/** windows/amd64 path */
 	public windows_amd64?: string;
+	/** windows/arm64 path */
+	public windows_arm64?: string;
 }
 
 export function isReleaseMetaV1(releaseMeta: ReleaseMeta | ReleaseMetaV1): releaseMeta is ReleaseMetaV1 {
