@@ -34,8 +34,7 @@ export function createReadOnly(provider: providers.JsonRpcProvider, options: Par
   const registry = new ethers.Contract(registryAddress, contracts.registryABI, provider);
   const license = new ethers.Contract(licenseAddress, contracts.licenseABI, provider);
 
-  // @ts-expect-error
-  const ipfs = createIPFS(options.ipfsHost || 'https://pin-infura.valist.io');
+  const ipfs = createIPFS({ url: options.ipfsHost || 'https://pin-1.valist.io/api/v0' });
   const ipfsGateway = options.ipfsGateway || 'https://gateway.valist.io';
 
   return new Client(registry, license, ipfs, ipfsGateway, subgraphUrl, undefined, false);
@@ -76,8 +75,19 @@ export async function create(providerOrSigner: Provider, options: Partial<Option
   const registry = new ethers.Contract(registryAddress, contracts.registryABI, provider);
   const license = new ethers.Contract(licenseAddress, contracts.licenseABI, signer);
 
-  // @ts-expect-error
-  const ipfs = createIPFS(options.ipfsHost || 'https://pin-infura.valist.io');
+  let ipfsConfig: any = {
+    url: options.ipfsHost || 'https://pin-1.valist.io/api/v0',
+  };
+
+  // if in Node.js environment, disable connection keepAlive due to:
+  // https://github.com/ipfs/kubo/issues/6402
+  // https://github.com/ipfs/go-ipfs-cmds/pull/116
+  // https://github.com/ipfs/kubo/issues/5168#issuecomment-402806747
+  if (typeof window === 'undefined') {
+    ipfsConfig.agent = require('https').Agent({ keepAlive: false });
+  }
+
+  const ipfs = createIPFS(ipfsConfig);
   const ipfsGateway = options.ipfsGateway || 'https://gateway.valist.io';
 
   return new Client(registry, license, ipfs, ipfsGateway, subgraphUrl, signer, options.metaTx);
