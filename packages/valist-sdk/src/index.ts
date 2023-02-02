@@ -73,7 +73,7 @@ export async function create(providerOrSigner: Provider, options: Partial<Option
   const licenseAddress = options.licenseAddress || contracts.getLicenseAddress(options.chainId || 137);
 
   const registry = new ethers.Contract(registryAddress, contracts.registryABI, provider);
-  const license = new ethers.Contract(licenseAddress, contracts.licenseABI, provider);
+  const license = new ethers.Contract(licenseAddress, contracts.licenseABI, signer);
 
   let ipfsConfig: any = {
     url: options.ipfsHost || 'https://pin-1.valist.io/api/v0',

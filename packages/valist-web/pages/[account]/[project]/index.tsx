@@ -51,6 +51,7 @@ const platformIcons: Record<SupportedPlatform , JSX.Element> = {
   'linux_amd64': <Icon.BrandUbuntu />,
   'linux_arm64': <Icon.BrandUbuntu />,
   'windows_amd64': <Icon.BrandWindows />,
+  'windows_arm64': <Icon.BrandWindows />,
 };
 
 const ProjectPage: NextPage = () => {
