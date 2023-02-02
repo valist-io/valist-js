@@ -77,14 +77,14 @@ export async function updateProject(
     };
     
     if (image) {
-      meta.image = await valist.writeFile(image, false, (progress: number) => {
-        utils.updateLoading(`Uploading ${image.name}: ${progress}%`);
+      meta.image = await valist.writeFile(image, false, (bytes: string) => {
+        utils.updateLoading(`Uploading ${image.name}: ${bytes}`);
       });
     };
 
     if (mainCapsule) {
-      meta.main_capsule = await valist.writeFile(mainCapsule, false, (progress: number) => {
-        utils.updateLoading(`Uploading ${mainCapsule.name}: ${progress}%`);
+      meta.main_capsule = await valist.writeFile(mainCapsule, false, (bytes: string) => {
+        utils.updateLoading(`Uploading ${mainCapsule.name}: ${bytes}`);
       });
     };
 
@@ -92,8 +92,8 @@ export async function updateProject(
       if (typeof item === 'string') {
         meta.gallery?.push({ name: '', type: 'image', src: item });
       } else if (isFile(item)) {
-        const src = await valist.writeFile(item, false, (progress: number) => {  
-          utils.updateLoading(`Uploading ${item.name}: ${progress}%`);
+        const src = await valist.writeFile(item, false, (bytes: string) => {  
+          utils.updateLoading(`Uploading ${item.name}: ${bytes}`);
         });
         meta.gallery?.push({ name: '', type: 'image', src });
       }
