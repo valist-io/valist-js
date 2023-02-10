@@ -139,62 +139,36 @@ export const platformNames: Record<SupportedPlatform, string> = {
 	"android_arm64": "Android (arm64)",
 };
 
+type PlatformConfig = {
+	name: string;			// binary name or original file name
+	external_url: string;	// full path to file
+	executable?: string; 	// path to executable
+	installScript?: string; // optional install script
+};
+
 export class PlatformsMeta {
 	/** web bundle */
-	public web?: {
-		name: string,
-		external_url: string,
-	};
+	public web?: PlatformConfig;
 	/** android/arm64 path */
-	public android_arm64?: {
-		name: string,
-		external_url: string,
-	};
+	public android_arm64?: PlatformConfig;
 	/** darwin/amd64 path */
-	public darwin_amd64?: {
-		name: string,
-		external_url: string,
-	};
+	public darwin_amd64?: PlatformConfig;
 	/** darwin/arm64 path */
-	public darwin_arm64?: {
-		name: string,
-		external_url: string,
-	};
+	public darwin_arm64?: PlatformConfig;
 	/** linux/386 path */
-	public linux_386?: {
-		name: string,
-		external_url: string,
-	};
+	public linux_386?: PlatformConfig;
 	/** linux/amd64 path */
-	public linux_amd64?: {
-		name: string,
-		external_url: string,
-	};
+	public linux_amd64?: PlatformConfig;
 	/** linux/arm path */
-	public linux_arm?: {
-		name: string,
-		external_url: string,
-	};
+	public linux_arm?: PlatformConfig;
 	/** linux/arm64 path */
-	public linux_arm64?: {
-		name: string,
-		external_url: string,
-	};
+	public linux_arm64?: PlatformConfig;
 	/** windows/386 path */
-	public windows_386?: {
-		name: string,
-		external_url: string,
-	};
+	public windows_386?: PlatformConfig;
 	/** windows/amd64 path */
-	public windows_amd64?: {
-		name: string,
-		external_url: string,
-	};
+	public windows_amd64?: PlatformConfig;
 	/** windows/arm64 path */
-	public windows_arm64?: {
-		name: string;
-		external_url: string;
-	};
+	public windows_arm64?: PlatformConfig;
 }
 
 export class ReleaseMetaV1 {
