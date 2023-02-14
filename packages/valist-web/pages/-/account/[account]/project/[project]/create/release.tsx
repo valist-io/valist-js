@@ -240,15 +240,15 @@ const CreateReleasePage: NextPage = () => {
                             <>
                               {filesObject[platform] && filesObject[platform].length !== 0  &&
                                 <span style={{ marginLeft: 20 }}>
-                                {filesObject[platform][0].name}
-                              </span>
+                                  {filesObject[platform][0].name}
+                                </span>
                               }
                               <PlatformInput
                                 setExecutable={(executable: string) => {
-                                  setExecutables({ ...executables, [platform]: executable});
+                                  setExecutables({ ...executables, [platform]: executable });
                                 }}
                                 setInstallScript={(script: string) => {
-                                  setInstallScripts({ ...installScripts, [platform]: script});
+                                  setInstallScripts({ ...installScripts, [platform]: script });
                                 }}
                                 setFiles={(_files: File[]) => {
                                   setFilesObject({ ...filesObject, [platform]: _files });
