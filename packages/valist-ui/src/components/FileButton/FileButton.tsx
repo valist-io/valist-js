@@ -23,13 +23,14 @@ export function FileButton(props: FileButtonProps):JSX.Element {
         <input
           onChange={(e) => props.setFiles(Object.values(e.target.files))} 
           className={classes.hidden}
+          style={{minHeight: '48px'}}
           type="file"
           id="files"
           /* @ts-expect-error */
           webkitdirectory="true" 
           mozdirectory="true"
         />
-        <label className={classes.root} htmlFor="files">Choose Folder</label>
+        <label style={{minHeight: '48px'}} className={classes.root} htmlFor="files">Choose Folder</label>
       </>
     );
   }
