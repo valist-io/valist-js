@@ -35,6 +35,8 @@ export async function createRelease(
   projectId: string,
   image: File | undefined,
   filesObject: Record<string, File[]>,
+  executables: Record<string, string>,
+  installScripts: Record<string, string>,
   values: FormValues,
   valist: Client,
   cache: ApolloCache<any>,
@@ -89,8 +91,10 @@ export async function createRelease(
         Object.keys(nonWebFiles).forEach((platform) => {
           if (meta.platforms && filesObject[platform] && filesObject[platform].length !== 0) {
             meta.platforms[platform as SupportedPlatform] = {
-              external_url: `${nativeCID}/${platform}/${filesObject[platform][0].name}`,
               name: filesObject[platform][0].name,
+              external_url: `${nativeCID}/${platform}/${filesObject[platform][0].name}`,
+              executable: executables[platform],
+              installScript: installScripts[platform],
             };
           }
         });

@@ -132,10 +132,10 @@ export const platformNames: Record<SupportedPlatform, string> = {
 	"web": "Web build",
 	"windows_amd64": "Windows (amd64 / Intel)",
 	"windows_arm64": "Windows (arm64)",
-	"linux_amd64": "Linux (amd64 / Intel)",
-	"linux_arm64": "Linux (arm64)",
 	"darwin_arm64": "macOS (arm64 / Apple Silicon)",
 	"darwin_amd64": "macOS (amd64 / Intel)",
+	"linux_amd64": "Linux (amd64 / Intel)",
+	"linux_arm64": "Linux (arm64)",
 	"android_arm64": "Android (arm64)",
 };
 

@@ -25,6 +25,7 @@ import {
   FileInput,
   File,
   Breadcrumbs,
+  PlatformInput,
 } from '@valist/ui';
 
 import { 
@@ -66,6 +67,8 @@ const CreateReleasePage: NextPage = () => {
   const [image, setImage] = useState<File>();
   const [files, setFiles] = useState<FileWithPath[]>([]);
   const [filesObject, setFilesObject] = useState<Record<string, File[]>>({});
+  const [executables, setExecutables] = useState<Record<string, string>>({});
+  const [installScripts, setInstallScripts] = useState<Record<string, string>>({});
   const [activeTab, setActiveTab] = useState<string | null>();
   const [opened, setOpened] = useState(false);
 
@@ -93,6 +96,8 @@ const CreateReleasePage: NextPage = () => {
       projectId,
       image,
       filesObject,
+      executables,
+      installScripts,
       values,
       valist,
       cache,
@@ -190,20 +195,22 @@ const CreateReleasePage: NextPage = () => {
                 </Group>
               </Tabs.Panel>
               <Tabs.Panel value="files">
-                <Stack style={{ maxWidth: 784 }}>
+                <Stack style={{ maxWidth: 600 }}>
                   <Title mt="lg">Files</Title>
                       <Text color="dimmed">Upload your release files to the designated platform target.</Text>
                       <Text weight={900} color="dimmed">At least one platform is required.</Text>
                       <h3>Web</h3>
                       {(Object.keys(platformNames) as SupportedPlatform[]).map((platform, index) => (
                         <div key={index}>
-                          <Text style={{ display: 'inline-block', width: 300 }}>{platformNames[platform]}</Text>
+                          <Text mb={15} mt={15} style={{ display: 'inline-block', width: 300 }}>{platformNames[platform]}</Text>
 
                           {platform === 'web' &&
                             <>
+                              <br/>
                               <FileButton directory={true} setFiles={(_files: File[]) => {
                                 setFilesObject({ ...filesObject, [platform]: _files });
                               }} />
+
                               {filesObject[platform] && filesObject[platform].length !== 0  &&
                                  <span style={{ marginLeft: 20, cursor: 'pointer' }} onClick={() => setOpened((o) => !o)}>
                                  - {filesObject[platform].length} files
@@ -225,14 +232,52 @@ const CreateReleasePage: NextPage = () => {
                               <br/>
                               <br/>
                               <h3>Desktop / Mobile</h3>
+                              <Text>For Windows builds:
+                                <br/>1. Please upload a compressed ZIP of your files.
+                                <br/>2. Set the executable path from build root, including the .exe extension.
+                                <br/>3. Set an optional pre-install script for any dependencies.
+                              </Text>
+                              <br/>
+                              <Text>For macOS builds:
+                                <br/>1. Please upload a compressed ZIP of your .app or .pkg file.
+                                <br/>2. Set either the .app or .pkg name as the executable path, including the .app/.pkg file extension.
+                              </Text>
+                              <br/>
+                              <Text>For single-file static binaries:
+                                <br/>1. You can upload the file as-is, or a compressed ZIP.
+                                <br/>2. Ensure that the executable path matches the executable name & extension.
+                              </Text>
                             </>
                           }
 
-                          {platform !== 'web' &&
+                          {platform !== 'web' && platform !== 'android_arm64' &&
                             <>
-                              <FileButton setFiles={(_files: File[]) => {
-                                setFilesObject({ ...filesObject, [platform]: _files });
-                              }} />
+                              {filesObject[platform] && filesObject[platform].length !== 0  &&
+                                <span style={{ marginLeft: 20 }}>
+                                  {(() => { try { return filesObject[platform][0]?.name; } catch (e: any) { return 'Cannot read filename'; } })()}
+                                </span>
+                              }
+                              <PlatformInput
+                                setExecutable={(executable: string) => {
+                                  setExecutables({ ...executables, [platform]: executable });
+                                }}
+                                setInstallScript={(script: string) => {
+                                  setInstallScripts({ ...installScripts, [platform]: script });
+                                }}
+                                setFiles={(_files: File[]) => {
+                                  setFilesObject({ ...filesObject, [platform]: _files });
+                                }}
+                              />
+                            </>
+                          }
+
+                          {platform === 'android_arm64' &&
+                            <>
+                              <PlatformInput
+                                setFiles={(_files: File[]) => {
+                                  setFilesObject({ ...filesObject, [platform]: _files });
+                                }}
+                              />
                               {filesObject[platform] && filesObject[platform].length !== 0  &&
                                 <span style={{ marginLeft: 20 }}>
                                 - {filesObject[platform].length} files
