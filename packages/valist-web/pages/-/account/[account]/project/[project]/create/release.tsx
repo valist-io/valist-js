@@ -239,9 +239,13 @@ const CreateReleasePage: NextPage = () => {
                               </Text>
                               <br/>
                               <Text>For macOS builds:
-                                <br/>1. You can simply upload the .app file, and it will be auto-zipped by macOS.
-                                <br/>2. If .pkg, you will need to compress into a ZIP manually.
-                                <br/>3. Set either the .app or .pkg name as the executable path, including the .app/.pkg file extension.
+                                <br/>1. Please upload a compressed ZIP of your .app or .pkg file.
+                                <br/>2. Set either the .app or .pkg name as the executable path, including the .app/.pkg file extension.
+                              </Text>
+                              <br/>
+                              <Text>For single-file static binaries:
+                                <br/>1. You can upload the file as-is, or a compressed ZIP.
+                                <br/>2. Ensure that the executable path matches the executable name.
                               </Text>
                             </>
                           }
@@ -250,7 +254,7 @@ const CreateReleasePage: NextPage = () => {
                             <>
                               {filesObject[platform] && filesObject[platform].length !== 0  &&
                                 <span style={{ marginLeft: 20 }}>
-                                  {filesObject[platform][0].name}
+                                  {(() => { try { return filesObject[platform][0]?.name; } catch (e: any) { return 'Cannot read filename'; } })()}
                                 </span>
                               }
                               <PlatformInput
