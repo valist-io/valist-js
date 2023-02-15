@@ -245,7 +245,7 @@ const CreateReleasePage: NextPage = () => {
                               <br/>
                               <Text>For single-file static binaries:
                                 <br/>1. You can upload the file as-is, or a compressed ZIP.
-                                <br/>2. Ensure that the executable path matches the executable name.
+                                <br/>2. Ensure that the executable path matches the executable name & extension.
                               </Text>
                             </>
                           }
