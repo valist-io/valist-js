@@ -240,7 +240,7 @@ const CreateReleasePage: NextPage = () => {
                               <br/>
                               <Text>For macOS builds:
                                 <br/>1. You can simply upload the .app file, and it will be auto-zipped by macOS.
-                                <br/>2. If .pkg, you'll need to compress into a ZIP manually.
+                                <br/>2. If .pkg, you will need to compress into a ZIP manually.
                                 <br/>3. Set either the .app or .pkg name as the executable path, including the .app/.pkg file extension.
                               </Text>
                             </>
