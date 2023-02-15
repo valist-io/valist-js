@@ -232,7 +232,17 @@ const CreateReleasePage: NextPage = () => {
                               <br/>
                               <br/>
                               <h3>Desktop / Mobile</h3>
-                              <Text>For native builds with multiple files, please upload a compressed ZIP and specify the executable path within, and an optional pre-install script.</Text>
+                              <Text>For Windows builds:
+                                <br/>1. Please upload a compressed ZIP of your files.
+                                <br/>2. Set the executable path from build root, including the .exe extension.
+                                <br/>3. Set an optional pre-install script for any dependencies.
+                              </Text>
+                              <br/>
+                              <Text>For macOS builds:
+                                <br/>1. You can simply upload the .app file, and it will be auto-zipped by macOS.
+                                <br/>2. If .pkg, you'll need to compress into a ZIP manually.
+                                <br/>3. Set either the .app or .pkg name as the executable path, including the .app/.pkg file extension.
+                              </Text>
                             </>
                           }
 
