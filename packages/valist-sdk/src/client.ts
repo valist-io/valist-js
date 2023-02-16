@@ -11,6 +11,7 @@ import { IPFSHTTPClient } from 'ipfs-http-client';
 import { sendMetaTx, sendTx } from './metatx';
 import { ImportCandidate } from 'ipfs-core-types/src/utils';
 import path from 'path';
+import { isAddress } from 'ethers/lib/utils';
 
 // minimal ABI for interacting with erc20 tokens
 const erc20ABI = [
@@ -433,6 +434,10 @@ export default class Client {
 			from: await this.signer.getAddress(),
 			...unsigned,
 		};
+
+		if (!isAddress(txReq.from) || txReq.from === "0x") {
+			throw new Error(`Invalid wallet address ${txReq.from} please try again`);
+		}
 
 		let hash = this.metaTx
 			? await sendMetaTx(this.signer, txReq)
