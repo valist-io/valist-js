@@ -73,3 +73,7 @@ export async function sendStats(projectPath: string) {
 		`https://stats.valist.io/api/download/${projectPath}`
 	);
 }
+
+export const delay = (time: number) => {
+	return new Promise(resolve => setTimeout(resolve, time));
+}
