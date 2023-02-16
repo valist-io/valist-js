@@ -435,7 +435,7 @@ export default class Client {
 			...unsigned,
 		};
 
-		if (!isAddress(txReq.from)) {
+		if (!isAddress(txReq.from) || txReq.from === "0x") {
 			throw new Error(`Invalid wallet address ${txReq.from} please try again`);
 		}
 
