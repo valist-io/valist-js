@@ -70,7 +70,16 @@ export const buildTypedData = async (forwarder: any, request: any) => {
 export const signMetaTxRequest = async (signer: Signer, forwarder: ethers.Contract, input: PopulatedTransaction) => {
   const request = await buildRequest(forwarder, input);
   const { domain, types, message } = await buildTypedData(forwarder, request);
-  const signature = await signer._signTypedData(domain, types, message);
+  let signature = await signer._signTypedData(domain, types, message);
+
+  // Workaround for Ledger support
+  let v: string | number = `0x${signature.slice(130, 132)}`;
+  v = parseInt(v, 16);
+  if (![27, 28].includes(v)) {
+    v += 27;
+    v = v.toString(16);
+    signature = `${signature.substring(0, 130)}${v}`;
+  }
 
   return { signature, request };
 };
