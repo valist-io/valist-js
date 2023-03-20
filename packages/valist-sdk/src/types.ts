@@ -144,6 +144,7 @@ type PlatformConfig = {
 	external_url: string;	// full path to file
 	executable?: string; 	// path to executable
 	installScript?: string; // optional install script
+	processName?: string; // process name to inject values
 };
 
 export class PlatformsMeta {
