@@ -38,84 +38,7 @@ const Discover: NextPage<DiscoverProps> = (props) => {
 	return (
     <Layout padding={0}>
       <div style={{ padding: 40 }}>
-        <div 
-          style={{ 
-            height: 500,
-            borderRadius: 8,
-            position: 'relative',
-            background: 'rgba(0, 0, 0, 0.6)',
-          }}
-        >
-          <Image
-            style={{ zIndex: -1, borderRadius: 8 }}
-            layout="fill"
-            objectFit="cover"
-            objectPosition="center"
-            alt="Shattered Realms"
-            src="/images/discovery/shattered_realms.jpg"
-            priority
-          />
-          <Stack align="center" justify="center" style={{ height: 500 }}>
-            <Title color="white" size={96}>Shattered Realms</Title>
-            <Text color="white" size={24}>Action, Adventure, RPG</Text>
-            <NextLink href="/shatteredrealms/game">
-              <Button>View Game</Button>
-            </NextLink>
-          </Stack>
-        </div>
-        <div style={{ paddingTop: 44 }}>
           <Stack>
-            <Title size={32}>Featured Games</Title>
-            <Carousel
-              height={340}
-              slideGap={32}
-              slideSize={280}
-              align="start"
-              dragFree
-              loop
-            >
-              {featuredGames.map((item: any, index: number) => 
-                <Carousel.Slide key={index}>
-                  <DiscoveryCard {...item} />
-                </Carousel.Slide>,
-              )}
-            </Carousel>
-          </Stack>
-          <Stack pt={100}>
-            <Title size={32}>Featured dApps</Title>
-            <Carousel
-              height={340}
-              slideGap={32}
-              slideSize={280}
-              align="start"
-              dragFree
-              loop
-            >
-              {featuredApps.map((item: any, index: number) => 
-                <Carousel.Slide key={index}>
-                  <DiscoveryCard {...item} />
-                </Carousel.Slide>,
-              )}
-            </Carousel>
-          </Stack>
-          <Stack pt={100}>
-            <Title size={32}>Featured on Testnet</Title>
-            <Carousel
-              height={340}
-              slideGap={32}
-              slideSize={280}
-              align="start"
-              dragFree
-              loop
-            >
-              {featuredTestnet.map((item: any, index: number) => 
-                <Carousel.Slide key={index}>
-                  <DiscoveryCard {...item} />
-                </Carousel.Slide>,
-              )}
-            </Carousel>
-          </Stack>
-          <Stack pt={100}>
             <Title size={32}>Recently Updated</Title>
             <SimpleGrid
               breakpoints={[
@@ -158,7 +81,6 @@ const Discover: NextPage<DiscoverProps> = (props) => {
               </Button>
             </Group>
           </Stack>
-        </div>
       </div>
       <div style={{ height: 584, position: 'relative' }}>
         <Image
