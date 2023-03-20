@@ -232,7 +232,7 @@ const ProjectPage: NextPage = () => {
 
   return (
     <Layout padding={0} title={`${accountName}/${projectName}`}>
-      <DonationModal 
+      <DonationModal
         opened={donationOpen}
         accountName={accountName}
         projectName={projectName}
