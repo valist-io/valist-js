@@ -1,4 +1,5 @@
 import { Group, Select, Stack, Text } from "@mantine/core";
+import { useState } from "react";
 
 interface SelectRepo {
   repos: string[];
@@ -9,6 +10,8 @@ interface SelectRepo {
 }
 
 export function SelectRepo(props: SelectRepo):JSX.Element {
+  const [branchValues, setBranchValues] = useState<string[]>(['main', 'master']);
+
   return (
     <Stack my='xl'>
       <Text>Search your repositories</Text>
@@ -23,7 +26,15 @@ export function SelectRepo(props: SelectRepo):JSX.Element {
           value={props.repo}
         />
         <Select
-          data={['main', 'master']}
+          data={branchValues}
+          searchable
+          creatable
+          getCreateLabel={(query) => `+ Add branch ${query}`}
+          onCreate={(query) => {
+            const item = { value: query, label: query };
+            setBranchValues((current: any) => [...current, item]);
+            return item;
+          }}
           onChange={(value) => { 
             if (value) props?.onBranchChange(value);
           }}
