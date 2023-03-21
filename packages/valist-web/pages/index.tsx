@@ -23,6 +23,7 @@ import {
   DiscoveryFooter,
 } from '@valist/ui';
 import { ProjectMeta } from '@valist/sdk';
+import { Project } from '@valist/sdk/dist/graphql';
 
 export async function getStaticProps() {
   const variables = { order: 'desc', filterAddresses };
@@ -45,8 +46,8 @@ export async function getStaticProps() {
 }
 
 export interface DiscoverProps {
-  recent: ProjectMeta[];
-  newest: ProjectMeta[];
+  recent: Project[];
+  newest: Project[];
 }
 
 const Discover: NextPage<DiscoverProps> = (props) => {
