@@ -1,18 +1,19 @@
 import {
-  AspectRatio,
-  Center, 
+  AspectRatio, 
   Image,
   Stack,
   Text,
 } from '@mantine/core';
 
-import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
+import { Dropzone } from '@mantine/dropzone';
 import { useElementSize } from '@mantine/hooks';
 import React, { useEffect, useState } from 'react';
 import * as Icon from 'tabler-icons-react';
 
+const IMAGE_MIME_TYPE = ["image/png" || "image/gif" || "image/jpeg"];
+
 export interface ImageInputProps {
-  onChange: (file: File) => void;
+  onChange: (value: any) => void;
   value?: File | string;
   width?: number;
   height?: number;
@@ -30,7 +31,7 @@ export function ImageInput(props: ImageInputProps) {
     } else if (props.value) {
       setSrc(props.value as string);
     } else {
-      setSrc(null);
+      setSrc(undefined);
     }
   }, [props.value]);
 
@@ -38,14 +39,14 @@ export function ImageInput(props: ImageInputProps) {
     if (files.length > 0) {
       props.onChange(files[0]);
     } else {
-      props.onChange(null);      
+      props.onChange(undefined);      
     }
   };
 
 	return (
     <AspectRatio 
       ref={ref} 
-      ratio={props.width / props.height} 
+      ratio={(props.width || 16) / (props.height || 9)} 
       style={{ width: props.width, height: props.height }}
     >
       <Dropzone
@@ -72,4 +73,4 @@ export function ImageInput(props: ImageInputProps) {
 ImageInput.defaultProps = {
   width: 300,
   height: 300,
-}
+};
