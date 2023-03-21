@@ -26,9 +26,9 @@ export function DiscoveryCard(props: DiscoveryCardProps) {
           <Image
             style={{ borderRadius: 8 }}
             src={props.image ?? '/images/valist.png'}
-            alt={props.name} 
-            width={264}
-            height={185}
+            alt={props.name}
+            width={384}
+            height={512}
             objectFit="contain"
             objectPosition="center"
           />
