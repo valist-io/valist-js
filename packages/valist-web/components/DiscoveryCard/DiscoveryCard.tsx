@@ -9,6 +9,7 @@ import {
 
 import { Tag } from '@valist/ui';
 import Image from 'next/image';
+import { useState } from 'react';
 
 export interface DiscoveryCardProps {
   image?: string;
@@ -19,18 +20,20 @@ export interface DiscoveryCardProps {
 }
 
 export function DiscoveryCard(props: DiscoveryCardProps) {
+  const [imageError, setImageError] = useState(false);
   return (
     <Anchor href={props.link ?? '/'} style={{ textDecoration: 'none' }}>
       <Stack style={{ maxWidth: 350 }}>
         <div style={{ borderRadius: 8 }}>
           <Image
             style={{ borderRadius: 8 }}
-            src={props.image ?? '/images/valist.png'}
-            alt={props.name} 
-            width={264}
-            height={185}
+            src={(imageError || !props.image) ? '/images/valist.png' : props.image }
+            alt={props.name}
+            width={384}
+            height={512}
             objectFit="contain"
             objectPosition="center"
+            onError={() => setImageError(true)}
           />
         </div>
         <Title size={18} style={{ height: 24 }}>

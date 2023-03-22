@@ -2,12 +2,10 @@ import { useState } from 'react';
 import type { NextPage } from 'next';
 import Image from 'next/image';
 import { NextLink } from '@mantine/next';
-import { Carousel } from '@mantine/carousel';
 import { Layout } from '@/components/Layout';
 import { Metadata } from '@/components/Metadata';
 import { DiscoveryCard } from '@/components/DiscoveryCard';
 import { filterAddresses } from '@/utils/config';
-import { featuredApps, featuredGames, featuredTestnet } from '@/utils/discover';
 import { client } from '@/components/ApolloProvider';
 import query from '@/graphql/Discover.graphql';
 
@@ -22,13 +20,34 @@ import {
 
 import {
   Button,
-  Card,
   DiscoveryFooter,
 } from '@valist/ui';
+import { ProjectMeta } from '@valist/sdk';
+import { Project } from '@valist/sdk/dist/graphql';
+
+export async function getStaticProps() {
+  const variables = { order: 'desc', filterAddresses };
+  const { data } = await client.query({ query, variables });
+
+  const projectMap = new Map<string, any>();
+  const releases = data?.releases ?? [];
+
+  releases.map((r: any) => r.project)
+    .forEach((p: any) => projectMap.set(p.id, p));
+
+  const recent = Array.from(projectMap.values());
+  const newest = recent.slice()
+    .sort((a: any, b: any) => b.blockTime.localeCompare(a.blockTime));
+
+  return {
+    props: { recent, newest },
+    revalidate: 1 * 60 * 60,
+  };
+}
 
 export interface DiscoverProps {
-  recent: any[];
-  newest: any[];
+  recent: Project[];
+  newest: Project[];
 }
 
 const Discover: NextPage<DiscoverProps> = (props) => {
@@ -50,7 +69,7 @@ const Discover: NextPage<DiscoverProps> = (props) => {
             >
               {props.recent.slice(0, 8).map((project: any, index: number) =>
                 <Metadata key={index} url={project.metaURI}>
-                  {(data: any) => (
+                  {(data: ProjectMeta) => (
                     <DiscoveryCard link={`/${project.account.name}/${project?.name}`} {...data} /> 
                   )}
                 </Metadata>,
@@ -69,7 +88,7 @@ const Discover: NextPage<DiscoverProps> = (props) => {
             >
               {props.newest.slice(0, offset).map((project: any, index: number) =>
                 <Metadata key={index} url={project.metaURI}>
-                  {(data: any) => (
+                  {(data: ProjectMeta) => (
                     <DiscoveryCard link={`/${project.account.name}/${project?.name}`} {...data} /> 
                   )}
                 </Metadata>,
@@ -88,7 +107,7 @@ const Discover: NextPage<DiscoverProps> = (props) => {
           layout="fill"
           objectFit="cover"
           objectPosition="center"
-          alt="Shattered Realms"
+          alt="publish-now"
           src={`/images/discovery/publish_promo_${theme.colorScheme}.jpg`}
           priority
         />
@@ -109,23 +128,3 @@ const Discover: NextPage<DiscoverProps> = (props) => {
 };
 
 export default Discover;
-
-export async function getStaticProps() {
-  const variables = { order: 'desc', filterAddresses };
-  const { data } = await client.query({ query, variables });
-
-  const projectMap = new Map<string, any>();
-  const releases = data?.releases ?? [];
-
-  releases.map((r: any) => r.project)
-    .forEach((p: any) => projectMap.set(p.id, p));
-
-  const recent = Array.from(projectMap.values());
-  const newest = recent.slice()
-    .sort((a: any, b: any) => b.blockTime.localeCompare(a.blockTime));
-
-  return {
-    props: { recent, newest },
-    revalidate: 1 * 60 * 60,
-  };
-}

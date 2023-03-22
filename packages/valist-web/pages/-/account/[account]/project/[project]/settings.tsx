@@ -252,20 +252,23 @@ const Project: NextPage = () => {
             <Stack style={{ maxWidth: 784 }}>
               <Title mt="lg">Basic Info</Title>
               <Text color="dimmed">This is your public account info.</Text>
-              <Group spacing={40} grow>
-                <ImageInput 
-                  width={300}
-                  height={300}
-                  onChange={setNewImage} 
-                  value={newImage || image}
-                  disabled={loading}
-                  openRef={openRef}
-                />
+              <Group spacing={40} grow mb={20}>
+                <div style={{ width: 384, height: 512 }}>
+                  <ImageInput 
+                    width={384}
+                    height={512}
+                    onChange={setNewImage} 
+                    value={newImage || image}
+                    disabled={loading}
+                    openRef={openRef}
+                  />
+                </div>
                 <Stack align="flex-start">
-                  <Title order={2}>Project Image</Title>
+                  <Title order={2}>Project Image <span style={{ color: "#F04438" }}>*</span></Title>
                   <Text>
                     Click below to upload or drag and drop. 
-                    Formats available are SVG, PNG, JPG (max. 800x800px)
+                    Formats available are PNG, JPG, GIF
+                    <br/>(3:4 ratio or 768x1024px)
                   </Text>
                   <Button onClick={() => openRef?.current?.()}>
                     Change Image
@@ -425,20 +428,22 @@ const Project: NextPage = () => {
                   allowFullScreen
                 />
               }
-              <Title order={2}>Header Image</Title>
-              <Text color="dimmed">This can be the cover image of your game or app. Recommended size is (616x353).</Text>
-              <ImageInput 
-                width={616}
-                height={353}
-                onChange={setNewMainCapsule} 
-                value={newMainCapsule || mainCapsule}
-                disabled={loading}
-              />
-              <Title order={2}>Gallery Images</Title>
-              <Text color="dimmed">Additional images of your game or app. Recommended size is (1280x720 or 1920x1080).</Text>
+              <Title order={2}>Header Image <span style={{ color: "#F04438" }}>*</span></Title>
+              <Text color="dimmed">This can be the cover image of your game. Recommended size is 1824x816px.</Text>
+              <div style={{ width: 912, height: 408 }}>
+                <ImageInput 
+                  width={912}
+                  height={408}
+                  onChange={setNewMainCapsule} 
+                  value={newMainCapsule || mainCapsule}
+                  disabled={loading}
+                />
+              </div>
+              <Title order={2}>Gallery Images <span style={{ color: "#F04438" }}>*</span></Title>
+              <Text color="dimmed">Additional images of your game. Recommended size is 16:9 ratio or 1920x1080px.</Text>
               <GalleryInput
                 onChange={setGallery}
-                value={gallery}
+                value={gallery as any}
                 disabled={loading}
               />
             </Stack>
