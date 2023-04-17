@@ -71,7 +71,8 @@ const AccountPage: NextPage = () => {
       icon: Icon.Settings, 
       href: `/-/account/${accountName}/settings`,
       variant: 'subtle',
-      side: 'right',
+      hide: !isMember,
+      side: 'left',
     },
     {
       label: 'New Project',
@@ -79,7 +80,7 @@ const AccountPage: NextPage = () => {
       href: `/-/account/${accountName}/create/project`,
       variant: 'primary',
       hide: !isMember,
-      side: 'right',
+      side: 'left',
     },
   ];
 
