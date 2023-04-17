@@ -1,6 +1,6 @@
 {
   "name": "@valist/cli",
-  "version": "2.7.2",
+  "version": "2.8.0",
   "description": "Valist CLI",
   "author": "Valist, Inc.",
   "bin": {

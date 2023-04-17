@@ -2,6 +2,7 @@
 import { ethers, PopulatedTransaction } from "ethers";
 import { TypedDataSigner } from "@ethersproject/abstract-signer";
 import axios from "axios";
+import { delay } from "./utils";
 
 type Signer = ethers.Signer & TypedDataSigner;
 
@@ -69,7 +70,16 @@ export const buildTypedData = async (forwarder: any, request: any) => {
 export const signMetaTxRequest = async (signer: Signer, forwarder: ethers.Contract, input: PopulatedTransaction) => {
   const request = await buildRequest(forwarder, input);
   const { domain, types, message } = await buildTypedData(forwarder, request);
-  const signature = await signer._signTypedData(domain, types, message);
+  let signature = await signer._signTypedData(domain, types, message);
+
+  // Workaround for Ledger support
+  let v: string | number = `0x${signature.slice(130, 132)}`;
+  v = parseInt(v, 16);
+  if (![27, 28].includes(v)) {
+    v += 27;
+    v = v.toString(16);
+    signature = `${signature.substring(0, 130)}${v}`;
+  }
 
   return { signature, request };
 };
@@ -92,7 +102,20 @@ export const sendMetaTx = async (signer: ethers.Signer, unsigned: PopulatedTrans
   const forwarderAddress = getForwarderContract(chainId);
   const forwarder = new ethers.Contract(forwarderAddress, ForwarderABI, signer);
 
-  const request = await signMetaTxRequest(signer as Signer, forwarder, unsigned);
+  let request;
+
+  do {
+    try {
+      request = await signMetaTxRequest(signer as Signer, forwarder, unsigned);
+    } catch(e) {
+      if (JSON.stringify(e).includes('getNonce')) {
+        console.error(e);
+        await delay(250);
+      } else {
+        throw new Error(e);
+      }
+    }
+  } while (request == null);
 
   const req = await axios.post(getAutotaskURL(chainId), JSON.stringify(request), { headers: { 'Content-Type': 'application/json' } });
 

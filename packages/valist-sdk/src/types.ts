@@ -41,6 +41,25 @@ export class ProjectMeta {
 	public launch_external?: boolean;
 	/** repository used for deployments */
 	public repository?: string;
+	/** hardware requirements */
+	public systemRequirements?: {
+		cpu: string;
+		gpu: string;
+		memory: string;
+		disk: string;
+	};
+	/** supported compatibility layers (wine)  */
+	public wineSupport?: {
+		mac: boolean;
+		linux: boolean;
+	}
+	/** supported networks for smart contracts */
+	public networks?: NetworkMeta[]
+}
+
+export class NetworkMeta {
+	chainId?: string;
+	address?: string[];
 }
 
 export class GalleryMeta {
@@ -105,71 +124,52 @@ export class ReleaseMeta {
 	public platforms: PlatformsMeta;
 }
 
-export type SupportedPlatform = 'web' | 'darwin_amd64' | 'darwin_arm64' | 'linux_amd64' | 'linux_arm64' | 'windows_amd64' | 'android_arm64';
+export type SupportedPlatform = 'web' | 'darwin_amd64' | 'darwin_arm64' | 'linux_amd64' | 'linux_arm64' | 'windows_amd64' | 'windows_arm64' | 'android_arm64';
 
-export const supportedPlatforms: SupportedPlatform[] = ['web', 'darwin_amd64', 'darwin_arm64', 'linux_amd64', 'linux_arm64', 'windows_amd64', 'android_arm64'];
+export const supportedPlatforms: SupportedPlatform[] = ['web', 'darwin_amd64', 'darwin_arm64', 'linux_amd64', 'linux_arm64', 'windows_arm64', 'windows_amd64', 'android_arm64'];
 
 export const platformNames: Record<SupportedPlatform, string> = {
 	"web": "Web build",
 	"windows_amd64": "Windows (amd64 / Intel)",
-	"linux_amd64": "Linux (amd64 / Intel)",
-	"linux_arm64": "Linux (arm64)",
+	"windows_arm64": "Windows (arm64)",
 	"darwin_arm64": "macOS (arm64 / Apple Silicon)",
 	"darwin_amd64": "macOS (amd64 / Intel)",
+	"linux_amd64": "Linux (amd64 / Intel)",
+	"linux_arm64": "Linux (arm64)",
 	"android_arm64": "Android (arm64)",
+};
+
+type PlatformConfig = {
+	name: string;			// binary name or original file name
+	external_url: string;	// full path to file
+	executable?: string; 	// path to executable
+	installScript?: string; // optional install script
+	processName?: string; // process name to inject values
 };
 
 export class PlatformsMeta {
 	/** web bundle */
-	public web?: {
-		name: string,
-		external_url: string,
-	};
+	public web?: PlatformConfig;
 	/** android/arm64 path */
-	public android_arm64?: {
-		name: string,
-		external_url: string,
-	};
+	public android_arm64?: PlatformConfig;
 	/** darwin/amd64 path */
-	public darwin_amd64?: {
-		name: string,
-		external_url: string,
-	};
+	public darwin_amd64?: PlatformConfig;
 	/** darwin/arm64 path */
-	public darwin_arm64?: {
-		name: string,
-		external_url: string,
-	};
+	public darwin_arm64?: PlatformConfig;
 	/** linux/386 path */
-	public linux_386?: {
-		name: string,
-		external_url: string,
-	};
+	public linux_386?: PlatformConfig;
 	/** linux/amd64 path */
-	public linux_amd64?: {
-		name: string,
-		external_url: string,
-	};
+	public linux_amd64?: PlatformConfig;
 	/** linux/arm path */
-	public linux_arm?: {
-		name: string,
-		external_url: string,
-	};
+	public linux_arm?: PlatformConfig;
 	/** linux/arm64 path */
-	public linux_arm64?: {
-		name: string,
-		external_url: string,
-	};
+	public linux_arm64?: PlatformConfig;
 	/** windows/386 path */
-	public windows_386?: {
-		name: string,
-		external_url: string,
-	};
+	public windows_386?: PlatformConfig;
 	/** windows/amd64 path */
-	public windows_amd64?: {
-		name: string,
-		external_url: string,
-	};
+	public windows_amd64?: PlatformConfig;
+	/** windows/arm64 path */
+	public windows_arm64?: PlatformConfig;
 }
 
 export class ReleaseMetaV1 {
@@ -210,6 +210,8 @@ export class InstallMeta {
 	public windows_386?: string;
 	/** windows/amd64 path */
 	public windows_amd64?: string;
+	/** windows/arm64 path */
+	public windows_arm64?: string;
 }
 
 export function isReleaseMetaV1(releaseMeta: ReleaseMeta | ReleaseMetaV1): releaseMeta is ReleaseMetaV1 {
@@ -240,6 +242,7 @@ export class ReleaseConfig {
 			darwin_amd64: '',
 			darwin_arm64: '',
 			windows_amd64: '',
+			windows_arm64: '',
 			linux_amd64: '',
 			linux_arm64: '',
 			android_arm64: '',

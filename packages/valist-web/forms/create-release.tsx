@@ -35,6 +35,8 @@ export async function createRelease(
   projectId: string,
   image: File | undefined,
   filesObject: Record<string, File[]>,
+  executables: Record<string, string>,
+  installScripts: Record<string, string>,
   values: FormValues,
   valist: Client,
   cache: ApolloCache<any>,
@@ -59,8 +61,8 @@ export async function createRelease(
 
     utils.showLoading('Uploading files');
     if (image) {
-      meta.image = await valist.writeFile(image, false, (progress: number) => {
-        utils.updateLoading(`Uploading ${image?.name}: ${progress}%`);
+      meta.image = await valist.writeFile(image, false, (bytes: string) => {
+        utils.updateLoading(`Uploading ${image?.name}: ${bytes}`);
       });
     }
 
@@ -82,23 +84,25 @@ export async function createRelease(
         ));
 
       if (nonWebIC.length !== 0) {
-        nativeCID = await valist.writeFolder(nonWebIC, true, (progress: number) => {
-          utils.updateLoading(`Uploading releases for native: ${progress}%`);
+        nativeCID = await valist.writeFolder(nonWebIC, true, (bytes: string) => {
+          utils.updateLoading(`Uploading releases for native: ${bytes}`);
         });
 
         Object.keys(nonWebFiles).forEach((platform) => {
           if (meta.platforms && filesObject[platform] && filesObject[platform].length !== 0) {
             meta.platforms[platform as SupportedPlatform] = {
-              external_url: `${nativeCID}/${platform}/${filesObject[platform][0].name}`,
               name: filesObject[platform][0].name,
+              external_url: `${nativeCID}/${platform}/${filesObject[platform][0].name}`,
+              executable: executables[platform],
+              installScript: installScripts[platform],
             };
           }
         });
       };
 
       if (webIC.length !== 0) {
-        webCID = await valist.writeFolder(webIC, false, (progress: number) => {
-          utils.updateLoading(`Uploading release archive for web: ${progress}%`);
+        webCID = await valist.writeFolder(webIC, false, (bytes: string) => {
+          utils.updateLoading(`Uploading release archive for web: ${bytes}`);
         });
         meta.platforms.web = {
           external_url: webCID,

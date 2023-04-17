@@ -25,7 +25,7 @@ async function createClient(registry: ethers.Contract, license: ethers.Contract)
 	const subgraphAddress = 'https://api.thegraph.com/subgraphs/name/valist-io/valistmumbai';
 	const ipfsGateway = 'https://gateway.valist.io';
 	// @ts-expect-error weird IPFS JS types
-	const ipfs = createIPFS('https://pin-infura.valist.io');
+	const ipfs = createIPFS('https://pin-1.valist.io');
 	const valist = new Client(registry, license, ipfs, ipfsGateway, subgraphAddress, provider.getSigner(), false);
 	return valist;
 }
