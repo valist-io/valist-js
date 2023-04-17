@@ -257,6 +257,7 @@ export const getCurrentCommit = async (
 
 export async function createPullRequest(octokit: Octokit, valistConfig: string, owner: string, repo: string, branchName: string) {
   // Get current commit
+  console.log('branchName', branchName);
   const currentCommit = await getCurrentCommit(octokit, owner, repo, branchName);
   console.log('Current Commit', currentCommit);
 
