@@ -3,12 +3,12 @@ import { providers } from 'ethers';
 import { useSigner, useProvider } from 'wagmi';
 import { getChainId } from '@/utils/config';
 
-import { 
-  Client, 
+import {
+  Client,
   Options,
   contracts,
   create,
-  createReadOnly, 
+  createReadOnly,
 } from '@valist/sdk';
 
 const chainId = getChainId();

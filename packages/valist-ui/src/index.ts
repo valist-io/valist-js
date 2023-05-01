@@ -30,7 +30,6 @@ export { InfoButton } from './components/InfoButton';
 export { Item } from './components/Item';
 export { List } from './components/List';
 export { Logo } from './components/Logo';
-export { Markdown } from './components/Markdown';
 export { Member } from './components/Member';
 export { MemberCard } from './components/MemberCard';
 export { MemberList } from './components/MemberList';

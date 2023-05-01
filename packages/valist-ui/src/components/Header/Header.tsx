@@ -17,9 +17,11 @@ import { Logo } from '../Logo';
 
 export interface HeaderProps {
   children?: React.ReactNode;
+  logo?: React.ReactNode;
   opened: boolean;
   onClick(): void;
   hideNavbar?: boolean;
+  hideSearch?: boolean;
   onSearch?: (value: string) => void;
 }
 
@@ -38,18 +40,20 @@ export function Header(props: HeaderProps) {
     <MantineHeader height={72} className={classes.root}>
       <Group style={{ height: '100%' }} spacing={0} noWrap>
         <Anchor href="/" style={{ width: 250, flexShrink: 0 }}>
-          <Logo />
+          {props.logo || <Logo />} 
         </Anchor>
         <MediaQuery smallerThan="sm" styles={{ display: 'none' }}>
           <Group style={{ width: '100%' }}>
             <div style={{ flex: '1 1 0px', maxWidth: 350 }}>
-              <TextInput
-                placeholder="Search projects"
-                icon={<Icon.Search size={18} strokeWidth={3} />}
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                onKeyPress={onSearch}
-              />
+              {!props.hideSearch && 
+                <TextInput
+                  placeholder="Search projects"
+                  icon={<Icon.Search size={18} strokeWidth={3} />}
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  onKeyPress={onSearch}
+                />
+              }
             </div>
             <Group 
               style={{ flex: '1 1 0px' }} 
@@ -88,11 +92,11 @@ export function Header(props: HeaderProps) {
                 />
               </Group>
             </Drawer>
-            <CircleButton 
+            {!props.hideSearch && <CircleButton 
               icon={Icon.Search}
               label="Search"
               onClick={() => setSearchOpened(true)}
-            />
+            />}
             {!props.hideNavbar &&
               <Burger
                 size="sm"

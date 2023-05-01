@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "lib": ["es6", "dom"],
+    "lib": ["es5", "dom"],
     "outDir": "dist",
-    "module": "es6",
-    "target": "es6",
+    "module": "CommonJS",
+    "target": "es5",
     "jsx": "react-jsx",
     "allowJs": true,
     "noImplicitAny": true,

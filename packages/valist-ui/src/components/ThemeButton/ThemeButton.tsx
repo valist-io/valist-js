@@ -1,4 +1,5 @@
 import { useMantineColorScheme } from '@mantine/core';
+import React from 'react';
 import { Sun, MoonStars } from 'tabler-icons-react';
 import { CircleButton } from '../CircleButton';
 
