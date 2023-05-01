@@ -41,8 +41,8 @@ export class ProjectMeta {
 	public launch_external?: boolean;
 	/** launch epic */
 	public launch_epic?: boolean;
-	/** epic game store ID for epic auth & services */
-	public epic_app_id?: string;
+	/** epic game url used for epic auth & services */
+	public epic_game_url?: string;
 	/** repository used for deployments */
 	public repository?: string;
 	/** hardware requirements */
