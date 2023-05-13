@@ -54,7 +54,21 @@ export class ProjectMeta {
 		linux: boolean;
 	}
 	/** supported networks for smart contracts */
-	public networks?: NetworkMeta[]
+	public networks?: NetworkMeta[];
+}
+
+export class NetworkMeta {
+	chainId?: string;
+	tokens?: TokenMetadata[];
+}
+
+type TokenType = "fungible" | "semiFungible" | "nonFungible" | "other";
+
+interface TokenMetadata {
+	address: string;
+	iconSvg?: string;
+	type?: TokenType;
+	name?: string;
 }
 
 export class NetworkMeta {
