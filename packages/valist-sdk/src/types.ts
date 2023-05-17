@@ -58,7 +58,7 @@ export class ProjectMeta {
 }
 
 export interface NetworkMeta {
-	chainId?: string;
+	chainId: string;
 	tokens?: TokenMetadata[];
 }
 
