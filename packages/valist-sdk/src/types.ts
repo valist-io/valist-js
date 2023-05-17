@@ -57,23 +57,18 @@ export class ProjectMeta {
 	public networks?: NetworkMeta[];
 }
 
-export class NetworkMeta {
+export interface NetworkMeta {
 	chainId?: string;
 	tokens?: TokenMetadata[];
 }
 
-type TokenType = "fungible" | "semiFungible" | "nonFungible" | "other";
+export type TokenType = "fungible" | "semiFungible" | "nonFungible" | "other";
 
-interface TokenMetadata {
+export interface TokenMetadata {
 	address: string;
 	iconSvg?: string;
 	type?: TokenType;
 	name?: string;
-}
-
-export class NetworkMeta {
-	chainId?: string;
-	address?: string[];
 }
 
 export class GalleryMeta {
