@@ -39,6 +39,10 @@ export class ProjectMeta {
 	public prompt_donation?: boolean;
 	/** launch project from external_url*/
 	public launch_external?: boolean;
+	/** launch epic */
+	public launch_epic?: boolean;
+	/** epic game url used for epic auth & services */
+	public epic_game_url?: string;
 	/** repository used for deployments */
 	public repository?: string;
 	/** hardware requirements */
