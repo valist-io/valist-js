@@ -145,6 +145,8 @@ type PlatformConfig = {
 	executable?: string; 	// path to executable
 	installScript?: string; // optional install script
 	processName?: string; // process name to inject values
+	downloadSize?: string; // size of download
+	installSize?: string; // size of install
 };
 
 export class PlatformsMeta {
