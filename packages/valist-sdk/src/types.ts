@@ -58,12 +58,30 @@ export class ProjectMeta {
 		linux: boolean;
 	}
 	/** supported networks for smart contracts */
-	public networks?: NetworkMeta[]
+	public networks?: NetworkMeta[];
 }
 
-export class NetworkMeta {
-	chainId?: string;
-	address?: string[];
+export interface NetworkMeta {
+	/** network chain id */
+	chainId: string;
+	/** tokens required to play game on this chain */
+	tokens?: TokenMetadata[];
+}
+
+/** user-friendly token type is used in favor of ERC standard */
+export type TokenType = "fungible" | "semiFungible" | "nonFungible" | "other";
+
+export interface TokenMetadata {
+	/** token contract address */
+	address: string;
+	/** token icon */
+	icon?: string;
+	/** token fungible type */
+	type?: TokenType;
+	/** name of token */
+	name?: string;
+	/** dex or marketplace url where user can trade token */
+	marketplaceUrls?: string[];
 }
 
 export class GalleryMeta {
