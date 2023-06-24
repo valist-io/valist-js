@@ -3,7 +3,7 @@ import { ApolloCache } from '@apollo/client';
 import { ProjectMeta, Client, GalleryMeta } from '@valist/sdk';
 import { handleEvent } from './events';
 import * as utils from './utils';
-import { normalizeError, refineYouTube } from './common';
+import { isFile, normalizeError, refineYouTube } from './common';
 import { Anchor } from '@mantine/core';
 import { getBlockExplorer } from '@/components/Activity';
 
@@ -19,6 +19,20 @@ export interface FormValues {
   launchExternal: boolean;
   promptDonation: boolean;
   linkRepository: boolean;
+  systemRequirements: {
+    cpu: string,
+    gpu: string,
+    memory: string,
+    disk: string,
+  }
+	wineSupport: {
+		mac: boolean;
+		linux: boolean;
+	}
+	networks: {
+    chainId?: string;
+    address?: string[];
+  }[]
 }
 
 export const schema = z.object({
@@ -36,11 +50,18 @@ export const schema = z.object({
   promptDonation: z.boolean(),
   launchExternal: z.boolean(),
   linkRepository: z.boolean(),
+  systemRequirements: z.object({
+    cpu: z.string(),
+    gpu: z.string(),
+    memory: z.string(),
+    disk: z.string(),
+  }),
+  wineSupport: z.object({
+		mac: z.boolean(),
+		linux: z.boolean(),
+	}),
 });
 
-const isFile = (file: File | String): file is File => {
-  return (file as File).lastModified !== undefined;
-};
 
 export async function updateProject(
   address: string | undefined,
@@ -49,9 +70,9 @@ export async function updateProject(
   ytLink: string,
   image: File | undefined,
   mainCapsule: File | undefined,
-  gallery: (File | String)[],
-  values: FormValues,
-  valist: Client,
+  gallery: (File | string)[],
+  values: FormValues, 
+  valist: Client, 
   cache: ApolloCache<any>,
   chainId: number,
 ): Promise<undefined | ProjectMeta> {
@@ -74,6 +95,9 @@ export async function updateProject(
       launch_external: values.launchExternal,
       donation_address: values.donationAddress,
       prompt_donation: values.promptDonation,
+      systemRequirements: values.systemRequirements,
+      wineSupport: values.wineSupport,
+      networks: values.networks,
     };
     
     if (image) {

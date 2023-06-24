@@ -32,6 +32,8 @@ import {
   MultiSelect,
   Tabs,
   Checkbox,
+  Flex,
+  Card,
 } from '@mantine/core';
 
 import { 
@@ -41,9 +43,11 @@ import {
   MemberList,
   GalleryInput,
   _404,
+  Activity,
 } from '@valist/ui';
 import { ProjectMeta, GalleryMeta } from '@valist/sdk';
 import { getYouTubeEmbedURL } from '@valist/ui/dist/components/Gallery';
+import { NetworkInput } from '@/components/NetworkInput';
 
 const Project: NextPage = () => {
   const router = useRouter();
@@ -64,6 +68,9 @@ const Project: NextPage = () => {
 
   const accountMembers = data?.project?.account?.members ?? [];
   const projectMembers = data?.project?.members ?? [];
+
+  const logs = data?.project?.logs || [];
+  const releases = data?.project?.releases || [];
 
   const [activeTab, setActiveTab] = useState<string | null>();
 
@@ -98,6 +105,17 @@ const Project: NextPage = () => {
       donationAddress: '',
       promptDonation: false,
       linkRepository: false,
+      systemRequirements: {
+        cpu: '',
+        gpu: '',
+        memory: '',
+        disk: '',
+      },
+      wineSupport: {
+        mac: false,
+        linux: false,
+      },
+      networks: [],
     },
   });
 
@@ -117,6 +135,9 @@ const Project: NextPage = () => {
       form.setFieldValue('launchExternal', meta.launch_external ?? false);
       form.setFieldValue('promptDonation', meta.prompt_donation ?? false);
       form.setFieldValue('donationAddress', meta.donation_address || '');
+      if (meta.systemRequirements) form.setFieldValue('systemRequirements', meta.systemRequirements);
+      if (meta.wineSupport) form.setFieldValue('wineSupport', meta.wineSupport);
+      if (meta.networks) form.setFieldValue('networks', meta.networks);
 
       const _gallery = galleryLinks?.map((item: GalleryMeta) => item.src) || [];
       setGallery(_gallery);
@@ -212,12 +233,6 @@ const Project: NextPage = () => {
     });
   };
 
-  const breadcrumbs = [
-    { title: accountName, href: `/${accountName}` },
-    { title: projectName, href: `/${accountName}/${projectName}` },
-    { title: 'Settings', href: `/-/account/${accountName}/project/${projectName}/settings` },
-  ];
-
   if (!gqLoading && !data?.project) {
     return (
       <Layout>
@@ -233,9 +248,6 @@ const Project: NextPage = () => {
 
   return (
     <Layout>
-      <div style={{ paddingBottom: 32 }}>
-        <Breadcrumbs items={breadcrumbs} />
-      </div>
       <Tabs
         defaultValue="basic"
         value={activeTab}
@@ -243,9 +255,11 @@ const Project: NextPage = () => {
       >
         <Tabs.List grow>
           <Tabs.Tab value="basic">Basic Info</Tabs.Tab>
-          <Tabs.Tab value="descriptions">Descriptions</Tabs.Tab>
+          <Tabs.Tab value="requirements">System Requirements</Tabs.Tab>
+          <Tabs.Tab value="media">Media & Descriptions</Tabs.Tab>
           <Tabs.Tab value="members">Members</Tabs.Tab>
-          <Tabs.Tab value="media">Media</Tabs.Tab>
+          <Tabs.Tab value="releases">Releases</Tabs.Tab>
+          <Tabs.Tab value="activity">Activity</Tabs.Tab>
         </Tabs.List>
         <Tabs.Panel value="basic">
           <form onSubmit={form.onSubmit(update)}>
@@ -303,16 +317,12 @@ const Project: NextPage = () => {
                 label="Type"
                 data={defaultTypes}
                 placeholder="Select type"
-                nothingFound="Nothing found"
-                searchable
-                creatable
-                getCreateLabel={(query) => `+ Create ${query}`}
                 {...form.getInputProps('type')}
               />
               <MultiSelect
-                label="Tags"
+                label="Genres"
                 data={defaultTags}
-                placeholder="Select tags"
+                placeholder="Select genres"
                 searchable
                 creatable
                 getCreateLabel={(query) => `+ Create ${query}`}
@@ -334,6 +344,10 @@ const Project: NextPage = () => {
                   onSubmit={(address: string) => form.setFieldValue('donationAddress', address)} 
                 />
               }
+              <NetworkInput
+                form={form}
+                loading={loading}
+              />
             </Stack>
             <Group mt="lg">
               <Button 
@@ -345,10 +359,96 @@ const Project: NextPage = () => {
             </Group>
           </form>
         </Tabs.Panel>
-        <Tabs.Panel value="descriptions">
+        <Tabs.Panel value="requirements">
+          <form onSubmit={form.onSubmit(update)}>
+            <Title mt="lg">System Requirements</Title>
+            <Text color="dimmed">The minimum system requirements for your project.</Text>
+            <Stack style={{ maxWidth: 784 }}>
+              <TextInput
+                label="CPU"
+                disabled={loading}
+                {...form.getInputProps('systemRequirements.cpu')}
+              />
+              <TextInput 
+                label="GPU"
+                disabled={loading}
+                {...form.getInputProps('systemRequirements.gpu')}
+              />
+              <TextInput 
+                label="Memory (RAM)"
+                disabled={loading}
+                {...form.getInputProps('systemRequirements.memory')}
+              />
+              <TextInput 
+                label="Disk"
+                disabled={loading}
+                {...form.getInputProps('systemRequirements.disk')}
+              />
+              <Text>Compatibility Library Support (WINE/Proton)</Text>
+              <Flex mb="lg" gap="lg">
+                <Checkbox 
+                  label="Linux Compatibility"
+                  {...form.getInputProps('wineSupport.linux', { type: 'checkbox' })}
+                />
+                <Checkbox 
+                  label="MacOS Compatibility"
+                  {...form.getInputProps('wineSupport.mac', { type: 'checkbox' })}
+                />
+              </Flex>
+            </Stack>
+            <Group mt="lg">
+              <Button 
+                type="submit"
+                disabled={submitDisabled || loading}
+              >
+                Save
+              </Button>
+            </Group>
+          </form>
+        </Tabs.Panel>
+        <Tabs.Panel value="media">
           <form onSubmit={form.onSubmit(update)}>
             <Stack style={{ maxWidth: 784 }}>
-              <Title mt="lg">Descriptions</Title>
+            <Title mt="lg">Media</Title>
+              <Text color="dimmed">Show off your project with videos and images.</Text>
+              <Title order={2}>YouTube Link</Title>
+              <Text color="dimmed">Paste a link to your video.</Text>
+              <TextInput
+                label="YouTube Link"
+                disabled={loading}
+                {...form.getInputProps('youTubeLink')}
+              />
+              {form.values.youTubeLink && 
+                <iframe
+                  width="100%"
+                  style={{ minHeight: 353, maxWidth: 616 }}
+                  src={getYouTubeEmbedURL(form.values.youTubeLink)}
+                  title="YouTube video player"
+                  frameBorder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowFullScreen
+                />
+              }
+              <Title order={2}>Header Image <span style={{ color: "#F04438" }}>*</span></Title>
+              <Text color="dimmed">This can be the cover image of your project. Recommended size is 1824x816px.</Text>
+              <div style={{ width: 912, height: 408 }}>
+                <ImageInput 
+                  width={912}
+                  height={408}
+                  onChange={setNewMainCapsule} 
+                  value={newMainCapsule || mainCapsule}
+                  disabled={loading}
+                />
+              </div>
+              <Title order={2}>Gallery Images <span style={{ color: "#F04438" }}>*</span></Title>
+              <Text color="dimmed">Additional images of your project. Recommended size is 16:9 ratio or 1920x1080px.</Text>
+              <GalleryInput
+                onChange={setGallery}
+                value={gallery as any}
+                disabled={loading}
+              />
+
+              <Title mt="lg">Descriptions <span style={{ color: "#F04438" }}>*</span></Title>
               <Text color="dimmed">Let everyone know about your project.</Text>
               <Title order={2}>Short Description</Title>
               <Text color="dimmed">Enter a brief summary of the project. This will be displayed on the project card or thumbnail.</Text>
@@ -405,57 +505,34 @@ const Project: NextPage = () => {
             />
           </Stack>
         </Tabs.Panel>
-        <Tabs.Panel value="media">
-          <form onSubmit={form.onSubmit(update)}>
-            <Stack style={{ maxWidth: 784 }}>
-              <Title mt="lg">Media</Title>
-              <Text color="dimmed">Show off your project with videos and images.</Text>
-              <Title order={2}>YouTube Link</Title>
-              <Text color="dimmed">Paste a link to your video.</Text>
-              <TextInput
-                label="YouTube Link"
-                disabled={loading}
-                {...form.getInputProps('youTubeLink')}
-              />
-              {form.values.youTubeLink && 
-                <iframe
-                  width="100%"
-                  style={{ minHeight: 353, maxWidth: 616 }}
-                  src={getYouTubeEmbedURL(form.values.youTubeLink)}
-                  title="YouTube video player"
-                  frameBorder="0" 
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                  allowFullScreen
-                />
-              }
-              <Title order={2}>Header Image <span style={{ color: "#F04438" }}>*</span></Title>
-              <Text color="dimmed">This can be the cover image of your game. Recommended size is 1824x816px.</Text>
-              <div style={{ width: 912, height: 408 }}>
-                <ImageInput 
-                  width={912}
-                  height={408}
-                  onChange={setNewMainCapsule} 
-                  value={newMainCapsule || mainCapsule}
-                  disabled={loading}
-                />
-              </div>
-              <Title order={2}>Gallery Images <span style={{ color: "#F04438" }}>*</span></Title>
-              <Text color="dimmed">Additional images of your game. Recommended size is 16:9 ratio or 1920x1080px.</Text>
-              <GalleryInput
-                onChange={setGallery}
-                value={gallery as any}
-                disabled={loading}
-              />
-            </Stack>
-            <Group mt="lg">
-              <Button 
-                type="submit"
-                disabled={submitDisabled || loading}
-              >
-                Save
-              </Button>
-            </Group>
-          </form>
+        <Tabs.Panel value="releases">
+          <Title my="lg">Releases</Title>
+          <Button onClick={() => router.push(`/-/account/${accountName}/project/${projectName}/create/release`)}>Submit Release</Button>
+          <br/><br/>
+          <Card>
+            <List>
+              {releases.map((release: any, index: number) =>
+               <div key={index} style={{ marginBottom: 20 }}>
+                  <Group position="apart">
+                    <Text>{release.name}</Text>
+                    <a target="_blank" href={release.metaURI} rel="noreferrer">view metadata</a>
+                  </Group>
+                </div>,
+              )}
+            </List>
+          </Card>
+        </Tabs.Panel>
+        <Tabs.Panel value="activity">
+          <Title my="lg">Activity</Title>
+          <Card>
+            <List>
+              {logs.map((log: any, index: number) =>
+                <div key={index} style={{ marginBottom: 20 }}>
+                  <Activity  {...log} />
+                </div>,
+              )}
+            </List>
+          </Card>
         </Tabs.Panel>
       </Tabs>
     </Layout>
