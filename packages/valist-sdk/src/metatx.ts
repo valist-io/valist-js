@@ -63,12 +63,12 @@ const ForwarderABI = [
   }
 ]
 
-const EIP712Domain = [
-  { name: 'name', type: 'string' },
-  { name: 'version', type: 'string' },
-  { name: 'chainId', type: 'uint256' },
-  { name: 'verifyingContract', type: 'address' }
-]
+// const EIP712Domain = [
+//   { name: 'name', type: 'string' },
+//   { name: 'version', type: 'string' },
+//   { name: 'chainId', type: 'uint256' },
+//   { name: 'verifyingContract', type: 'address' }
+// ]
 
 const ForwardRequest = [
   { name: 'from', type: 'address' },
@@ -114,6 +114,7 @@ export const getMetaTxTypeData = (
   }
 }
 
+//eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const buildRequest = async (forwarder: any, input: any) => {
   const nonce = await forwarder
     .getNonce(input.from)
@@ -122,9 +123,11 @@ export const buildRequest = async (forwarder: any, input: any) => {
   return { value: 0, gas: gasLimit.toHexString(), nonce, ...input }
 }
 
+//eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const buildTypedData = async (forwarder: any, request: any) => {
   const chainId = await forwarder.provider
     .getNetwork()
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
     .then((n: any) => n.chainId)
   const typeData = getMetaTxTypeData(chainId, forwarder.address)
   return { ...typeData, message: request }

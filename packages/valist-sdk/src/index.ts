@@ -114,6 +114,7 @@ export async function create(
     signer
   )
 
+  //eslint-disable-next-line @typescript-eslint/no-explicit-any
   const ipfsConfig: any = {
     url: options.ipfsHost || 'https://pin-1.valist.io/api/v0'
   }
@@ -123,6 +124,7 @@ export async function create(
   // https://github.com/ipfs/go-ipfs-cmds/pull/116
   // https://github.com/ipfs/kubo/issues/5168#issuecomment-402806747
   if (typeof window === 'undefined') {
+    //eslint-disable-next-line @typescript-eslint/no-var-requires
     ipfsConfig.agent = require('https').Agent({ keepAlive: false })
   }
 

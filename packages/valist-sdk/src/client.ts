@@ -561,7 +561,7 @@ export default class Client {
     } else {
       const fileStream = file.stream()
       fileData = { content: fileStream, path }
-      //eslint-disable-next-line @typescript-eslint/no-var-requires
+      //eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unused-vars
       fileSize = require('fs').statSync(fileStream.path).size
     }
 

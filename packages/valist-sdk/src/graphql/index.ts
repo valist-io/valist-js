@@ -11,6 +11,7 @@ export type GraphqlQuery = {
 export async function fetchGraphQL(
   url: string,
   query: GraphqlQuery
+  //eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> {
   const { data } = await axios({
     url: url,

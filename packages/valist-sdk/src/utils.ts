@@ -55,6 +55,7 @@ export const getFilesFromPath = getFiles
  */
 export const toImportCandidate = (file: File) => {
   /** @type {ReadableStream} */
+  //eslint-disable-next-line @typescript-eslint/no-explicit-any
   let stream: any
   return {
     path: file.name,
