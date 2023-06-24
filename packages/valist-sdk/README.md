@@ -6,7 +6,7 @@ This folder contains the Valist SDK/core library that bridges the IPFS and Ether
 
 For the TypeScript API documentation, please see the following link:
 
-* [TypeScript API Docs](https://jsdocs.valist.io/)
+- [TypeScript API Docs](https://jsdocs.valist.io/)
 
 ## Install
 

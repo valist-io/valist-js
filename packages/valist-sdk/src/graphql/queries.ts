@@ -222,7 +222,6 @@ export const ACCOUNT_PROFILE_QUERY = `
   }
 `;
 
-
 export const PROJECTS_SEARCH_QUERY = `
   query ProjectSearch($search: String){
     projects(where:{name_contains: $search}){
