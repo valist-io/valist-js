@@ -20,7 +20,7 @@
       "@/components/*": ["components/*"],
       "@/forms/*": ["forms/*"],
       "@/graphql/*": ["graphql/*"],
-      "@/utils/*": ["utils/*"],
+      "@/utils/*": ["utils/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],

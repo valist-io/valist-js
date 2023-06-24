@@ -27,7 +27,9 @@
     "docs": "typedoc ./src --theme minimal --out ../../site/sdk --readme none",
     "test": "mocha -r ts-node/register 'tests/**/*.ts' --timeout=30000",
     "lint": "eslint . --ext .ts",
-    "lint:fix": "eslint . --ext .ts --fix"
+    "lint:fix": "eslint . --ext .ts --fix",
+    "prettier": "prettier --check .",
+    "prettier-fix": "prettier --write ."
   },
   "devDependencies": {
     "@types/chai": "^4.3.0",
@@ -42,6 +44,7 @@
     "ganache": "^7.0.0",
     "ipfs-core-types": "0.13.0",
     "mocha": "^9.2.0",
+    "prettier": "^2.8.8",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.5"
   },
