@@ -10,6 +10,8 @@ import {
   TokenMetadataInterface,
 } from "./typesShared";
 
+export {PlatformConfig, SupportedPlatform, TokenType} from "./typesShared";
+
 export type FileObject = FObject;
 
 // Valist Types
