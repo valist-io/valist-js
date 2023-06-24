@@ -1,8 +1,6 @@
 {
-  "cSpell.words": [
-    "Filecoin",
-    "Valist",
-    "wagmi"
-  ],
-  "solidity.packageDefaultDependenciesDirectory": "packages/evm-contracts/node_modules"
+  "cSpell.words": ["Filecoin", "Valist", "wagmi"],
+  "solidity.packageDefaultDependenciesDirectory": "packages/evm-contracts/node_modules",
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
 }
