@@ -77,7 +77,7 @@ export default class Client {
 
     release.platforms = new PlatformsMeta();
 
-    let filesObject: Record<string, FileObject[]> = {};
+    const filesObject: Record<string, FileObject[]> = {};
     const platforms = Object.keys(config.platforms);
 
     for (let i = 0; i < platforms.length; i++) {
@@ -115,7 +115,7 @@ export default class Client {
           filesObject[platform].length !== 0
         ) {
           const fileName = path.basename(filesObject[platform][0].name); // @TODO make this work with folders
-          let url = new URL(nativeCID);
+          const url = new URL(nativeCID);
           url.pathname = path.join(url.pathname, platform, fileName);
           release.platforms[platform as SupportedPlatform] = {
             external_url: url.toString(),
@@ -523,9 +523,9 @@ export default class Client {
     return (file as File).lastModified !== undefined;
   }
 
-  async writeJSON(data: Object): Promise<string> {
+  async writeJSON(data: object): Promise<string> {
     let buffer: Blob | Buffer;
-    let string = JSON.stringify(data);
+    const string = JSON.stringify(data);
 
     if (typeof window === "undefined") {
       buffer = Buffer.from(JSON.stringify(data));
@@ -561,6 +561,7 @@ export default class Client {
     } else {
       const fileStream = file.stream();
       fileData = { content: fileStream, path };
+      //eslint-disable-next-line @typescript-eslint/no-var-requires
       fileSize = require("fs").statSync(fileStream.path).size;
     }
 
@@ -613,7 +614,7 @@ export default class Client {
       throw new Error(`Invalid wallet address ${txReq.from} please try again`);
     }
 
-    let hash = this.metaTx
+    const hash = this.metaTx
       ? await sendMetaTx(this.signer, txReq)
       : await sendTx(this.signer, txReq);
 
