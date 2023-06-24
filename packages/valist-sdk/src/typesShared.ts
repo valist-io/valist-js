@@ -30,6 +30,10 @@ export interface ProjectMetaInterface {
   prompt_donation?: boolean;
   /** launch project from external_url*/
   launch_external?: boolean;
+  /** launch epic */
+  launch_epic?: boolean;
+  /** epic game url used for epic auth & services */
+  epic_game_url?: string;
   /** repository used for deployments */
   repository?: string;
   /** hardware requirements */
@@ -122,7 +126,7 @@ export type SupportedPlatform =
 /** user-friendly token type is used in favor of ERC standard */
 export type TokenType = "fungible" | "semiFungible" | "nonFungible" | "other";
 
-export interface TokenMetadata {
+export interface TokenMetadataInterface {
   /** token contract address */
   address: string;
   /** token icon */
@@ -131,6 +135,4 @@ export interface TokenMetadata {
   type?: TokenType;
   /** name of token */
   name?: string;
-  /** dex or marketplace url where user can trade token */
-  marketplaceUrls?: string[];
 }

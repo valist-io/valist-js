@@ -7,7 +7,7 @@ import {
   PlatformsMetaInterface,
   ProjectMetaInterface,
   SupportedPlatform,
-  TokenMetadata,
+  TokenMetadataInterface,
 } from "./typesShared";
 
 export type FileObject = FObject;
@@ -69,6 +69,11 @@ export class ProjectMeta implements ProjectMetaInterface {
   };
   /** supported networks for smart contracts */
   public networks?: NetworkMeta[];
+}
+
+export interface TokenMetadata extends TokenMetadataInterface {
+  /** dex or marketplace url where user can trade token */
+  marketplaceUrls?: string[];
 }
 
 export interface NetworkMeta {
