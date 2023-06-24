@@ -40,7 +40,7 @@ describe('download', () => {
     const release = new ReleaseMeta();
     release.name = 'v0.0.1';
     release.description = 'Release v0.0.1';
-    release.external_url = await valist.writeJSON('{}');
+    release.external_url = await valist.writeJSON({});
 
     const accountID = valist.generateID(1337, 'valist');
     const projectID = valist.generateID(accountID, 'cli');
