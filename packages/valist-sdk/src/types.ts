@@ -1,94 +1,94 @@
-import { FileObject as FObject } from "files-from-path";
+import { FileObject as FObject } from 'files-from-path'
 
-export type FileObject = FObject;
+export type FileObject = FObject
 
 // Valist Types
 export class AccountMeta {
   /** account image */
-  public image?: string;
+  public image?: string
   /** account friendly name. */
-  public name?: string;
+  public name?: string
   /** short description of the account. */
-  public description?: string;
+  public description?: string
   /** link to the account website. */
-  public external_url?: string;
+  public external_url?: string
 }
 
 export class ProjectMeta {
   /** project image used for profile pic */
-  public image?: string;
+  public image?: string
   /** main project image used for discovery */
-  public main_capsule?: string;
+  public main_capsule?: string
   /** project friendly name */
-  public name?: string;
+  public name?: string
   /** short description of the project. */
-  public short_description?: string;
+  public short_description?: string
   /** extended description of the project. */
-  public description?: string;
+  public description?: string
   /** link to the project website. */
-  public external_url?: string;
+  public external_url?: string
   /** type used by clients to handle project */
-  public type?: string;
+  public type?: string
   /** tags used for searching and categorization */
-  public tags?: string[];
+  public tags?: string[]
   /** videos and graphics of the project */
-  public gallery?: GalleryMeta[];
+  public gallery?: GalleryMeta[]
   /** address where donations are sent*/
-  public donation_address?: string;
+  public donation_address?: string
   /** whether to prompt for donation */
-  public prompt_donation?: boolean;
+  public prompt_donation?: boolean
   /** launch project from external_url*/
-  public launch_external?: boolean;
+  public launch_external?: boolean
   /** launch epic */
-  public launch_epic?: boolean;
+  public launch_epic?: boolean
   /** epic game url used for epic auth & services */
-  public epic_game_url?: string;
+  public epic_game_url?: string
   /** repository used for deployments */
-  public repository?: string;
+  public repository?: string
   /** hardware requirements */
   public systemRequirements?: {
-    cpu: string;
-    gpu: string;
-    memory: string;
-    disk: string;
-  };
+    cpu: string
+    gpu: string
+    memory: string
+    disk: string
+  }
   /** supported compatibility layers (wine)  */
   public wineSupport?: {
-    mac: boolean;
-    linux: boolean;
-  };
+    mac: boolean
+    linux: boolean
+  }
   /** supported networks for smart contracts */
-  public networks?: NetworkMeta[];
+  public networks?: NetworkMeta[]
 }
 
 export interface NetworkMeta {
   /** network chain id */
-  chainId: string;
+  chainId: string
   /** tokens required to play game on this chain */
-  tokens?: TokenMetadata[];
+  tokens?: TokenMetadata[]
 }
 
 /** user-friendly token type is used in favor of ERC standard */
-export type TokenType = "fungible" | "semiFungible" | "nonFungible" | "other";
+export type TokenType = 'fungible' | 'semiFungible' | 'nonFungible' | 'other'
 
 export interface TokenMetadata {
   /** token contract address */
-  address: string;
+  address: string
   /** token icon */
-  icon?: string;
+  icon?: string
   /** token fungible type */
-  type?: TokenType;
+  type?: TokenType
   /** name of token */
-  name?: string;
+  name?: string
   /** dex or marketplace url where user can trade token */
-  marketplaceUrls?: string[];
+  marketplaceUrls?: string[]
 }
 
 export class GalleryMeta {
-  public name = "";
-  public src = "";
-  public type = "";
-  public preview?: string;
+  public name = ''
+  public src = ''
+  public type = ''
+  public preview?: string
 }
 
 /*
@@ -120,180 +120,180 @@ export class GalleryMeta {
 		*/
 
 export class ReleaseMeta {
-  constructor(metadata_version = "2") {
-    this._metadata_version = metadata_version;
-    this.path = "";
-    this.name = "";
-    this.description = "";
-    this.external_url = "";
-    this.platforms = {};
+  constructor(metadata_version = '2') {
+    this._metadata_version = metadata_version
+    this.path = ''
+    this.name = ''
+    this.description = ''
+    this.external_url = ''
+    this.platforms = {}
   }
   /** valist metadata version */
-  public _metadata_version: string;
+  public _metadata_version: string
   /** project image */
-  public image?: string;
+  public image?: string
   /** full account/project/release path */
-  public path: string;
+  public path: string
   /** full release name. */
-  public name: string;
+  public name: string
   /** short description of the release. */
-  public description: string;
+  public description: string
   /** link to the release assets. */
-  public external_url: string;
+  public external_url: string
   /** source code snapshot */
-  public source?: string;
+  public source?: string
   /** installable binaries and web bundles */
-  public platforms: PlatformsMeta;
+  public platforms: PlatformsMeta
 }
 
 export type SupportedPlatform =
-  | "web"
-  | "darwin_amd64"
-  | "darwin_arm64"
-  | "linux_amd64"
-  | "linux_arm64"
-  | "windows_amd64"
-  | "windows_arm64"
-  | "android_arm64";
+  | 'web'
+  | 'darwin_amd64'
+  | 'darwin_arm64'
+  | 'linux_amd64'
+  | 'linux_arm64'
+  | 'windows_amd64'
+  | 'windows_arm64'
+  | 'android_arm64'
 
 export const supportedPlatforms: SupportedPlatform[] = [
-  "web",
-  "darwin_amd64",
-  "darwin_arm64",
-  "linux_amd64",
-  "linux_arm64",
-  "windows_arm64",
-  "windows_amd64",
-  "android_arm64",
-];
+  'web',
+  'darwin_amd64',
+  'darwin_arm64',
+  'linux_amd64',
+  'linux_arm64',
+  'windows_arm64',
+  'windows_amd64',
+  'android_arm64'
+]
 
 export const platformNames: Record<SupportedPlatform, string> = {
-  web: "Web build",
-  windows_amd64: "Windows (amd64 / Intel)",
-  windows_arm64: "Windows (arm64)",
-  darwin_arm64: "macOS (arm64 / Apple Silicon)",
-  darwin_amd64: "macOS (amd64 / Intel)",
-  linux_amd64: "Linux (amd64 / Intel)",
-  linux_arm64: "Linux (arm64)",
-  android_arm64: "Android (arm64)",
-};
+  web: 'Web build',
+  windows_amd64: 'Windows (amd64 / Intel)',
+  windows_arm64: 'Windows (arm64)',
+  darwin_arm64: 'macOS (arm64 / Apple Silicon)',
+  darwin_amd64: 'macOS (amd64 / Intel)',
+  linux_amd64: 'Linux (amd64 / Intel)',
+  linux_arm64: 'Linux (arm64)',
+  android_arm64: 'Android (arm64)'
+}
 
 type PlatformConfig = {
-  name: string; // binary name or original file name
-  external_url: string; // full path to file
-  executable?: string; // path to executable
-  installScript?: string; // optional install script
-  processName?: string; // process name to inject values
-  downloadSize?: string; // size of download
-  installSize?: string; // size of install
-};
+  name: string // binary name or original file name
+  external_url: string // full path to file
+  executable?: string // path to executable
+  installScript?: string // optional install script
+  processName?: string // process name to inject values
+  downloadSize?: string // size of download
+  installSize?: string // size of install
+}
 
 export class PlatformsMeta {
   /** web bundle */
-  public web?: PlatformConfig;
+  public web?: PlatformConfig
   /** android/arm64 path */
-  public android_arm64?: PlatformConfig;
+  public android_arm64?: PlatformConfig
   /** darwin/amd64 path */
-  public darwin_amd64?: PlatformConfig;
+  public darwin_amd64?: PlatformConfig
   /** darwin/arm64 path */
-  public darwin_arm64?: PlatformConfig;
+  public darwin_arm64?: PlatformConfig
   /** linux/386 path */
-  public linux_386?: PlatformConfig;
+  public linux_386?: PlatformConfig
   /** linux/amd64 path */
-  public linux_amd64?: PlatformConfig;
+  public linux_amd64?: PlatformConfig
   /** linux/arm path */
-  public linux_arm?: PlatformConfig;
+  public linux_arm?: PlatformConfig
   /** linux/arm64 path */
-  public linux_arm64?: PlatformConfig;
+  public linux_arm64?: PlatformConfig
   /** windows/386 path */
-  public windows_386?: PlatformConfig;
+  public windows_386?: PlatformConfig
   /** windows/amd64 path */
-  public windows_amd64?: PlatformConfig;
+  public windows_amd64?: PlatformConfig
   /** windows/arm64 path */
-  public windows_arm64?: PlatformConfig;
+  public windows_arm64?: PlatformConfig
 }
 
 export class ReleaseMetaV1 {
   /** project image */
-  public image?: string;
+  public image?: string
   /** full release name. */
-  public name?: string;
+  public name?: string
   /** short description of the release. */
-  public description?: string;
+  public description?: string
   /** link to the release assets. */
-  public external_url?: string;
+  public external_url?: string
   /** source code snapshot */
-  public source?: string;
+  public source?: string
   /** installable binaries */
-  public install?: InstallMeta;
+  public install?: InstallMeta
 }
 
 export class InstallMeta {
   /** binary name */
-  public name?: string;
+  public name?: string
   /** web bundle */
-  public web?: string;
+  public web?: string
   /** android/arm64 path */
-  public android_arm64?: string;
+  public android_arm64?: string
   /** darwin/amd64 path */
-  public darwin_amd64?: string;
+  public darwin_amd64?: string
   /** darwin/arm64 path */
-  public darwin_arm64?: string;
+  public darwin_arm64?: string
   /** linux/386 path */
-  public linux_386?: string;
+  public linux_386?: string
   /** linux/amd64 path */
-  public linux_amd64?: string;
+  public linux_amd64?: string
   /** linux/arm path */
-  public linux_arm?: string;
+  public linux_arm?: string
   /** linux/arm64 path */
-  public linux_arm64?: string;
+  public linux_arm64?: string
   /** windows/386 path */
-  public windows_386?: string;
+  public windows_386?: string
   /** windows/amd64 path */
-  public windows_amd64?: string;
+  public windows_amd64?: string
   /** windows/arm64 path */
-  public windows_arm64?: string;
+  public windows_arm64?: string
 }
 
 export function isReleaseMetaV1(
   releaseMeta: ReleaseMeta | ReleaseMetaV1
 ): releaseMeta is ReleaseMetaV1 {
-  const meta = releaseMeta as ReleaseMetaV1;
+  const meta = releaseMeta as ReleaseMetaV1
   return (
     meta.install !== undefined ||
-    (meta as ReleaseMeta)._metadata_version === "undefined"
-  );
+    (meta as ReleaseMeta)._metadata_version === 'undefined'
+  )
 }
 
 export function isReleaseMetaV2(
   releaseMeta: ReleaseMeta | ReleaseMetaV1
 ): releaseMeta is ReleaseMeta {
-  const meta = releaseMeta as ReleaseMeta;
-  return meta._metadata_version === "2";
+  const meta = releaseMeta as ReleaseMeta
+  return meta._metadata_version === '2'
 }
 
 export class ReleaseConfig {
-  public account: string;
-  public project: string;
-  public release: string;
-  public image?: string;
-  public description?: string;
-  public source?: string;
-  public platforms: Record<SupportedPlatform, string>;
+  public account: string
+  public project: string
+  public release: string
+  public image?: string
+  public description?: string
+  public source?: string
+  public platforms: Record<SupportedPlatform, string>
 
   constructor(account: string, project: string, release: string) {
-    this.account = account;
-    this.project = project;
-    this.release = release;
+    this.account = account
+    this.project = project
+    this.release = release
     this.platforms = {
-      web: "",
-      darwin_amd64: "",
-      darwin_arm64: "",
-      windows_amd64: "",
-      windows_arm64: "",
-      linux_amd64: "",
-      linux_arm64: "",
-      android_arm64: "",
-    };
+      web: '',
+      darwin_amd64: '',
+      darwin_arm64: '',
+      windows_amd64: '',
+      windows_arm64: '',
+      linux_amd64: '',
+      linux_arm64: '',
+      android_arm64: ''
+    }
   }
 }

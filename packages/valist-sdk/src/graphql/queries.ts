@@ -8,7 +8,7 @@ export const ACCOUNT_QUERY = `
       metaURI
     }
   }
-`;
+`
 
 export const PROJECT_QUERY = `
   query Projects{
@@ -22,7 +22,7 @@ export const PROJECT_QUERY = `
       }
     }
   }
-`;
+`
 
 export const RELEASE_QUERY = `
   query Releases{
@@ -36,7 +36,7 @@ export const RELEASE_QUERY = `
   	  }
   	}
   }
-`;
+`
 
 export const ACCOUNT_PROJECT_QUERY = `
   query AccountProjects($accountID: String!){
@@ -48,7 +48,7 @@ export const ACCOUNT_PROJECT_QUERY = `
         }
     }
   } 
-`;
+`
 
 // Query for listing releases for a particular project ID
 export const PROJECT_RELEASE_QUERY = `
@@ -64,7 +64,7 @@ export const PROJECT_RELEASE_QUERY = `
         }
     }
   } 
-`;
+`
 
 export const USER_LOGS_QUERY = `
   query UserLogs($address: String, $count: Int){
@@ -90,7 +90,7 @@ export const USER_LOGS_QUERY = `
       sender
     }
   }
-`;
+`
 
 export const ACCOUNT_LOGS_QUERY = `
   query AccountLogs($account: String, $count: Int){
@@ -103,7 +103,7 @@ export const ACCOUNT_LOGS_QUERY = `
       sender
     }
   }
-`;
+`
 
 export const PROJECT_LOGS_QUERY = `
   query ProjectLogs($account: String, $project: String, $count: Int){
@@ -116,7 +116,7 @@ export const PROJECT_LOGS_QUERY = `
       sender
     }
   }
-`;
+`
 
 export const USER_ACCOUNTS_QUERY = `
   query UserAccounts($address: String!){
@@ -129,7 +129,7 @@ export const USER_ACCOUNTS_QUERY = `
       }
     }
   }
-`;
+`
 
 export const USER_PROJECTS_QUERY = `
   query UserProjects($address: String!){
@@ -146,7 +146,7 @@ export const USER_PROJECTS_QUERY = `
       }
     }
   }
-`;
+`
 
 export const USER_HOMEPAGE_QUERY = `
   query Homepage($address: String){
@@ -178,7 +178,7 @@ export const USER_HOMEPAGE_QUERY = `
       }
     }
   }
-`;
+`
 
 export const ACCOUNT_PROFILE_QUERY = `
   query AccountProfile($account: String) {
@@ -220,7 +220,7 @@ export const ACCOUNT_PROFILE_QUERY = `
       }
     }
   }
-`;
+`
 
 export const PROJECTS_SEARCH_QUERY = `
   query ProjectSearch($search: String){
@@ -233,7 +233,7 @@ export const PROJECTS_SEARCH_QUERY = `
       }
     }
   }
-`;
+`
 
 export const ACCOUNTS_SEARCH__QUERY = `
   query AccountSearch($search: String){
@@ -243,7 +243,7 @@ export const ACCOUNTS_SEARCH__QUERY = `
       metaURI
     }
   }
-`;
+`
 
 export const SEARCH_QUERY = `
   query Search($search: String, $order: String){
@@ -263,7 +263,7 @@ export const SEARCH_QUERY = `
       blockTime
     }
   }
-`;
+`
 
 export const PROJECT_PROFILE_QUERY = `
   query ProjectProfile($projectID: String){
@@ -305,7 +305,7 @@ export const PROJECT_PROFILE_QUERY = `
       }
     }
   }
-`;
+`
 
 export const ADDR_PROFILE_QUERY = `
   query AddrProfile($address: String){
@@ -330,4 +330,4 @@ export const ADDR_PROFILE_QUERY = `
       }
     }
   }
-`;
+`

@@ -1,43 +1,43 @@
-import { ethers } from "ethers";
-import { expect } from "chai";
-import { before, describe, it } from "mocha";
-import { create as createIPFS } from "ipfs-http-client";
+import { ethers } from 'ethers'
+import { expect } from 'chai'
+import { before, describe, it } from 'mocha'
+import { create as createIPFS } from 'ipfs-http-client'
 
 import {
   Client,
   AccountMeta,
   ProjectMeta,
   ReleaseMeta,
-  generateID,
-} from "../src/index";
-import * as contracts from "../src/contracts";
-import { FileObject, getFilesFromPath } from "files-from-path";
-import { ImportCandidate } from "ipfs-core-types/src/utils";
+  generateID
+} from '../src/index'
+import * as contracts from '../src/contracts'
+import { FileObject, getFilesFromPath } from 'files-from-path'
+import { ImportCandidate } from 'ipfs-core-types/src/utils'
 
-const ganache = require("ganache");
-const provider = new ethers.providers.Web3Provider(ganache.provider());
-const signer = provider.getSigner();
+const ganache = require('ganache')
+const provider = new ethers.providers.Web3Provider(ganache.provider())
+const signer = provider.getSigner()
 
 const Registry = new ethers.ContractFactory(
   contracts.registryABI,
   contracts.registryBytecode,
   signer
-);
+)
 const License = new ethers.ContractFactory(
   contracts.licenseABI,
   contracts.licenseBytecode,
   signer
-);
+)
 
 async function createClient(
   registry: ethers.Contract,
   license: ethers.Contract
 ) {
   const subgraphAddress =
-    "https://api.thegraph.com/subgraphs/name/valist-io/valistmumbai";
-  const ipfsGateway = "https://gateway.valist.io";
+    'https://api.thegraph.com/subgraphs/name/valist-io/valistmumbai'
+  const ipfsGateway = 'https://gateway.valist.io'
   // @ts-expect-error weird IPFS JS types
-  const ipfs = createIPFS("https://pin-1.valist.io");
+  const ipfs = createIPFS('https://pin-1.valist.io')
   const valist = new Client(
     registry,
     license,
@@ -46,151 +46,151 @@ async function createClient(
     subgraphAddress,
     provider.getSigner(),
     false
-  );
-  return valist;
+  )
+  return valist
 }
 
-describe("valist client", async function () {
-  const accountID = generateID(1337, "valist");
-  const projectID = generateID(accountID, "sdk");
-  const releaseID = generateID(projectID, "v0.5.0");
-  let registry: ethers.Contract, license: ethers.Contract;
-  let valist: Client;
-  let address: string;
+describe('valist client', async function () {
+  const accountID = generateID(1337, 'valist')
+  const projectID = generateID(accountID, 'sdk')
+  const releaseID = generateID(projectID, 'v0.5.0')
+  let registry: ethers.Contract, license: ethers.Contract
+  let valist: Client
+  let address: string
 
   before(async () => {
-    registry = await Registry.deploy(ethers.constants.AddressZero);
-    await registry.deployed();
+    registry = await Registry.deploy(ethers.constants.AddressZero)
+    await registry.deployed()
 
-    license = await License.deploy(registry.address);
-    await license.deployed();
+    license = await License.deploy(registry.address)
+    await license.deployed()
 
-    valist = await createClient(registry, license);
-    address = await signer.getAddress();
-  });
+    valist = await createClient(registry, license)
+    address = await signer.getAddress()
+  })
 
-  describe("valist ipfs pinning", async function () {
-    let nestedFiles: ImportCandidate[];
-    let singleFile: FileObject[];
-    let multipleFiles: ImportCandidate[];
+  describe('valist ipfs pinning', async function () {
+    let nestedFiles: ImportCandidate[]
+    let singleFile: FileObject[]
+    let multipleFiles: ImportCandidate[]
 
     before(async () => {
-      nestedFiles = (await getFilesFromPath("./data/data")).map((file) => ({
+      nestedFiles = (await getFilesFromPath('./data/data')).map((file) => ({
         content: file.stream(),
-        path: file.name,
-      }));
+        path: file.name
+      }))
 
-      singleFile = await getFilesFromPath("./data/data3");
+      singleFile = await getFilesFromPath('./data/data3')
 
-      multipleFiles = (await getFilesFromPath("./data/data/data2")).map(
+      multipleFiles = (await getFilesFromPath('./data/data/data2')).map(
         (file) => ({
           content: file.stream(),
-          path: file.name,
+          path: file.name
         })
-      );
-    });
+      )
+    })
 
-    describe("valist (writeFile)", async function () {
-      it("should write file", async () => {
-        const res = await valist.writeFile(singleFile[0], false);
+    describe('valist (writeFile)', async function () {
+      it('should write file', async () => {
+        const res = await valist.writeFile(singleFile[0], false)
         expect(res).to.equal(
-          "https://gateway.valist.io/ipfs/bafkreifnd4m4zim2zjs6vmkyxfca5dsk4sxrzc7cfvg6djg32k46sfj2im"
-        );
-      });
+          'https://gateway.valist.io/ipfs/bafkreifnd4m4zim2zjs6vmkyxfca5dsk4sxrzc7cfvg6djg32k46sfj2im'
+        )
+      })
 
-      it("should write file and wrap with directory", async () => {
-        const res = await valist.writeFile(singleFile[0], true);
+      it('should write file and wrap with directory', async () => {
+        const res = await valist.writeFile(singleFile[0], true)
         expect(res).to.equal(
-          "https://gateway.valist.io/ipfs/bafybeif7pyzm6q7jwja2pcrikkwk47pzuru5ty7xs3ccocu5sjmyqerqzu"
-        );
-      });
-    });
+          'https://gateway.valist.io/ipfs/bafybeif7pyzm6q7jwja2pcrikkwk47pzuru5ty7xs3ccocu5sjmyqerqzu'
+        )
+      })
+    })
 
-    describe("valist (writeJSON)", async function () {
-      it("should write json", async () => {
-        const res = await valist.writeJSON({ test: "hello world" });
+    describe('valist (writeJSON)', async function () {
+      it('should write json', async () => {
+        const res = await valist.writeJSON({ test: 'hello world' })
         expect(res).to.equal(
-          "https://gateway.valist.io/ipfs/bafkreic77yghmzpvua4o5omh6xrxrlnxfbr4chji6umy2sl42vfouzmgse"
-        );
-      });
-    });
+          'https://gateway.valist.io/ipfs/bafkreic77yghmzpvua4o5omh6xrxrlnxfbr4chji6umy2sl42vfouzmgse'
+        )
+      })
+    })
 
-    describe("valist (writeFolder)", async function () {
-      it("should write multiple files to folder", async () => {
-        const res = await valist.writeFolder(multipleFiles);
+    describe('valist (writeFolder)', async function () {
+      it('should write multiple files to folder', async () => {
+        const res = await valist.writeFolder(multipleFiles)
         expect(res).to.equal(
-          "https://gateway.valist.io/ipfs/bafybeia6iljxfei53gy5s5wxas2li62kviynguvwfnox3nhstyotwaysk4"
-        );
-      });
+          'https://gateway.valist.io/ipfs/bafybeia6iljxfei53gy5s5wxas2li62kviynguvwfnox3nhstyotwaysk4'
+        )
+      })
 
-      it("should write nested files to folder", async () => {
-        const res = await valist.writeFolder(nestedFiles);
+      it('should write nested files to folder', async () => {
+        const res = await valist.writeFolder(nestedFiles)
         expect(res).to.equal(
-          "https://gateway.valist.io/ipfs/bafybeiedqri5gw24cr6jxnznfgmxqrra3l372cur4lghn25tmqh4tpcose"
-        );
-      });
-    });
-  });
+          'https://gateway.valist.io/ipfs/bafybeiedqri5gw24cr6jxnznfgmxqrra3l372cur4lghn25tmqh4tpcose'
+        )
+      })
+    })
+  })
 
-  describe("valist (createAccount)", async function () {
-    const account = new AccountMeta();
-    account.image = "https://gateway.valist.io/ipfs/Qm456";
-    account.name = "valist";
-    account.description = "Web3 digital distribution";
-    account.external_url = "https://valist.io";
+  describe('valist (createAccount)', async function () {
+    const account = new AccountMeta()
+    account.image = 'https://gateway.valist.io/ipfs/Qm456'
+    account.name = 'valist'
+    account.description = 'Web3 digital distribution'
+    account.external_url = 'https://valist.io'
 
-    it("should create account", async () => {
-      const createAccountTx = await valist.createAccount("valist", account, [
-        address,
-      ]);
-      await createAccountTx.wait();
+    it('should create account', async () => {
+      const createAccountTx = await valist.createAccount('valist', account, [
+        address
+      ])
+      await createAccountTx.wait()
 
-      const otherAccount = await valist.getAccountMeta(accountID);
-      expect(otherAccount).to.deep.equal(account);
-    });
-  });
+      const otherAccount = await valist.getAccountMeta(accountID)
+      expect(otherAccount).to.deep.equal(account)
+    })
+  })
 
-  describe("valist (createProject)", async function () {
-    const project = new ProjectMeta();
-    project.image = "https://gateway.valist.io/ipfs/Qm456";
-    project.name = "sdk";
-    project.description = "Valist Typescript SDK";
-    project.external_url = "https://github.com/valist-io/valist-js";
+  describe('valist (createProject)', async function () {
+    const project = new ProjectMeta()
+    project.image = 'https://gateway.valist.io/ipfs/Qm456'
+    project.name = 'sdk'
+    project.description = 'Valist Typescript SDK'
+    project.external_url = 'https://github.com/valist-io/valist-js'
 
-    it("should create project", async () => {
+    it('should create project', async () => {
       const createProjectTx = await valist.createProject(
         accountID,
-        "sdk",
+        'sdk',
         project,
         [address]
-      );
-      await createProjectTx.wait();
+      )
+      await createProjectTx.wait()
 
-      const otherProject = await valist.getProjectMeta(projectID);
-      expect(otherProject).to.deep.equal(project);
-    });
-  });
+      const otherProject = await valist.getProjectMeta(projectID)
+      expect(otherProject).to.deep.equal(project)
+    })
+  })
 
-  describe("valist (publishRelease)", async function () {
-    const release = new ReleaseMeta();
-    release.image = "https://gateway.valist.io/ipfs/Qm456";
-    release.name = "sdk@v0.5.0";
-    release.description = "Release v0.5.0";
-    release.external_url = "https://gateway.valist.io/ipfs/Qm123";
+  describe('valist (publishRelease)', async function () {
+    const release = new ReleaseMeta()
+    release.image = 'https://gateway.valist.io/ipfs/Qm456'
+    release.name = 'sdk@v0.5.0'
+    release.description = 'Release v0.5.0'
+    release.external_url = 'https://gateway.valist.io/ipfs/Qm123'
 
-    it("should publish release", async () => {
+    it('should publish release', async () => {
       const createReleaseTx = await valist.createRelease(
         projectID,
-        "v0.5.0",
+        'v0.5.0',
         release
-      );
-      await createReleaseTx.wait();
+      )
+      await createReleaseTx.wait()
 
-      const otherRelease = await valist.getReleaseMeta(releaseID);
-      expect(otherRelease).to.deep.equal(release);
-    });
-  });
-});
+      const otherRelease = await valist.getReleaseMeta(releaseID)
+      expect(otherRelease).to.deep.equal(release)
+    })
+  })
+})
 
 // describe('list data', async () => {
 // 	it('list', async () => {
