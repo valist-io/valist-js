@@ -1,9 +1,7 @@
 import { FileObject as FObject } from "files-from-path";
 import {
-  ReleaseMetaInterface,
   AccountMetaInterface,
   GalleryMetaInterface,
-  PlatformConfig,
   PlatformsMetaInterface,
   ProjectMetaInterface,
   SupportedPlatform,
@@ -14,61 +12,14 @@ export {PlatformConfig, SupportedPlatform, TokenType} from "./typesShared";
 
 export type FileObject = FObject;
 
-// Valist Types
-export class AccountMeta implements AccountMetaInterface {
-  /** account image */
-  public image?: string;
-  /** account friendly name. */
-  public name?: string;
-  /** short description of the account. */
-  public description?: string;
-  /** link to the account website. */
-  public external_url?: string;
+function autoImplement<T>(): new () => T {
+  return class {} as new () => T;
 }
 
-export class ProjectMeta implements ProjectMetaInterface {
-  /** project image used for profile pic */
-  public image?: string;
-  /** main project image used for discovery */
-  public main_capsule?: string;
-  /** project friendly name */
-  public name?: string;
-  /** short description of the project. */
-  public short_description?: string;
-  /** extended description of the project. */
-  public description?: string;
-  /** link to the project website. */
-  public external_url?: string;
-  /** type used by clients to handle project */
-  public type?: string;
-  /** tags used for searching and categorization */
-  public tags?: string[];
-  /** videos and graphics of the project */
-  public gallery?: GalleryMeta[];
-  /** address where donations are sent*/
-  public donation_address?: string;
-  /** whether to prompt for donation */
-  public prompt_donation?: boolean;
-  /** launch project from external_url*/
-  public launch_external?: boolean;
-  /** launch epic */
-  public launch_epic?: boolean;
-  /** epic game url used for epic auth & services */
-  public epic_game_url?: string;
-  /** repository used for deployments */
-  public repository?: string;
-  /** hardware requirements */
-  public systemRequirements?: {
-    cpu: string;
-    gpu: string;
-    memory: string;
-    disk: string;
-  };
-  /** supported compatibility layers (wine)  */
-  public wineSupport?: {
-    mac: boolean;
-    linux: boolean;
-  };
+// Valist Types
+export class AccountMeta extends autoImplement<AccountMetaInterface>() {}
+
+export class ProjectMeta extends autoImplement<ProjectMetaInterface>() {
   /** supported networks for smart contracts */
   public networks?: NetworkMeta[];
 }
@@ -85,12 +36,7 @@ export interface NetworkMeta {
   tokens?: TokenMetadata[];
 }
 
-export class GalleryMeta implements GalleryMetaInterface {
-  public name = "";
-  public src = "";
-  public type = "";
-  public preview?: string;
-}
+export class GalleryMeta extends autoImplement<GalleryMetaInterface>() {}
 
 /*
 	Example ReleaseMeta:
@@ -120,7 +66,7 @@ export class GalleryMeta implements GalleryMetaInterface {
 		}
 		*/
 
-export class ReleaseMeta implements ReleaseMetaInterface {
+export class ReleaseMeta {
   constructor(metadata_version = "2") {
     this._metadata_version = metadata_version;
     this.path = "";
@@ -144,7 +90,7 @@ export class ReleaseMeta implements ReleaseMetaInterface {
   /** source code snapshot */
   public source?: string;
   /** installable binaries and web bundles */
-  public platforms: PlatformsMeta;
+  public platforms: PlatformsMetaInterface;
 }
 
 export const supportedPlatforms: SupportedPlatform[] = [
@@ -169,30 +115,7 @@ export const platformNames: Record<SupportedPlatform, string> = {
   android_arm64: "Android (arm64)",
 };
 
-export class PlatformsMeta implements PlatformsMetaInterface {
-  /** web bundle */
-  public web?: PlatformConfig;
-  /** android/arm64 path */
-  public android_arm64?: PlatformConfig;
-  /** darwin/amd64 path */
-  public darwin_amd64?: PlatformConfig;
-  /** darwin/arm64 path */
-  public darwin_arm64?: PlatformConfig;
-  /** linux/386 path */
-  public linux_386?: PlatformConfig;
-  /** linux/amd64 path */
-  public linux_amd64?: PlatformConfig;
-  /** linux/arm path */
-  public linux_arm?: PlatformConfig;
-  /** linux/arm64 path */
-  public linux_arm64?: PlatformConfig;
-  /** windows/386 path */
-  public windows_386?: PlatformConfig;
-  /** windows/amd64 path */
-  public windows_amd64?: PlatformConfig;
-  /** windows/arm64 path */
-  public windows_arm64?: PlatformConfig;
-}
+export class PlatformsMeta extends autoImplement<PlatformsMetaInterface>() {}
 
 export class ReleaseMetaV1 {
   /** project image */

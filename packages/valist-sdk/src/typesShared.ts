@@ -94,25 +94,6 @@ export interface PlatformsMetaInterface {
   windows_arm64?: PlatformConfig;
 }
 
-export interface ReleaseMetaInterface {
-  /** valist metadata version */
-  _metadata_version: string;
-  /** project image */
-  image?: string;
-  /** full account/project/release path */
-  path: string;
-  /** full release name. */
-  name: string;
-  /** short description of the release. */
-  description: string;
-  /** link to the release assets. */
-  external_url: string;
-  /** source code snapshot */
-  source?: string;
-  /** installable binaries and web bundles */
-  platforms: PlatformsMetaInterface;
-}
-
 export type SupportedPlatform =
   | "web"
   | "darwin_amd64"
