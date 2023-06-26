@@ -5,6 +5,18 @@ export interface GalleryMetaInterface {
   preview?: string;
 }
 
+export interface SystemRequirements {
+  cpu: string;
+  gpu: string;
+  memory: string;
+  disk: string;
+}
+
+export interface WineSupport {
+  mac: boolean;
+  linux: boolean;
+}
+
 export interface ProjectMetaInterface {
   /** project image used for profile pic */
   image?: string;
@@ -37,17 +49,9 @@ export interface ProjectMetaInterface {
   /** repository used for deployments */
   repository?: string;
   /** hardware requirements */
-  systemRequirements?: {
-    cpu: string;
-    gpu: string;
-    memory: string;
-    disk: string;
-  };
+  systemRequirements?: SystemRequirements;
   /** supported compatibility layers (wine)  */
-  wineSupport?: {
-    mac: boolean;
-    linux: boolean;
-  };
+  wineSupport?: WineSupport;
 }
 
 export interface AccountMetaInterface {
@@ -67,6 +71,8 @@ export interface PlatformConfig {
   executable?: string; // path to executable
   installScript?: string; // optional install script
   processName?: string; // process name to inject values
+  installSize?: string; // install size in bytes
+  downloadSize?: string; // download size in bytes
 }
 
 export interface PlatformsMetaInterface {

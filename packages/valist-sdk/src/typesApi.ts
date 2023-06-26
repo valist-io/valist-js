@@ -16,6 +16,7 @@ export interface Channel {
   channel_id: number;
   channel_name: string;
   release_meta: ChannelReleaseMeta;
+  license_config_id: string | null
 }
 
 export interface ContractMetadata extends TokenMetadataInterface {
