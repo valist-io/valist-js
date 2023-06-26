@@ -3,7 +3,7 @@ import { BigNumber, ethers, PopulatedTransaction } from 'ethers';
 import { ContractTransaction } from '@ethersproject/contracts';
 import { formatBytes, getFilesFromPath } from './utils';
 
-import { AccountMeta, PlatformsMeta, ProjectMeta, ReleaseMeta, SupportedPlatform, FileObject, ReleaseConfig } from './types';
+import { AccountMeta, PlatformsMeta, ProjectMeta, SupportedPlatform, ReleaseMeta, FileObject, ReleaseConfig } from './types';
 import { fetchGraphQL, Account, Project, Release } from './graphql';
 import { generateID, getAccountID, getProjectID, getReleaseID } from './utils';
 import * as queries from './graphql/queries';
