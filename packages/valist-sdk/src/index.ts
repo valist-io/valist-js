@@ -1,5 +1,4 @@
 import { ethers, providers } from 'ethers';
-import { create as createIPFS } from 'ipfs-http-client';
 import Client from './client';
 import * as contracts from './contracts';
 import * as graphql from './graphql';
@@ -17,6 +16,29 @@ export interface Options {
   licenseAddress: string;
   subgraphUrl: string;
 }
+
+export type IPFSCLIENT = {
+  add: (value: any, value2: any) => Promise<string>;
+  addAll: (value: any, value2: any) => Promise<string[]>;
+}
+
+const createIPFS = (value: Object): IPFSCLIENT => {
+  const API = 'https://pin-1.valist.io/api/v0';
+  return {
+    add: async (value: any, value2: Object) => {
+      const res = await fetch(`${API}/add`, {
+        method: 'post',
+      });
+      return await res.json();
+    },
+    addAll: async (value: any, value2: Object) => {
+      const res = await fetch(`${API}/addAll`, {
+        method: 'post',
+      });
+      return await res.json();
+    }
+  }
+};
 
 /**
  * Create a read-only Valist client using the given JSON RPC provider.
