@@ -17,26 +17,72 @@ export interface Options {
   subgraphUrl: string;
 }
 
+export type IPFSOptions = {
+  wrapWithDirectory?: boolean;
+  cidVersion?: number;
+  progress?: (bytes: number) => void;
+}
+
 export type IPFSCLIENT = {
-  add: (value: any, value2: any) => Promise<string>;
-  addAll: (value: any, value2: any) => Promise<string[]>;
+  add: (value: any, options: IPFSOptions) => Promise<string | undefined>;
+  addAll: (values: any, options: any) => Promise<string[]>;
 }
 
 const createIPFS = (value: Object): IPFSCLIENT => {
   const API = 'https://pin-1.valist.io/api/v0';
-  return {
-    add: async (value: any, value2: Object) => {
-      const res = await fetch(`${API}/add`, {
-        method: 'post',
-      });
-      return await res.json();
-    },
-    addAll: async (value: any, value2: Object) => {
-      const res = await fetch(`${API}/addAll`, {
-        method: 'post',
-      });
-      return await res.json();
+
+  const addAll = async (values: any[], options: IPFSOptions) => {
+    let data: { Name: string, Hash: string }[] = [];
+    let path = `${API}/add?progress=true`;
+
+    if (options?.cidVersion == 0 || options?.cidVersion == 1)
+      path += `&cid-version=${options.cidVersion}`;
+
+    if (options?.wrapWithDirectory)
+      path += '&wrap-with-directory=true';
+
+    const formData = new FormData();
+    for (const value of values) {
+      console.log(`adding ${value.path} to form`);
+      formData.append('file', value.content, value.path);
     }
+
+    const res = await fetch(path, {
+      method: 'post',
+      body: formData
+    });
+
+    if (res.status === 400)
+      return [];
+
+    if (res?.body) {
+      const resText = await res.text();
+      const jsonLines = resText.split('\n');
+      jsonLines.forEach(line => {
+        if (line) {
+          const jsonValue = JSON.parse(line);
+          data.push(jsonValue);
+        }
+      });
+    }
+
+    const hashes: string[] = [];
+    data.forEach(item =>
+      item?.Hash && hashes.push(item.Hash)
+    );
+
+    return hashes;
+  }
+
+  const add = async (value: any, options: any) => {
+    const data = await addAll([value], options);
+    if (data.length !== 0)
+      return data[0];
+  }
+
+  return {
+    addAll,
+    add,
   }
 };
 
