@@ -43,13 +43,13 @@ const createIPFS = (value: Object): IPFSCLIENT => {
 
     const formData = new FormData();
     for (const value of values) {
-      console.log(`adding ${value.path} to form`);
       formData.append('file', value.content, value.path);
     }
 
     const res = await fetch(path, {
       method: 'post',
-      body: formData
+      body: formData,
+      keepalive: false,
     });
 
     if (res.status === 400)
@@ -66,6 +66,7 @@ const createIPFS = (value: Object): IPFSCLIENT => {
       });
     }
 
+    console.log({ data });
     const hashes: string[] = [];
     data.forEach(item =>
       item?.Hash && hashes.push(item.Hash)
@@ -77,7 +78,7 @@ const createIPFS = (value: Object): IPFSCLIENT => {
   const add = async (value: any, options: any) => {
     const data = await addAll([value], options);
     if (data.length !== 0)
-      return data[0];
+      return data[data.length - 1];
   }
 
   return {
