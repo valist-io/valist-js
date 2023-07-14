@@ -373,11 +373,7 @@ export default class Client {
 		let buffer: Blob | Buffer;
 		let string = JSON.stringify(data);
 
-		if (typeof window === 'undefined') {
-			buffer = Buffer.from(JSON.stringify(data));
-		} else {
-			buffer = new Blob([string], { type: 'application/json' });
-		}
+		buffer = new Blob([string], { type: 'application/json' });
 
 		const res = await this.ipfs.add(buffer, { cidVersion: 1 });
 
