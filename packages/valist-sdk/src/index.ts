@@ -28,7 +28,7 @@ export type IPFSCLIENT = {
   addAll: (values: any, options: any) => Promise<string[]>;
 }
 
-const createIPFS = (value: Object): IPFSCLIENT => {
+export const createIPFS = (value: Object): IPFSCLIENT => {
   const API = 'https://pin-1.valist.io/api/v0';
 
   const addAll = async (values: any[], options: IPFSOptions) => {
@@ -42,8 +42,15 @@ const createIPFS = (value: Object): IPFSCLIENT => {
       path += '&wrap-with-directory=true';
 
     const formData = new FormData();
-    for (const value of values) {
-      formData.append('file', value.content, value.path);
+    for (const item of values) {
+      let content = item?.content || item;
+      let path = item?.path;
+
+      if (content instanceof Blob) {
+        path === "meta.json"
+      }
+
+      formData.append('file', content, path);
     }
 
     const res = await fetch(path, {
