@@ -1,7 +1,7 @@
-import axios from 'axios';
+import axios, { AxiosProgressEvent } from 'axios';
 import { BigNumber, ethers, PopulatedTransaction } from 'ethers';
 import { ContractTransaction } from '@ethersproject/contracts';
-import { formatBytes, getFilesFromPath } from './utils';
+import { getFilesFromPath } from './utils';
 
 import { AccountMeta, PlatformsMeta, ProjectMeta, SupportedPlatform, ReleaseMeta, FileObject, ReleaseConfig } from './types';
 import { fetchGraphQL, Account, Project, Release } from './graphql';
@@ -380,7 +380,7 @@ export default class Client {
 		return `${this.ipfsGateway}/ipfs/${res}`;
 	}
 
-	async writeFile(file: File | FileObject, wrapWithDirectory = false, onProgress?: (bytes: string) => void) {
+	async writeFile(file: File | FileObject, wrapWithDirectory = false, onProgress?: (percentCompleteOrBytesUploaded: number | string) => void) {
 		if (typeof file === 'undefined') throw new Error("file === undefined, must pin at least one file");
 
 		let fileData, fileSize: number;
@@ -402,19 +402,19 @@ export default class Client {
 		const res = await this.ipfs.add(fileData, {
 			wrapWithDirectory,
 			cidVersion: 1,
-			progress: (bytes: number) => onProgress ? onProgress(formatBytes(String(bytes))) : '',
+			progress: onProgress,
 		});
 
 		return `${this.ipfsGateway}/ipfs/${res}`;
 	}
 
-	async writeFolder(files: ImportCandidate[], wrapWithDirectory = false, onProgress?: (bytes: string) => void) {
+	async writeFolder(files: ImportCandidate[], wrapWithDirectory = false, onProgress?: (percent: number) => void) {
 		if (files.length == 0) throw new Error("files.length == 0, must pin at least one file");
 
 		const cids: string[] = await this.ipfs.addAll(files, {
 			cidVersion: 1,
 			wrapWithDirectory,
-			progress: (bytes: number, path?: string) => onProgress ? onProgress(`${path ? `(${path})  ` : ''}${formatBytes(String(bytes))}`) : '',
+			progress: onProgress,
 		});
 
 		return `${this.ipfsGateway}/ipfs/${cids[cids.length - 1]}`;

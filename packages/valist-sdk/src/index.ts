@@ -2,6 +2,9 @@ import { ethers, providers } from 'ethers';
 import Client from './client';
 import * as contracts from './contracts';
 import * as graphql from './graphql';
+import axios, { AxiosProgressEvent, AxiosRequestConfig } from 'axios';
+import https from "https";
+import { formatBytes } from './utils';
 
 export type Provider = providers.Provider | ethers.Signer;
 
@@ -20,7 +23,7 @@ export interface Options {
 export type IPFSOptions = {
   wrapWithDirectory?: boolean;
   cidVersion?: number;
-  progress?: (bytes: number) => void;
+  progress?: (percentCompleteOrBytesUploaded: number | string) => void;
 }
 
 export type IPFSCLIENT = {
@@ -53,19 +56,27 @@ export const createIPFS = (value: Object): IPFSCLIENT => {
       formData.append('file', content, path);
     }
 
-    const res = await fetch(path, {
-      method: 'post',
-      body: formData,
-      keepalive: false,
-    });
+    const reqConfig: AxiosRequestConfig = {
+      onUploadProgress: (progressEvent: AxiosProgressEvent) => {
+        if (options?.progress) {
+          options.progress(progressEvent.total ? `${((progressEvent.loaded * 100) / progressEvent.total).toFixed(2)}%` : formatBytes(progressEvent.loaded.toString()));
+        }
+      },
+    };
+
+    // workaround for node.js since ipfs pinning behind secure proxy doesn't support duplex connections
+    if (typeof window !== undefined) {
+      reqConfig.httpsAgent = new https.Agent({ keepAlive: false });
+    }
+
+    const res = await axios.postForm(path, formData, reqConfig);
 
     if (res.status === 400)
       return [];
 
-    if (res?.body) {
-      const resText = await res.text();
-      const jsonLines = resText.split('\n');
-      jsonLines.forEach(line => {
+    if (res.data) {
+      const jsonLines = (res.data as string).split('\n');
+      jsonLines.forEach((line) => {
         if (line) {
           const jsonValue = JSON.parse(line);
           data.push(jsonValue);
@@ -73,7 +84,6 @@ export const createIPFS = (value: Object): IPFSCLIENT => {
       });
     }
 
-    console.log({ data });
     const hashes: string[] = [];
     data.forEach(item =>
       item?.Hash && hashes.push(item.Hash)
