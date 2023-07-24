@@ -4,7 +4,8 @@ import * as contracts from './contracts';
 import * as graphql from './graphql';
 import axios, { AxiosProgressEvent, AxiosRequestConfig } from 'axios';
 import https from "https";
-import { formatBytes } from './utils';
+import { formatBytes, generateValistToken } from './utils';
+
 
 export type Provider = providers.Provider | ethers.Signer;
 
@@ -21,6 +22,7 @@ export interface Options {
 }
 
 export type IPFSOptions = {
+  apiSecret?: string;
   wrapWithDirectory?: boolean;
   cidVersion?: number;
   progress?: (percentCompleteOrBytesUploaded: number | string) => void;
@@ -57,6 +59,9 @@ export const createIPFS = (value: Object): IPFSCLIENT => {
     }
 
     const reqConfig: AxiosRequestConfig = {
+      headers: {
+        'Authorization': `Bearer ${await generateValistToken(options.apiSecret || process.env.VALIST_API_SECRET || '')}`,
+      },
       onUploadProgress: (progressEvent: AxiosProgressEvent) => {
         if (options?.progress) {
           options.progress(progressEvent.total ? `${((progressEvent.loaded * 100) / progressEvent.total).toFixed(2)}%` : formatBytes(progressEvent.loaded.toString()));
