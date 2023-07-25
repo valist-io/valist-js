@@ -27,7 +27,7 @@ export interface ContractMetadata extends TokenMetadataInterface {
 }
 
 export interface ProjectMetaApi extends ProjectMetaInterface {
-  contracts: ContractMetadata[];
+  networks: ContractMetadata[];
 }
 
 export interface Listing {
