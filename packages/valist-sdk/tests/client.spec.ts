@@ -9,9 +9,9 @@ import {
 	ProjectMeta,
 	ReleaseMeta,
 	generateID,
+	getFilesFromPath,
 } from '../src/index';
 import * as contracts from '../src/contracts';
-import { FileObject, getFilesFromPath } from 'files-from-path';
 import { ImportCandidate } from 'ipfs-core-types/src/utils';
 
 const ganache = require("ganache");
@@ -51,7 +51,7 @@ describe('valist client', async function () {
 
 	describe('valist ipfs pinning', async function () {
 		let nestedFiles: ImportCandidate[];
-		let singleFile: FileObject[];
+		let singleFile;
 		let multipleFiles: ImportCandidate[];
 
 		before(async () => {

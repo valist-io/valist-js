@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
-import { getFilesFromPath as getFiles } from 'files-from-path';
 import axios from 'axios';
+import { filesFromPaths } from './files';
 
 /**
  * Generate account, project, and release IDs.
@@ -26,7 +26,7 @@ export function getReleaseID(chainId: ethers.BigNumberish, account: string, proj
 	return generateID(generateID(generateID(chainId, account), project), release);
 }
 
-export const getFilesFromPath = getFiles;
+export const getFilesFromPath = filesFromPaths;
 
 /**
  * Convert the passed file to an "import candidate" - an object suitable for
@@ -56,7 +56,7 @@ export const formatBytes = (x: string) => {
 	while (n >= 1024 && ++l) {
 		n = n / 1024;
 	}
-	
+
 	return (n.toFixed(n < 10 && l > 0 ? 1 : 0) + ' ' + units[l]);
 }
 
