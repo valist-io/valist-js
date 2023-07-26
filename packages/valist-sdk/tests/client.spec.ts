@@ -13,6 +13,7 @@ import {
 } from '../src/index';
 import * as contracts from '../src/contracts';
 import { ImportCandidate } from 'ipfs-core-types/src/utils';
+import { FileObject } from '../src/files';
 
 const ganache = require("ganache");
 const provider = new ethers.providers.Web3Provider(ganache.provider());
@@ -51,7 +52,7 @@ describe('valist client', async function () {
 
 	describe('valist ipfs pinning', async function () {
 		let nestedFiles: ImportCandidate[];
-		let singleFile;
+		let singleFile: FileObject[];
 		let multipleFiles: ImportCandidate[];
 
 		before(async () => {
