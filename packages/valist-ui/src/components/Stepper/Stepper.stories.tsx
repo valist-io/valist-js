@@ -1,4 +1,4 @@
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { ComponentStory, ComponentMeta, StoryFn } from '@storybook/react';
 import { Stepper } from './Stepper';
 
 export default {
@@ -7,9 +7,9 @@ export default {
   parameters: {
     layout: 'fullscreen',
   },
-} as ComponentMeta<typeof Stepper>;
+};
 
-const Template: ComponentStory<typeof Stepper> = (args) => (
+const Template: StoryFn<typeof Stepper> = (args) => (
   <Stepper {...args}/>
 );
 
