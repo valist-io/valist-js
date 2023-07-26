@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { getFilesFromPath as getFiles } from 'files-from-path';
+import { filesFromPaths as getFiles } from './filesFromPaths';
 import axios from 'axios';
 
 /**

@@ -1,4 +1,4 @@
-import { FileObject as FObject } from "files-from-path";
+import { FileLike as FObject } from "./filesFromPaths";
 import {
   AccountMetaInterface,
   GalleryMetaInterface,

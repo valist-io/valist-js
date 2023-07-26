@@ -400,7 +400,7 @@ export default class Client {
 		} else {
 			const fileStream = file.stream();
 			fileData = { content: fileStream, path };
-			fileSize = require('fs').statSync(fileStream.path).size;
+			fileSize = require('fs').statSync(file.path).size;
 		}
 
 		const res = await this.ipfs.add(fileData, {
