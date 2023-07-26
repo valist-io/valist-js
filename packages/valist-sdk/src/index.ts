@@ -60,7 +60,7 @@ export const createIPFS = (value: Object): IPFSCLIENT => {
 
     const reqConfig: AxiosRequestConfig = {
       headers: {
-        'Authorization': `Bearer ${await generateValistToken(options.apiSecret || process.env.VALIST_API_SECRET || '')}`,
+        // 'Authorization': `Bearer ${await generateValistToken(options.apiSecret || process.env.VALIST_API_SECRET || '')}`,
       },
       onUploadProgress: (progressEvent: AxiosProgressEvent) => {
         if (options?.progress) {
