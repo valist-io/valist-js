@@ -17,14 +17,18 @@
     "/oclif.manifest.json"
   ],
   "dependencies": {
+    "@capacitor-community/electron": "1.4.2",
     "@oclif/core": "^1.8.0",
     "@oclif/plugin-help": "^5",
     "@valist/sdk": "*",
     "ethers": "^5.5.4",
+    "files-from-path": "1.0.0",
     "inquirer": "^8.2.4",
-    "ipfs-http-client": "^56.0.3",
+    "ipfs-http-client": "^60.0.1",
     "ipfs-utils": "^9.0.7",
     "keytar": "^7.9.0",
+    "typescript-plugin-css-modules": "5.0.1",
+    "ua-parser-js": "1.0.35",
     "yaml": "^2.1.0"
   },
   "devDependencies": {

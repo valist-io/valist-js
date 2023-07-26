@@ -1,8 +1,11 @@
 import { ethers, providers } from 'ethers';
-import { create as createIPFS } from 'ipfs-http-client';
 import Client from './client';
 import * as contracts from './contracts';
 import * as graphql from './graphql';
+import axios, { AxiosProgressEvent, AxiosRequestConfig } from 'axios';
+import https from "https";
+import { formatBytes, generateValistToken } from './utils';
+
 
 export type Provider = providers.Provider | ethers.Signer;
 
@@ -17,6 +20,94 @@ export interface Options {
   licenseAddress: string;
   subgraphUrl: string;
 }
+
+export type IPFSOptions = {
+  apiSecret?: string;
+  wrapWithDirectory?: boolean;
+  cidVersion?: number;
+  progress?: (percentCompleteOrBytesUploaded: number | string) => void;
+}
+
+export type IPFSCLIENT = {
+  add: (value: any, options: IPFSOptions) => Promise<string | undefined>;
+  addAll: (values: any, options: any) => Promise<string[]>;
+}
+
+export const createIPFS = (value: Object): IPFSCLIENT => {
+  const API = 'https://pin-1.valist.io/api/v0';
+
+  const addAll = async (values: any[], options: IPFSOptions) => {
+    let data: { Name: string, Hash: string }[] = [];
+    let path = `${API}/add?progress=true`;
+
+    if (options?.cidVersion == 0 || options?.cidVersion == 1)
+      path += `&cid-version=${options.cidVersion}`;
+
+    if (options?.wrapWithDirectory)
+      path += '&wrap-with-directory=true';
+
+    const formData = new FormData();
+    for (const item of values) {
+      let content = item?.content || item;
+      let path = item?.path;
+
+      if (content instanceof Blob) {
+        path === "meta.json"
+      }
+
+      formData.append('file', content, path);
+    }
+
+    const reqConfig: AxiosRequestConfig = {
+      headers: {
+        // 'Authorization': `Bearer ${await generateValistToken(options.apiSecret || process.env.VALIST_API_SECRET || '')}`,
+      },
+      onUploadProgress: (progressEvent: AxiosProgressEvent) => {
+        if (options?.progress) {
+          options.progress(progressEvent.total ? `${((progressEvent.loaded * 100) / progressEvent.total).toFixed(2)}%` : formatBytes(progressEvent.loaded.toString()));
+        }
+      },
+    };
+
+    // workaround for node.js since ipfs pinning behind secure proxy doesn't support duplex connections
+    if (typeof window !== undefined) {
+      reqConfig.httpsAgent = new https.Agent({ keepAlive: false });
+    }
+
+    const res = await axios.postForm(path, formData, reqConfig);
+
+    if (res.status === 400)
+      return [];
+
+    if (res.data) {
+      const jsonLines = (res.data as string).split('\n');
+      jsonLines.forEach((line) => {
+        if (line) {
+          const jsonValue = JSON.parse(line);
+          data.push(jsonValue);
+        }
+      });
+    }
+
+    const hashes: string[] = [];
+    data.forEach(item =>
+      item?.Hash && hashes.push(item.Hash)
+    );
+
+    return hashes;
+  }
+
+  const add = async (value: any, options: any) => {
+    const data = await addAll([value], options);
+    if (data.length !== 0)
+      return data[data.length - 1];
+  }
+
+  return {
+    addAll,
+    add,
+  }
+};
 
 /**
  * Create a read-only Valist client using the given JSON RPC provider.

@@ -1,7 +1,6 @@
 import { ethers } from 'ethers';
 import { expect } from 'chai';
 import { before, describe, it } from 'mocha';
-import { create as createIPFS } from 'ipfs-http-client';
 
 import {
 	Client,
@@ -10,6 +9,7 @@ import {
 	ReleaseMeta,
 	generateID,
 	getFilesFromPath,
+	createIPFS,
 } from '../src/index';
 import * as contracts from '../src/contracts';
 import { ImportCandidate } from 'ipfs-core-types/src/utils';
@@ -25,8 +25,7 @@ const License = new ethers.ContractFactory(contracts.licenseABI, contracts.licen
 async function createClient(registry: ethers.Contract, license: ethers.Contract) {
 	const subgraphAddress = 'https://api.thegraph.com/subgraphs/name/valist-io/valistmumbai';
 	const ipfsGateway = 'https://gateway.valist.io';
-	// @ts-expect-error weird IPFS JS types
-	const ipfs = createIPFS('https://pin-1.valist.io');
+	const ipfs = createIPFS({ url: 'https://pin-1.valist.io/api/v0' });
 	const valist = new Client(registry, license, ipfs, ipfsGateway, subgraphAddress, provider.getSigner(), false);
 	return valist;
 }
