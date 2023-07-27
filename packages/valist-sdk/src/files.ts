@@ -1,14 +1,28 @@
-import fs from 'graceful-fs'
-import { promisify } from 'util'
-import path from 'path'
-import { Readable } from 'stream'
+import fs from 'graceful-fs';
+import path from 'path';
+import { Readable } from 'stream';
 
 export type FileLike = Pick<File, 'stream' | 'name' | 'size'>;
 
 export type FileObject = {
   name: string;
   stream: () => any;
-  size: number;
+  size: number | bigint;
+}
+
+function promisify<T, A extends unknown[]>(
+  func: (...args: [...A, (error: unknown, result?: T) => void]) => void
+): (...args: A) => Promise<T> {
+  return (...args: A) =>
+    new Promise<T>((resolve, reject) =>
+      func(...args, (error: unknown, result?: T) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result!);
+        }
+      })
+    );
 }
 
 const fsStat = promisify(fs.stat);
@@ -47,7 +61,7 @@ async function* filesFromPath(filepath: string, options: { hidden?: boolean } = 
   }
 
   const name = filepath
-  const stat = await fsStat(name)
+  const stat = await fsStat(name, {})
 
   if (!filter(name)) {
     return
@@ -71,7 +85,7 @@ async function* filesFromDir(dir: string, filter: (name: string) => boolean): As
 
     if (entry.isFile()) {
       const name = path.join(dir, entry.name)
-      const { size } = await fsStat(name)
+      const { size } = await fsStat(name, {})
       // @ts-expect-error node web stream not type compatible with web stream
       yield { name, stream: () => Readable.toWeb(fs.createReadStream(name)), size }
     } else if (entry.isDirectory()) {
