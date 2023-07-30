@@ -1,6 +1,6 @@
 {
   "name": "@valist/ui",
-  "version": "0.0.1",
+  "version": "2.9.2-alpha.1",
   "source": "src/index.ts",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
