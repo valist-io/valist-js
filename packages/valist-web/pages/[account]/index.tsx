@@ -4,7 +4,6 @@ import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 import useSWRImmutable from 'swr/immutable';
 import * as Icon from 'tabler-icons-react';
-import { NextLink } from '@mantine/next';
 import { useMediaQuery } from '@mantine/hooks';
 import { useQuery } from '@apollo/client';
 import { Layout } from '@/components/Layout';
@@ -37,6 +36,7 @@ import {
   ProjectCard,
   List,
 } from '@valist/ui';
+import Link from 'next/link';
 
 const AccountPage: NextPage = () => {
   const chainId = getChainId();
@@ -145,9 +145,10 @@ const AccountPage: NextPage = () => {
                 {projects.map((project: any, index: number) =>
                     <Metadata key={index} url={project.metaURI}>
                     {(data: any) => 
-                      <NextLink
+                      <Link
                         style={{ textDecoration: 'none' }}
                         href={`/${accountName}/${project.name}`}
+                        passHref
                       >
                         <ProjectCard
                           title={project.name} 
@@ -155,7 +156,7 @@ const AccountPage: NextPage = () => {
                           description={data?.short_description} 
                           image={data?.image} 
                         />
-                      </NextLink>
+                      </Link>
                     }
                   </Metadata>,
                 )}

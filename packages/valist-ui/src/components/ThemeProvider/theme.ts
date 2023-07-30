@@ -14,37 +14,37 @@ export const theme: MantineThemeOverride = {
     fontWeight: 700,
     sizes: {
       h1: {
-        fontSize: 34,
+        fontSize: "2.125rem",
         lineHeight: 1.3,
       },
-      h2: { 
-        fontSize: 26, 
+      h2: {
+        fontSize: "1.625rem",
         lineHeight: 1.35,
       },
-      h3: { 
-        fontSize: 22, 
+      h3: {
+        fontSize: "1.375rem",
         lineHeight: 1.4,
       },
       h4: {
-        fontSize: 18, 
+        fontSize: "1.125rem",
         lineHeight: 1.45,
       },
-      h5: { 
-        fontSize: 16, 
+      h5: {
+        fontSize: "1rem",
         lineHeight: 1.5,
       },
-      h6: { 
-        fontSize: 14, 
+      h6: {
+        fontSize: "0.875rem",
         lineHeight: 1.5,
       },
     },
   },
-  fontSizes:{
-    lg: 18,
-    md: 16,
-    sm: 14,
-    xl: 20,
-    xs: 12,
+  fontSizes: {
+    lg: "1.125rem",
+    md: "1rem",
+    sm: "0.875rem",
+    xl: "1.25rem",
+    xs: "0.75rem",
   },
   colors: {
     'green': [

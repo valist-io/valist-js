@@ -6,7 +6,7 @@ export interface LinkStyleProps {
 
 export default createStyles((theme, params: LinkStyleProps) => {
   const active = {
-    paddingLeft: 25,
+    paddingLeft: '1.5625rem',
     borderLeft: `5px solid ${theme.colors.purple[3]}`,
     backgroundColor: theme.colors.purple[0],
   };
@@ -14,8 +14,8 @@ export default createStyles((theme, params: LinkStyleProps) => {
   const color = params.active
     ? theme.colors.purple[3]
     : theme.colorScheme === 'dark'
-    ? theme.colors.gray[2]
-    : theme.colors.gray[3];
+      ? theme.colors.gray[2]
+      : theme.colors.gray[3];
 
   return {
     link: {
@@ -24,7 +24,7 @@ export default createStyles((theme, params: LinkStyleProps) => {
       width: '100%',
 
       '&:hover': {
-        textDecoration: 'none',        
+        textDecoration: 'none',
       },
 
       ...(params.active ? active : {}),

@@ -1,6 +1,6 @@
 import { ActionIcon, Group, useMantineTheme } from "@mantine/core";
 import * as Icons from 'tabler-icons-react';
-import { NextLink } from "@mantine/next";
+import Link from 'next/link';
 
 export function SocialIcons(): JSX.Element {
 	const theme = useMantineTheme();
@@ -10,7 +10,7 @@ export function SocialIcons(): JSX.Element {
     <Group spacing="lg">
       <ActionIcon 
         variant="transparent" 
-        component={NextLink}
+        component={Link}
         target="_blank" 
         href="https://valist.io/discord"
       >
@@ -18,7 +18,7 @@ export function SocialIcons(): JSX.Element {
       </ActionIcon>
       <ActionIcon 
         variant="transparent"
-        component={NextLink}
+        component={Link}
         target="_blank" 
         href="https://twitter.com/Valist_io"
       >
@@ -26,7 +26,7 @@ export function SocialIcons(): JSX.Element {
       </ActionIcon>
       <ActionIcon 
         variant="transparent"
-        component={NextLink}
+        component={Link}
         target="_blank" 
         href="https://github.com/valist-io"
       >

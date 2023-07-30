@@ -76,7 +76,7 @@ export const AccountSelect: AccountSelectComponent = (props: AccountSelectProps)
           <div className={classes.popoverHeader}>
             <Title order={5}>My Accounts</Title>
           </div>
-          <ScrollArea.Autosize maxHeight={266}>
+          <ScrollArea.Autosize mah={266}>
             <Stack className={classes.popoverList}>
               <AccountSelectContext.Provider value={{ value: props.value, setValue }}>
                 {props.children}

@@ -1,4 +1,4 @@
-import { createStyles } from '@mantine/styles';
+import { createStyles, getStylesRef } from '@mantine/core';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'subtle' | 'text';
 
@@ -6,7 +6,7 @@ export interface ButtonStylesProps {
   variant: ButtonVariant;
 }
 
-export default createStyles((theme, params: ButtonStylesProps, getRef) => {
+export default createStyles((theme, params: ButtonStylesProps) => {
   const variant = {
     'primary': {
       color: theme.white,
@@ -14,7 +14,7 @@ export default createStyles((theme, params: ButtonStylesProps, getRef) => {
       '&:hover': {
         backgroundColor: theme.colors.purple[4],
       },
-      [`&:not(.${getRef('loading')}):disabled`]: {
+      [`&:not(.${getStylesRef('loading')}):disabled`]: {
         color: theme.white,
         backgroundColor: theme.colors.purple[1],
       },
@@ -28,7 +28,7 @@ export default createStyles((theme, params: ButtonStylesProps, getRef) => {
         border: `1px solid ${theme.colors.purple[4]}`,
         backgroundColor: 'transparent',
       },
-      [`&:not(.${getRef('loading')}):disabled`]: {
+      [`&:not(.${getStylesRef('loading')}):disabled`]: {
         color: theme.colors.purple[1],
         border: `1px solid ${theme.colors.purple[1]}`,
         backgroundColor: 'transparent',
@@ -40,7 +40,7 @@ export default createStyles((theme, params: ButtonStylesProps, getRef) => {
       '&:hover': {
         backgroundColor: theme.colors.purple[1],
       },
-      [`&:not(.${getRef('loading')}):disabled`]: {
+      [`&:not(.${getStylesRef('loading')}):disabled`]: {
         color: theme.colors.purple[2],
         backgroundColor: theme.colors.purple[0],
       },
@@ -52,7 +52,7 @@ export default createStyles((theme, params: ButtonStylesProps, getRef) => {
         color: theme.colors.purple[5],
         backgroundColor: 'transparent',
       },
-      [`&:not(.${getRef('loading')}):disabled`]: {
+      [`&:not(.${getStylesRef('loading')}):disabled`]: {
         color: theme.colors.purple[1],
         backgroundColor: 'transparent',
       },

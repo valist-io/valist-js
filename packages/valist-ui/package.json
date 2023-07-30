@@ -15,6 +15,7 @@
     "build-storybook": "build-storybook -s public"
   },
   "dependencies": {
+    "@mantine/next": "^6.0.17",
     "ethereum-blockies-base64": "^1.0.2",
     "react-markdown": "^8.0.3",
     "remark-gfm": "^3.0.1",
@@ -44,11 +45,11 @@
     "typescript-plugin-css-modules": "^3.4.0"
   },
   "peerDependencies": {
-    "@mantine/carousel": ">=5.9.5",
-    "@mantine/core": ">=5.9.5",
-    "@mantine/dropzone": ">=5.9.5",
-    "@mantine/hooks": ">=5.9.5",
-    "@mantine/styles": ">=5.9.5",
+    "@mantine/carousel": ">=6.0.17",
+    "@mantine/core": ">=6.0.17",
+    "@mantine/dropzone": ">=6.0.17",
+    "@mantine/hooks": ">=6.0.17",
+    "@mantine/styles": ">=6.0.17",
     "react": ">=18.1.0",
     "react-dom": ">=18.1.0"
   }

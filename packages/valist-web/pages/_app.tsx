@@ -4,15 +4,15 @@ import '@valist/ui/public/styles.css';
 import type { AppContext, AppProps } from 'next/app';
 import { SWRConfig } from 'swr';
 import { useEnsName } from 'wagmi';
-import { NextLink } from '@mantine/next';
 import { useColorScheme, useLocalStorage } from '@mantine/hooks';
-import { NotificationsProvider } from '@mantine/notifications';
+import { Notifications } from '@mantine/notifications';
 import { ColorSchemeProvider, ColorScheme } from '@mantine/core';
 import { ThemeProvider, AddressProvider } from '@valist/ui';
 import { ApolloProvider } from '@/components/ApolloProvider';
 import { WagmiProvider, rehydrate } from '@/components/WagmiProvider';
 import { RainbowKitProvider } from '@/components/RainbowKitProvider';
 import { AccountProvider } from '@/components/AccountProvider';
+import Link from 'next/link';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 const resolveName = (address: string) => useEnsName({ address, chainId: 1 }); // eslint-disable-line react-hooks/rules-of-hooks
@@ -21,7 +21,7 @@ const resolveName = (address: string) => useEnsName({ address, chainId: 1 }); //
 const components = {
   Anchor: {
     defaultProps: {
-      component: NextLink,
+      component: Link,
     },
   },
 };
@@ -48,11 +48,9 @@ function ValistApp(props: AppProps) {
             <ApolloProvider>
               <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
                 <ThemeProvider theme={{ colorScheme, components }}>
-                  <NotificationsProvider>
-                    <AccountProvider>
-                      <Component {...pageProps} />
-                    </AccountProvider>
-                  </NotificationsProvider>
+                  <AccountProvider>
+                    <Component {...pageProps} />
+                  </AccountProvider>
                 </ThemeProvider>
               </ColorSchemeProvider>
             </ApolloProvider>

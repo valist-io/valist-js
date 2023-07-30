@@ -7,9 +7,11 @@ export default createStyles(() => {
   const textColor = theme.colorScheme === 'dark' ? '' : `${theme.colors.gray[4]} !important`;
 
   return {
-    disabled: {
-      borderColor,
-      color: textColor,
+    input: {
+      '&:disabled, &[data-disabled]': {
+        borderColor,
+        color: textColor,
+      },
     },
   };
 });

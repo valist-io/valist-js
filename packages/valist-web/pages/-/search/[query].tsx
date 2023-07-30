@@ -6,8 +6,8 @@ import { Account, Project } from '@valist/sdk/dist/graphql';
 import { Layout } from '@/components/Layout';
 import { CardGrid, ProjectCard, SearchOptions } from '@valist/ui';
 import { Metadata } from '@/components/Metadata';
-import { NextLink } from '@mantine/next';
 import query from '@/graphql/SearchPage.graphql';
+import Link from 'next/link';
 
 const SearchPage: NextPage = () => {
   const router = useRouter();
@@ -41,9 +41,10 @@ const SearchPage: NextPage = () => {
           {projects.map((project: any, index: number) =>
               <Metadata key={index} url={project.metaURI}>
               {(data: any) =>
-                <NextLink
+                <Link
                   style={{ textDecoration: 'none' }}
                   href={`/${project.account?.name}/${project.name}`}
+                  passHref
                 >
                   <ProjectCard
                     title={project.name} 
@@ -51,7 +52,7 @@ const SearchPage: NextPage = () => {
                     description={data?.description} 
                     image={data?.image} 
                   />
-                </NextLink>
+                </Link>
               }
             </Metadata>,
           )}
@@ -63,9 +64,10 @@ const SearchPage: NextPage = () => {
           {accounts && accounts.map((account: any, index: number) =>
             <Metadata key={index} url={account.metaURI}>
               {(data: any) =>
-                <NextLink
+                <Link
                   style={{ textDecoration: 'none' }}
                   href={`/${account?.name}`}
+                  passHref
                 >
                   <ProjectCard
                     title={account?.name} 
@@ -73,7 +75,7 @@ const SearchPage: NextPage = () => {
                     description={data?.description} 
                     image={data?.image} 
                   />
-                </NextLink>
+                </Link>
               }
             </Metadata>,
           )}

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import type { NextPage } from 'next';
 import Image from 'next/image';
-import { NextLink } from '@mantine/next';
 import { Layout } from '@/components/Layout';
 import { Metadata } from '@/components/Metadata';
 import { DiscoveryCard } from '@/components/DiscoveryCard';
@@ -24,6 +23,7 @@ import {
 } from '@valist/ui';
 import { ProjectMeta } from '@valist/sdk';
 import { Project } from '@valist/sdk/dist/graphql';
+import Link from 'next/link';
 
 export async function getStaticProps() {
   const variables = { order: 'desc', filterAddresses };
@@ -115,11 +115,11 @@ const Discover: NextPage<DiscoverProps> = (props) => {
           <Title color="white" size={56}>Publish Today</Title>
           <Text color="white" size={24} mt={24}>Have your software, webapp, or game</Text>
           <Text color="white" size={24} mb={40}>hosted on Valist to be truly decentralized!</Text>
-          <NextLink href="/-/dashboard">
+          <Link href="/-/dashboard" passHref>
             <Button style={{ background: 'linear-gradient(90deg, #FF9A9E 0%, #FAD0C4 99%, #FAD0C4 100%)' }}>
               Publish Now
             </Button>
-          </NextLink>
+          </Link>
         </Stack>
       </div>
       <DiscoveryFooter />
