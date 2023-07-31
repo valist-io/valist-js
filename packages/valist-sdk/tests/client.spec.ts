@@ -8,11 +8,12 @@ import {
 	ProjectMeta,
 	ReleaseMeta,
 	generateID,
+	getFilesFromPath,
 	createIPFS,
 } from '../src/index';
 import * as contracts from '../src/contracts';
-import { FileObject, getFilesFromPath } from 'files-from-path';
 import { ImportCandidate } from 'ipfs-core-types/src/utils';
+import { FileObject } from '../src/files';
 
 const ganache = require("ganache");
 const provider = new ethers.providers.Web3Provider(ganache.provider());

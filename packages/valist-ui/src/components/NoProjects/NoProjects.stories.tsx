@@ -1,4 +1,3 @@
-import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { NoProjects } from './NoProjects';
 
 export default {
@@ -7,9 +6,9 @@ export default {
   parameters: {
     layout: 'fullscreen',
   },
-} as ComponentMeta<typeof NoProjects>;
+};
 
-const Template: ComponentStory<typeof NoProjects> = (args) => (
+const Template = () => (
   <NoProjects action={() => alert('button clicked!')}/>
 );
 
