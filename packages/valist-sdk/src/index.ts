@@ -6,7 +6,6 @@ import axios, { AxiosProgressEvent, AxiosRequestConfig } from 'axios';
 import https from "https";
 import { formatBytes, generateValistToken } from './utils';
 
-
 export type Provider = providers.Provider | ethers.Signer;
 
 // additional options for configuring the client
@@ -34,7 +33,7 @@ export type IPFSCLIENT = {
 }
 
 export const createIPFS = (value: Object): IPFSCLIENT => {
-  const API = 'https://pin-1.valist.io/api/v0';
+  const API = 'https://pin-2.valist.io/api/v0';
 
   const addAll = async (values: any[], options: IPFSOptions) => {
     let data: { Name: string, Hash: string }[] = [];
@@ -58,6 +57,8 @@ export const createIPFS = (value: Object): IPFSCLIENT => {
       formData.append('file', content, path);
     }
 
+    console.log('formData', formData)
+
     const reqConfig: AxiosRequestConfig = {
       headers: {
         // 'Authorization': `Bearer ${await generateValistToken(options.apiSecret || process.env.VALIST_API_SECRET || '')}`,
@@ -74,7 +75,9 @@ export const createIPFS = (value: Object): IPFSCLIENT => {
       reqConfig.httpsAgent = new https.Agent({ keepAlive: false });
     }
 
-    const res = await axios.postForm(path, formData, reqConfig);
+    console.log('reqConfig', reqConfig)
+
+    const res = await axios.post(path, formData, reqConfig);
 
     if (res.status === 400)
       return [];

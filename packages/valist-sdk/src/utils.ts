@@ -2,6 +2,8 @@ import { ethers } from 'ethers';
 import { getFilesFromPath as getFiles } from 'files-from-path';
 import axios from 'axios';
 
+export const VALIST_API_URL = process.env.NEXT_PUBLIC_VALIST_API_URL || 'https://api.valist.io';
+
 const createHash = async (text: string) => {
   const utf8 = new TextEncoder().encode(text);
   const hashBuffer = await globalThis.crypto.subtle.digest('SHA-256', utf8);
@@ -35,6 +37,10 @@ export function getReleaseID(chainId: ethers.BigNumberish, account: string, proj
 }
 
 export const getFilesFromPath = getFiles;
+
+export function isBrowser(): boolean {
+	return typeof window !== 'undefined';
+}
 
 /**
  * Convert the passed file to an "import candidate" - an object suitable for

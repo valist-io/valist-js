@@ -12,11 +12,27 @@ import { ImportCandidate } from 'ipfs-core-types/src/utils';
 import path from 'path';
 import { isAddress } from 'ethers/lib/utils';
 import { IPFSCLIENT } from '.';
+import { uploadFiles, uploadFolder } from './storage';
+import { S3Client } from "@aws-sdk/client-s3";
 
 // minimal ABI for interacting with erc20 tokens
 const erc20ABI = [
 	'function approve(address spender, uint256 amount) returns (bool)'
 ];
+
+interface AWSCredentials {
+  accessKeyId: string;
+  secretAccessKey: string;
+}
+
+const s3Client = new S3Client({
+  region: 'us-east-005',
+  endpoint: 'https://s3.us-east-005.backblazeb2.com',
+  credentials: {
+    accessKeyId: process.env.B2_KEY_ID as string,
+    secretAccessKey: process.env.B2_KEY as string,
+  } as AWSCredentials,
+});
 
 export default class Client {
 	constructor(
@@ -380,44 +396,20 @@ export default class Client {
 		return `${this.ipfsGateway}/ipfs/${res}`;
 	}
 
-	async writeFile(file: File | FileObject, wrapWithDirectory = false, onProgress?: (percentCompleteOrBytesUploaded: number | string) => void) {
+	async writeFile(file: File, onProgress?: (percentCompleteOrBytesUploaded: number | string) => void) {
 		if (typeof file === 'undefined') throw new Error("file === undefined, must pin at least one file");
 
-		let fileData, fileSize: number;
-		const baseFileName = this.getFileBaseName(file.name);
-		const path = wrapWithDirectory ? `/${baseFileName}/${baseFileName}` : baseFileName;
+		const key = await uploadFiles([file], onProgress);
 
-		if (this.isBrowserFile(file)) {
-			fileData = {
-				content: file,
-				path: file.name,
-			};
-			fileSize = file.size;
-		} else {
-			const fileStream = file.stream();
-			fileData = { content: fileStream, path };
-			fileSize = require('fs').statSync(fileStream.path).size;
-		}
-
-		const res = await this.ipfs.add(fileData, {
-			wrapWithDirectory,
-			cidVersion: 1,
-			progress: onProgress,
-		});
-
-		return `${this.ipfsGateway}/ipfs/${res}`;
+		return `${this.ipfsGateway}/${key}`;
 	}
 
-	async writeFolder(files: ImportCandidate[], wrapWithDirectory = false, onProgress?: (percent: number) => void) {
+	async writeFolder(files: File[], onProgress?: (percent: number) => void) {
 		if (files.length == 0) throw new Error("files.length == 0, must pin at least one file");
 
-		const cids: string[] = await this.ipfs.addAll(files, {
-			cidVersion: 1,
-			wrapWithDirectory,
-			progress: onProgress,
-		});
+		const key = await uploadFiles(files, onProgress);
 
-		return `${this.ipfsGateway}/ipfs/${cids[cids.length - 1]}`;
+		return `${this.ipfsGateway}/${key}`;
 	}
 
 	async sendTx(unsigned: PopulatedTransaction): Promise<ethers.providers.TransactionResponse> {
