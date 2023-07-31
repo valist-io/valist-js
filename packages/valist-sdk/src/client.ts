@@ -1,17 +1,17 @@
-import axios from 'axios';
+import axios, { AxiosProgressEvent } from 'axios';
 import { BigNumber, ethers, PopulatedTransaction } from 'ethers';
 import { ContractTransaction } from '@ethersproject/contracts';
-import { formatBytes, getFilesFromPath } from './utils';
+import { getFilesFromPath } from './utils';
 
 import { AccountMeta, PlatformsMeta, ProjectMeta, SupportedPlatform, ReleaseMeta, FileObject, ReleaseConfig } from './types';
 import { fetchGraphQL, Account, Project, Release } from './graphql';
 import { generateID, getAccountID, getProjectID, getReleaseID } from './utils';
 import * as queries from './graphql/queries';
-import { IPFSHTTPClient } from 'ipfs-http-client';
 import { sendMetaTx, sendTx } from './metatx';
 import { ImportCandidate } from 'ipfs-core-types/src/utils';
 import path from 'path';
 import { isAddress } from 'ethers/lib/utils';
+import { IPFSCLIENT } from '.';
 
 // minimal ABI for interacting with erc20 tokens
 const erc20ABI = [
@@ -22,7 +22,7 @@ export default class Client {
 	constructor(
 		private registry: ethers.Contract,
 		private license: ethers.Contract,
-		private ipfs: IPFSHTTPClient,
+		private ipfs: IPFSCLIENT,
 		private ipfsGateway: string,
 		private subgraphUrl: string,
 		private signer?: ethers.Signer,
@@ -74,7 +74,7 @@ export default class Client {
 					path: path.join(platform, path.basename(file.name)),
 					content: file.stream(),
 				}),
-			));
+				));
 
 		if (nonWebIC.length > 0) {
 			nativeCID = await this.writeFolder(nonWebIC, true);
@@ -373,18 +373,14 @@ export default class Client {
 		let buffer: Blob | Buffer;
 		let string = JSON.stringify(data);
 
-		if (typeof window === 'undefined') {
-			buffer = Buffer.from(JSON.stringify(data));
-		} else {
-			buffer = new Blob([string], { type: 'application/json' });
-		}
+		buffer = new Blob([string], { type: 'application/json' });
 
 		const res = await this.ipfs.add(buffer, { cidVersion: 1 });
 
-		return `${this.ipfsGateway}/ipfs/${res.cid.toString()}`;
+		return `${this.ipfsGateway}/ipfs/${res}`;
 	}
 
-	async writeFile(file: File | FileObject, wrapWithDirectory = false, onProgress?: (bytes: string) => void) {
+	async writeFile(file: File | FileObject, wrapWithDirectory = false, onProgress?: (percentCompleteOrBytesUploaded: number | string) => void) {
 		if (typeof file === 'undefined') throw new Error("file === undefined, must pin at least one file");
 
 		let fileData, fileSize: number;
@@ -406,23 +402,20 @@ export default class Client {
 		const res = await this.ipfs.add(fileData, {
 			wrapWithDirectory,
 			cidVersion: 1,
-			progress: (bytes: number) => onProgress ? onProgress(formatBytes(String(bytes))) : '',
+			progress: onProgress,
 		});
 
-		return `${this.ipfsGateway}/ipfs/${res.cid.toString()}`;
+		return `${this.ipfsGateway}/ipfs/${res}`;
 	}
 
-	async writeFolder(files: ImportCandidate[], wrapWithDirectory = false, onProgress?: (bytes: string) => void) {
+	async writeFolder(files: ImportCandidate[], wrapWithDirectory = false, onProgress?: (percent: number) => void) {
 		if (files.length == 0) throw new Error("files.length == 0, must pin at least one file");
 
-		const cids: string[] = [];
-		for await (const res of this.ipfs.addAll(files, {
+		const cids: string[] = await this.ipfs.addAll(files, {
 			cidVersion: 1,
 			wrapWithDirectory,
-			progress: (bytes: number, path?: string) => onProgress ? onProgress(`${path ? `(${path})  ` : ''}${formatBytes(String(bytes))}`) : '',
-		})) {
-			cids.push(res.cid.toString());
-		}
+			progress: onProgress,
+		});
 
 		return `${this.ipfsGateway}/ipfs/${cids[cids.length - 1]}`;
 	}
