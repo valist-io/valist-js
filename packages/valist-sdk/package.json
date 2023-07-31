@@ -1,6 +1,6 @@
 {
   "name": "@valist/sdk",
-  "version": "2.9.2-alpha.10",
+  "version": "2.9.2-alpha.11",
   "description": "Web3-native software distribution.",
   "author": "Valist, Inc.",
   "maintainers": [
@@ -52,9 +52,10 @@
     "@aws-sdk/s3-request-presigner": "^3.377.0",
     "@aws-sdk/util-body-length-browser": "^3.374.0",
     "@aws-sdk/util-body-length-node": "^3.374.0",
+    "@capacitor-community/electron": "1.4.2",
     "axios": "^1.4.0",
     "ethers": "^5.5.4",
-    "files-from-path": "^0.2.6",
-    "proxy-from-env": "^1.1.0"
+    "proxy-from-env": "^1.1.0",
+    "ua-parser-js": "1.0.35"
   }
 }

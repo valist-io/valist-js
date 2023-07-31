@@ -3,7 +3,7 @@ import { BigNumber, ethers, PopulatedTransaction } from 'ethers';
 import { ContractTransaction } from '@ethersproject/contracts';
 import { getFilesFromPath } from './utils';
 
-import { AccountMeta, PlatformsMeta, ProjectMeta, SupportedPlatform, ReleaseMeta, FileObject, ReleaseConfig } from './types';
+import { AccountMeta, PlatformsMeta, ProjectMeta, SupportedPlatform, ReleaseMeta, ReleaseConfig } from './types';
 import { fetchGraphQL, Account, Project, Release } from './graphql';
 import { generateID, getAccountID, getProjectID, getReleaseID } from './utils';
 import * as queries from './graphql/queries';
@@ -11,6 +11,7 @@ import { sendMetaTx, sendTx } from './metatx';
 import { ImportCandidate } from 'ipfs-core-types/src/utils';
 import path from 'path';
 import { isAddress } from 'ethers/lib/utils';
+import { FileObject } from './files';
 import { IPFSCLIENT } from '.';
 import { uploadFiles, uploadFolder } from './storage';
 import { S3Client } from "@aws-sdk/client-s3";
