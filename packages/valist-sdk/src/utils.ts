@@ -1,10 +1,11 @@
 import { ethers } from 'ethers';
 import axios from 'axios';
 import { filesFromPaths } from './files';
+import { webcrypto } from 'node:crypto';
 
 const createHash = async (text: string) => {
   const utf8 = new TextEncoder().encode(text);
-  const hashBuffer = await globalThis.crypto.subtle.digest('SHA-256', utf8);
+  const hashBuffer = await (globalThis.crypto || webcrypto).subtle.digest('SHA-256', utf8);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   const hashHex = hashArray.map((bytes) => bytes.toString(16).padStart(2, '0')).join('');
   return hashHex;
