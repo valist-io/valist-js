@@ -55,7 +55,7 @@ export interface ProjectMetaInterface {
   /** repository used for deployments */
   repository?: string;
   /** hardware requirements */
-  systemRequirements?: SystemRequirements;
+  system_requirements?: SystemRequirements;
   /** supported compatibility layers (wine)  */
   wineSupport?: WineSupport;
 }
