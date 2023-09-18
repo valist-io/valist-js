@@ -61,8 +61,8 @@ export async function createRelease(
 
     utils.showLoading('Uploading files');
     if (image) {
-      meta.image = await valist.writeFile(image, false, (bytes: string) => {
-        utils.updateLoading(`Uploading ${image?.name}: ${bytes}`);
+      meta.image = await valist.writeFile(image, false, (percentOrBytes: number | string) => {
+        utils.updateLoading(`Uploading ${image?.name}: ${percentOrBytes}`);
       });
     }
 
@@ -84,8 +84,8 @@ export async function createRelease(
         ));
 
       if (nonWebIC.length !== 0) {
-        nativeCID = await valist.writeFolder(nonWebIC, true, (bytes: string) => {
-          utils.updateLoading(`Uploading releases for native: ${bytes}`);
+        nativeCID = await valist.writeFolder(nonWebIC, true, (percentOrBytes: number | string) => {
+          utils.updateLoading(`Uploading releases for native: ${percentOrBytes}`);
         });
 
         Object.keys(nonWebFiles).forEach((platform) => {
@@ -101,8 +101,8 @@ export async function createRelease(
       };
 
       if (webIC.length !== 0) {
-        webCID = await valist.writeFolder(webIC, false, (bytes: string) => {
-          utils.updateLoading(`Uploading release archive for web: ${bytes}`);
+        webCID = await valist.writeFolder(webIC, false, (percentOrBytes: number | string) => {
+          utils.updateLoading(`Uploading release archive for web: ${percentOrBytes}`);
         });
         meta.platforms.web = {
           external_url: webCID,

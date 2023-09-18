@@ -16,7 +16,10 @@ export interface Channel {
   channel_id: number;
   channel_name: string;
   release_meta: ChannelReleaseMeta;
-  license_config_id: string | null
+  license_config: {
+    id: number;
+    access_codes: boolean;
+  };
 }
 
 export interface ContractMetadata extends TokenMetadataInterface {
@@ -27,7 +30,7 @@ export interface ContractMetadata extends TokenMetadataInterface {
 }
 
 export interface ProjectMetaApi extends ProjectMetaInterface {
-  contracts: ContractMetadata[];
+  networks: ContractMetadata[];
 }
 
 export interface Listing {

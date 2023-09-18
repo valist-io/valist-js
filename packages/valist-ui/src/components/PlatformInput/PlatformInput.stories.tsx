@@ -1,13 +1,12 @@
-import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn } from '@storybook/react';
 import { PlatformInput } from './PlatformInput';
 
 export default {
   title: 'PlatformInput',
   component: PlatformInput,
-} as ComponentMeta<typeof PlatformInput>;
+};
 
-const Template: ComponentStory<typeof PlatformInput> = (args) => (
+const Template: StoryFn<typeof PlatformInput> = (args) => (
   <PlatformInput {...args} />
 );
 

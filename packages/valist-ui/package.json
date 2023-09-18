@@ -17,20 +17,23 @@
   "dependencies": {
     "@mantine/next": "^6.0.17",
     "ethereum-blockies-base64": "^1.0.2",
+    "files-from-path": "1.0.0",
+    "ipfs-http-client": "60.0.1",
     "react-markdown": "^8.0.3",
     "remark-gfm": "^3.0.1",
-    "tabler-icons-react": "^1.49.0"
+    "tabler-icons-react": "^1.49.0",
+    "ua-parser-js": "1.0.35"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^6.5.9",
-    "@storybook/addon-essentials": "^6.5.9",
+    "@storybook/addon-essentials": "^7.1.1",
     "@storybook/addon-interactions": "^6.5.9",
     "@storybook/addon-links": "^6.5.9",
     "@storybook/builder-webpack5": "^6.5.9",
     "@storybook/manager-webpack5": "^6.5.9",
     "@storybook/node-logger": "^6.5.9",
     "@storybook/preset-create-react-app": "^4.1.2",
-    "@storybook/react": "^6.5.9",
+    "@storybook/react": "^7.1.1",
     "@storybook/testing-library": "^0.0.13",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
@@ -42,7 +45,7 @@
     "prop-types": "^15.8.1",
     "storybook-dark-mode": "^1.1.0",
     "typescript": "^4.7.3",
-    "typescript-plugin-css-modules": "^3.4.0"
+    "typescript-plugin-css-modules": "^5.0.1"
   },
   "peerDependencies": {
     "@mantine/carousel": ">=6.0.17",

@@ -30,6 +30,12 @@ export interface ProjectMetaInterface {
   description?: string;
   /** link to the project website. */
   external_url?: string;
+  /** link to the project discord. */
+  discord_url?: string;
+  /** link to the project youtube. */
+  youtube_url?: string;
+  /** link to the project twitter. */
+  twitter_url?: string;
   /** type used by clients to handle project */
   type?: string;
   /** tags used for searching and categorization */

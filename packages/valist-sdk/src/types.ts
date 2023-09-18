@@ -1,4 +1,3 @@
-import { FileObject as FObject } from "files-from-path";
 import {
   AccountMetaInterface,
   GalleryMetaInterface,
@@ -8,16 +7,14 @@ import {
   TokenMetadataInterface,
 } from "./typesShared";
 
-export {PlatformConfig, SupportedPlatform, TokenType} from "./typesShared";
-
-export type FileObject = FObject;
+export { PlatformConfig, SupportedPlatform, TokenType } from "./typesShared";
 
 function autoImplement<T>(): new () => T {
-  return class {} as new () => T;
+  return class { } as new () => T;
 }
 
 // Valist Types
-export class AccountMeta extends autoImplement<AccountMetaInterface>() {}
+export class AccountMeta extends autoImplement<AccountMetaInterface>() { }
 
 export class ProjectMeta extends autoImplement<ProjectMetaInterface>() {
   /** supported networks for smart contracts */
@@ -36,35 +33,35 @@ export interface NetworkMeta {
   tokens?: TokenMetadata[];
 }
 
-export class GalleryMeta extends autoImplement<GalleryMetaInterface>() {}
+export class GalleryMeta extends autoImplement<GalleryMetaInterface>() { }
 
 /*
-	Example ReleaseMeta:
-		{
-			"external_url": "webCID || nativeCID",
-			"install": {
-				"web": {
-					"external_url": "webCID",
-					"name": "web"
-				},
-				"linux_amd64": {
-					"external_url": "nativeCID/linux_amd64_build",
-					"name": "binaryname"
-				},
-				"linux_arm64": {
-					"external_url": "nativeCID/linux_arm64_build",
-					"name": "binaryname"
-				},
-				"windows_amd64": {
-					"external_url": "nativeCID/windows_amd64_build",
-					"name": "binaryname",
-					"dependencies": {
-						"cpp-libs@version": "microsoft_link || cid"
-					}
-				}
-			}
-		}
-		*/
+  Example ReleaseMeta:
+    {
+      "external_url": "webCID || nativeCID",
+      "install": {
+        "web": {
+          "external_url": "webCID",
+          "name": "web"
+        },
+        "linux_amd64": {
+          "external_url": "nativeCID/linux_amd64_build",
+          "name": "binaryname"
+        },
+        "linux_arm64": {
+          "external_url": "nativeCID/linux_arm64_build",
+          "name": "binaryname"
+        },
+        "windows_amd64": {
+          "external_url": "nativeCID/windows_amd64_build",
+          "name": "binaryname",
+          "dependencies": {
+            "cpp-libs@version": "microsoft_link || cid"
+          }
+        }
+      }
+    }
+    */
 
 export class ReleaseMeta {
   constructor(metadata_version = "2") {
@@ -115,7 +112,7 @@ export const platformNames: Record<SupportedPlatform, string> = {
   android_arm64: "Android (arm64)",
 };
 
-export class PlatformsMeta extends autoImplement<PlatformsMetaInterface>() {}
+export class PlatformsMeta extends autoImplement<PlatformsMetaInterface>() { }
 
 export class ReleaseMetaV1 {
   /** project image */
