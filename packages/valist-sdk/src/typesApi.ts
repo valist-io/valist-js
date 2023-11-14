@@ -3,6 +3,8 @@ import {
   TokenMetadataInterface,
   AccountMetaInterface,
   PlatformsMetaInterface,
+  SystemRequirements,
+  WineSupport,
 } from "./typesShared";
 
 export interface ChannelReleaseMeta {
@@ -19,6 +21,7 @@ export interface Channel {
   license_config: {
     id: number;
     access_codes: boolean;
+    tokens: boolean;
   };
 }
 
@@ -29,8 +32,10 @@ export interface ContractMetadata extends TokenMetadataInterface {
   marketplace_urls?: string[];
 }
 
-export interface ProjectMetaApi extends ProjectMetaInterface {
+export interface ProjectMetaApi extends Omit<ProjectMetaInterface, 'systemRequirements' | 'wineSupport'> {
   networks: ContractMetadata[];
+  system_requirements: SystemRequirements;
+  wine_support: WineSupport;
 }
 
 export interface Listing {
