@@ -25,6 +25,7 @@ const nextConfig = {
       config.resolve.fallback.fs = false;
     }
 
+
     // add graphql file loader
     config.module.rules.push({
       test: /\.(graphql|gql)$/,
@@ -36,6 +37,11 @@ const nextConfig = {
     config.resolve.alias['bn.js'] = path.resolve(__dirname, '..', '..', 'node_modules', 'bn.js');
 
     config.plugins.push(new options.webpack.IgnorePlugin({ resourceRegExp: /^electron$/ }));
+
+    config.plugins.push(new options.webpack.NormalModuleReplacementPlugin(/node:/, (resource) => {
+      resource.request = resource.request.replace(/^node:/, "");
+    }));
+
     return config;
   },
 };

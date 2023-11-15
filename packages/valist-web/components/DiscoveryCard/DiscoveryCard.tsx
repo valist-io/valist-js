@@ -1,7 +1,5 @@
 import { 
   Anchor,
-  Group,
-  Paper,
   Stack,
   Title,
   Text,
@@ -28,7 +26,7 @@ export function DiscoveryCard(props: DiscoveryCardProps) {
           <Image
             style={{ borderRadius: 8 }}
             src={(imageError || !props.image) ? '/images/valist.png' : props.image }
-            alt={props.name}
+            alt={props.name || ""}
             width={384}
             height={512}
             objectFit="contain"

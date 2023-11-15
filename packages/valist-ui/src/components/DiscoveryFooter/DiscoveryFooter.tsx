@@ -1,4 +1,4 @@
-import { Grid, List, useMantineTheme } from "@mantine/core";
+import { Grid, List } from "@mantine/core";
 import { Logo } from "../Logo";
 import { SocialIcons } from "../SocialIcons/SocialIcons";
 import useStyles from "./DiscoveryFooter.styles";

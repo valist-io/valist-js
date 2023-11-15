@@ -20,6 +20,8 @@ export interface WineSupport {
 export interface ProjectMetaInterface {
   /** project image used for profile pic */
   image?: string;
+  /** true/false for uses overlay */
+  uses_overlay?: boolean;
   /** main project image used for discovery */
   main_capsule?: string;
   /** project friendly name */
