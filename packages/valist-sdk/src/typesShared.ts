@@ -20,6 +20,10 @@ export interface WineSupport {
 export interface ProjectMetaInterface {
   /** project image used for profile pic */
   image?: string;
+  /** true/false for uses HyperPlay overlay */
+  uses_overlay?: boolean;
+  /** true/false for if a game is only published on HyperPlay */
+  is_hyperplay_exclusive?: boolean;
   /** main project image used for discovery */
   main_capsule?: string;
   /** project friendly name */
