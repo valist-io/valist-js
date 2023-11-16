@@ -34,8 +34,8 @@ export interface ContractMetadata extends TokenMetadataInterface {
 
 export interface ProjectMetaApi extends Omit<ProjectMetaInterface, 'systemRequirements' | 'wineSupport'> {
   networks: ContractMetadata[];
-  system_requirements: SystemRequirements;
-  wine_support: WineSupport;
+  system_requirements?: SystemRequirements;
+  wine_support?: WineSupport;
 }
 
 export interface Listing {
