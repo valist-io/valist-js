@@ -11,7 +11,7 @@ import {
 
 import React, { useState } from 'react';
 import * as Icon from 'tabler-icons-react';
-import useStyles from './AccountSelect.styles'
+import styles from './AccountSelect.module.css';
 import { Item } from '../Item';
 import { Divider } from '../Divider';
 import { Option } from './Option/Option';
@@ -36,7 +36,6 @@ export interface AccountSelectComponent extends React.FC<AccountSelectProps> {
 }
 
 export const AccountSelect: AccountSelectComponent = (props: AccountSelectProps) => {
-  const { classes } = useStyles();
   const [opened, setOpened] = useState(false);
 
   const setValue = (value: string) => {
@@ -52,7 +51,7 @@ export const AccountSelect: AccountSelectComponent = (props: AccountSelectProps)
       position="bottom-start"
       opened={opened}
       onClose={() => setOpened(false)}
-      classNames={{ dropdown: classes.popoverBody }}
+      classNames={{ dropdown: styles.popoverBody }}
     >
       <Popover.Target>
         <UnstyledButton 
@@ -73,24 +72,24 @@ export const AccountSelect: AccountSelectComponent = (props: AccountSelectProps)
       </Popover.Target>
       <Popover.Dropdown>
         <Stack spacing={0}>
-          <div className={classes.popoverHeader}>
+          <div className={styles.popoverHeader}>
             <Title order={5}>My Accounts</Title>
           </div>
           <ScrollArea.Autosize maxHeight={266}>
-            <Stack className={classes.popoverList}>
+            <Stack className={styles.popoverList}>
               <AccountSelectContext.Provider value={{ value: props.value, setValue }}>
                 {props.children}
               </AccountSelectContext.Provider>
             </Stack>
           </ScrollArea.Autosize>
-          <div className={classes.popoverFooter}>
+          <div className={styles.popoverFooter}>
             <Divider style={{ marginBottom: 16 }} />
             <Anchor href={props.href}>
               <Group spacing={10}>
                 <Icon.CirclePlus 
                   size={26}
                   fill="#5850EC" 
-                  className={classes.popoverFooterIcon} 
+                  className={styles.popoverFooterIcon} 
                 />
                 <Text color="#5850EC">New Account</Text>
               </Group>
