@@ -51,7 +51,6 @@ export { Stepper } from './components/Stepper';
 export { TabsListCard } from './components/TabsListCard';
 export { Tag } from './components/Tag';
 export { ThemeButton } from './components/ThemeButton';
-export { ThemeProvider } from './components/ThemeProvider';
 export { TokenInput } from './components/TokenInput';
 export { Welcome } from './components/Welcome';
 
