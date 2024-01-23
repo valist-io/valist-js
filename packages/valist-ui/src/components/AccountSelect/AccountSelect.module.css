@@ -1,15 +1,19 @@
 .popoverBody {
-  border: 'none',
+  border: "none";
 }
 .popoverHeader {
-  padding: 24,
+  padding: 24;
 }
 .popoverList {
-  padding: '0 24px',
+  padding: "0 24px";
 }
 .popoverFooter {
-  padding: 24,
+  padding: 24;
 }
 .popoverFooterIcon {
   color: light-dark(var(--color-neutral-700), white);
+}
+
+.scrollArea {
+  max-height: 266px;
 }

@@ -58,7 +58,7 @@ export const AccountSelect: AccountSelectComponent = (props: AccountSelectProps)
           style={props.style}
           onClick={() => setOpened(!opened)}
         >
-          <Group spacing={10}>
+          <Group>
             <Item 
               name={props.name} 
               image={props.image} 
@@ -71,11 +71,11 @@ export const AccountSelect: AccountSelectComponent = (props: AccountSelectProps)
         </UnstyledButton>
       </Popover.Target>
       <Popover.Dropdown>
-        <Stack spacing={0}>
+        <Stack gap="xs">
           <div className={styles.popoverHeader}>
             <Title order={5}>My Accounts</Title>
           </div>
-          <ScrollArea.Autosize maxHeight={266}>
+          <ScrollArea.Autosize className={styles.scrollArea}>
             <Stack className={styles.popoverList}>
               <AccountSelectContext.Provider value={{ value: props.value, setValue }}>
                 {props.children}
@@ -85,7 +85,7 @@ export const AccountSelect: AccountSelectComponent = (props: AccountSelectProps)
           <div className={styles.popoverFooter}>
             <Divider style={{ marginBottom: 16 }} />
             <Anchor href={props.href}>
-              <Group spacing={10}>
+              <Group gap="sm">
                 <Icon.CirclePlus 
                   size={26}
                   fill="#5850EC" 
