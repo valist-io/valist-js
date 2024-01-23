@@ -1,0 +1,7 @@
+@use './designSystem/_colors.scss';
+@use './designSystem/_typography.scss';
+
+:root {
+    @include typography.typeSystem;
+    @include colors.colorSystem;
+  }

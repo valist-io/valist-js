@@ -1,0 +1,24 @@
+@mixin typeSystem {
+    --primary-font-family: 'Aktiv Grotesk Corp', sans-serif;
+    --secondary-font-family: 'Monaco', 'Courier', monospace;
+    --light: 300;
+    --regular: 400;
+    --medium: 500;
+    --semibold: 600;
+    --bold: 700;
+    --extrabold: 900;
+
+    --text-xs: 12px;
+    --text-sm: 14px;
+    --text-md: 16px;
+    --text-lg: 18px;
+    --text-xl: 21px;
+    --text-2xl: 24px;
+    --text-3xl: 28px;
+    --text-4xl: 33px;
+    --text-5xl: 38px;
+    --text-6xl: 44px;
+    --text-7xl: 50px;
+    --text-8xl: 58px;
+    --text-8xl: 67px;
+}

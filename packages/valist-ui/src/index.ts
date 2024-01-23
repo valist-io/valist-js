@@ -1,3 +1,5 @@
+import './index.scss'
+
 export { _404 } from "./components/404";
 export { AccountSelect } from './components/AccountSelect';
 export { Actions } from './components/Actions';
