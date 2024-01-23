@@ -15,5 +15,6 @@
     "sourceMap": true,
     "declaration": true,
   },
-  "include": ["src"]
+  "include": ["src"],
+  "typeRoots": ["node_modules/@types", "src/global.d.ts"]
 }

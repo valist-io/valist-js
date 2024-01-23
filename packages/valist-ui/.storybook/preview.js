@@ -2,8 +2,7 @@ import '../public/styles.css';
 
 import React from 'react';
 import { themes } from '@storybook/theming';
-import { useDarkMode } from 'storybook-dark-mode';
-import { ThemeProvider } from '../src/components/ThemeProvider';
+import { MantineProvider } from '@mantine/core'
 
 export const parameters = {
   actions: { 
@@ -24,8 +23,8 @@ export const parameters = {
 
 export const decorators = [
   (Story) => (
-    <ThemeProvider theme={{ colorScheme: useDarkMode() ? 'dark' : 'light' }}>
+    <MantineProvider>
       <Story />
-    </ThemeProvider>
+    </MantineProvider>
   ),
 ];
