@@ -49,7 +49,6 @@ export interface Listing {
   project_name: string;
   timestamp: number;
   isVerified?: boolean;
-  isMetaMaskVerified?: boolean;
   isMetaMaskMarketplace?: boolean;
   isHyperPlayPreferredDownload?: boolean;
   isMetaMaskInGame?: boolean;
