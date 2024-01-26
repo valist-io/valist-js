@@ -50,7 +50,7 @@ export interface Listing {
   timestamp: number;
   isVerified?: boolean;
   isMetaMaskVerified?: boolean;
-  isMetMaskCompatible?: boolean;
+  isMetaMaskMarketplace?: boolean;
   isHyperPlayPreferredDownload?: boolean;
   isMetaMaskInGame?: boolean;
 }
