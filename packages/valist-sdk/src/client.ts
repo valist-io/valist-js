@@ -1,15 +1,16 @@
-import axios, { AxiosProgressEvent } from 'axios';
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable-next-line @typescript-eslint/no-var-requires */
+import axios from 'axios';
 import { BigNumber, ethers, PopulatedTransaction } from 'ethers';
 import { ContractTransaction } from '@ethersproject/contracts';
-import { getFilesFromPath } from './utils';
 
-import { AccountMeta, PlatformsMeta, ProjectMeta, SupportedPlatform, ReleaseMeta, ReleaseConfig } from './types';
+import { AccountMeta, ProjectMeta, ReleaseMeta } from './types';
 import { fetchGraphQL, Account, Project, Release } from './graphql';
 import { generateID, getAccountID, getProjectID, getReleaseID } from './utils';
 import * as queries from './graphql/queries';
 import { sendMetaTx, sendTx } from './metatx';
 import { ImportCandidate } from 'ipfs-core-types/src/utils';
-import path from 'path';
 import { isAddress } from 'ethers/lib/utils';
 import { FileObject } from './files';
 import { IPFSCLIENT } from '.';
@@ -40,77 +41,6 @@ export default class Client {
 		const metaURI = await this.writeJSON(meta);
 		const unsigned = await this.registry.populateTransaction.createProject(accountID, name, metaURI, members);
 		return await this.sendTx(unsigned);
-	}
-
-	async uploadRelease(config: ReleaseConfig): Promise<ReleaseMeta> {
-		const release = new ReleaseMeta();
-
-		release.name = config.release;
-		release.description = config.description || '';
-
-		release.path = `${config.account}/${config.project}/${config.release}`;
-
-		release.platforms = new PlatformsMeta();
-
-		let filesObject: Record<string, (FileObject)[]> = {};
-		const platforms = Object.keys(config.platforms);
-
-		for (let i = 0; i < platforms.length; i++) {
-			if (config.platforms[platforms[i] as SupportedPlatform]) {
-				filesObject[platforms[i]] = await getFilesFromPath(config.platforms[platforms[i] as SupportedPlatform]);
-			}
-		}
-
-		const { web, ...nonWebFiles } = filesObject;
-		let webCID, nativeCID = '';
-
-		const webIC: ImportCandidate[] = web.map(file => ({
-			path: file.name,
-			content: file.stream(),
-		}));
-
-		const nonWebIC: ImportCandidate[] = Object.entries(nonWebFiles)
-			.flatMap(([platform, files]) => files
-				.map(file => ({
-					path: path.join(platform, path.basename(file.name)),
-					content: file.stream(),
-				}),
-				));
-
-		if (nonWebIC.length > 0) {
-			nativeCID = await this.writeFolder(nonWebIC, true);
-
-			Object.keys(filesObject).forEach((platform) => {
-				if (release.platforms && filesObject[platform] && filesObject[platform].length !== 0) {
-					const fileName = path.basename((filesObject[platform][0].name)); // @TODO make this work with folders
-					let url = new URL(nativeCID);
-					url.pathname = path.join(url.pathname, platform, fileName);
-					release.platforms[platform as SupportedPlatform] = {
-						external_url: url.toString(),
-						name: fileName,
-					};
-				}
-			});
-		}
-
-		if (webIC.length > 0) {
-			webCID = await this.writeFolder(webIC, false);
-
-			release.platforms.web = {
-				external_url: webCID,
-				name: 'web',
-			};
-		};
-
-		release.external_url = webCID || nativeCID;
-
-		// upload release image
-		if (config.image) {
-			const imageFile = await getFilesFromPath(config.image);
-			release.image = await this.writeFile(imageFile[0]);
-		}
-
-		return release;
 	}
 
 	async createRelease(projectID: ethers.BigNumberish, name: string, meta: ReleaseMeta): Promise<ContractTransaction> {
@@ -368,23 +298,23 @@ export default class Client {
 
 	isBrowserFile(file: File | FileObject): file is File {
 		return (file as File).lastModified !== undefined;
-	};
+	}
 
 	async writeJSON(data: Object): Promise<string> {
-		let buffer: Blob | Buffer;
-		let string = JSON.stringify(data);
-
-		buffer = new Blob([string], { type: 'application/json' });
-
-		const res = await this.ipfs.add(buffer, { cidVersion: 1 });
-
+		const string = JSON.stringify(data);
+		let content: Blob | Buffer;
+		if (typeof window !== 'undefined') {	// Browser environment
+			content = new Blob([string], { type: 'application/json' });
+		} else { // Node.js environment
+			content = Buffer.from(string, 'utf-8');
+		}
+		const res = await this.ipfs.add(content, { cidVersion: 1 });
 		return `${this.ipfsGateway}/ipfs/${res}`;
 	}
 
 	async writeFile(file: File | FileObject, wrapWithDirectory = false, onProgress?: (percentCompleteOrBytesUploaded: number | string) => void) {
 		if (typeof file === 'undefined') throw new Error("file === undefined, must pin at least one file");
-
-		let fileData, fileSize: number;
+		let fileData;
 		const baseFileName = this.getFileBaseName(file.name);
 		const path = wrapWithDirectory ? `/${baseFileName}/${baseFileName}` : baseFileName;
 
@@ -393,11 +323,9 @@ export default class Client {
 				content: file,
 				path: file.name,
 			};
-			fileSize = file.size;
 		} else {
 			const fileStream = file.stream();
 			fileData = { content: fileStream, path };
-			fileSize = require('fs').statSync(fileStream.path).size;
 		}
 
 		const res = await this.ipfs.add(fileData, {
@@ -405,7 +333,6 @@ export default class Client {
 			cidVersion: 1,
 			progress: onProgress,
 		});
-
 		return `${this.ipfsGateway}/ipfs/${res}`;
 	}
 
@@ -433,7 +360,7 @@ export default class Client {
 			throw new Error(`Invalid wallet address ${txReq.from} please try again`);
 		}
 
-		let hash = this.metaTx
+		const hash = this.metaTx
 			? await sendMetaTx(this.signer, txReq)
 			: await sendTx(this.signer, txReq);
 

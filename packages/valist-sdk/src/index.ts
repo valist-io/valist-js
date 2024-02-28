@@ -1,15 +1,15 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ethers, providers } from 'ethers';
 import Client from './client';
 import * as contracts from './contracts';
 import * as graphql from './graphql';
 import axios, { AxiosProgressEvent, AxiosRequestConfig } from 'axios';
 import https from "https";
-import { formatBytes, generateValistToken } from './utils';
-
+import { formatBytes } from './utils';
 
 export type Provider = providers.Provider | ethers.Signer;
 
-// additional options for configuring the client
 export interface Options {
   chainId: number;
   ipfsHost: string;
@@ -33,11 +33,15 @@ export type IPFSCLIENT = {
   addAll: (values: any, options: any) => Promise<string[]>;
 }
 
-export const createIPFS = (value: Object): IPFSCLIENT => {
+// Dynamically determine which FormData to use based on the environment
+const isBrowser = typeof window !== 'undefined';
+const FormData = isBrowser ? window.FormData : require('form-data');
+
+export const createIPFS = (_value: Record<string, unknown>): IPFSCLIENT => {
   const API = 'https://pin-1.valist.io/api/v0';
 
   const addAll = async (values: any[], options: IPFSOptions) => {
-    let data: { Name: string, Hash: string }[] = [];
+    const data: { Name: string, Hash: string }[] = [];
     let path = `${API}/add?progress=true`;
 
     if (options?.cidVersion == 0 || options?.cidVersion == 1)
@@ -48,20 +52,24 @@ export const createIPFS = (value: Object): IPFSCLIENT => {
 
     const formData = new FormData();
     for (const item of values) {
-      let content = item?.content || item;
-      let path = item?.path;
+      const content = item?.content || item;
+      const path = item?.path;
 
       if (content instanceof Blob) {
         path === "meta.json"
       }
 
-      formData.append('file', content, path);
+      if (isBrowser) {
+        formData.append('file', content, path);
+      } else {
+        formData.append('file', content, {
+          filepath: path,
+          contentType: 'application/octet-stream',
+        });
+      }
     }
 
     const reqConfig: AxiosRequestConfig = {
-      headers: {
-        // 'Authorization': `Bearer ${await generateValistToken(options.apiSecret || process.env.VALIST_API_SECRET || '')}`,
-      },
       onUploadProgress: (progressEvent: AxiosProgressEvent) => {
         if (options?.progress) {
           options.progress(progressEvent.total ? `${((progressEvent.loaded * 100) / progressEvent.total).toFixed(2)}%` : formatBytes(progressEvent.loaded.toString()));
@@ -166,7 +174,7 @@ export async function create(providerOrSigner: Provider, options: Partial<Option
   const registry = new ethers.Contract(registryAddress, contracts.registryABI, provider);
   const license = new ethers.Contract(licenseAddress, contracts.licenseABI, signer);
 
-  let ipfsConfig: any = {
+  const ipfsConfig: any = {
     url: options.ipfsHost || 'https://pin-1.valist.io/api/v0',
   };
 
