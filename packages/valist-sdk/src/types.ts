@@ -129,32 +129,7 @@ export class ReleaseMetaV1 {
   public install?: InstallMeta;
 }
 
-export class InstallMeta {
-  /** binary name */
-  public name?: string;
-  /** web bundle */
-  public web?: string;
-  /** android/arm64 path */
-  public android_arm64?: string;
-  /** darwin/amd64 path */
-  public darwin_amd64?: string;
-  /** darwin/arm64 path */
-  public darwin_arm64?: string;
-  /** linux/386 path */
-  public linux_386?: string;
-  /** linux/amd64 path */
-  public linux_amd64?: string;
-  /** linux/arm path */
-  public linux_arm?: string;
-  /** linux/arm64 path */
-  public linux_arm64?: string;
-  /** windows/386 path */
-  public windows_386?: string;
-  /** windows/amd64 path */
-  public windows_amd64?: string;
-  /** windows/arm64 path */
-  public windows_arm64?: string;
-}
+export type InstallMeta = Record<string, string>;
 
 export function isReleaseMetaV1(
   releaseMeta: ReleaseMeta | ReleaseMetaV1
@@ -180,7 +155,7 @@ export class ReleaseConfig {
   public image?: string;
   public description?: string;
   public source?: string;
-  public platforms: Record<SupportedPlatform, string>;
+  public platforms: Record<string, string>;
 
   constructor(account: string, project: string, release: string) {
     this.account = account;
