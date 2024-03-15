@@ -6,7 +6,10 @@ import * as contracts from './contracts';
 import * as graphql from './graphql';
 import axios, { AxiosProgressEvent, AxiosRequestConfig } from 'axios';
 import https from "https";
+import http from "http";
 import { formatBytes } from './utils';
+import fs from 'fs';
+import { ImportCandidate } from 'ipfs-core-types/src/utils';
 
 export type Provider = providers.Provider | ethers.Signer;
 
@@ -31,6 +34,7 @@ export type IPFSOptions = {
 export type IPFSCLIENT = {
   add: (value: any, options: IPFSOptions) => Promise<string | undefined>;
   addAll: (values: any, options: any) => Promise<string[]>;
+  addAllNode?: (values: any[], addOptions: IPFSOptions) => Promise<any>;
 }
 
 // Dynamically determine which FormData to use based on the environment
@@ -111,10 +115,53 @@ export const createIPFS = (_value: Record<string, unknown>): IPFSCLIENT => {
       return data[data.length - 1];
   }
 
-  return {
+  const ipfsClient: IPFSCLIENT = {
     addAll,
     add,
+  };
+
+  if (!isBrowser) {
+    const addAllNode = async (values: any[], addOptions: IPFSOptions) => {
+      const formData = new FormData();
+      for (const { path, content } of values) {
+        formData.append('file', content, {
+          filepath: path,
+          contentType: 'application/octet-stream',
+        });
+      }
+
+      const url = new URL(`${API}/add`);
+      url.search = new URLSearchParams({
+        'chunker': 'rabin-131072-262144-524288',
+        'cid-version': `${addOptions.cidVersion || 0}`,
+        ...addOptions.wrapWithDirectory && { 'wrap-with-directory': 'true' }
+      }).toString();
+
+      const agent = url.protocol === 'https:' ? new https.Agent({ keepAlive: false }) : new http.Agent({ keepAlive: false });
+
+      try {
+        const response = await axios.post(url.toString(), formData, {
+          httpsAgent: agent,
+          headers: formData.getHeaders(),
+        });
+
+        if (response.status !== 200) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const lines = response.data.split('\n').filter((line: string) => line.trim());
+        const data = lines.map((line: string) => JSON.parse(line)).filter((item: any) => item !== null);
+        return data;
+      } catch (error) {
+        console.error('Upload failed:', error);
+        return null;
+      }
+    };
+
+    ipfsClient.addAllNode = addAllNode;
   }
+
+  return ipfsClient;
 };
 
 /**
