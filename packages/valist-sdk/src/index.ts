@@ -34,7 +34,7 @@ export type IPFSOptions = {
 export type IPFSCLIENT = {
   add: (value: any, options: IPFSOptions) => Promise<string | undefined>;
   addAll: (values: any, options: any) => Promise<string[]>;
-  addAllNode?: (values: any[], addOptions: IPFSOptions) => Promise<any>;
+  addAllNode?: (values: any[], addOptions: IPFSOptions) => Promise<{ Hash: string, Name: string, Size: number }[]>;
 }
 
 // Dynamically determine which FormData to use based on the environment
