@@ -35,14 +35,14 @@ export type IPFSCLIENT = {
   addAllNode?: (values: any[], addOptions: IPFSOptions) => Promise<{ Hash: string, Name: string, Size: number }[]>;
 }
 
-// Dynamically determine which FormData to use based on the environment
-const isBrowser = typeof window !== 'undefined';
-const FormData = isBrowser ? window.FormData : require('form-data');
+export const isBrowser = typeof window !== 'undefined';
 
 export const createIPFS = (_value: Record<string, unknown>): IPFSCLIENT => {
   const API = 'https://pin-1.valist.io/api/v0';
 
   const addAll = async (values: any[], options: IPFSOptions) => {
+    const FormData = isBrowser ? window.FormData : require('form-data');
+
     const data: { Name: string, Hash: string }[] = [];
     let path = `${API}/add?progress=true`;
 
@@ -120,8 +120,9 @@ export const createIPFS = (_value: Record<string, unknown>): IPFSCLIENT => {
 
   if (!isBrowser) {
     const addAllNode = async (values: any[], addOptions: IPFSOptions) => {
-      const formData = new FormData();
-      const fetch = (await import('node-fetch')).default;
+      const FormData = require('form-data');
+      const formData = new FormData(); // @ts-expect-error sdcd
+      const fetch = (...args: any) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
       for (const { path, content } of values) {
         formData.append('file', content, {
@@ -152,8 +153,8 @@ export const createIPFS = (_value: Record<string, unknown>): IPFSCLIENT => {
         }
 
         const text = await response.text();
-        const lines = text.split('\n').filter(line => line.trim());
-        const data = lines.map(line => JSON.parse(line)).filter(item => item !== null);
+        const lines = text.split('\n').filter((line: string) => line.trim());
+        const data = lines.map((line: string) => JSON.parse(line)).filter((item: null) => item !== null);
         return data;
       } catch (error) {
         console.error('Upload failed:', error);
