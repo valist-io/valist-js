@@ -8,8 +8,7 @@ import axios, { AxiosProgressEvent, AxiosRequestConfig } from 'axios';
 import https from "https";
 import http from "http";
 import { formatBytes } from './utils';
-import fs from 'fs';
-import { ImportCandidate } from 'ipfs-core-types/src/utils';
+import fetch from 'node-fetch';
 
 export type Provider = providers.Provider | ethers.Signer;
 
@@ -140,21 +139,24 @@ export const createIPFS = (_value: Record<string, unknown>): IPFSCLIENT => {
       const agent = url.protocol === 'https:' ? new https.Agent({ keepAlive: false }) : new http.Agent({ keepAlive: false });
 
       try {
-        const response = await axios.post(url.toString(), formData, {
-          httpsAgent: agent,
-          headers: formData.getHeaders(),
+        const response = await fetch(url.toString(), {
+          method: 'POST',
+          body: formData,
+          agent,
         });
 
-        if (response.status !== 200) {
+
+        if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const lines = response.data.split('\n').filter((line: string) => line.trim());
-        const data = lines.map((line: string) => JSON.parse(line)).filter((item: any) => item !== null);
+        const text = await response.text();
+        const lines = text.split('\n').filter(line => line.trim());
+        const data = lines.map(line => JSON.parse(line)).filter(item => item !== null);
         return data;
       } catch (error) {
         console.error('Upload failed:', error);
-        return null;
+        return [];
       }
     };
 
