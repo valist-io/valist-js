@@ -8,7 +8,6 @@ import axios, { AxiosProgressEvent, AxiosRequestConfig } from 'axios';
 import https from "https";
 import http from "http";
 import { formatBytes } from './utils';
-import fetch from 'node-fetch';
 
 export type Provider = providers.Provider | ethers.Signer;
 
@@ -122,6 +121,8 @@ export const createIPFS = (_value: Record<string, unknown>): IPFSCLIENT => {
   if (!isBrowser) {
     const addAllNode = async (values: any[], addOptions: IPFSOptions) => {
       const formData = new FormData();
+      const fetch = (await import('node-fetch')).default;
+
       for (const { path, content } of values) {
         formData.append('file', content, {
           filepath: path,
