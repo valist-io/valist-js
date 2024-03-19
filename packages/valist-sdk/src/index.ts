@@ -6,6 +6,7 @@ import * as contracts from './contracts';
 import * as graphql from './graphql';
 import axios, { AxiosProgressEvent, AxiosRequestConfig } from 'axios';
 import https from "https";
+import http from "http";
 import { formatBytes } from './utils';
 
 export type Provider = providers.Provider | ethers.Signer;
@@ -31,16 +32,17 @@ export type IPFSOptions = {
 export type IPFSCLIENT = {
   add: (value: any, options: IPFSOptions) => Promise<string | undefined>;
   addAll: (values: any, options: any) => Promise<string[]>;
+  addAllNode?: (values: any[], addOptions: IPFSOptions) => Promise<{ Hash: string, Name: string, Size: number }[]>;
 }
 
-// Dynamically determine which FormData to use based on the environment
-const isBrowser = typeof window !== 'undefined';
-const FormData = isBrowser ? window.FormData : require('form-data');
+export const isBrowser = typeof window !== 'undefined';
 
 export const createIPFS = (_value: Record<string, unknown>): IPFSCLIENT => {
   const API = 'https://pin-1.valist.io/api/v0';
 
   const addAll = async (values: any[], options: IPFSOptions) => {
+    const FormData = isBrowser ? window.FormData : require('form-data');
+
     const data: { Name: string, Hash: string }[] = [];
     let path = `${API}/add?progress=true`;
 
@@ -111,10 +113,59 @@ export const createIPFS = (_value: Record<string, unknown>): IPFSCLIENT => {
       return data[data.length - 1];
   }
 
-  return {
+  const ipfsClient: IPFSCLIENT = {
     addAll,
     add,
+  };
+
+  if (!isBrowser) {
+    const addAllNode = async (values: any[], addOptions: IPFSOptions) => {
+      const FormData = require('form-data');
+      const formData = new FormData(); // @ts-expect-error sdcd
+      const fetch = (...args: any) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+
+      for (const { path, content } of values) {
+        formData.append('file', content, {
+          filepath: path,
+          contentType: 'application/octet-stream',
+        });
+      }
+
+      const url = new URL(`${API}/add`);
+      url.search = new URLSearchParams({
+        'chunker': 'rabin-131072-262144-524288',
+        'cid-version': `${addOptions.cidVersion || 0}`,
+        ...addOptions.wrapWithDirectory && { 'wrap-with-directory': 'true' }
+      }).toString();
+
+      const agent = url.protocol === 'https:' ? new https.Agent({ keepAlive: false }) : new http.Agent({ keepAlive: false });
+
+      try {
+        const response = await fetch(url.toString(), {
+          method: 'POST',
+          body: formData,
+          agent,
+        });
+
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const text = await response.text();
+        const lines = text.split('\n').filter((line: string) => line.trim());
+        const data = lines.map((line: string) => JSON.parse(line)).filter((item: null) => item !== null);
+        return data;
+      } catch (error) {
+        console.error('Upload failed:', error);
+        return [];
+      }
+    };
+
+    ipfsClient.addAllNode = addAllNode;
   }
+
+  return ipfsClient;
 };
 
 /**

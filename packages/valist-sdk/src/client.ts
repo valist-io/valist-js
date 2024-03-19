@@ -348,6 +348,17 @@ export default class Client {
 		return `${this.ipfsGateway}/ipfs/${cids[cids.length - 1]}`;
 	}
 
+	async writeFolderNode(files: ImportCandidate[], wrapWithDirectory = false, onProgress?: (percent: number) => void) {
+		if (files.length == 0) throw new Error("files.length == 0, must pin at least one file");
+		if (this.ipfs.addAllNode === undefined) throw new Error("not nodejs environment");
+		const cids = await this.ipfs.addAllNode(files, {
+			cidVersion: 1,
+			wrapWithDirectory,
+		});
+
+		return `${this.ipfsGateway}/ipfs/${cids[cids.length - 1].Hash}`;
+	}
+
 	async sendTx(unsigned: PopulatedTransaction): Promise<ethers.providers.TransactionResponse> {
 		if (!this.signer) throw new Error('valist client is read-only');
 

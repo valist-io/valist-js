@@ -1,6 +1,6 @@
 {
   "name": "@valist/sdk",
-  "version": "2.9.4",
+  "version": "2.9.5",
   "description": "Web3-native software distribution.",
   "author": "Valist, Inc.",
   "maintainers": [
@@ -49,6 +49,7 @@
     "@capacitor-community/electron": "1.4.2",
     "axios": "^1.4.0",
     "ethers": "^5.5.4",
+    "node-fetch": "^2.6.1",
     "proxy-from-env": "^1.1.0",
     "ua-parser-js": "1.0.35"
   }
