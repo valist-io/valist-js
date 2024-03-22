@@ -12,6 +12,10 @@ export interface ChannelReleaseMeta {
   meta_uri: string;
   platforms: PlatformsMetaInterface;
   description: string;
+  project_id: string;
+  release_id: string;
+  external_url: string;
+  release_name: string;
 }
 
 export interface Channel {
