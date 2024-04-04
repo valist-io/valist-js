@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ethers, providers } from 'ethers';
+import { BigNumberish, JsonRpcProvider, ethers } from 'ethers';
 import Client from './client';
 import * as contracts from './contracts';
 import * as graphql from './graphql';
@@ -9,10 +9,10 @@ import https from "https";
 import http from "http";
 import { formatBytes } from './utils';
 
-export type Provider = providers.Provider | ethers.Signer;
+export type Provider = ethers.Signer | ethers.Provider;
 
 export interface Options {
-  chainId: number;
+  chainId: BigNumberish;
   ipfsHost: string;
   ipfsGateway: string;
   metaTx: boolean;
@@ -174,12 +174,12 @@ export const createIPFS = (_value: Record<string, unknown>): IPFSCLIENT => {
  * @param provider Provider to use for transactions
  * @param options Additional client options
  */
-export function createReadOnly(provider: providers.JsonRpcProvider, options: Partial<Options>): Client {
+export function createReadOnly(provider: JsonRpcProvider, options: Partial<Options>): Client {
   const chainId = options.chainId || 137;
 
-  const subgraphUrl = options.subgraphUrl || graphql.getSubgraphUrl(chainId);
-  const registryAddress = options.registryAddress || contracts.getRegistryAddress(chainId);
-  const licenseAddress = options.licenseAddress || contracts.getLicenseAddress(chainId);
+  const subgraphUrl = options.subgraphUrl || graphql.getSubgraphUrl(Number(chainId));
+  const registryAddress = options.registryAddress || contracts.getRegistryAddress(Number(chainId));
+  const licenseAddress = options.licenseAddress || contracts.getLicenseAddress(Number(chainId));
 
   const registry = new ethers.Contract(registryAddress, contracts.registryABI, provider);
   const license = new ethers.Contract(licenseAddress, contracts.licenseABI, provider);
@@ -197,16 +197,16 @@ export function createReadOnly(provider: providers.JsonRpcProvider, options: Par
  * @param options Additional client options
  */
 export async function create(providerOrSigner: Provider, options: Partial<Options>): Promise<Client> {
-  let signer: ethers.Signer | undefined;
-  let provider: providers.Provider | undefined;
+  let signer: ethers.Signer | null;
+  let provider: ethers.Provider | null;
 
   // coerce the signer and provider out of the merged types
-  if (ethers.Signer.isSigner(providerOrSigner)) {
+  if (providerOrSigner?.provider) {
     signer = providerOrSigner as ethers.Signer;
     provider = signer.provider;
   } else {
-    provider = providerOrSigner as providers.Web3Provider;
-    signer = (provider as providers.Web3Provider).getSigner();
+    provider = providerOrSigner as ethers.BrowserProvider;
+    signer = await (provider as ethers.BrowserProvider).getSigner();
   }
 
   if (!provider) {
@@ -218,9 +218,9 @@ export async function create(providerOrSigner: Provider, options: Partial<Option
     options.chainId = network.chainId;
   }
 
-  const subgraphUrl = options.subgraphUrl || graphql.getSubgraphUrl(options.chainId || 137);
-  const registryAddress = options.registryAddress || contracts.getRegistryAddress(options.chainId || 137);
-  const licenseAddress = options.licenseAddress || contracts.getLicenseAddress(options.chainId || 137);
+  const subgraphUrl = options.subgraphUrl || graphql.getSubgraphUrl(Number(options.chainId) || 137);
+  const registryAddress = options.registryAddress || contracts.getRegistryAddress(Number(options.chainId) || 137);
+  const licenseAddress = options.licenseAddress || contracts.getLicenseAddress(Number(options.chainId) || 137);
 
   const registry = new ethers.Contract(registryAddress, contracts.registryABI, provider);
   const license = new ethers.Contract(licenseAddress, contracts.licenseABI, signer);

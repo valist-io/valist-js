@@ -1,12 +1,12 @@
 // adapted from OZ Defender Workshop https://github.com/OpenZeppelin/workshops/blob/9402515b42efe1b4b3c5d8621fc78b55e7078386/25-defender-metatx-api/src/signer.js
-import { ethers, PopulatedTransaction } from "ethers";
+import { ethers } from "ethers";
 import { TypedDataSigner } from "@ethersproject/abstract-signer";
 import axios from "axios";
 import { delay } from "./utils";
 
 type Signer = ethers.Signer & TypedDataSigner;
 
-const ForwarderABI = [{"inputs":[{"components":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"uint256","name":"gas","type":"uint256"},{"internalType":"uint256","name":"nonce","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"}],"internalType":"struct MinimalForwarder.ForwardRequest","name":"req","type":"tuple"},{"internalType":"bytes","name":"signature","type":"bytes"}],"name":"execute","outputs":[{"internalType":"bool","name":"","type":"bool"},{"internalType":"bytes","name":"","type":"bytes"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"}],"name":"getNonce","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"components":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"uint256","name":"gas","type":"uint256"},{"internalType":"uint256","name":"nonce","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"}],"internalType":"struct MinimalForwarder.ForwardRequest","name":"req","type":"tuple"},{"internalType":"bytes","name":"signature","type":"bytes"}],"name":"verify","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}];
+const ForwarderABI = [{ "inputs": [{ "components": [{ "internalType": "address", "name": "from", "type": "address" }, { "internalType": "address", "name": "to", "type": "address" }, { "internalType": "uint256", "name": "value", "type": "uint256" }, { "internalType": "uint256", "name": "gas", "type": "uint256" }, { "internalType": "uint256", "name": "nonce", "type": "uint256" }, { "internalType": "bytes", "name": "data", "type": "bytes" }], "internalType": "struct MinimalForwarder.ForwardRequest", "name": "req", "type": "tuple" }, { "internalType": "bytes", "name": "signature", "type": "bytes" }], "name": "execute", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }, { "internalType": "bytes", "name": "", "type": "bytes" }], "stateMutability": "payable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "from", "type": "address" }], "name": "getNonce", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "components": [{ "internalType": "address", "name": "from", "type": "address" }, { "internalType": "address", "name": "to", "type": "address" }, { "internalType": "uint256", "name": "value", "type": "uint256" }, { "internalType": "uint256", "name": "gas", "type": "uint256" }, { "internalType": "uint256", "name": "nonce", "type": "uint256" }, { "internalType": "bytes", "name": "data", "type": "bytes" }], "internalType": "struct MinimalForwarder.ForwardRequest", "name": "req", "type": "tuple" }, { "internalType": "bytes", "name": "signature", "type": "bytes" }], "name": "verify", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" }];
 
 const EIP712Domain = [
   { name: 'name', type: 'string' },
@@ -26,9 +26,9 @@ const ForwardRequest = [
 
 const getForwarderContract = (chainId: number) => {
   const addressMap: Record<number, string> = {
-		80001: '0xe111Cd016Fd7c4E9FFF0670e22d2a01948B5b58E',
-		137: '0x2abeE2E2294556ebe0B15b8eb0ed4891b27AE777',
-	};
+    80001: '0xe111Cd016Fd7c4E9FFF0670e22d2a01948B5b58E',
+    137: '0x2abeE2E2294556ebe0B15b8eb0ed4891b27AE777',
+  };
   return addressMap[chainId];
 };
 
@@ -67,7 +67,7 @@ export const buildTypedData = async (forwarder: any, request: any) => {
   return { ...typeData, message: request };
 };
 
-export const signMetaTxRequest = async (signer: Signer, forwarder: ethers.Contract, input: PopulatedTransaction) => {
+export const signMetaTxRequest = async (signer: Signer, forwarder: ethers.Contract, input: any) => {
   const request = await buildRequest(forwarder, input);
   const { domain, types, message } = await buildTypedData(forwarder, request);
   let signature = await signer._signTypedData(domain, types, message);
@@ -84,9 +84,12 @@ export const signMetaTxRequest = async (signer: Signer, forwarder: ethers.Contra
   return { signature, request };
 };
 
-export const sendTx = async (signer: ethers.Signer, unsigned: PopulatedTransaction): Promise<string> => {
+export const sendTx = async (signer: ethers.Signer, unsigned: any): Promise<string> => {
   unsigned.gasLimit = await signer.estimateGas(unsigned);
-  unsigned.gasPrice = await signer.getGasPrice();
+  const provider = signer?.provider;
+  if (!provider) throw ('No provider found in signer');
+
+  unsigned.gasPrice = (await provider.getFeeData()).gasPrice;
 
   const gasLimit = unsigned.gasLimit?.toHexString();
   const gasPrice = unsigned.gasPrice?.toHexString();
@@ -97,9 +100,14 @@ export const sendTx = async (signer: ethers.Signer, unsigned: PopulatedTransacti
   return hash;
 };
 
-export const sendMetaTx = async (signer: ethers.Signer, unsigned: PopulatedTransaction) => {
-  const chainId = await signer.getChainId();
-  const forwarderAddress = getForwarderContract(chainId);
+export const sendMetaTx = async (signer: ethers.Signer, unsigned: any) => {
+  const provider = signer?.provider;
+  if (!provider) throw ('no provider found in signer');
+
+  const chainId = (await signer.provider?.getNetwork())?.chainId;
+  if (!chainId) throw ('no chainId found on provider');
+
+  const forwarderAddress = getForwarderContract(Number(chainId));
   const forwarder = new ethers.Contract(forwarderAddress, ForwarderABI, signer);
 
   let request;
@@ -107,7 +115,7 @@ export const sendMetaTx = async (signer: ethers.Signer, unsigned: PopulatedTrans
   do {
     try {
       request = await signMetaTxRequest(signer as Signer, forwarder, unsigned);
-    } catch(e) {
+    } catch (e) {
       if (JSON.stringify(e).includes('getNonce')) {
         console.error(e);
         await delay(250);
@@ -117,7 +125,7 @@ export const sendMetaTx = async (signer: ethers.Signer, unsigned: PopulatedTrans
     }
   } while (request == null);
 
-  const req = await axios.post(getAutotaskURL(chainId), JSON.stringify(request), { headers: { 'Content-Type': 'application/json' } });
+  const req = await axios.post(getAutotaskURL(Number(chainId)), JSON.stringify(request), { headers: { 'Content-Type': 'application/json' } });
 
   return JSON.parse(req.data.result)['txHash'];
 };
