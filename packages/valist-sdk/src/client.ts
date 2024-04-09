@@ -160,16 +160,16 @@ export default class Client {
 		return await purchase(projectID, recipient, { value: price });
 	}
 
-	// async purchaseProductToken(token: string, projectID: ethers.BigNumberish, recipient: string): Promise<ContractTransaction> {
-	// 	const erc20 = new ethers.Contract(token, erc20ABI, this.license.);
-	// 	const price = await this.getProductTokenPrice(token, projectID);
-	// 	// approve the transfer
-	// 	const approveTx = await erc20.approve(this.license.address, price);
-	// 	await approveTx.wait();
-	// 	// purchase the product
-	// 	const purchase = this.license['purchase(address,uint256,address)'];
-	// 	return await purchase(token, projectID, recipient);
-	// }
+	async purchaseProductToken(token: string, projectID: ethers.BigNumberish, recipient: string): Promise<ContractTransaction> {
+		const erc20 = new ethers.Contract(token, erc20ABI, this.signer);
+		const price = await this.getProductTokenPrice(token, projectID);
+		// approve the transfer
+		const approveTx = await erc20.approve(this.license.address, price);
+		await approveTx.wait();
+		// purchase the product
+		const purchase = this.license['purchase(address,uint256,address)'];
+		return await purchase(token, projectID, recipient);
+	}
 
 	async withdrawProductBalance(projectID: ethers.BigNumberish, recipient: string): Promise<ContractTransaction> {
 		const withdraw = this.license['withdraw(uint256,address)'];
