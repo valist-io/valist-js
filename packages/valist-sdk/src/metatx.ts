@@ -1,5 +1,5 @@
 // adapted from OZ Defender Workshop https://github.com/OpenZeppelin/workshops/blob/9402515b42efe1b4b3c5d8621fc78b55e7078386/25-defender-metatx-api/src/signer.js
-import { ethers } from "ethers";
+import { BaseContract, Contract, ethers } from "ethers";
 import { TypedDataSigner } from "@ethersproject/abstract-signer";
 import axios from "axios";
 import { delay } from "./utils";
@@ -55,10 +55,9 @@ export const getMetaTxTypeData = (chainId: number, verifyingContract: string) =>
   }
 };
 
-export const buildRequest = async (forwarder: any, input: any) => {
+export const buildRequest = async (forwarder: Contract, input: ethers.ContractTransaction, estimatedGas: bigint) => {
   const nonce = await forwarder.getNonce(input.from).then((nonce: number) => nonce.toString());
-  const gasLimit = await forwarder.provider.estimateGas(input);
-  return { value: 0, gas: gasLimit.toHexString(), nonce, ...input };
+  return { value: 0, gas: estimatedGas, nonce, ...input };
 };
 
 export const buildTypedData = async (forwarder: any, request: any) => {
@@ -67,8 +66,8 @@ export const buildTypedData = async (forwarder: any, request: any) => {
   return { ...typeData, message: request };
 };
 
-export const signMetaTxRequest = async (signer: Signer, forwarder: ethers.Contract, input: any) => {
-  const request = await buildRequest(forwarder, input);
+export const signMetaTxRequest = async (signer: Signer, forwarder: ethers.Contract, input: ethers.ContractTransaction, estimatedGas: bigint) => {
+  const request = await buildRequest(forwarder, input, estimatedGas);
   const { domain, types, message } = await buildTypedData(forwarder, request);
   let signature = await signer._signTypedData(domain, types, message);
 
@@ -100,7 +99,7 @@ export const sendTx = async (signer: ethers.Signer, unsigned: any): Promise<stri
   return hash;
 };
 
-export const sendMetaTx = async (signer: ethers.Signer, unsigned: any) => {
+export const sendMetaTx = async (signer: ethers.Signer, unsigned: ethers.ContractTransaction, estimatedGas: bigint) => {
   const provider = signer?.provider;
   if (!provider) throw ('no provider found in signer');
 
@@ -114,7 +113,7 @@ export const sendMetaTx = async (signer: ethers.Signer, unsigned: any) => {
 
   do {
     try {
-      request = await signMetaTxRequest(signer as Signer, forwarder, unsigned);
+      request = await signMetaTxRequest(signer as Signer, forwarder, unsigned, estimatedGas);
     } catch (e) {
       if (JSON.stringify(e).includes('getNonce')) {
         console.error(e);
