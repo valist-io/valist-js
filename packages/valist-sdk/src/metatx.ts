@@ -1,5 +1,5 @@
 // adapted from OZ Defender Workshop https://github.com/OpenZeppelin/workshops/blob/9402515b42efe1b4b3c5d8621fc78b55e7078386/25-defender-metatx-api/src/signer.js
-import { BaseContract, Contract, ethers } from "ethers";
+import { Contract, ethers } from "ethers";
 import { TypedDataSigner } from "@ethersproject/abstract-signer";
 import axios from "axios";
 import { delay } from "./utils";
@@ -55,65 +55,73 @@ export const getMetaTxTypeData = (chainId: number, verifyingContract: string) =>
   }
 };
 
-export const buildRequest = async (forwarder: Contract, input: ethers.ContractTransaction, estimatedGas: bigint) => {
+export const buildRequest = async (forwarder: ethers.Contract, input: ethers.ContractTransaction, signer: Signer) => {
   const nonce = await forwarder.getNonce(input.from).then((nonce: number) => nonce.toString());
-  return { value: 0, gas: estimatedGas, nonce, ...input };
+  if (!nonce) throw ('unable to get none');
+
+  const gasLimit = await signer.estimateGas(input);
+  return { ...input, gas: gasLimit, value: BigInt(0), nonce: Number(nonce) };
 };
 
-export const buildTypedData = async (forwarder: any, request: any) => {
-  const chainId = await forwarder.provider.getNetwork().then((n: any) => n.chainId);
-  const typeData = getMetaTxTypeData(chainId, forwarder.address);
+export const buildTypedData = async (forwarder: ethers.Contract, request: ethers.ContractTransaction) => {
+  const forwarderAddress = await forwarder.getAddress();
+  const typeData = getMetaTxTypeData(137, forwarderAddress);
   return { ...typeData, message: request };
 };
 
-export const signMetaTxRequest = async (signer: Signer, forwarder: ethers.Contract, input: ethers.ContractTransaction, estimatedGas: bigint) => {
-  const request = await buildRequest(forwarder, input, estimatedGas);
+export const signMetaTxRequest = async (signer: Signer, forwarder: ethers.Contract, input: ethers.ContractTransaction) => {
+  const request = await buildRequest(forwarder, input, signer);
+  console.log('i got here 1');
   const { domain, types, message } = await buildTypedData(forwarder, request);
-  let signature = await signer._signTypedData(domain, types, message);
-
+  console.log('i got here 2');
+  let signature;
+  try {
+    signature = await signer.signTypedData(domain, types, message);
+  } catch (err) {
+    console.error('caught error', err);
+  }
+  console.log('i got here 3');
   // Workaround for Ledger support
-  let v: string | number = `0x${signature.slice(130, 132)}`;
+  let v: string | number = `0x${signature?.slice(130, 132)}`;
   v = parseInt(v, 16);
   if (![27, 28].includes(v)) {
     v += 27;
     v = v.toString(16);
-    signature = `${signature.substring(0, 130)}${v}`;
+    signature = `${signature?.substring(0, 130)}${v}`;
   }
 
   return { signature, request };
 };
 
-export const sendTx = async (signer: ethers.Signer, unsigned: any): Promise<string> => {
+export const sendTx = async (signer: ethers.Signer, unsigned: ethers.ContractTransaction): Promise<string> => {
   unsigned.gasLimit = await signer.estimateGas(unsigned);
   const provider = signer?.provider;
-  if (!provider) throw ('No provider found in signer');
+  if (!provider) throw ('no provider found in signer');
 
-  unsigned.gasPrice = (await provider.getFeeData()).gasPrice;
+  const gasPrice = (await provider.getFeeData()).gasPrice;
+  if (!gasPrice) throw ('unable to get gas price');
+  unsigned.gasPrice = gasPrice;
 
-  const gasLimit = unsigned.gasLimit?.toHexString();
-  const gasPrice = unsigned.gasPrice?.toHexString();
-  const value = unsigned.value ? unsigned.value.toHexString() : '0x0';
+  const gasLimit = unsigned.gasLimit;
+  const value = unsigned.value ? unsigned.value.toString(16) : '0x0';
 
   const { hash } = await signer.sendTransaction({ ...unsigned, gasLimit, gasPrice, value });
 
   return hash;
 };
 
-export const sendMetaTx = async (signer: ethers.Signer, unsigned: ethers.ContractTransaction, estimatedGas: bigint) => {
+export const sendMetaTx = async (signer: ethers.Signer, unsigned: ethers.ContractTransaction) => {
   const provider = signer?.provider;
   if (!provider) throw ('no provider found in signer');
 
-  const chainId = (await signer.provider?.getNetwork())?.chainId;
-  if (!chainId) throw ('no chainId found on provider');
-
-  const forwarderAddress = getForwarderContract(Number(chainId));
+  const forwarderAddress = getForwarderContract(137);
   const forwarder = new ethers.Contract(forwarderAddress, ForwarderABI, signer);
 
   let request;
 
   do {
     try {
-      request = await signMetaTxRequest(signer as Signer, forwarder, unsigned, estimatedGas);
+      request = await signMetaTxRequest(signer as Signer, forwarder, unsigned);
     } catch (e) {
       if (JSON.stringify(e).includes('getNonce')) {
         console.error(e);
@@ -124,7 +132,12 @@ export const sendMetaTx = async (signer: ethers.Signer, unsigned: ethers.Contrac
     }
   } while (request == null);
 
-  const req = await axios.post(getAutotaskURL(Number(chainId)), JSON.stringify(request), { headers: { 'Content-Type': 'application/json' } });
+  const req = await axios.post(getAutotaskURL(137), JSON.stringify(request), { headers: { 'Content-Type': 'application/json' } });
 
   return JSON.parse(req.data.result)['txHash'];
 };
+
+// @ts-expect-error 🚧 ETHERS 6 IS STILL BROKEN IN NEXTJS. THIS IS A WORKAROUND
+BigInt.prototype.toJSON = function () {
+  return this.toString()
+}

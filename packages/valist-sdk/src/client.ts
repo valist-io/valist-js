@@ -33,22 +33,19 @@ export default class Client {
 	async createAccount(name: string, meta: AccountMeta, members: string[]): Promise<TransactionResponse> {
 		const metaURI = await this.writeJSON(meta);
 		const unsigned = await this.registry.createAccount.populateTransaction(name, metaURI, members);
-		const estimatedGas = await this.registry.createAccount.estimateGas(name, metaURI, members);
-		return await this.sendTx(unsigned, estimatedGas);
+		return await this.sendTx(unsigned);
 	}
 
 	async createProject(accountID: ethers.BigNumberish, name: string, meta: ProjectMeta, members: string[]): Promise<TransactionResponse> {
 		const metaURI = await this.writeJSON(meta);
 		const unsigned = await this.registry.createProject.populateTransaction(accountID, name, metaURI, members);
-		const estimatedGas = await this.registry.createProject.estimateGas(accountID, name, metaURI, members);
-		return await this.sendTx(unsigned, estimatedGas);
+		return await this.sendTx(unsigned);
 	}
 
 	async createRelease(projectID: ethers.BigNumberish, name: string, meta: ReleaseMeta): Promise<TransactionResponse> {
 		const metaURI = await this.writeJSON(meta);
 		const unsigned = await this.registry.createRelease.populateTransaction(projectID, name, metaURI);
-		const estimatedGas = await this.registry.createRelease.estimateGas(projectID, name, metaURI);
-		return await this.sendTx(unsigned, estimatedGas);
+		return await this.sendTx(unsigned);
 	}
 
 	async accountExists(accountID: ethers.BigNumberish): Promise<boolean> {
@@ -88,52 +85,44 @@ export default class Client {
 		const metaURI = await this.writeJSON(meta);
 		console.log('called setAccountMetaURI....', { metaURI });
 		const unsigned = await this.registry.setAccountMetaURI.populateTransaction(accountID, metaURI);
-		const estimatedGas = await this.registry.setAccountMetaURI.estimateGas(accountID, metaURI);
 		console.log('created unsigned transaction');
-		return await this.sendTx(unsigned, estimatedGas);
+		return await this.sendTx(unsigned);
 	}
 
 	async setProjectMeta(projectID: ethers.BigNumberish, meta: ProjectMeta): Promise<TransactionResponse> {
 		const metaURI = await this.writeJSON(meta);
 		const unsigned = await this.registry.setProjectMetaURI.populateTransaction(projectID, metaURI);
-		const estimatedGas = await this.registry.setProjectMetaURI.estimateGas(projectID, metaURI);
-		return await this.sendTx(unsigned, estimatedGas);
+		return await this.sendTx(unsigned);
 	}
 
 	async addAccountMember(accountID: ethers.BigNumberish, address: string): Promise<TransactionResponse> {
 		const unsigned = await this.registry.addAccountMember.populateTransaction(accountID, address);
-		const estimatedGas = await this.registry.addAccountMember.estimateGas(accountID, address);
-		return await this.sendTx(unsigned, estimatedGas);
+		return await this.sendTx(unsigned);
 	}
 
 	async removeAccountMember(accountID: ethers.BigNumberish, address: string): Promise<TransactionResponse> {
 		const unsigned = await this.registry.removeAccountMember.populateTransaction(accountID, address);
-		const estimatedGas = await this.registry.removeAccountMember.estimateGas(accountID, address);
-		return await this.sendTx(unsigned, estimatedGas);
+		return await this.sendTx(unsigned);
 	}
 
 	async addProjectMember(projectID: ethers.BigNumberish, address: string): Promise<TransactionResponse> {
 		const unsigned = await this.registry.addProjectMember.populateTransaction(projectID, address);
-		const estimatedGas = await this.registry.addProjectMember.estimateGas(projectID, address);
-		return await this.sendTx(unsigned, estimatedGas);
+		return await this.sendTx(unsigned);
 	}
 
 	async removeProjectMember(projectID: ethers.BigNumberish, address: string): Promise<TransactionResponse> {
 		const unsigned = await this.registry.removeProjectMember.populateTransaction(projectID, address);
-		const estimatedGas = await this.registry.removeProjectMember.estimateGas(projectID, address);
-		return await this.sendTx(unsigned, estimatedGas);
+		return await this.sendTx(unsigned);
 	}
 
 	async approveRelease(releaseID: ethers.BigNumberish): Promise<TransactionResponse> {
 		const unsigned = await this.registry.approveRelease.populateTransaction(releaseID);
-		const estimatedGas = await this.registry.approveRelease.estimateGas(releaseID);
-		return await this.sendTx(unsigned, estimatedGas);
+		return await this.sendTx(unsigned);
 	}
 
 	async revokeRelease(releaseID: ethers.BigNumberish): Promise<TransactionResponse> {
-		const unsigned = await this.registry.revokeRelease.populateTransaction(releaseID);
-		const estimatedGas = await this.registry.revokeRelease.estimateGas(releaseID);
-		return await this.sendTx(unsigned, estimatedGas);
+		const unsigned = await this.registry.approveRelease.populateTransaction(releaseID);
+		return await this.sendTx(unsigned);
 	}
 
 	async setProductLimit(projectID: ethers.BigNumberish, limit: ethers.BigNumberish): Promise<ContractTransaction> {
@@ -371,7 +360,7 @@ export default class Client {
 		return `${this.ipfsGateway}/ipfs/${cids[cids.length - 1].Hash}`;
 	}
 
-	async sendTx(unsigned: ethers.ContractTransaction, estimatedGas: bigint): Promise<ethers.TransactionResponse> {
+	async sendTx(unsigned: ethers.ContractTransaction): Promise<ethers.TransactionResponse> {
 		if (!this.signer) throw new Error('valist client is read-only');
 
 		const txReq: ethers.ContractTransaction = {
@@ -383,18 +372,14 @@ export default class Client {
 			throw new Error(`Invalid wallet address ${txReq.from} please try again`);
 		}
 
-		console.log('metaTx', this.metaTx);
-
 		const hash = this.metaTx
-			? await sendMetaTx(this.signer, txReq, estimatedGas)
+			? await sendMetaTx(this.signer, txReq)
 			: await sendTx(this.signer, txReq);
 
 		let tx;
-
 		do {
-			tx = await this.registry.getTransaction(hash);
+			tx = await this?.signer?.provider?.getTransaction(hash);
 		} while (tx == null);
-
 		return tx;
 	}
 
