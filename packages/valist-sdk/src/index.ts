@@ -196,19 +196,7 @@ export function createReadOnly(provider: JsonRpcProvider, options: Partial<Optio
  * @param providerOrSigner Provider or signer to use for transactions
  * @param options Additional client options
  */
-export async function create(providerOrSigner: Provider, options: Partial<Options>): Promise<Client> {
-  let signer: ethers.Signer | null;
-  let provider: ethers.Provider | null;
-
-  // coerce the signer and provider out of the merged types
-  if (providerOrSigner?.provider) {
-    signer = providerOrSigner as ethers.Signer;
-    provider = signer.provider;
-  } else {
-    provider = providerOrSigner as ethers.BrowserProvider;
-    signer = await (provider as ethers.BrowserProvider).getSigner();
-  }
-
+export async function create(provider: ethers.BrowserProvider, options: Partial<Options>): Promise<Client> {
   if (!provider) {
     throw new Error('invalid provider');
   }
@@ -217,6 +205,9 @@ export async function create(providerOrSigner: Provider, options: Partial<Option
     const network = await provider.getNetwork();
     options.chainId = network.chainId;
   }
+
+  const signer = await provider?.getSigner();
+  if (!signer) throw new Error('signer not found');
 
   const subgraphUrl = options.subgraphUrl || graphql.getSubgraphUrl(Number(options.chainId) || 137);
   const registryAddress = options.registryAddress || contracts.getRegistryAddress(Number(options.chainId) || 137);
