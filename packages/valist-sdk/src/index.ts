@@ -12,7 +12,7 @@ import { formatBytes } from './utils';
 export type Provider = ethers.Signer | ethers.Provider;
 
 export interface Options {
-  chainId: BigNumberish;
+  chainId: number;
   ipfsHost: string;
   ipfsGateway: string;
   metaTx: boolean;
@@ -177,9 +177,9 @@ export const createIPFS = (_value: Record<string, unknown>): IPFSCLIENT => {
 export function createReadOnly(provider: JsonRpcProvider, options: Partial<Options>): Client {
   const chainId = options.chainId || 137;
 
-  const subgraphUrl = options.subgraphUrl || graphql.getSubgraphUrl(Number(chainId));
-  const registryAddress = options.registryAddress || contracts.getRegistryAddress(Number(chainId));
-  const licenseAddress = options.licenseAddress || contracts.getLicenseAddress(Number(chainId));
+  const subgraphUrl = options.subgraphUrl || graphql.getSubgraphUrl(chainId);
+  const registryAddress = options.registryAddress || contracts.getRegistryAddress(chainId);
+  const licenseAddress = options.licenseAddress || contracts.getLicenseAddress(chainId);
 
   const registry = new ethers.Contract(registryAddress, contracts.registryABI, provider);
   const license = new ethers.Contract(licenseAddress, contracts.licenseABI, provider);
@@ -203,15 +203,15 @@ export async function create(provider: ethers.BrowserProvider, options: Partial<
 
   if (!options.chainId) {
     const network = await provider.getNetwork();
-    options.chainId = network.chainId;
+    options.chainId = Number(network.chainId);
   }
 
   const signer = await provider?.getSigner();
   if (!signer) throw new Error('signer not found');
 
-  const subgraphUrl = options.subgraphUrl || graphql.getSubgraphUrl(Number(options.chainId) || 137);
-  const registryAddress = options.registryAddress || contracts.getRegistryAddress(Number(options.chainId) || 137);
-  const licenseAddress = options.licenseAddress || contracts.getLicenseAddress(Number(options.chainId) || 137);
+  const subgraphUrl = options.subgraphUrl || graphql.getSubgraphUrl(options.chainId || 137);
+  const registryAddress = options.registryAddress || contracts.getRegistryAddress(options.chainId || 137);
+  const licenseAddress = options.licenseAddress || contracts.getLicenseAddress(options.chainId || 137);
 
   const registry = new ethers.Contract(registryAddress, contracts.registryABI, provider);
   const license = new ethers.Contract(licenseAddress, contracts.licenseABI, signer);
