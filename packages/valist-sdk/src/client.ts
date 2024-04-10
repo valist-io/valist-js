@@ -83,9 +83,7 @@ export default class Client {
 
 	async setAccountMeta(accountID: ethers.BigNumberish, meta: AccountMeta): Promise<TransactionResponse> {
 		const metaURI = await this.writeJSON(meta);
-		console.log('called setAccountMetaURI....', { metaURI });
 		const unsigned = await this.registry.setAccountMetaURI.populateTransaction(accountID, metaURI);
-		console.log('created unsigned transaction');
 		return await this.sendTx(unsigned);
 	}
 

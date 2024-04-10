@@ -71,16 +71,10 @@ export const buildTypedData = async (forwarder: ethers.Contract, request: ethers
 
 export const signMetaTxRequest = async (signer: Signer, forwarder: ethers.Contract, input: ethers.ContractTransaction) => {
   const request = await buildRequest(forwarder, input, signer);
-  console.log('i got here 1');
   const { domain, types, message } = await buildTypedData(forwarder, request);
-  console.log('i got here 2');
-  let signature;
-  try {
-    signature = await signer.signTypedData(domain, types, message);
-  } catch (err) {
-    console.error('caught error', err);
-  }
-  console.log('i got here 3');
+
+  let signature = await signer.signTypedData(domain, types, message);
+
   // Workaround for Ledger support
   let v: string | number = `0x${signature?.slice(130, 132)}`;
   v = parseInt(v, 16);
