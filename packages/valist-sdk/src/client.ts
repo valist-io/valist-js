@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 import axios from 'axios';
-import { BigNumber, ethers, PopulatedTransaction } from 'ethers';
+import { BigNumberish, TransactionResponse, ethers } from 'ethers';
 import { ContractTransaction } from '@ethersproject/contracts';
 
 import { AccountMeta, ProjectMeta, ReleaseMeta } from './types';
@@ -11,7 +11,6 @@ import { generateID, getAccountID, getProjectID, getReleaseID } from './utils';
 import * as queries from './graphql/queries';
 import { sendMetaTx, sendTx } from './metatx';
 import { ImportCandidate } from 'ipfs-core-types/src/utils';
-import { isAddress } from 'ethers/lib/utils';
 import { FileObject } from './files';
 import { IPFSCLIENT } from '.';
 
@@ -31,21 +30,21 @@ export default class Client {
 		private metaTx: boolean = true,
 	) { }
 
-	async createAccount(name: string, meta: AccountMeta, members: string[]): Promise<ContractTransaction> {
+	async createAccount(name: string, meta: AccountMeta, members: string[]): Promise<TransactionResponse> {
 		const metaURI = await this.writeJSON(meta);
-		const unsigned = await this.registry.populateTransaction.createAccount(name, metaURI, members);
+		const unsigned = await this.registry.createAccount.populateTransaction(name, metaURI, members);
 		return await this.sendTx(unsigned);
 	}
 
-	async createProject(accountID: ethers.BigNumberish, name: string, meta: ProjectMeta, members: string[]): Promise<ContractTransaction> {
+	async createProject(accountID: ethers.BigNumberish, name: string, meta: ProjectMeta, members: string[]): Promise<TransactionResponse> {
 		const metaURI = await this.writeJSON(meta);
-		const unsigned = await this.registry.populateTransaction.createProject(accountID, name, metaURI, members);
+		const unsigned = await this.registry.createProject.populateTransaction(accountID, name, metaURI, members);
 		return await this.sendTx(unsigned);
 	}
 
-	async createRelease(projectID: ethers.BigNumberish, name: string, meta: ReleaseMeta): Promise<ContractTransaction> {
+	async createRelease(projectID: ethers.BigNumberish, name: string, meta: ReleaseMeta): Promise<TransactionResponse> {
 		const metaURI = await this.writeJSON(meta);
-		const unsigned = await this.registry.populateTransaction.createRelease(projectID, name, metaURI);
+		const unsigned = await this.registry.createRelease.populateTransaction(projectID, name, metaURI);
 		return await this.sendTx(unsigned);
 	}
 
@@ -82,45 +81,45 @@ export default class Client {
 		return data;
 	}
 
-	async setAccountMeta(accountID: ethers.BigNumberish, meta: AccountMeta): Promise<ContractTransaction> {
+	async setAccountMeta(accountID: ethers.BigNumberish, meta: AccountMeta): Promise<TransactionResponse> {
 		const metaURI = await this.writeJSON(meta);
-		const unsigned = await this.registry.populateTransaction.setAccountMetaURI(accountID, metaURI);
+		const unsigned = await this.registry.setAccountMetaURI.populateTransaction(accountID, metaURI);
 		return await this.sendTx(unsigned);
 	}
 
-	async setProjectMeta(projectID: ethers.BigNumberish, meta: ProjectMeta): Promise<ContractTransaction> {
+	async setProjectMeta(projectID: ethers.BigNumberish, meta: ProjectMeta): Promise<TransactionResponse> {
 		const metaURI = await this.writeJSON(meta);
-		const unsigned = await this.registry.populateTransaction.setProjectMetaURI(projectID, metaURI);
+		const unsigned = await this.registry.setProjectMetaURI.populateTransaction(projectID, metaURI);
 		return await this.sendTx(unsigned);
 	}
 
-	async addAccountMember(accountID: ethers.BigNumberish, address: string): Promise<ContractTransaction> {
-		const unsigned = await this.registry.populateTransaction.addAccountMember(accountID, address);
+	async addAccountMember(accountID: ethers.BigNumberish, address: string): Promise<TransactionResponse> {
+		const unsigned = await this.registry.addAccountMember.populateTransaction(accountID, address);
 		return await this.sendTx(unsigned);
 	}
 
-	async removeAccountMember(accountID: ethers.BigNumberish, address: string): Promise<ContractTransaction> {
-		const unsigned = await this.registry.populateTransaction.removeAccountMember(accountID, address);
+	async removeAccountMember(accountID: ethers.BigNumberish, address: string): Promise<TransactionResponse> {
+		const unsigned = await this.registry.removeAccountMember.populateTransaction(accountID, address);
 		return await this.sendTx(unsigned);
 	}
 
-	async addProjectMember(projectID: ethers.BigNumberish, address: string): Promise<ContractTransaction> {
-		const unsigned = await this.registry.populateTransaction.addProjectMember(projectID, address);
+	async addProjectMember(projectID: ethers.BigNumberish, address: string): Promise<TransactionResponse> {
+		const unsigned = await this.registry.addProjectMember.populateTransaction(projectID, address);
 		return await this.sendTx(unsigned);
 	}
 
-	async removeProjectMember(projectID: ethers.BigNumberish, address: string): Promise<ContractTransaction> {
-		const unsigned = await this.registry.populateTransaction.removeProjectMember(projectID, address);
+	async removeProjectMember(projectID: ethers.BigNumberish, address: string): Promise<TransactionResponse> {
+		const unsigned = await this.registry.removeProjectMember.populateTransaction(projectID, address);
 		return await this.sendTx(unsigned);
 	}
 
-	async approveRelease(releaseID: ethers.BigNumberish): Promise<ContractTransaction> {
-		const unsigned = await this.registry.populateTransaction.approveRelease(releaseID);
+	async approveRelease(releaseID: ethers.BigNumberish): Promise<TransactionResponse> {
+		const unsigned = await this.registry.approveRelease.populateTransaction(releaseID);
 		return await this.sendTx(unsigned);
 	}
 
-	async revokeRelease(releaseID: ethers.BigNumberish): Promise<ContractTransaction> {
-		const unsigned = await this.registry.populateTransaction.approveRelease(releaseID);
+	async revokeRelease(releaseID: ethers.BigNumberish): Promise<TransactionResponse> {
+		const unsigned = await this.registry.approveRelease.populateTransaction(releaseID);
 		return await this.sendTx(unsigned);
 	}
 
@@ -149,7 +148,7 @@ export default class Client {
 	}
 
 	async purchaseProductToken(token: string, projectID: ethers.BigNumberish, recipient: string): Promise<ContractTransaction> {
-		const erc20 = new ethers.Contract(token, erc20ABI, this.license.signer);
+		const erc20 = new ethers.Contract(token, erc20ABI, this.signer);
 		const price = await this.getProductTokenPrice(token, projectID);
 		// approve the transfer
 		const approveTx = await erc20.approve(this.license.address, price);
@@ -169,33 +168,33 @@ export default class Client {
 		return await withdraw(token, projectID, recipient);
 	}
 
-	async getProductPrice(projectID: ethers.BigNumberish): Promise<ethers.BigNumber> {
+	async getProductPrice(projectID: ethers.BigNumberish): Promise<ethers.BigNumberish> {
 		const getPrice = this.license['getPrice(uint256)'];
 		return await getPrice(projectID);
 	}
 
-	async getProductTokenPrice(token: string, projectID: ethers.BigNumberish): Promise<ethers.BigNumber> {
+	async getProductTokenPrice(token: string, projectID: ethers.BigNumberish): Promise<ethers.BigNumberish> {
 		const getPrice = this.license['getPrice(address,uint256)'];
 		return await getPrice(token, projectID);
 	}
 
-	async getProductLimit(projectID: ethers.BigNumberish): Promise<ethers.BigNumber> {
+	async getProductLimit(projectID: ethers.BigNumberish): Promise<ethers.BigNumberish> {
 		return await this.license.getLimit(projectID);
 	}
 
-	async getProductRoyaltyInfo(projectID: ethers.BigNumberish, price: ethers.BigNumberish): Promise<[string, BigNumber]> {
+	async getProductRoyaltyInfo(projectID: ethers.BigNumberish, price: ethers.BigNumberish): Promise<[string, BigNumberish]> {
 		return await this.license.royaltyInfo(projectID, price);
 	}
 
-	async getProductSupply(projectID: ethers.BigNumberish): Promise<ethers.BigNumber> {
+	async getProductSupply(projectID: ethers.BigNumberish): Promise<ethers.BigNumberish> {
 		return await this.license.getSupply(projectID);
 	}
 
-	async getProductBalance(address: string, projectID: ethers.BigNumberish): Promise<ethers.BigNumber> {
+	async getProductBalance(address: string, projectID: ethers.BigNumberish): Promise<ethers.BigNumberish> {
 		return await this.license.balanceOf(address, projectID);
 	}
 
-	async getProductBalanceBatch(addresses: string[], projectIDs: ethers.BigNumberish[]): Promise<ethers.BigNumber[]> {
+	async getProductBalanceBatch(addresses: string[], projectIDs: ethers.BigNumberish[]): Promise<ethers.BigNumberish[]> {
 		return await this.license.balanceOfBatch(addresses, projectIDs);
 	}
 
@@ -211,19 +210,19 @@ export default class Client {
 		return await this.registry.getReleaseSigners(releaseID);
 	}
 
-	async getLatestReleaseID(projectID: ethers.BigNumberish): Promise<ethers.BigNumber> {
+	async getLatestReleaseID(projectID: ethers.BigNumberish): Promise<ethers.BigNumberish> {
 		return await this.registry.getLatestReleaseID(projectID);
 	}
 
-	async getPreviousReleaseID(releaseID: ethers.BigNumberish): Promise<ethers.BigNumber> {
+	async getPreviousReleaseID(releaseID: ethers.BigNumberish): Promise<ethers.BigNumberish> {
 		return await this.registry.getPreviousReleaseID(releaseID);
 	}
 
-	async getProjectAccountID(projectID: ethers.BigNumberish): Promise<ethers.BigNumber> {
+	async getProjectAccountID(projectID: ethers.BigNumberish): Promise<ethers.BigNumberish> {
 		return await this.registry.getProjectAccountID(projectID);
 	}
 
-	async getReleaseProjectID(releaseID: ethers.BigNumberish): Promise<ethers.BigNumber> {
+	async getReleaseProjectID(releaseID: ethers.BigNumberish): Promise<ethers.BigNumberish> {
 		return await this.registry.getReleaseProjectID(releaseID);
 	}
 
@@ -359,15 +358,15 @@ export default class Client {
 		return `${this.ipfsGateway}/ipfs/${cids[cids.length - 1].Hash}`;
 	}
 
-	async sendTx(unsigned: PopulatedTransaction): Promise<ethers.providers.TransactionResponse> {
+	async sendTx(unsigned: ethers.ContractTransaction): Promise<ethers.TransactionResponse> {
 		if (!this.signer) throw new Error('valist client is read-only');
 
-		const txReq = {
+		const txReq: ethers.ContractTransaction = {
 			from: await this.signer.getAddress(),
 			...unsigned,
 		};
 
-		if (!isAddress(txReq.from) || txReq.from === "0x") {
+		if (!ethers.isAddress(txReq.from) || txReq.from === "0x") {
 			throw new Error(`Invalid wallet address ${txReq.from} please try again`);
 		}
 
@@ -376,11 +375,9 @@ export default class Client {
 			: await sendTx(this.signer, txReq);
 
 		let tx;
-
 		do {
-			tx = await this.registry.provider.getTransaction(hash);
+			tx = await this?.signer?.provider?.getTransaction(hash);
 		} while (tx == null);
-
 		return tx;
 	}
 

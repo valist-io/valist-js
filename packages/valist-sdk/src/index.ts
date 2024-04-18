@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ethers, providers } from 'ethers';
+import { BigNumberish, JsonRpcProvider, ethers } from 'ethers';
 import Client from './client';
 import * as contracts from './contracts';
 import * as graphql from './graphql';
@@ -9,7 +9,7 @@ import https from "https";
 import http from "http";
 import { formatBytes } from './utils';
 
-export type Provider = providers.Provider | ethers.Signer;
+export type Provider = ethers.Signer | ethers.Provider;
 
 export interface Options {
   chainId: number;
@@ -174,7 +174,7 @@ export const createIPFS = (_value: Record<string, unknown>): IPFSCLIENT => {
  * @param provider Provider to use for transactions
  * @param options Additional client options
  */
-export function createReadOnly(provider: providers.JsonRpcProvider, options: Partial<Options>): Client {
+export function createReadOnly(provider: JsonRpcProvider, options: Partial<Options>): Client {
   const chainId = options.chainId || 137;
 
   const subgraphUrl = options.subgraphUrl || graphql.getSubgraphUrl(chainId);
@@ -196,27 +196,18 @@ export function createReadOnly(provider: providers.JsonRpcProvider, options: Par
  * @param providerOrSigner Provider or signer to use for transactions
  * @param options Additional client options
  */
-export async function create(providerOrSigner: Provider, options: Partial<Options>): Promise<Client> {
-  let signer: ethers.Signer | undefined;
-  let provider: providers.Provider | undefined;
-
-  // coerce the signer and provider out of the merged types
-  if (ethers.Signer.isSigner(providerOrSigner)) {
-    signer = providerOrSigner as ethers.Signer;
-    provider = signer.provider;
-  } else {
-    provider = providerOrSigner as providers.Web3Provider;
-    signer = (provider as providers.Web3Provider).getSigner();
-  }
-
+export async function create(provider: ethers.BrowserProvider, options: Partial<Options>): Promise<Client> {
   if (!provider) {
     throw new Error('invalid provider');
   }
 
   if (!options.chainId) {
     const network = await provider.getNetwork();
-    options.chainId = network.chainId;
+    options.chainId = Number(network.chainId);
   }
+
+  const signer = await provider?.getSigner();
+  if (!signer) throw new Error('signer not found');
 
   const subgraphUrl = options.subgraphUrl || graphql.getSubgraphUrl(options.chainId || 137);
   const registryAddress = options.registryAddress || contracts.getRegistryAddress(options.chainId || 137);

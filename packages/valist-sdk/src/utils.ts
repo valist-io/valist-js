@@ -1,14 +1,15 @@
+/* eslint-disable @typescript-eslint/no-inferrable-types */
 import { ethers } from 'ethers';
 import axios from 'axios';
 import { filesFromPaths } from './files';
 import { webcrypto } from 'node:crypto';
 
 const createHash = async (text: string) => {
-  const utf8 = new TextEncoder().encode(text);
-  const hashBuffer = await (globalThis.crypto || webcrypto).subtle.digest('SHA-256', utf8);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashHex = hashArray.map((bytes) => bytes.toString(16).padStart(2, '0')).join('');
-  return hashHex;
+	const utf8 = new TextEncoder().encode(text);
+	const hashBuffer = await (globalThis.crypto || webcrypto).subtle.digest('SHA-256', utf8);
+	const hashArray = Array.from(new Uint8Array(hashBuffer));
+	const hashHex = hashArray.map((bytes) => bytes.toString(16).padStart(2, '0')).join('');
+	return hashHex;
 }
 
 /**
@@ -18,9 +19,9 @@ const createHash = async (text: string) => {
  * @param name Name of the account, project, or rlease.
  */
 export function generateID(parentID: ethers.BigNumberish, name: string): string {
-	const nameBytes = ethers.utils.toUtf8Bytes(name);
-	const nameHash = ethers.utils.keccak256(nameBytes);
-	return ethers.utils.solidityKeccak256(["uint256", "bytes32"], [parentID, nameHash]);
+	const nameBytes = ethers.toUtf8Bytes(name);
+	const nameHash = ethers.keccak256(nameBytes);
+	return ethers.solidityPackedKeccak256(["uint256", "bytes32"], [parentID, nameHash]);
 }
 
 export function getAccountID(chainId: ethers.BigNumberish, account: string): string {
@@ -88,23 +89,23 @@ export const delay = (time: number) => {
 }
 
 export async function generateValistToken(apiSecret: string, expiresIn: number = 3600): Promise<string> {
-  const expires = Math.floor(Date.now() / 1000) + expiresIn; // defaults to 60min
+	const expires = Math.floor(Date.now() / 1000) + expiresIn; // defaults to 60min
 
-  const hashInput = `${apiSecret}${expires}`;
-  const hash = await createHash(hashInput);
+	const hashInput = `${apiSecret}${expires}`;
+	const hash = await createHash(hashInput);
 
-  const token = `${hash}${expires}`;
-  return token;
+	const token = `${hash}${expires}`;
+	return token;
 }
 
 export async function verifyValistToken(apiSecret: string, token: string): Promise<boolean> {
-  const requestHash = token.slice(0, 64);
-  const expires = token.slice(64, 82);
+	const requestHash = token.slice(0, 64);
+	const expires = token.slice(64, 82);
 
-  if (new Date(expires) < new Date()) return false;
+	if (new Date(expires) < new Date()) return false;
 
-  const hashInput = `${apiSecret}${expires}`;
-  const hash = await createHash(hashInput);
+	const hashInput = `${apiSecret}${expires}`;
+	const hash = await createHash(hashInput);
 
-  return requestHash === hash;
+	return requestHash === hash;
 }
