@@ -38,6 +38,11 @@ export interface ProjectMetaApi extends Omit<ProjectMetaInterface, 'systemRequir
   wine_support?: WineSupport;
 }
 
+export interface PartialQuest {
+  id: number;
+  name: string;
+}
+
 export interface Listing {
   channels: Channel[];
   disabled: boolean;
@@ -48,4 +53,5 @@ export interface Listing {
   project_meta: ProjectMetaApi;
   project_name: string;
   timestamp: number;
+  quests: PartialQuest[];
 }
