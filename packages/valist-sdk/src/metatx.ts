@@ -35,7 +35,7 @@ const getForwarderContract = (chainId: number) => {
 const getAutotaskURL = (chainId: number) => {
   const addressMap: Record<number, string> = {
     80001: 'https://api.defender.openzeppelin.com/autotasks/45a953df-acc7-4e75-bc9a-aaf799c58fcf/runs/webhook/c46f91ee-4fb7-43e6-8254-44f996d6a553/Jju58XYcUYbXhdFQwCkjFJ',
-    137: 'https://api.defender.openzeppelin.com/autotasks/3342ffa2-940e-498c-ba8b-691759c9e716/runs/webhook/c46f91ee-4fb7-43e6-8254-44f996d6a553/Y3cZWv8WcM8YpxzKaKHxKC',
+    137: 'https://api.defender.openzeppelin.com/actions/a7a907f3-8f7b-4924-a8b3-66d271ed22f6/runs/webhook/c46f91ee-4fb7-43e6-8254-44f996d6a553/8NVQBnqyuHUPamnvnEqhkV',
   }
   return addressMap[chainId];
 };
