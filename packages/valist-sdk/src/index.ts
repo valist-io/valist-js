@@ -190,24 +190,26 @@ export function createReadOnly(provider: JsonRpcProvider, options: Partial<Optio
   return new Client(registry, license, ipfs, ipfsGateway, subgraphUrl, undefined, false);
 }
 
-/**
- * Create a Valist client using the given JSON RPC provider.
- * 
- * @param providerOrSigner Provider or signer to use for transactions
- * @param options Additional client options
- */
-export async function create(provider: ethers.BrowserProvider, options: Partial<Options>): Promise<Client> {
-  if (!provider) {
-    throw new Error('invalid provider');
+export async function create(providerOrSigner: ethers.BrowserProvider | ethers.Wallet, options: Partial<Options>): Promise<Client> {
+  if (!providerOrSigner) throw new Error('invalid provider or signer');
+
+  let signer: ethers.Signer;
+  let provider: ethers.Provider;
+
+  if ('getSigner' in providerOrSigner) {
+    signer = await providerOrSigner.getSigner();
+    provider = providerOrSigner;
+  } else if (providerOrSigner?.provider) {
+    signer = providerOrSigner;
+    provider = providerOrSigner.provider;
+  } else {
+    throw new Error('invalid provider or signer');
   }
 
   if (!options.chainId) {
     const network = await provider.getNetwork();
     options.chainId = Number(network.chainId);
   }
-
-  const signer = await provider?.getSigner();
-  if (!signer) throw new Error('signer not found');
 
   const subgraphUrl = options.subgraphUrl || graphql.getSubgraphUrl(options.chainId || 137);
   const registryAddress = options.registryAddress || contracts.getRegistryAddress(options.chainId || 137);
