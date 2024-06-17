@@ -57,5 +57,9 @@ export interface Listing {
   project_meta: ProjectMetaApi;
   project_name: string;
   timestamp: number;
-  quests: PartialQuest[];
+  quests?: PartialQuest[];
+  is_metamask_in_game: boolean;
+  is_metamask_verified: boolean;
+  is_metamask_compatible: boolean;
+  download_badge_verified: boolean;
 }
