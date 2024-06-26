@@ -7,11 +7,13 @@ export function getChainId() {
   return parseInt(CHAIN_ID);
 }
 
+export const SUBGRAPH_URL = `https://gateway-arbitrum.network.thegraph.com/api/${process.env.NEXT_PUBLIC_SUBGRAPH_API_KEY}/subgraphs/id/88cRsVabPiks1qmwJ1vPJVJKsWD5M3Z7nvdUSTkmA51f`;
+
 export function getSubgraphURI() {
   const chainId = getChainId();
   switch (chainId) {
     case 137:
-      return 'https://api.thegraph.com/subgraphs/name/valist-io/valist';
+      return SUBGRAPH_URL;
     case 80001:
       return 'https://api.thegraph.com/subgraphs/name/valist-io/valistmumbai';
   }

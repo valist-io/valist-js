@@ -70,7 +70,6 @@ const ProjectPage: NextPage = () => {
 
   const { data, loading } = useQuery(query, { 
     variables: { projectId },
-    pollInterval: 5000,
   });
 
   const accountMembers = data?.project?.account?.members ?? [];
