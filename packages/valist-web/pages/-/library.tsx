@@ -17,7 +17,6 @@ const LibraryPage: NextPage = () => {
 
   const { data, loading } = useQuery(query, { 
     variables: { address: address?.toLowerCase() ?? '' },
-    pollInterval: 5000,
   });
 
   const _projects: any[] = Array.from((data?.purchases ?? [])
