@@ -50,7 +50,6 @@ const AccountPage: NextPage = () => {
 
   const { data, loading } = useQuery(query, { 
     variables: { accountId },
-    pollInterval: 5000,
   });
   const { data: meta } = useSWRImmutable(data?.account?.metaURI);
 

@@ -9,9 +9,8 @@ import query from '@/graphql/Dashboard.graphql';
 export function useEntityIds(accountName: string = '') {
   const { address } = useAccount();
 
-  const { data, loading } = useQuery(query, { 
+  const { data, loading } = useQuery(query, {
     variables: { address: address?.toLowerCase() ?? '' },
-    pollInterval: 5000,
   });
 
   const _accounts = data?.user?.accounts ?? [];
@@ -42,12 +41,10 @@ export function useEntities(accountName: string = '') {
 
   const accountsData = useQuery(accountsQuery, {
     variables: { ids: accountIds },
-    pollInterval: 5000,
   });
 
   const projectsData = useQuery(projectsQuery, {
     variables: { ids: projectIds },
-    pollInterval: 5000,
   });
 
   const accounts = accountsData.data?.accounts ?? [];
@@ -104,7 +101,7 @@ export function useMembers(accountName: string = '') {
   const memberIds = Array.from(memberSet.values());
 
   const membersData = useQuery(membersQuery, {
-    variables: { ids: memberIds }, 
+    variables: { ids: memberIds },
   });
 
   const members = membersData.data?.users ?? [];
@@ -116,18 +113,17 @@ export function useMembers(accountName: string = '') {
 export function useAccounts() {
   const { address, isReconnecting } = useAccount();
 
-  const { data, loading } = useQuery(query, { 
+  const { data, loading } = useQuery(query, {
     variables: { address: address?.toLowerCase() ?? '' },
-    pollInterval: 5000,
   });
 
   const _accounts = data?.user?.accounts ?? [];
   const _projects = data?.user?.projects ?? [];
 
   const accountMap = new Map<string, any>();
-  
+
   _accounts.forEach((a: any) => accountMap.set(a.id, a));
-  
+
   _projects.map((p: any) => p.account)
     .forEach((a: any) => accountMap.set(a.id, a));
 

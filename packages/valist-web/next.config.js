@@ -5,6 +5,7 @@ const nextConfig = {
   publicRuntimeConfig: {
     CHAIN_ID: process.env.CHAIN_ID || 137,
     CLIENT_ID: process.env.CLIENT_ID,
+    NEXT_PUBLIC_SUBGRAPH_API_KEY: process.env.NEXT_PUBLIC_SUBGRAPH_API_KEY,
   },
   images: {
     remotePatterns: [
